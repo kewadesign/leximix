@@ -26,20 +26,20 @@ export const initSecurity = () => {
             }
         });
 
-        // 3. Detect DevTools opening
+        // 3. Detect DevTools opening (Less aggressive)
         const detectDevTools = () => {
             const threshold = 160;
             const widthThreshold = window.outerWidth - window.innerWidth > threshold;
             const heightThreshold = window.outerHeight - window.innerHeight > threshold;
 
             if (widthThreshold || heightThreshold) {
-                // DevTools detected - reload or show warning
-                document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f0718;color:#fff;font-family:sans-serif;text-align:center;padding:20px;"><div><h1>⚠️ Access Denied</h1><p>Developer tools are not permitted.</p></div></div>';
+                // DevTools detected - just warn, don't destroy the DOM which might break payment flows if triggered falsely
+                 console.warn('DevTools detected');
             }
         };
 
-        // Check periodically
-        setInterval(detectDevTools, 1000);
+        // Check periodically - reduced frequency
+        setInterval(detectDevTools, 2000);
 
         // 4. Prevent text selection in production
         document.body.style.userSelect = 'none';
@@ -57,33 +57,24 @@ export const initSecurity = () => {
             return false;
         });
 
-        // 6. Clear console periodically to remove any debug info
-        setInterval(() => {
-            console.clear();
-        }, 1000);
-
-        // 7. Detect and prevent debugging
-        let checkDebugger = () => {
-            const start = new Date();
-            debugger; // This will pause if debugger is open
-            const end = new Date();
-            if (end.getTime() - start.getTime() > 100) {
-                window.location.reload();
-            }
-        };
-
-        // Don't check too frequently to avoid performance issues
-        setInterval(checkDebugger, 5000);
+        // 6. REMOVED: Console clearing and Object.freeze
+        // These were triggering anti-bot protections on external sites (like PayPal) 
+        // and causing "Access Denied" or "Javascript blocked" errors.
+        
+        // 7. Detect and prevent debugging (Less aggressive)
+        // We removed the 'debugger' statement loop as it can cause the browser to hang
+        // and is a primary trigger for "browser behavior" blocks.
 
         // 8. Prevent iframe embedding (clickjacking protection)
         if (window.self !== window.top) {
-            window.top!.location.href = window.self.location.href;
+            try {
+                window.top!.location.href = window.self.location.href;
+            } catch (e) {
+                // Ignore if cross-origin frame access is blocked
+            }
         }
 
-        // 9. Object.freeze on critical objects
-        Object.freeze(Object.prototype);
-
-        // 10. Detect tampering with Local Storage
+        // 9. Detect tampering with Local Storage
         const originalSetItem = localStorage.setItem;
         localStorage.setItem = function (key: string, value: string) {
             if (key.startsWith('leximix_')) {
@@ -92,19 +83,10 @@ export const initSecurity = () => {
             // Allow other apps to use localStorage
             return originalSetItem.apply(this, [key, value] as any);
         };
-
-        // Disable console functions
-        console.log = () => { };
-        console.debug = () => { };
-        console.info = () => { };
-        console.warn = () => { };
     }
 };
 
 // Optional: Integrity check for critical files
 export const verifyIntegrity = () => {
-    // This would check if the app files have been modified
-    // In a production environment, you could store hashes of critical files
-    // and verify them at runtime
     return true;
 };
