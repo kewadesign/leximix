@@ -55,3 +55,4 @@ class SoundManager {
 }
 
 export const audio = new SoundManager();
+export const sfx = audio; // Alias for backwards compatibility

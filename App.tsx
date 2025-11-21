@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
 import { SeasonPass } from './components/SeasonPass';
-import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES } from './constants';
+import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
 
@@ -197,6 +197,11 @@ export default function App() {
 
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
   const [gameState, setGameState] = useState<any>(null);
+  const gameStateRef = useRef(gameState);
+
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
 
   // Modals
   const [showAd, setShowAd] = useState(false);
@@ -220,6 +225,10 @@ export default function App() {
   const [editName, setEditName] = useState(user.name || "Agent");
   const [editAge, setEditAge] = useState(user.age || 18);
   const [editAvatar, setEditAvatar] = useState(user.avatarId || AVATARS[0]);
+
+  const [showPremiumRequiredModal, setShowPremiumRequiredModal] = useState(false);
+  const [showCorrectWordModal, setShowCorrectWordModal] = useState(false);
+  const [correctWord, setCorrectWord] = useState('');
 
   useEffect(() => {
     if (view !== 'ONBOARDING') {
@@ -262,7 +271,8 @@ export default function App() {
     if (view !== 'GAME' || !gameConfig) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameState?.status !== 'playing') return;
+      const currentGameState = gameStateRef.current;
+      if (currentGameState?.status !== 'playing') return;
 
       const key = e.key.toUpperCase();
       const isSudoku = gameConfig.mode === GameMode.SUDOKU;
@@ -276,12 +286,12 @@ export default function App() {
       }
 
       // Math Mode Input
-      if (gameState.isMath) {
+      if (currentGameState.isMath) {
         if (['BACKSPACE', 'DELETE'].includes(key)) {
           handleWordDelete();
         } else if (key === 'ENTER') {
           handleWordEnter();
-        } else if (/^[0-9+\-*/]$/.test(key)) {
+        } else if (['+', '-', '*', '/'].includes(key) || /^[0-9]$/.test(key)) {
           handleWordKey(key);
         }
         return;
@@ -299,7 +309,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [view, gameState, gameConfig]);
+  }, [view, gameConfig]);
 
 
   const handleModeSelect = (mode: GameMode) => {
@@ -307,8 +317,7 @@ export default function App() {
 
     if (mode === GameMode.CHALLENGE) {
       if (!user.isPremium) {
-        alert(t.SEASON.PREMIUM_REQUIRED || "Season Pass Required!"); // Fallback text
-        setView('SEASON');
+        setShowPremiumRequiredModal(true);
         return;
       }
 
@@ -363,7 +372,7 @@ export default function App() {
         status: 'playing',
         hintsUsed: 0,
         isMath: data.type === 'math',
-        timeLeft: data.timeLimit // Set the timer from the generator
+        timeLeft: data.timeLimit
       });
     } else {
       // This block is now handled by the useEffect below
@@ -373,9 +382,68 @@ export default function App() {
     setView('TUTORIAL');
   };
 
+  const handleNextLevel = () => {
+    if (!gameConfig) return;
+
+    const currentTier = gameConfig.tier;
+    const currentLevelId = gameConfig.levelId;
+
+    // Calculate next level
+    let nextTier = currentTier;
+    let nextLevelId = currentLevelId + 1;
+
+    // Handle tier transitions (50 levels per tier)
+    if (nextLevelId > 50) {
+      nextTier = (currentTier + 1) as Tier;
+      nextLevelId = 1;
+
+      // Check if next tier exists (max is Tier 5)
+      if (nextTier > 5) {
+        // No more levels, go back to level selection
+        setView('LEVELS');
+        return;
+      }
+    }
+
+    // Start the next level and skip tutorial
+    const config = { ...gameConfig, tier: nextTier, levelId: nextLevelId };
+    setGameConfig(config);
+
+    // Reset hints for new level
+    setHintCostMultiplier(0);
+
+    if (config.mode === GameMode.SUDOKU) {
+      const data = generateSudoku(nextTier);
+      setGameState({
+        data,
+        currentGrid: JSON.parse(JSON.stringify(data.sudokuPuzzle)),
+        selectedCell: null,
+        history: []
+      });
+    } else if (config.mode === GameMode.CHALLENGE) {
+      const data = generateChallenge(user.language, nextTier, nextLevelId);
+      setGameState({
+        targetWord: data.target,
+        hintTitle: "CHALLENGE",
+        hintDesc: data.question,
+        guesses: [],
+        currentGuess: '',
+        status: 'playing',
+        hintsUsed: 0,
+        isMath: data.type === 'math',
+        timeLeft: data.timeLimit
+      });
+    }
+    // For other modes, the useEffect will handle state initialization
+
+    // Go directly to game, skip tutorial
+    setView('GAME');
+  };
+
   // Load Level Content and Initialize Game State for non-Sudoku/Challenge modes
+  // Load Level Content and Initialize Game State for non‑Sudoku/Challenge/Speedrun modes
   useEffect(() => {
-    if (view === 'GAME' && gameConfig && gameConfig.mode !== GameMode.SUDOKU && gameConfig.mode !== GameMode.CHALLENGE) {
+    if (view === 'GAME' && gameConfig && gameConfig.mode !== GameMode.SUDOKU && gameConfig.mode !== GameMode.CHALLENGE && gameConfig.mode !== GameMode.SPEEDRUN) {
       const content = getLevelContent(
         gameConfig.mode,
         gameConfig.tier,
@@ -391,19 +459,19 @@ export default function App() {
         currentGuess: '',
         status: 'playing',
         targetWord: content.target,
-        hintTitle: content.hintTitle, // Added from original logic
-        hintDesc: content.hintDesc,   // Added from original logic
-        timeLeft: content.timeLimit,  // Added from original logic
+        hintTitle: content.hintTitle,
+        hintDesc: content.hintDesc,
+        timeLeft: content.timeLimit,
         startTime: Date.now(),
         hintsUsed: 0,
-        isMath: false, // Added from original logic
-        isHintUnlocked: false // This was in the provided snippet, but not in original. Keeping it.
+        isMath: false,
+        isHintUnlocked: false
       });
 
       setShowWin(false);
       console.log("Target Word:", content.target); // DEBUG: For verification
     }
-  }, [view, gameConfig, user.language, user.playedWords]); // Added user.playedWords to dependencies
+  }, [view, gameConfig, user.language]);
 
   const startGame = () => {
     setView('GAME');
@@ -439,30 +507,40 @@ export default function App() {
   // --- Gameplay Logic ---
 
   const handleWordKey = (char: string) => {
-    if (gameState.status !== 'playing') return;
-    if (gameState.currentGuess.length < gameState.targetWord.length) {
-      setGameState((prev: any) => ({ ...prev, currentGuess: prev.currentGuess + char }));
+    const currentGameState = gameStateRef.current;
+    if (currentGameState?.status !== 'playing') return;
+    if (currentGameState.currentGuess.length < currentGameState.targetWord.length) {
+      const newGuess = currentGameState.currentGuess + char;
+      setGameState((prev: any) => ({ ...prev, currentGuess: newGuess }));
       audio.playClick();
+
+      // Auto-submit when word is complete
+      if (newGuess.length === currentGameState.targetWord.length) {
+        setTimeout(() => handleWordEnter(), 100);
+      }
     }
   };
 
   const handleWordDelete = () => {
-    if (gameState.status !== 'playing') return;
+    const currentGameState = gameStateRef.current;
+    if (currentGameState?.status !== 'playing') return;
     setGameState((prev: any) => ({ ...prev, currentGuess: prev.currentGuess.slice(0, -1) }));
   };
 
   const handleWordEnter = () => {
-    if (gameState.status !== 'playing') return;
-    if (gameState.currentGuess.length !== gameState.targetWord.length) {
+    const currentGameState = gameStateRef.current;
+    if (currentGameState?.status !== 'playing') return;
+    if (currentGameState.currentGuess.length !== currentGameState.targetWord.length) {
       audio.playError();
       return;
     }
 
-    const result = checkGuess(gameState.currentGuess, gameState.targetWord);
-    const newGuess = { word: gameState.currentGuess, result };
-    const won = gameState.currentGuess === gameState.targetWord;
-    const currentTier = gameConfig!.tier; // Store tier before state update
+    const result = checkGuess(currentGameState.currentGuess, currentGameState.targetWord);
+    const newGuess = { word: currentGameState.currentGuess, result };
+    const won = currentGameState.currentGuess === currentGameState.targetWord;
+    const currentTier = gameConfig!.tier;
 
+    // Update game state first
     setGameState((prev: any) => {
       const nextState = {
         ...prev,
@@ -472,21 +550,30 @@ export default function App() {
       };
 
       if (nextState.status === 'lost') audio.playLoss();
-      if (won) audio.playWin();
 
       return nextState;
     });
 
-    // Call handleWin AFTER state update, not inside
+    // Show confirmation modal if word is correct
     if (won) {
-      setTimeout(() => handleWin(currentTier), 100);
+      audio.playWin();
+      setCorrectWord(currentGameState.currentGuess);
+      setShowCorrectWordModal(true);
+    }
+  };
+
+  const handleCorrectWordConfirm = () => {
+    setShowCorrectWordModal(false);
+    if (gameConfig) {
+      setTimeout(() => handleWin(gameConfig.tier), 100);
     }
   };
 
   const handleSudokuInput = (char: string) => {
-    if (!gameState.selectedCell) return;
-    const { r, c } = gameState.selectedCell;
-    const newGrid = [...gameState.currentGrid];
+    const currentGameState = gameStateRef.current;
+    if (!currentGameState?.selectedCell) return;
+    const { r, c } = currentGameState.selectedCell;
+    const newGrid = [...currentGameState.currentGrid];
     newGrid[r][c] = char;
 
     setGameState((prev: any) => ({ ...prev, currentGrid: newGrid }));
@@ -494,7 +581,7 @@ export default function App() {
 
     const isFull = newGrid.every((row: any) => row.every((cell: any) => cell !== null));
     if (isFull) {
-      const isCorrect = JSON.stringify(newGrid) === JSON.stringify(gameState.data.sudokuGrid);
+      const isCorrect = JSON.stringify(newGrid) === JSON.stringify(currentGameState.data.sudokuGrid);
       if (isCorrect) {
         audio.playWin();
         // Move handleWin outside to prevent race condition
@@ -878,7 +965,7 @@ export default function App() {
 
             <button
               onClick={() => setShowRedeemModal(true)}
-              className="text-xs font-bold text-gray-400 underline hover:text-white mt-2"
+              className="mt-4 px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase rounded-xl shadow-[0_0_15px_rgba(234,179,8,0.4)] transition-all active:scale-95"
             >
               {t.SEASON.REDEEM_CODE}
             </button>
@@ -953,51 +1040,29 @@ export default function App() {
             <ShoppingBag size={24} className="text-lexi-cyan" />
             <h2 className="text-xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-blue-500 uppercase tracking-widest">{t.SHOP.TITLE}</h2>
           </div>
-          <div className="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-white/10">
-            <Gem size={14} className="text-blue-400" />
-            <span className="text-xs font-bold">{Math.max(0, user.coins)}</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
+              className="hidden md:flex items-center gap-1 bg-gray-800/50 px-3 py-1 rounded-full border border-white/10 hover:bg-white/10 transition-colors text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-white"
+            >
+              <Sparkles size={12} /> Gutschein
+            </button>
+            <div className="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-white/10">
+              <Gem size={14} className="text-blue-400" />
+              <span className="text-xs font-bold">{Math.max(0, user.coins)}</span>
+            </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide">
-          {/* Currency Section */}
-          <div>
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><CreditCard size={16} /> {t.SHOP.CURRENCY_SECTION}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {SHOP_ITEMS.filter(i => i.type === 'currency').map((item, idx) => (
-                <div
-                  key={item.id}
-                  className="bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 p-6 rounded-3xl flex flex-col items-center relative overflow-hidden group hover:border-blue-500/50 transition-all animate-scale-in"
-                  style={{ animationDelay: `${idx * 100}ms` }}
-                >
-                  <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="bg-blue-900/30 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform duration-500">
-                    <Coins size={32} className="text-blue-300" />
-                  </div>
-                  <span className="text-2xl font-black text-white mb-1">{item.currencyAmount}</span>
-                  <span className="text-xs text-blue-300 font-bold uppercase mb-4">{t.GAME.COINS_GAINED}</span>
-
-                  <div className="w-full mt-auto">
-                    {item.isRealMoney ? (
-                      <button
-                        onClick={() => handleBuyItem(item)}
-                        className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-black rounded-full text-sm hover:scale-105 transition-transform shadow-[0_0_15px_rgba(234,179,8,0.4)] w-full uppercase flex flex-col items-center gap-1"
-                      >
-                        <span className="text-lg">{item.cost}</span>
-                        <span className="text-[10px] font-bold opacity-80">KAUFEN</span>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleBuyItem(item)}
-                        className="px-6 py-2 bg-white text-black font-bold rounded-full text-sm hover:bg-blue-50 transition-colors shadow-lg w-full"
-                      >
-                        {item.cost}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+          {/* Mobile Redeem Button */}
+          <div className="md:hidden w-full mb-4">
+            <button
+              onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
+              className="w-full py-3 rounded-xl bg-gray-800/50 border border-white/10 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Sparkles size={14} /> Gutschein einlösen
+            </button>
           </div>
 
           {/* Avatar Section */}
@@ -1007,42 +1072,79 @@ export default function App() {
               {SHOP_ITEMS.filter(i => i.type === 'avatar').map((item, idx) => {
                 const isOwned = (user.ownedAvatars || []).includes(item.value as string);
                 const isEquipped = user.avatarId === item.value;
-                const canAfford = user.coins >= (item.cost as number);
 
                 return (
                   <div
                     key={item.id}
-                    className={`bg-gray-900 border border-white/10 p-4 rounded-3xl flex flex-col items-center relative overflow-hidden animate-scale-in ${isEquipped ? 'ring-2 ring-lexi-fuchsia bg-lexi-fuchsia/10' : ''}`}
-                    style={{ animationDelay: `${(idx + 3) * 100}ms` }}
+                    className={`bg-gray-900/50 border ${isEquipped ? 'border-lexi-fuchsia bg-lexi-fuchsia/10' : 'border-white/10'} p-4 rounded-2xl flex flex-col items-center relative overflow-hidden group hover:border-lexi-fuchsia/50 transition-all animate-scale-in`}
+                    style={{ animationDelay: `${idx * 50}ms` }}
                   >
-                    <div className="w-20 h-20 bg-gray-800 rounded-full mb-4 overflow-hidden border-2 border-white/10">
+                    <div className="w-20 h-20 bg-gray-800 rounded-full mb-3 overflow-hidden border-2 border-white/5 group-hover:scale-105 transition-transform">
                       <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${item.value}`} alt={item.name} />
                     </div>
-                    <span className="font-bold text-sm text-white mb-3 text-center leading-tight">{item.name}</span>
+                    <span className="text-sm font-bold text-white mb-1 text-center leading-tight">{item.name}</span>
 
-                    {isOwned ? (
+                    <div className="mt-auto w-full">
+                      {isOwned ? (
+                        <button
+                          disabled={isEquipped}
+                          onClick={() => setUser({ ...user, avatarId: item.value as string })}
+                          className={`w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider ${isEquipped ? 'bg-lexi-fuchsia text-white cursor-default' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'}`}
+                        >
+                          {isEquipped ? t.SHOP.EQUIPPED : t.SHOP.EQUIP}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleBuyItem(item)}
+                          className="w-full py-2 rounded-lg bg-white text-black text-[10px] font-bold uppercase tracking-wider hover:bg-gray-200 flex items-center justify-center gap-1"
+                        >
+                          <Gem size={10} className="text-blue-500" /> {item.cost}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Currency Section */}
+          <div>
+            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><CreditCard size={16} /> {t.SHOP.CURRENCY_SECTION}</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {SHOP_ITEMS.filter(i => i.type === 'currency').map((item, idx) => (
+                <div
+                  key={item.id}
+                  className="bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 p-4 rounded-2xl flex flex-col items-center relative overflow-hidden group hover:border-blue-500/50 transition-all animate-scale-in"
+                  style={{ animationDelay: `${idx * 100}ms` }}
+                >
+                  <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="bg-blue-900/30 p-3 rounded-full mb-2 group-hover:scale-110 transition-transform duration-500">
+                    <Coins size={24} className="text-blue-300" />
+                  </div>
+                  <span className="text-lg font-black text-white mb-0 leading-none">{item.currencyAmount}</span>
+                  <span className="text-[10px] text-blue-300 font-bold uppercase mb-3">{t.GAME.COINS_GAINED}</span>
+
+                  <div className="w-full mt-auto">
+                    {item.isRealMoney ? (
                       <button
-                        onClick={() => {
-                          setUser(u => ({ ...u, avatarId: item.value as string }));
-                          audio.playClick();
-                        }}
-                        disabled={isEquipped}
-                        className={`w-full py-2 rounded-xl font-bold text-xs uppercase transition-colors ${isEquipped ? 'bg-lexi-fuchsia text-white cursor-default' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                        onClick={() => handleBuyItem(item)}
+                        className="px-2 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-black rounded-xl text-xs hover:scale-105 transition-transform shadow-[0_0_10px_rgba(234,179,8,0.3)] w-full uppercase flex flex-col items-center gap-0.5"
                       >
-                        {isEquipped ? t.SHOP.EQUIPPED : t.SHOP.EQUIP}
+                        <span className="text-sm leading-none">{item.cost}</span>
+                        <span className="text-[8px] font-bold opacity-80 leading-none">KAUFEN</span>
                       </button>
                     ) : (
                       <button
                         onClick={() => handleBuyItem(item)}
-                        className={`w-full py-2 rounded-xl font-bold text-xs uppercase transition-colors flex items-center justify-center gap-1 ${canAfford ? 'bg-lexi-cyan/20 text-lexi-cyan hover:bg-lexi-cyan hover:text-black' : 'bg-red-900/20 text-red-500 opacity-50 cursor-not-allowed'}`}
+                        className="px-4 py-2 bg-white text-black font-bold rounded-full text-sm hover:bg-blue-50 transition-colors shadow-lg w-full"
                       >
-                        {canAfford ? t.SHOP.BUY : t.SHOP.INSUFFICIENT}
-                        <span className="text-[10px] opacity-80">({item.cost})</span>
+                        {item.cost}
                       </button>
                     )}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -1208,35 +1310,23 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-5 md:grid-cols-8 gap-3 md:gap-4">
-                {Array.from({ length: 10 }).map((_, i) => {
+                {Array.from({ length: 50 }).map((_, i) => {
                   const lvl = (tier - 1) * 50 + i + 1;
                   // Sequential Unlock Logic:
                   // Level 1 is always unlocked.
-                  // Subsequent levels require the previous level (in the same tier) to be completed.
-                  // Note: This simple logic assumes levels are within the same tier. 
-                  // Since the UI currently shows a gap between tiers (1-10, then 51-60), 
-                  // cross-tier unlocking would need more complex logic, but this satisfies the "not all open at start" request.
+                  // Subsequent levels require the previous level to be completed.
                   const prevLevelKey = `${gameConfig?.mode}_${tier}_${lvl - 1}`;
 
-                  // Cross-Tier Unlock Logic:
-                  // If it's the first level of a tier (lvl % 50 === 1), check if the last level of the previous tier is done.
-                  // Otherwise, check the previous level in the same tier.
                   let isUnlocked = false;
 
-                  if (tier === 1 && i === 0) {
-                    // First level of first tier is always open
+                  if (lvl === 1) {
+                    // Very first level is always open
                     isUnlocked = true;
                   } else if (i === 0) {
-                    // First level of a subsequent tier (e.g., Tier 2 Level 51)
-                    // Check if the last visible level of the previous tier is completed.
-                    // Previous Tier Index: tier - 1
-                    // Last Level ID of Previous Tier: (tier - 2) * 50 + 10
-                    // Example: For Tier 2 (Learner), we check Tier 1 (Beginner), Level 10.
-                    // ID = (2 - 2) * 50 + 10 = 10. Correct.
-
-                    const prevTierLastLevelID = (tier - 2) * 50 + 10;
-                    const prevTierLastLevelKey = `${gameConfig?.mode}_${tier - 1}_${prevTierLastLevelID}`;
-
+                    // First level of a new tier (e.g. 51, 101, etc.)
+                    // Check if the last level of the previous tier is done.
+                    // Previous Tier Last Level ID: lvl - 1
+                    const prevTierLastLevelKey = `${gameConfig?.mode}_${tier - 1}_${lvl - 1}`;
                     isUnlocked = !!user.completedLevels[prevTierLastLevelKey];
                   } else {
                     // Normal in-tier progression
@@ -1384,6 +1474,22 @@ export default function App() {
                 turn={gameState.guesses.length}
               />
             )}
+
+            {/* Confirmation Prompt */}
+            {!isSudoku && gameState.awaitingConfirmation && (
+              <div className="mt-6 p-4 bg-green-500/20 border-2 border-green-500/50 rounded-2xl animate-scale-in shadow-[0_0_20px_rgba(34,197,94,0.3)] max-w-md">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Check size={24} className="text-green-400" />
+                  <h3 className="text-xl font-black text-green-400 uppercase">Correct!</h3>
+                </div>
+                <p className="text-center text-white font-bold mb-2">
+                  Enter the word again to confirm:
+                </p>
+                <div className="text-center text-2xl font-black text-green-300 tracking-widest uppercase bg-black/30 py-2 px-4 rounded-lg">
+                  {gameState.confirmedWord}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1433,7 +1539,7 @@ export default function App() {
   );
 
   return (
-    <div className="h-screen w-full text-white font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white" style={{ background: 'linear-gradient(135deg, #0a0510 0%, #1a0f2e 50%, #0f0718 100%)' }}>
+    <div className="h-screen w-full text-white font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white py-4" style={{ background: 'linear-gradient(135deg, #0a0510 0%, #1a0f2e 50%, #0f0718 100%)' }}>
       {/* Simplified grain texture using CSS */}
       <div className="fixed inset-0 opacity-[0.08] pointer-events-none" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
@@ -1676,8 +1782,12 @@ export default function App() {
           </div>
 
           <div className="flex gap-3">
-            <Button className="flex-1" variant="secondary" onClick={() => { setShowWin(false); setView('SEASON'); }}>{t.GAME.PASS_BTN}</Button>
-            <Button className="flex-1" onClick={() => { setShowWin(false); setView('LEVELS'); }}>{t.GAME.NEXT_BTN}</Button>
+            <Button className="flex-1" variant="secondary" onClick={() => { setShowWin(false); setView('LEVELS'); }}>
+              Zurück zur Übersicht
+            </Button>
+            <Button className="flex-1" onClick={() => { setShowWin(false); handleNextLevel(); }}>
+              Nächstes Level
+            </Button>
           </div>
         </div>
       </Modal>
@@ -1703,27 +1813,51 @@ export default function App() {
             <Button
               className="flex-1 bg-red-600 hover:bg-red-500 border-red-500 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
               onClick={() => {
-                // Retry Level
-                const content = getLevelContent(
-                  gameConfig!.mode,
-                  gameConfig!.tier,
-                  gameConfig!.levelId,
-                  user.language,
-                  user.playedWords || []
-                );
-                setGameState({
-                  guesses: [],
-                  currentGuess: '',
-                  status: 'playing',
-                  targetWord: content.target,
-                  hintTitle: content.hintTitle,
-                  hintDesc: content.hintDesc,
-                  timeLeft: content.timeLimit,
-                  startTime: Date.now(),
-                  hintsUsed: 0,
-                  isMath: false,
-                  isHintUnlocked: false
-                });
+                const mode = gameConfig!.mode;
+
+                if (mode === GameMode.SUDOKU) {
+                  setGameState((prev: any) => ({
+                    ...prev,
+                    currentGrid: JSON.parse(JSON.stringify(prev.data.sudokuPuzzle)),
+                    selectedCell: null,
+                    history: [],
+                    status: 'playing'
+                  }));
+                } else if (mode === GameMode.CHALLENGE) {
+                  const data = generateChallenge(user.language, gameConfig!.tier, gameConfig!.levelId);
+                  setGameState({
+                    targetWord: data.target,
+                    hintTitle: "CHALLENGE",
+                    hintDesc: data.question,
+                    guesses: [],
+                    currentGuess: '',
+                    status: 'playing',
+                    hintsUsed: 0,
+                    isMath: data.type === 'math',
+                    timeLeft: data.timeLimit
+                  });
+                } else {
+                  const content = getLevelContent(
+                    mode,
+                    gameConfig!.tier,
+                    gameConfig!.levelId,
+                    user.language,
+                    user.playedWords || []
+                  );
+                  setGameState({
+                    guesses: [],
+                    currentGuess: '',
+                    status: 'playing',
+                    targetWord: content.target,
+                    hintTitle: content.hintTitle,
+                    hintDesc: content.hintDesc,
+                    timeLeft: content.timeLimit,
+                    startTime: Date.now(),
+                    hintsUsed: 0,
+                    isMath: false,
+                    isHintUnlocked: false
+                  });
+                }
               }}
             >
               RETRY
@@ -1771,30 +1905,52 @@ export default function App() {
                     if (e.key === 'Enter') {
                       const trimmedCode = redeemCode.trim();
 
-                      if (!VALID_CODES.includes(trimmedCode)) {
-                        setRedeemError(t.SEASON.INVALID_CODE);
-                        audio.playError();
+                      // Check Coin Codes
+                      if (COIN_CODES.includes(trimmedCode)) {
+                        if (user.redeemedCodes?.includes(trimmedCode)) {
+                          setRedeemError("Code bereits verwendet!");
+                          audio.playError();
+                          return;
+                        }
+
+                        audio.playWin();
+                        setUser(u => ({
+                          ...u,
+                          coins: u.coins + 1000,
+                          redeemedCodes: [...(u.redeemedCodes || []), trimmedCode]
+                        }));
+                        alert("Code erfolgreich eingelöst! +1000 Münzen");
+                        setShowRedeemModal(false);
+                        setRedeemCode('');
+                        setRedeemError(null);
                         return;
                       }
 
-                      audio.playWin();
-                      const plan = PREMIUM_PLANS[1];
-                      const levelBoost = plan.levelBoost || 0;
+                      // Check Premium Codes
+                      if (VALID_CODES.includes(trimmedCode)) {
+                        audio.playWin();
+                        const plan = PREMIUM_PLANS[1];
+                        const levelBoost = plan.levelBoost || 0;
 
-                      setUser(u => ({
-                        ...u,
-                        isPremium: true,
-                        level: u.level + levelBoost,
-                        xp: (u.level + levelBoost - 1) * 100
-                      }));
+                        setUser(u => ({
+                          ...u,
+                          isPremium: true,
+                          level: u.level + levelBoost,
+                          xp: (u.level + levelBoost - 1) * 100
+                        }));
 
-                      alert(`Premium Aktiviert! Willkommen, Legende.`);
+                        alert(`Premium Aktiviert! Willkommen, Legende.`);
 
-                      setShowRedeemModal(false);
-                      setRedeemCode('');
-                      setRedeemStep('code');
-                      setSelectedPlanIndex(null);
-                      setRedeemError(null);
+                        setShowRedeemModal(false);
+                        setRedeemCode('');
+                        setRedeemStep('code');
+                        setSelectedPlanIndex(null);
+                        setRedeemError(null);
+                        return;
+                      }
+
+                      setRedeemError(t.SEASON.INVALID_CODE);
+                      audio.playError();
                     }
                   }}
                 />
@@ -1823,33 +1979,55 @@ export default function App() {
                   onClick={() => {
                     const trimmedCode = redeemCode.trim();
 
-                    if (!VALID_CODES.includes(trimmedCode)) {
-                      setRedeemError(t.SEASON.INVALID_CODE);
-                      audio.playError();
+                    // Check Coin Codes
+                    if (COIN_CODES.includes(trimmedCode)) {
+                      if (user.redeemedCodes?.includes(trimmedCode)) {
+                        setRedeemError("Code bereits verwendet!");
+                        audio.playError();
+                        return;
+                      }
+
+                      audio.playWin();
+                      setUser(u => ({
+                        ...u,
+                        coins: u.coins + 1000,
+                        redeemedCodes: [...(u.redeemedCodes || []), trimmedCode]
+                      }));
+                      alert("Code erfolgreich eingelöst! +1000 Münzen");
+                      setShowRedeemModal(false);
+                      setRedeemCode('');
+                      setRedeemError(null);
                       return;
                     }
 
-                    // Code is valid, immediately activate Standard Premium (30 days)
-                    audio.playWin();
+                    // Check Premium Codes
+                    if (VALID_CODES.includes(trimmedCode)) {
+                      // Code is valid, immediately activate Standard Premium (30 days)
+                      audio.playWin();
 
-                    // Standard Plan is index 1 (30 days)
-                    const plan = PREMIUM_PLANS[1];
-                    const levelBoost = plan.levelBoost || 0;
+                      // Standard Plan is index 1 (30 days)
+                      const plan = PREMIUM_PLANS[1];
+                      const levelBoost = plan.levelBoost || 0;
 
-                    setUser(u => ({
-                      ...u,
-                      isPremium: true,
-                      level: u.level + levelBoost,
-                      xp: (u.level + levelBoost - 1) * 100
-                    }));
+                      setUser(u => ({
+                        ...u,
+                        isPremium: true,
+                        level: u.level + levelBoost,
+                        xp: (u.level + levelBoost - 1) * 100
+                      }));
 
-                    alert(`Premium Aktiviert! Willkommen, Legende.`);
+                      alert(`Premium Aktiviert! Willkommen, Legende.`);
 
-                    setShowRedeemModal(false);
-                    setRedeemCode('');
-                    setRedeemStep('code');
-                    setSelectedPlanIndex(null);
-                    setRedeemError(null);
+                      setShowRedeemModal(false);
+                      setRedeemCode('');
+                      setRedeemStep('code');
+                      setSelectedPlanIndex(null);
+                      setRedeemError(null);
+                      return;
+                    }
+
+                    setRedeemError(t.SEASON.INVALID_CODE);
+                    audio.playError();
                   }}
                 >
                   Code Einlösen
@@ -2008,6 +2186,40 @@ export default function App() {
           </Button>
         </div>
       </Modal>
+
+      {/* Premium Required Modal */}
+      <Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title="Premium Erforderlich">
+        <div className="text-center space-y-6">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center border-2 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]">
+            <Lock size={32} className="text-yellow-500" />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-xl font-black text-white">Challenge Mode Gesperrt</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Dieser Modus ist exklusiv für Premium-Mitglieder. Hole dir den Season Pass, um tägliche Herausforderungen und exklusive Belohnungen freizuschalten!
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={() => { setShowPremiumRequiredModal(false); setView('SEASON'); }}
+              fullWidth
+              className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black font-black border-none hover:brightness-110"
+            >
+              Zum Season Pass
+            </Button>
+            <Button
+              onClick={() => setShowPremiumRequiredModal(false)}
+              fullWidth
+              className="bg-transparent border border-white/10 text-gray-400 hover:text-white hover:bg-white/5"
+            >
+              Vielleicht später
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
     </div>
   );
 }

@@ -54,3 +54,29 @@ export const TierBadge: React.FC<{ tier: any; color: string }> = ({ tier, color 
     TIER {tier}
   </span>
 );
+
+export const RedeemCodeInput: React.FC<{ onRedeem: (code: string) => void; placeholder: string; buttonText: string; }> = ({ onRedeem, placeholder, buttonText }) => {
+  const [code, setCode] = React.useState('');
+
+  const handleRedeem = () => {
+    if (code.trim()) {
+      onRedeem(code.trim());
+      setCode('');
+    }
+  };
+
+  return (
+    <div className="flex gap-2">
+      <input
+        type="text"
+        value={code}
+        onChange={(e) => setCode(e.target.value.toUpperCase())}
+        placeholder={placeholder}
+        className="flex-grow bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2"
+      />
+      <Button onClick={handleRedeem} size="md">
+        {buttonText}
+      </Button>
+    </div>
+  );
+};

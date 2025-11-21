@@ -30,9 +30,9 @@ export default {
             animation: {
                 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-                'fade-in': 'fadeIn 0.4s ease-out forwards',
-                'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                'scale-in': 'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                'fade-in': 'fadeIn 0.8s ease-out forwards',
+                'slide-up': 'slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                'scale-in': 'scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                 'shimmer': 'shimmer 2s linear infinite',
                 'nebula': 'nebula 20s ease infinite alternate',
             },

@@ -46,13 +46,20 @@ export const TRANSLATIONS = {
 
         // Results
         victory: "VICTORY",
-        defeat: "DEFEAT",
+        defeat: "MISSION FAILED",
         theWordWas: "The Word Was",
         nextLevel: "NEXT LEVEL",
-        tryAgain: "TRY AGAIN",
-        exitToMenu: "EXIT",
+        tryAgain: "RETRY",
+        exitToMenu: "MENU",
         magnificent: "MAGNIFICENT!",
         xpEarned: "XP EARNED",
+        gameOver: "GAME OVER",
+        targetIdentified: "TARGET IDENTIFIED",
+        
+        // Marktplatz
+        marktplatz: "Marktplatz",
+        gutschein: "Gutschein",
+        redeemGutschein: "Redeem Gutschein",
 
         // Season Pass
         close: "CLOSE",
@@ -123,13 +130,20 @@ export const TRANSLATIONS = {
 
         // Results
         victory: "SIEG",
-        defeat: "NIEDERLAGE",
+        defeat: "MISSION GESCHEITERT",
         theWordWas: "Das Wort war",
         nextLevel: "NÄCHSTES LEVEL",
         tryAgain: "NOCHMAL",
-        exitToMenu: "BEENDEN",
+        exitToMenu: "MENÜ",
         magnificent: "HERVORRAGEND!",
         xpEarned: "XP ERHALTEN",
+        gameOver: "SPIEL VORBEI",
+        targetIdentified: "ZIEL IDENTIFIZIERT",
+
+        // Marktplatz
+        marktplatz: "Marktplatz",
+        gutschein: "Gutschein",
+        redeemGutschein: "Gutschein einlösen",
 
         // Season Pass
         close: "SCHLIESSEN",

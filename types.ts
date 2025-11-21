@@ -49,12 +49,27 @@ export interface UserState {
   age: number;
   avatarId: string;
   ownedAvatars: string[];
+  redeemedCodes?: string[]; // Track redeemed gutschein codes
 }
 
 export interface GameConfig {
   mode: GameMode;
   tier: Tier;
   levelId: number;
+}
+
+export enum LetterStatus {
+  CORRECT = 'correct',
+  PRESENT = 'present',
+  ABSENT = 'absent',
+  EMPTY = 'empty',
+  TBD = 'tbd'
+}
+
+export interface CellData {
+  char: string;
+  status: LetterStatus;
+  isFixed?: boolean; // For Sudoku fixed cells
 }
 
 export type CellStatus = 'correct' | 'present' | 'absent' | 'empty';

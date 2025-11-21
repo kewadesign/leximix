@@ -55,17 +55,10 @@ export const getLevelContent = (mode: GameMode, tier: Tier, levelId: number, lan
   // If no words for this tier (fallback), use all words
   if (availableWords.length === 0) availableWords = allWords;
 
-  // Filter out played words
-  let candidates = availableWords.filter(w => !playedWords.includes(w.word));
-
-  // If all words played, reset (use all available for this tier)
-  if (candidates.length === 0) candidates = availableWords;
-
-  // Pick a random word from candidates
-  // Use simple random here to ensure variety if replaying same level ID but different session
-  // Or use deterministic if we want levelId to always be the same word.
-  // Given the user wants "no repetition", random from candidates is better.
-  const wordData = candidates[Math.floor(Math.random() * candidates.length)];
+  // Deterministic selection based on Level ID
+  // This ensures Level 1 is always the 1st word, Level 2 is the 2nd, etc.
+  const wordIndex = (levelId - 1) % availableWords.length;
+  const wordData = availableWords[wordIndex];
   const word = wordData.word;
 
   let timeLimit = undefined;
