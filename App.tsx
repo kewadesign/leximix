@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
 import { SeasonPass } from './components/SeasonPass';
-import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS } from './constants';
+import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
 
@@ -189,6 +189,10 @@ export default function App() {
   const [tutorialMode, setTutorialMode] = useState<GameMode | null>(null);
   const [winStats, setWinStats] = useState({ xp: 0, coins: 0 });
   const [levelUpData, setLevelUpData] = useState({ level: 1, xp: 0 }); // Data for Level Up Modal
+  const [showRedeemModal, setShowRedeemModal] = useState(false); // Redeem Code Modal
+  const [redeemCode, setRedeemCode] = useState(''); // Code Input
+  const [redeemStep, setRedeemStep] = useState<'code' | 'plan'>('code'); // Redemption flow step
+  const [selectedPlanIndex, setSelectedPlanIndex] = useState<number | null>(null); // Selected plan
 
   // Edit Profile State
   const [editName, setEditName] = useState(user.name || "Agent");
@@ -829,32 +833,10 @@ export default function App() {
             </div>
 
             <button
-              onClick={() => {
-                const selectedPlan = prompt(`Welchen Premium Pass hast du gekauft?\n\n1 - Monatlich (7,99€) - mit 10 Level Boost\n2 - 30 Tage (4,99€) - ohne Level Boost\n\nGib 1 oder 2 ein:`);
-
-                if (selectedPlan === '1' || selectedPlan === '2') {
-                  const plan = PREMIUM_PLANS[parseInt(selectedPlan) - 1];
-                  const levelBoost = plan.levelBoost || 0;
-
-                  setUser(u => ({
-                    ...u,
-                    isPremium: true,
-                    level: u.level + levelBoost,
-                    xp: (u.level + levelBoost - 1) * 100
-                  }));
-
-                  audio.playWin();
-
-                  if (levelBoost > 0) {
-                    alert(`Premium Aktiviert! 🎁 Du hast ${levelBoost} Stufen freigeschaltet! Willkommen, Legende.`);
-                  } else {
-                    alert(`Premium Aktiviert! Willkommen, Legende.`);
-                  }
-                }
-              }}
+              onClick={() => setShowRedeemModal(true)}
               className="text-xs font-bold text-gray-400 underline hover:text-white mt-2"
             >
-              Zahlung Bestätigen & Aktivieren
+              {t.SEASON.REDEEM_CODE}
             </button>
           </div>
         )}
@@ -1695,6 +1677,163 @@ export default function App() {
               RETRY
             </Button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Redeem Code Modal */}
+      <Modal
+        isOpen={showRedeemModal}
+        onClose={() => {
+          setShowRedeemModal(false);
+          setRedeemCode('');
+          setRedeemStep('code');
+          setSelectedPlanIndex(null);
+        }}
+        title={redeemStep === 'code' ? t.SEASON.REDEEM_CODE : 'Plan Auswählen'}
+      >
+        <div className="text-center py-6 space-y-6">
+          {redeemStep === 'code' ? (
+            <>
+              <div className="inline-block p-6 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-4 shadow-[0_0_30px_rgba(234,179,8,0.3)]">
+                <Star className="text-yellow-400 drop-shadow-lg" size={48} fill="currentColor" />
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold text-gray-300">Aktivierungscode eingeben</h3>
+                <p className="text-xs text-gray-500">Format: LEXIMIX-XXXX-XXXX-XXXX</p>
+              </div>
+
+              <input
+                type="text"
+                value={redeemCode}
+                onChange={(e) => setRedeemCode(e.target.value.toUpperCase())}
+                placeholder={t.SEASON.CODE_PLACEHOLDER}
+                className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 text-center text-sm font-mono font-bold focus:border-yellow-400 focus:outline-none transition-colors text-white uppercase"
+                maxLength={24}
+              />
+
+              <div className="flex gap-3">
+                <Button
+                  className="flex-1"
+                  variant="secondary"
+                  onClick={() => {
+                    setShowRedeemModal(false);
+                    setRedeemCode('');
+                    setRedeemStep('code');
+                  }}
+                >
+                  Abbrechen
+                </Button>
+                <Button
+                  className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:brightness-110"
+                  onClick={() => {
+                    const trimmedCode = redeemCode.trim();
+
+                    if (!VALID_CODES.includes(trimmedCode)) {
+                      alert(t.SEASON.INVALID_CODE);
+                      audio.playError();
+                      return;
+                    }
+
+                    // Code is valid, move to plan selection
+                    audio.playClick();
+                    setRedeemStep('plan');
+                  }}
+                >
+                  Weiter
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="inline-block p-6 rounded-full bg-purple-500/10 border border-purple-500/20 mb-4 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
+                <Star className="text-purple-400 drop-shadow-lg" size={48} fill="currentColor" />
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <h3 className="text-lg font-bold text-gray-300">Welchen Pass hast du gekauft?</h3>
+                <p className="text-xs text-gray-500">Wähle den gekauften Premium Pass</p>
+              </div>
+
+              {/* Plan Selection Cards */}
+              <div className="space-y-3">
+                {PREMIUM_PLANS.map((plan, index) => (
+                  <button
+                    key={plan.id}
+                    onClick={() => setSelectedPlanIndex(index)}
+                    className={`w-full p-4 rounded-xl border-2 transition-all text-left ${selectedPlanIndex === index
+                        ? 'border-yellow-400 bg-yellow-400/10 shadow-[0_0_20px_rgba(250,204,21,0.3)]'
+                        : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                      }`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="font-black text-base text-white">{plan.cost}</h4>
+                        <p className="text-xs text-gray-400">{plan.duration}</p>
+                      </div>
+                      {plan.levelBoost > 0 && (
+                        <div className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-lg text-xs font-bold">
+                          +{plan.levelBoost} Level
+                        </div>
+                      )}
+                    </div>
+                    <ul className="text-xs space-y-1">
+                      {plan.features.slice(0, 3).map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-gray-300">
+                          <span className="text-green-400">✓</span> {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <Button
+                  className="flex-1"
+                  variant="secondary"
+                  onClick={() => {
+                    setRedeemStep('code');
+                    setSelectedPlanIndex(null);
+                  }}
+                >
+                  Zurück
+                </Button>
+                <Button
+                  className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:brightness-110"
+                  disabled={selectedPlanIndex === null}
+                  onClick={() => {
+                    if (selectedPlanIndex === null) return;
+
+                    const plan = PREMIUM_PLANS[selectedPlanIndex];
+                    const levelBoost = plan.levelBoost || 0;
+
+                    setUser(u => ({
+                      ...u,
+                      isPremium: true,
+                      level: u.level + levelBoost,
+                      xp: (u.level + levelBoost - 1) * 100
+                    }));
+
+                    audio.playWin();
+
+                    if (levelBoost > 0) {
+                      alert(`Premium Aktiviert! 🎁 Du hast ${levelBoost} Stufen freigeschaltet! Willkommen, Legende.`);
+                    } else {
+                      alert(`Premium Aktiviert! Willkommen, Legende.`);
+                    }
+
+                    setShowRedeemModal(false);
+                    setRedeemCode('');
+                    setRedeemStep('code');
+                    setSelectedPlanIndex(null);
+                  }}
+                >
+                  Aktivieren
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </Modal>
     </div>
