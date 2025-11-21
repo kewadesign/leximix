@@ -7,7 +7,7 @@ import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle } from 'lucide-react';
 
 // --- Sub Components for Game Logic ---
 
@@ -193,6 +193,8 @@ export default function App() {
   const [redeemCode, setRedeemCode] = useState(''); // Code Input
   const [redeemStep, setRedeemStep] = useState<'code' | 'plan'>('code'); // Redemption flow step
   const [selectedPlanIndex, setSelectedPlanIndex] = useState<number | null>(null); // Selected plan
+  const [redeemError, setRedeemError] = useState<string | null>(null); // Error message for redemption
+  const [showPremiumInfo, setShowPremiumInfo] = useState(false); // Premium info modal
 
   // Edit Profile State
   const [editName, setEditName] = useState(user.name || "Agent");
@@ -754,6 +756,7 @@ export default function App() {
                 placeholder={t.ONBOARDING.AGE_PLACEHOLDER}
                 className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 text-center text-xl font-bold focus:border-lexi-gold focus:outline-none transition-colors text-white"
                 autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleOnboardingComplete()}
               />
               <Button
                 fullWidth
@@ -773,8 +776,8 @@ export default function App() {
     const levels = Array.from({ length: 100 }, (_, i) => i + 1);
 
     return (
-      <div className="h-full flex flex-col animate-fade-in bg-black/40 backdrop-blur-sm">
-        <div className="p-4 bg-[#1e102e]/90 backdrop-blur-xl border-b border-white/10 flex items-center justify-between z-20 sticky top-0">
+      <div className="h-full flex flex-col animate-fade-in">
+        <div className="p-4 bg-[#1e102e]/90 backdrop-blur-xl border-b border-white/10 flex items-center justify-between z-20 shrink-0">
           <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition-colors border border-white/10">
             <ArrowLeft size={20} />
           </button>
@@ -785,10 +788,17 @@ export default function App() {
         </div>
 
         {!user.isPremium && (
-          <div className="p-4 flex flex-col items-center gap-4">
-            <div className="w-full max-w-md space-y-4">
-              <h3 className="text-center text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Premium Pass Optionen</h3>
+          <div className="p-4 flex flex-col items-center gap-4 border-b border-white/10 shrink-0">
+            <button
+              onClick={() => setShowPremiumInfo(true)}
+              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold uppercase hover:brightness-110 transition-all shadow-lg flex items-center gap-2"
+            >
+              <Info size={18} /> Premium Vorteile Ansehen
+            </button>
 
+            <h3 className="text-center text-sm font-bold text-gray-400 uppercase tracking-wider">Premium Pass Optionen</h3>
+
+            <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Monthly Plan - 7,99€ */}
               <div className="bg-gradient-to-br from-purple-900/50 to-gray-900 border-2 border-purple-500/30 p-6 rounded-3xl">
                 <div className="text-center mb-4">
@@ -841,54 +851,56 @@ export default function App() {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide max-w-2xl mx-auto w-full">
-          {/* Tracks */}
-          <div className="relative pt-8">
-            <div className="absolute left-[50%] top-0 bottom-0 w-1.5 bg-gray-800 -translate-x-1/2 rounded-full"></div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
+          <div className="max-w-2xl mx-auto w-full">
+            {/* Tracks */}
+            <div className="relative pt-8 pb-8">
+              <div className="absolute left-[50%] top-0 bottom-0 w-1.5 bg-gray-800 -translate-x-1/2 rounded-full"></div>
 
-            {levels.map((lvl, i) => {
-              const isUnlocked = user.level >= lvl;
-              const isPremiumNode = lvl % 2 === 0;
-              const isClaimed = isUnlocked && (!isPremiumNode || user.isPremium);
+              {levels.map((lvl, i) => {
+                const isUnlocked = user.level >= lvl;
+                const isPremiumNode = lvl % 2 === 0;
+                const isClaimed = isUnlocked && (!isPremiumNode || user.isPremium);
 
-              return (
-                <div
-                  key={lvl}
-                  className={`flex items-center mb-10 relative transition-all duration-500 ${isUnlocked ? 'opacity-100' : 'opacity-50 grayscale'}`}
-                  style={{ animationDelay: `${i * 50}ms` }}
-                >
-                  {/* Level Indicator */}
-                  <div className={`absolute left-[50%] -translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center font-black text-sm border-4 border-lexi-dark z-10 transition-transform hover:scale-125
+                return (
+                  <div
+                    key={lvl}
+                    className={`flex items-center mb-10 relative transition-all duration-500 ${isUnlocked ? 'opacity-100' : 'opacity-50 grayscale'}`}
+                    style={{ animationDelay: `${i * 50}ms` }}
+                  >
+                    {/* Level Indicator */}
+                    <div className={`absolute left-[50%] -translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center font-black text-sm border-4 border-lexi-dark z-10 transition-transform hover:scale-125
                                     ${isUnlocked ? 'bg-lexi-fuchsia text-white shadow-[0_0_20px_rgba(217,70,239,0.6)]' : 'bg-gray-800 text-gray-500'}
                                 `}>
-                    {lvl}
-                  </div>
+                      {lvl}
+                    </div>
 
-                  {/* Left Side: Free */}
-                  <div className="flex-1 pr-10 text-right flex flex-col items-end">
-                    {!isPremiumNode && (
-                      <div className={`bg-gray-800 p-4 rounded-2xl border border-white/10 w-32 md:w-40 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-green-500 bg-green-900/20' : ''}`}>
-                        <Gem size={24} className="text-blue-400 mb-1" />
-                        <span className="text-xs font-bold text-gray-400">100 {t.SEASON.COINS}</span>
-                        {isClaimed && <div className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1 shadow-lg"><Check size={12} /></div>}
-                      </div>
-                    )}
-                  </div>
+                    {/* Left Side: Free */}
+                    <div className="flex-1 pr-10 text-right flex flex-col items-end">
+                      {!isPremiumNode && (
+                        <div className={`bg-gray-800 p-4 rounded-2xl border border-white/10 w-32 md:w-40 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-green-500 bg-green-900/20' : ''}`}>
+                          <Gem size={24} className="text-blue-400 mb-1" />
+                          <span className="text-xs font-bold text-gray-400">100 {t.SEASON.COINS}</span>
+                          {isClaimed && <div className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1 shadow-lg"><Check size={12} /></div>}
+                        </div>
+                      )}
+                    </div>
 
-                  {/* Right Side: Premium */}
-                  <div className="flex-1 pl-10">
-                    {isPremiumNode && (
-                      <div className={`bg-gradient-to-br from-purple-900 to-gray-900 p-4 rounded-2xl border border-purple-500/30 w-32 md:w-40 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-yellow-400 bg-yellow-900/20' : ''}`}>
-                        <Lock size={16} className={`absolute top-2 right-2 text-purple-400 ${user.isPremium ? 'hidden' : ''}`} />
-                        <Star size={24} className="text-yellow-400 mb-1" fill="currentColor" />
-                        <span className="text-xs font-bold text-yellow-100/80">{t.SEASON.RARE_ITEM}</span>
-                        {isClaimed && <div className="absolute -top-2 -left-2 bg-yellow-500 text-black rounded-full p-1 shadow-lg"><Check size={12} /></div>}
-                      </div>
-                    )}
+                    {/* Right Side: Premium */}
+                    <div className="flex-1 pl-10">
+                      {isPremiumNode && (
+                        <div className={`bg-gradient-to-br from-purple-900 to-gray-900 p-4 rounded-2xl border border-purple-500/30 w-32 md:w-40 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-yellow-400 bg-yellow-900/20' : ''}`}>
+                          <Lock size={16} className={`absolute top-2 right-2 text-purple-400 ${user.isPremium ? 'hidden' : ''}`} />
+                          <Star size={24} className="text-yellow-400 mb-1" fill="currentColor" />
+                          <span className="text-xs font-bold text-yellow-100/80">{t.SEASON.RARE_ITEM}</span>
+                          {isClaimed && <div className="absolute -top-2 -left-2 bg-yellow-500 text-black rounded-full p-1 shadow-lg"><Check size={12} /></div>}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -1045,21 +1057,26 @@ export default function App() {
       </header>
 
       {/* Logo Area */}
-      <div className="flex flex-col items-center justify-center mb-12 relative animate-scale-in pt-4">
-        <div className="relative h-40 w-80 flex items-center justify-center hover:scale-105 transition-transform duration-700">
-          {/* Left Card */}
-          <div className="absolute left-8 w-32 h-40 bg-gradient-to-br from-purple-400 to-blue-600 rounded-3xl transform -rotate-12 shadow-[0_0_30px_rgba(147,51,234,0.4)]"></div>
-          {/* Right Card */}
-          <div className="absolute right-8 w-32 h-40 bg-gradient-to-bl from-blue-400 to-blue-700 rounded-3xl transform rotate-12 shadow-[0_0_30px_rgba(37,99,235,0.4)]"></div>
+      <div className="flex flex-col items-center justify-center mb-8 relative animate-scale-in pt-4">
+        <div className="relative flex items-center justify-center hover:scale-105 transition-transform duration-700">
+          {/* Logo Image Only - Background cards removed to prevent double look */}
 
           {/* Text */}
-          <h1 className="relative z-10 text-7xl font-black tracking-tighter text-white drop-shadow-2xl">
-            LEXiMiX
-          </h1>
+          <img src="/logo_graphic.png" alt="LEXiMiX" className="relative z-10 h-56 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500" />
         </div>
-        <div className="mt-8 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
+        <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
           {t.HOME.TAGLINE}
         </div>
+      </div>
+
+      <div className="mb-8 w-full">
+        <SeasonPass
+          xp={user.xp}
+          level={user.level}
+          isPremium={user.isPremium}
+          onBuyPremium={() => setView('SEASON')}
+          lang={user.language}
+        />
       </div>
 
       {/* Grid */}
@@ -1116,13 +1133,9 @@ export default function App() {
         />
       </div>
 
-      <SeasonPass
-        xp={user.xp}
-        level={user.level}
-        isPremium={user.isPremium}
-        onBuyPremium={() => setView('SEASON')}
-        lang={user.language}
-      />
+      <div className="text-center text-[10px] text-gray-600 font-bold mt-4 pb-8 uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity">
+        Made by Kevin Wagner 2025
+      </div>
     </div>
   );
 
@@ -1385,9 +1398,11 @@ export default function App() {
   );
 
   return (
-    <div className="h-screen w-full text-white font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white animate-nebula bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] bg-fixed" style={{ backgroundColor: '#0f0718', backgroundImage: 'radial-gradient(circle at 50% 50%, #2d1b4e 0%, #0f0718 100%)' }}>
+    <div className="h-screen w-full text-white font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white" style={{ background: 'linear-gradient(135deg, #0a0510 0%, #1a0f2e 50%, #0f0718 100%)', filter: 'contrast(1.1)' }}>
+      {/* Grain Texture Overlay */}
+      <div className="fixed inset-0 opacity-[0.15] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 400 400\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")', backgroundRepeat: 'repeat', backgroundSize: '200px 200px' }}></div>
       {/* Dynamic Background Layers */}
-      <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.05] pointer-events-none"></div>
+      <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
       <div className="fixed top-[-20%] left-[-20%] w-[140%] h-[140%] bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20 animate-pulse-slow pointer-events-none blur-3xl"></div>
 
       {view === 'ONBOARDING' && renderOnboarding()}
@@ -1688,6 +1703,7 @@ export default function App() {
           setRedeemCode('');
           setRedeemStep('code');
           setSelectedPlanIndex(null);
+          setRedeemError(null);
         }}
         title={redeemStep === 'code' ? t.SEASON.REDEEM_CODE : 'Plan Auswählen'}
       >
@@ -1703,14 +1719,54 @@ export default function App() {
                 <p className="text-xs text-gray-500">Format: LEXIMIX-XXXX-XXXX-XXXX</p>
               </div>
 
-              <input
-                type="text"
-                value={redeemCode}
-                onChange={(e) => setRedeemCode(e.target.value.toUpperCase())}
-                placeholder={t.SEASON.CODE_PLACEHOLDER}
-                className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 text-center text-sm font-mono font-bold focus:border-yellow-400 focus:outline-none transition-colors text-white uppercase"
-                maxLength={24}
-              />
+              <div className="w-full">
+                <input
+                  type="text"
+                  value={redeemCode}
+                  onChange={(e) => {
+                    setRedeemCode(e.target.value.toUpperCase());
+                    setRedeemError(null);
+                  }}
+                  placeholder={t.SEASON.CODE_PLACEHOLDER}
+                  className={`w-full bg-gray-900 border-2 ${redeemError ? 'border-red-500 animate-shake' : 'border-gray-700 focus:border-yellow-400'} rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors text-white uppercase`}
+                  maxLength={24}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const trimmedCode = redeemCode.trim();
+
+                      if (!VALID_CODES.includes(trimmedCode)) {
+                        setRedeemError(t.SEASON.INVALID_CODE);
+                        audio.playError();
+                        return;
+                      }
+
+                      audio.playWin();
+                      const plan = PREMIUM_PLANS[1];
+                      const levelBoost = plan.levelBoost || 0;
+
+                      setUser(u => ({
+                        ...u,
+                        isPremium: true,
+                        level: u.level + levelBoost,
+                        xp: (u.level + levelBoost - 1) * 100
+                      }));
+
+                      alert(`Premium Aktiviert! Willkommen, Legende.`);
+
+                      setShowRedeemModal(false);
+                      setRedeemCode('');
+                      setRedeemStep('code');
+                      setSelectedPlanIndex(null);
+                      setRedeemError(null);
+                    }
+                  }}
+                />
+                {redeemError && (
+                  <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center justify-center gap-1">
+                    <AlertTriangle size={12} /> {redeemError}
+                  </div>
+                )}
+              </div>
 
               <div className="flex gap-3">
                 <Button
@@ -1720,6 +1776,7 @@ export default function App() {
                     setShowRedeemModal(false);
                     setRedeemCode('');
                     setRedeemStep('code');
+                    setRedeemError(null);
                   }}
                 >
                   Abbrechen
@@ -1730,17 +1787,35 @@ export default function App() {
                     const trimmedCode = redeemCode.trim();
 
                     if (!VALID_CODES.includes(trimmedCode)) {
-                      alert(t.SEASON.INVALID_CODE);
+                      setRedeemError(t.SEASON.INVALID_CODE);
                       audio.playError();
                       return;
                     }
 
-                    // Code is valid, move to plan selection
-                    audio.playClick();
-                    setRedeemStep('plan');
+                    // Code is valid, immediately activate Standard Premium (30 days)
+                    audio.playWin();
+
+                    // Standard Plan is index 1 (30 days)
+                    const plan = PREMIUM_PLANS[1];
+                    const levelBoost = plan.levelBoost || 0;
+
+                    setUser(u => ({
+                      ...u,
+                      isPremium: true,
+                      level: u.level + levelBoost,
+                      xp: (u.level + levelBoost - 1) * 100
+                    }));
+
+                    alert(`Premium Aktiviert! Willkommen, Legende.`);
+
+                    setShowRedeemModal(false);
+                    setRedeemCode('');
+                    setRedeemStep('code');
+                    setSelectedPlanIndex(null);
+                    setRedeemError(null);
                   }}
                 >
-                  Weiter
+                  Code Einlösen
                 </Button>
               </div>
             </>
@@ -1762,8 +1837,8 @@ export default function App() {
                     key={plan.id}
                     onClick={() => setSelectedPlanIndex(index)}
                     className={`w-full p-4 rounded-xl border-2 transition-all text-left ${selectedPlanIndex === index
-                        ? 'border-yellow-400 bg-yellow-400/10 shadow-[0_0_20px_rgba(250,204,21,0.3)]'
-                        : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                      ? 'border-yellow-400 bg-yellow-400/10 shadow-[0_0_20px_rgba(250,204,21,0.3)]'
+                      : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
                       }`}
                   >
                     <div className="flex items-start justify-between mb-2">
@@ -1834,6 +1909,66 @@ export default function App() {
               </div>
             </>
           )}
+        </div>
+      </Modal>
+
+      {/* Premium Info Modal */}
+      <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Vorteile">
+        <div className="py-6 space-y-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="inline-block p-6 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+              <Star className="text-white" size={48} fill="currentColor" />
+            </div>
+            <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+              Werde Premium!
+            </h3>
+          </div>
+
+          <div className="space-y-4">
+            <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-xl p-4">
+              <h4 className="font-bold text-purple-300 mb-3 flex items-center gap-2">
+                <Sparkles size={18} /> Exklusive Features
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li className="flex items-start gap-2">
+                  <span className="text-green-400 mt-0.5">✓</span>
+                  <span><strong>Challenge Mode:</strong> Zugriff auf Premium Herausforderungen</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-400 mt-0.5">✓</span>
+                  <span><strong>Schnellere Hinweise:</strong> Reduzierte Wartezeiten</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-400 mt-0.5">✓</span>
+                  <span><strong>Goldener Name:</strong> Hebe dich von anderen ab</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-400 mt-0.5">✓</span>
+                  <span><strong>Exklusive Avatare:</strong> Freischaltung seltener Skins</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-gradient-to-r from-yellow-900/30 to-amber-900/30 border border-yellow-500/30 rounded-xl p-4">
+              <h4 className="font-bold text-yellow-300 mb-3 flex items-center gap-2">
+                <Zap size={18} /> Zwei Optionen
+              </h4>
+              <div className="space-y-3 text-sm text-gray-300">
+                <div className="bg-black/30 rounded-lg p-3">
+                  <p className="font-bold text-purple-300 mb-1">Monatlich (7,99€)</p>
+                  <p className="text-xs">🎁 Sofort +10 Stufen Boost + alle Premium Features</p>
+                </div>
+                <div className="bg-black/30 rounded-lg p-3">
+                  <p className="font-bold text-cyan-300 mb-1">30 Tage (4,99€)</p>
+                  <p className="text-xs">⚡ Selbst hocharbeiten + alle Premium Features</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Button fullWidth onClick={() => setShowPremiumInfo(false)} variant="primary">
+            Verstanden
+          </Button>
         </div>
       </Modal>
     </div>
