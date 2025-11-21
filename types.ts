@@ -41,6 +41,7 @@ export interface UserState {
   level: number;
   coins: number;
   isPremium: boolean;
+  premiumExpiry?: number; // Timestamp when premium expires
   completedLevels: Record<string, boolean>; // mode_levelId
   playedWords: string[]; // Track used words to prevent repetition
   language: Language;
