@@ -11,7 +11,7 @@ import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Lin
 
 // --- Sub Components for Game Logic ---
 
-const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode }: any) => {
+const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) => {
   const rows = isMathMode ? [
     ['1', '2', '3'],
     ['4', '5', '6'],
@@ -51,8 +51,8 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode }: any) => {
           )}
         </div>
       ))}
-      <button onClick={onEnter} className="w-full bg-gradient-to-r from-lexi-fuchsia to-purple-600 h-14 sm:h-16 rounded-xl font-black text-lg mt-3 active:scale-95 uppercase shadow-[0_0_20px_rgba(217,70,239,0.4)] hover:brightness-110 transition-all text-white tracking-widest">
-        Enter Guess
+      <button onClick={onEnter} className="w-full bg-gradient-to-r from-lexi-fuchsia to-purple-600 h-14 sm:h-16 rounded-xl font-black text-sm sm:text-base md:text-lg mt-3 active:scale-95 uppercase shadow-[0_0_20px_rgba(217,70,239,0.4)] hover:brightness-110 transition-all text-white tracking-widest">
+        {t.GAME.ENTER_GUESS}
       </button>
     </div>
   );
@@ -154,21 +154,41 @@ export default function App() {
   const [tempUser, setTempUser] = useState({ name: '', age: '', language: Language.EN });
 
   const [user, setUser] = useState<UserState>(() => {
-    const saved = localStorage.getItem('leximix_user');
-    return saved ? JSON.parse(saved) : {
+    try {
+      const saved = localStorage.getItem('leximix_user');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error('[LexiMix] localStorage error:', error);
+      // Continue to default state
+    }
+
+    // Default state
+    return {
       name: 'Agent',
       age: 0,
       avatarId: AVATARS[0],
       ownedAvatars: [AVATARS[0]],
-      xp: 0, level: 1, coins: 0, isPremium: false, // Default to FALSE
-      completedLevels: {}, language: Language.DE
+      xp: 0,
+      level: 1,
+      coins: 0,
+      isPremium: false,
+      completedLevels: {},
+      language: Language.DE
     };
   });
 
   // Check for saved user on mount to decide initial view
   useEffect(() => {
-    const saved = localStorage.getItem('leximix_user');
-    if (!saved) {
+    try {
+      const saved = localStorage.getItem('leximix_user');
+      if (!saved) {
+        setView('ONBOARDING');
+      }
+    } catch (error) {
+      console.error('[LexiMix] localStorage check error:', error);
+      // If localStorage fails, show onboarding
       setView('ONBOARDING');
     }
   }, []);
@@ -203,7 +223,11 @@ export default function App() {
 
   useEffect(() => {
     if (view !== 'ONBOARDING') {
-      localStorage.setItem('leximix_user', JSON.stringify(user));
+      try {
+        localStorage.setItem('leximix_user', JSON.stringify(user));
+      } catch (error) {
+        console.error('[LexiMix] localStorage save error:', error);
+      }
     }
   }, [user, view]);
 
@@ -437,6 +461,7 @@ export default function App() {
     const result = checkGuess(gameState.currentGuess, gameState.targetWord);
     const newGuess = { word: gameState.currentGuess, result };
     const won = gameState.currentGuess === gameState.targetWord;
+    const currentTier = gameConfig!.tier; // Store tier before state update
 
     setGameState((prev: any) => {
       const nextState = {
@@ -446,12 +471,16 @@ export default function App() {
         status: won ? 'won' : (prev.guesses.length + 1 >= 6 ? 'lost' : 'playing')
       };
 
-      if (won) handleWin(gameConfig!.tier);
       if (nextState.status === 'lost') audio.playLoss();
       if (won) audio.playWin();
 
       return nextState;
     });
+
+    // Call handleWin AFTER state update, not inside
+    if (won) {
+      setTimeout(() => handleWin(currentTier), 100);
+    }
   };
 
   const handleSudokuInput = (char: string) => {
@@ -468,7 +497,8 @@ export default function App() {
       const isCorrect = JSON.stringify(newGrid) === JSON.stringify(gameState.data.sudokuGrid);
       if (isCorrect) {
         audio.playWin();
-        handleWin(gameConfig!.tier);
+        // Move handleWin outside to prevent race condition
+        setTimeout(() => handleWin(gameConfig!.tier), 100);
       }
     }
   };
@@ -611,7 +641,11 @@ export default function App() {
   };
 
   const confirmDelete = () => {
-    localStorage.removeItem('leximix_user');
+    try {
+      localStorage.removeItem('leximix_user');
+    } catch (error) {
+      console.error('[LexiMix] localStorage delete error:', error);
+    }
     window.location.reload();
   };
 
@@ -674,8 +708,8 @@ export default function App() {
       ) : (
         <>
           <div className="relative z-10">
-            <h3 className="font-black italic text-2xl md:text-3xl uppercase tracking-tight leading-none mb-2 drop-shadow-sm text-white">{title}</h3>
-            <p className="text-xs md:text-sm font-bold opacity-90 leading-tight max-w-[80%] text-white/80">{desc}</p>
+            <h3 className="font-black italic text-sm sm:text-base md:text-lg uppercase tracking-tight leading-none mb-2 drop-shadow-sm text-white">{title}</h3>
+            <p className="text-[10px] sm:text-xs md:text-sm font-bold opacity-90 leading-tight max-w-full text-white/80 line-clamp-2">{desc}</p>
           </div>
           <div className="relative z-10 mt-1">
             <span className="bg-black/30 px-3 py-1 rounded text-[10px] md:text-xs font-bold uppercase tracking-wider border border-white/10 inline-flex items-center gap-1 text-white group-hover:bg-white group-hover:text-black transition-colors">
@@ -798,7 +832,7 @@ export default function App() {
 
             <h3 className="text-center text-sm font-bold text-gray-400 uppercase tracking-wider">Premium Pass Optionen</h3>
 
-            <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="w-full max-w-3xl grid grid-cols-2 gap-3">
               {/* Monthly Plan - 7,99€ */}
               <div className="bg-gradient-to-br from-purple-900/50 to-gray-900 border-2 border-purple-500/30 p-6 rounded-3xl">
                 <div className="text-center mb-4">
@@ -1163,7 +1197,7 @@ export default function App() {
             <div key={tier} className="mb-12 animate-slide-up bg-black/20 p-6 rounded-3xl border border-white/5" style={{ animationDelay: `${idx * 100}ms` }}>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className={`text-3xl font-black italic tracking-tight ${isLockedTier ? 'text-gray-600' : TIER_COLORS[tier]} drop-shadow-sm`}>
+                  <div className={`text-sm sm:text-base md:text-lg font-black italic tracking-tight ${isLockedTier ? 'text-gray-600' : TIER_COLORS[tier]} drop-shadow-sm truncate max-w-[280px]`}>
                     {label}
                   </div>
                   {!isLockedTier && <span className="text-[10px] font-bold text-lexi-fuchsia bg-lexi-fuchsia/10 px-2 py-1 rounded border border-lexi-fuchsia/30 flex items-center gap-1"><Sparkles size={10} /> +{xpReward} XP</span>}
@@ -1299,7 +1333,7 @@ export default function App() {
     let infoText = "Good Luck!";
     if (isSudoku) infoText = "Fill grid (A-I). No repeats.";
     else if (gameState.isMath) infoText = "Solve the math expression.";
-    else infoText = `${gameState.targetWord.length} letters. Green = Correct.`;
+    else infoText = `${gameState.targetWord.length} ${t.GAME.INFO_BAR}`;
 
     return (
       <div className="flex flex-col h-full max-h-screen relative z-10">
@@ -1374,6 +1408,7 @@ export default function App() {
               onChar={handleWordKey}
               onDelete={handleWordDelete}
               onEnter={handleWordEnter}
+              t={t}
               usedKeys={gameState.guesses.reduce((acc: any, g: any) => {
                 g.word.split('').forEach((char: string, i: number) => {
                   if (g.result[i] === 'correct') acc[char] = 'correct';
@@ -1398,12 +1433,14 @@ export default function App() {
   );
 
   return (
-    <div className="h-screen w-full text-white font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white" style={{ background: 'linear-gradient(135deg, #0a0510 0%, #1a0f2e 50%, #0f0718 100%)', filter: 'contrast(1.1)' }}>
-      {/* Grain Texture Overlay */}
-      <div className="fixed inset-0 opacity-[0.15] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 400 400\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")', backgroundRepeat: 'repeat', backgroundSize: '200px 200px' }}></div>
+    <div className="h-screen w-full text-white font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white" style={{ background: 'linear-gradient(135deg, #0a0510 0%, #1a0f2e 50%, #0f0718 100%)' }}>
+      {/* Simplified grain texture using CSS */}
+      <div className="fixed inset-0 opacity-[0.08] pointer-events-none" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        backgroundSize: '180px 180px'
+      }}></div>
       {/* Dynamic Background Layers */}
-      <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
-      <div className="fixed top-[-20%] left-[-20%] w-[140%] h-[140%] bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20 animate-pulse-slow pointer-events-none blur-3xl"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-purple-900/15 via-transparent to-blue-900/15 pointer-events-none"></div>
 
       {view === 'ONBOARDING' && renderOnboarding()}
       {view === 'HOME' && renderHome()}

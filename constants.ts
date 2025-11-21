@@ -62,7 +62,10 @@ export const TRANSLATIONS = {
       DAYS_LEFT: "DAYS LEFT",
       REDEEM_CODE: "REDEEM CODE",
       CODE_PLACEHOLDER: "Enter Activation Code",
-      INVALID_CODE: "Invalid Code"
+      INVALID_CODE: "Invalid Code",
+      PREMIUM_REQUIRED: "Season Pass Required!",
+      PREMIUM_OPTIONS: "PREMIUM PASS OPTIONS",
+      VIEW_BENEFITS: "VIEW PREMIUM BENEFITS"
     },
     LEVELS: {
       BACK: "BACK",
@@ -87,7 +90,14 @@ export const TRANSLATIONS = {
       CLAIM: "CLAIM HINT",
       REWARD: "REWARD READY",
       HINT_COST_PREFIX: "+",
-      HINT_COST_SUFFIX: "s Wait Time"
+      HINT_COST_SUFFIX: "s Wait Time",
+      INFO_BAR: "letters. Green = Correct.",
+      ENTER_GUESS: "ENTER GUESS",
+      LOST_TITLE: "MISSION FAILED",
+      LOST_DESC: "GAME OVER",
+      TARGET_ID: "TARGET IDENTIFIED",
+      MENU: "MENU",
+      RETRY: "RETRY"
     },
     TUTORIAL: {
       HEADER: "HOW TO PLAY",
@@ -97,9 +107,11 @@ export const TRANSLATIONS = {
     PROFILE: {
       TITLE: "AGENT PROFILE",
       SAVE: "SAVE CHANGES",
-      NAME: "Name",
-      AGE: "Age",
-      AVATAR: "Avatar"
+      NAME: "NAME",
+      AGE: "AGE",
+      AVATAR: "SELECT AVATAR",
+      DELETE_PROFILE: "DELETE PROFILE",
+      AVATAR_HINT: "Click avatar to cycle through your owned collection"
     },
     SHOP: {
       TITLE: "BLACK MARKET",
@@ -156,7 +168,10 @@ export const TRANSLATIONS = {
       DAYS_LEFT: "TAGE ÜBRIG",
       REDEEM_CODE: "CODE EINLÖSEN",
       CODE_PLACEHOLDER: "Gutscheincode eingeben",
-      INVALID_CODE: "Ungültiger Code"
+      INVALID_CODE: "Ungültiger Code",
+      PREMIUM_REQUIRED: "Season Pass erforderlich!",
+      PREMIUM_OPTIONS: "PREMIUM PASS OPTIONEN",
+      VIEW_BENEFITS: "PREMIUM VORTEILE ANSEHEN"
     },
     LEVELS: {
       BACK: "ZURÜCK",
@@ -170,18 +185,25 @@ export const TRANSLATIONS = {
       SUDOKU_DESC: "Fülle das Gitter",
       SPEEDRUN_DESC: "Verbleibende Zeit",
       WIN_TITLE: "SIEG",
-      WIN_DESC: "Level Geschafft!",
+      WIN_DESC: "Level abgeschlossen!",
       XP_GAINED: "XP GEWONNEN",
       COINS_GAINED: "MÜNZEN",
-      NEXT_BTN: "NÄCHSTES LEVEL",
+      NEXT_BTN: "NÄCHSTER LEVEL",
       PASS_BTN: "PASS ANSEHEN",
       HINT_MODAL_TITLE: "HINWEIS FREISCHALTEN",
-      AD_SIM: "WERBEFLÄCHE\n(Simulation)",
-      WATCHING: "WERBUNG LÄUFT...",
+      AD_SIM: "WERBEBEREICH\n(Simulation)",
+      WATCHING: "SCHAUEN...",
       CLAIM: "HINWEIS HOLEN",
       REWARD: "BELOHNUNG BEREIT",
       HINT_COST_PREFIX: "+",
-      HINT_COST_SUFFIX: "s Wartezeit"
+      HINT_COST_SUFFIX: "s Wartezeit",
+      INFO_BAR: "Buchstaben. Grün = Richtig.",
+      ENTER_GUESS: "LÖSUNG EINGEBEN",
+      LOST_TITLE: "MISSION FEHLGESCHLAGEN",
+      LOST_DESC: "SPIEL VORBEI",
+      TARGET_ID: "ZIELWORT IDENTIFIZIERT",
+      MENU: "MENÜ",
+      RETRY: "NOCHMAL"
     },
     TUTORIAL: {
       HEADER: "SPIELANLEITUNG",
@@ -191,12 +213,14 @@ export const TRANSLATIONS = {
     PROFILE: {
       TITLE: "AGENTEN PROFIL",
       SAVE: "SPEICHERN",
-      NAME: "Name",
-      AGE: "Alter",
-      AVATAR: "Avatar"
+      NAME: "NAME",
+      AGE: "ALTER",
+      AVATAR: "AVATAR WÄHLEN",
+      DELETE_PROFILE: "PROFIL LÖSCHEN",
+      AVATAR_HINT: "Klicke auf den Avatar um durch deine Sammlung zu wechseln"
     },
     SHOP: {
-      TITLE: "SCHWARZMARKT",
+      TITLE: "Marktplatz",
       CURRENCY_SECTION: "MÜNZPAKETE",
       AVATAR_SECTION: "AVATAR TERMINAL",
       BUY: "KAUFEN",
