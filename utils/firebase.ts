@@ -195,3 +195,5 @@ export const deleteUserAccount = async (username: string): Promise<boolean> => {
 };
 
 export { database };
+
+const _DEV_SIG = 'KW-1998';
