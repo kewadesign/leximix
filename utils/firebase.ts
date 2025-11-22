@@ -44,7 +44,7 @@ const checkRateLimit = (): boolean => {
 
 // Helper to normalize usernames (prevent duplicates like "User" vs "user")
 export const normalizeUsername = (username: string): string => {
-    return username.trim().toLowerCase();
+    return username.replace(/\s+/g, '').toLowerCase();
 };
 
 // Auth functions
