@@ -267,8 +267,10 @@ function App() {
 
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
   const [gameState, setGameState] = useState<any>(null);
-  const gameStateRef = useRef(gameState);
+  const gameStateRef = useRef<any>(null); // Ref to access latest state in event listeners
+  const hiddenInputRef = useRef<HTMLInputElement>(null); // Ref for hidden mobile keyboard input
 
+  // Update ref whenever gameState changes
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
@@ -1043,7 +1045,7 @@ function App() {
                 type="text"
                 maxLength={20}
                 value={tempUser.name}
-                onChange={(e) => setTempUser({ ...tempUser, name: e.target.value.replace(/\s/g, '') })}
+                onChange={(e) => setTempUser({ ...tempUser, name: e.target.value.replace(/[^a-zA-Z0-9]/g, '') })}
                 placeholder={t.ONBOARDING.NAME_PLACEHOLDER}
                 className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 text-center text-xl font-bold focus:border-lexi-fuchsia focus:outline-none transition-colors text-white"
                 autoFocus
@@ -1755,39 +1757,40 @@ function App() {
           </div>
         </div>
 
-        {/* Controls - Keyboard */}
-        <div className={`p-2 pb-6 glass-panel border-t border-lexi-border shrink-0 ${!isSudoku ? 'md:hidden' : ''} rounded-t-3xl`}>
-          {isSudoku ? (
-            <div className="grid grid-cols-9 gap-2 max-w-3xl mx-auto animate-slide-up p-2">
-              {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].map((char, i) => (
-                <button
-                  key={char}
-                  onClick={() => handleSudokuInput(char)}
-                  className="h-14 glass-button rounded-xl text-lexi-cyan text-xl font-bold active:bg-lexi-cyan active:text-black transition-colors hover:scale-105"
-                  style={{ animationDelay: `${i * 30}ms` }}
-                >
-                  {char}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <Keyboard
-              isMathMode={gameState.isMath}
-              onChar={handleWordKey}
-              onDelete={handleWordDelete}
-              onEnter={handleWordEnter}
-              t={t}
-              usedKeys={gameState.guesses.reduce((acc: any, g: any) => {
-                g.word.split('').forEach((char: string, i: number) => {
-                  if (g.result[i] === 'correct') acc[char] = 'correct';
-                  else if (g.result[i] === 'present' && acc[char] !== 'correct') acc[char] = 'present';
-                  else if (!acc[char]) acc[char] = 'absent';
-                });
-                return acc;
-              }, {})}
-            />
-          )}
-        </div>
+        {/* Controls - Native Keyboard Input */}
+        <input
+          ref={hiddenInputRef}
+          type="text"
+          className="opacity-0 absolute top-0 left-0 h-full w-full z-0 cursor-default"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="characters"
+          spellCheck="false"
+          value=""
+          onChange={(e) => {
+            const val = e.target.value.toUpperCase();
+            const char = val.slice(-1);
+            if (/^[A-Z0-9]$/.test(char)) {
+              if (isSudoku) handleSudokuInput(char);
+              else handleWordKey(char);
+            }
+            // Reset input to keep it empty
+            e.target.value = "";
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Backspace') {
+              if (!isSudoku) handleWordDelete();
+            } else if (e.key === 'Enter') {
+              if (!isSudoku) handleWordEnter();
+            }
+          }}
+          onBlur={(e) => {
+            // Try to keep focus if playing
+            if (gameState?.status === 'playing') {
+              setTimeout(() => e.target.focus(), 10);
+            }
+          }}
+        />
       </div>
     );
   };
@@ -1906,7 +1909,7 @@ function App() {
               className="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-lg text-white focus:border-lexi-fuchsia outline-none font-bold"
               value={editName}
               maxLength={20}
-              onChange={(e) => setEditName(e.target.value.replace(/\s/g, ''))}
+              onChange={(e) => setEditName(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
             />
           </div>
 

@@ -128,7 +128,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                         <input
                             type="text"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value.replace(/\s/g, ''))}
+                            onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
                             className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
                             placeholder="Dein Benutzername"
                             disabled={loading}
