@@ -1826,10 +1826,8 @@ function App() {
               <img
                 src="/logo.png"
                 alt="LexiMix Logo"
-                className={`w-32 h-32 mx-auto ${user.theme === 'dark' ? 'invert' : ''}`}
-              />    <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-lexi-fuchsia uppercase tracking-wider">
-                LexiMix
-              </h1>
+                className="w-32 h-32 mx-auto"
+              />
               <p className="text-gray-400 text-sm">
                 Melde dich an um zu spielen
               </p>
