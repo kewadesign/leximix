@@ -1043,7 +1043,7 @@ function App() {
                 type="text"
                 maxLength={20}
                 value={tempUser.name}
-                onChange={(e) => setTempUser({ ...tempUser, name: e.target.value })}
+                onChange={(e) => setTempUser({ ...tempUser, name: e.target.value.replace(/\s/g, '') })}
                 placeholder={t.ONBOARDING.NAME_PLACEHOLDER}
                 className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 text-center text-xl font-bold focus:border-lexi-fuchsia focus:outline-none transition-colors text-white"
                 autoFocus
@@ -1906,7 +1906,7 @@ function App() {
               className="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-lg text-white focus:border-lexi-fuchsia outline-none font-bold"
               value={editName}
               maxLength={20}
-              onChange={(e) => setEditName(e.target.value)}
+              onChange={(e) => setEditName(e.target.value.replace(/\s/g, ''))}
             />
           </div>
 
