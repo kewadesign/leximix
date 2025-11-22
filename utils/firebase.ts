@@ -1,4 +1,5 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from "firebase/app";
+// KW1998 - Firebase Integration
 import { getDatabase, ref, set, get, child } from 'firebase/database';
 
 // Firebase configuration

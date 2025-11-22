@@ -1,4 +1,5 @@
 import React from 'react';
+// KW1998 - UI Components
 import { X } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
