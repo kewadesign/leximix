@@ -5,7 +5,7 @@ import { Button, Modal } from './components/UI';
 import { SeasonPass } from './components/SeasonPass';
 import { AuthModal } from './components/AuthModal';
 import { PremiumStatus } from './components/PremiumStatus';
-import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS } from './constants';
+import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
 
@@ -200,6 +200,25 @@ function App() {
   const [voucherError, setVoucherError] = useState('');
   const [voucherSuccess, setVoucherSuccess] = useState('');
   const [lastCloudSync, setLastCloudSync] = useState<number | null>(null);
+
+  // Season System
+  const [currentSeason, setCurrentSeason] = useState(() => getCurrentSeason());
+
+  // Apply Season Colors to CSS Variables
+  useEffect(() => {
+    const season = getCurrentSeason();
+    setCurrentSeason(season);
+
+    // Apply season colors to CSS variables
+    const root = document.documentElement;
+    root.style.setProperty('--season-primary', season.colors.primary);
+    root.style.setProperty('--season-secondary', season.colors.secondary);
+    root.style.setProperty('--season-accent', season.colors.accent);
+    root.style.setProperty('--season-bg-dark', season.colors.bgDark);
+    root.style.setProperty('--season-bg-card', season.colors.bgCard);
+
+    console.log(`[Season] Active: ${season.name} (ID: ${season.id})`);
+  }, []);
 
   // Check for saved user on mount to decide initial view
   useEffect(() => {
@@ -1504,10 +1523,10 @@ function App() {
 
   const renderHome = () => (
     <div className="flex flex-col h-full p-6 w-full max-w-4xl mx-auto overflow-y-auto pb-10 scrollbar-hide animate-fade-in">
-      {/* Header */}
-      <header className="flex justify-between items-center mb-10 glass-panel p-4 rounded-3xl">
-        <div className="flex items-center gap-4 group cursor-pointer" onClick={openProfile}>
-          <div className="w-16 h-16 bg-gradient-to-br from-lexi-surface-highlight to-lexi-surface rounded-2xl border border-lexi-border flex items-center justify-center shadow-inner relative overflow-hidden transition-transform group-hover:scale-105">
+      {/* Header Section */}
+      <div className="flex items-center justify-between w-full px-4 py-4 mb-6">
+        <div className="flex items-center gap-4">
+          <div className="relative">
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-14 h-14" />
           </div>
           <div>
@@ -1517,7 +1536,7 @@ function App() {
 
             <div className="mt-2">
               <div className="text-[10px] text-lexi-text-muted font-bold tracking-widest uppercase flex flex-col items-start mb-1 gap-1">
-                <span>{t.HOME.SEASON_LEVEL} {user.level}</span>
+                <span>SEASON LEVEL {user.level}</span>
                 <span className="text-lexi-fuchsia">{user.xp % 100}/100 XP</span>
               </div>
               <div className="h-1.5 w-32 bg-lexi-surface-highlight rounded-full overflow-hidden">
@@ -1529,52 +1548,15 @@ function App() {
         <div className="flex flex-col items-end gap-2">
           <button onClick={() => setView('SHOP')} className="flex items-center gap-1 glass-button px-4 py-2 rounded-full text-lexi-text">
             <Gem size={16} className="text-blue-400" />
-            <span className="text-sm font-bold">{Math.max(0, user.coins)}</span>
-            <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-[10px] text-black font-bold ml-1">+</div>
+            <span className="font-bold text-sm">{user.coins}</span>
           </button>
-          <button
-            onClick={() => setUser(u => ({ ...u, theme: u.theme === 'dark' ? 'light' : 'dark' }))}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-button text-[10px] font-bold text-lexi-text"
-          >
-            {user.theme === 'dark' ? '🌙' : '☀️'}
+          <button onClick={openProfile} className="glass-button p-2 rounded-full">
+            <Settings size={16} className="text-lexi-text" />
           </button>
-          <button
-            onClick={() => setUser(u => ({ ...u, language: u.language === Language.EN ? Language.DE : Language.EN }))}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-button text-[10px] font-bold text-lexi-text"
-          >
-            <Globe size={12} className="text-lexi-fuchsia animate-pulse-slow" />
-            {user.language}
-          </button>
-
-          {/* Premium Status */}
-          <PremiumStatus isPremium={user.isPremium} premiumActivatedAt={user.premiumActivatedAt} />
-        </div>
-      </header>
-
-      {/* Logo Area */}
-      <div className="flex flex-col items-center justify-center mb-8 relative animate-scale-in pt-4">
-        <div className="relative flex items-center justify-center hover:scale-105 transition-transform duration-700">
-          {/* Logo Image Only - Background cards removed to prevent double look */}
-
-          {/* Text */}
-          <img src="/logo_graphic.png" alt="LEXiMiX" className={`relative z-10 h-56 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500 ${user.theme === 'dark' ? '' : 'invert'}`} />
-        </div>
-        <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
-          {t.HOME.TAGLINE}
         </div>
       </div>
 
-      <div className="mb-8 w-full">
-        <SeasonPass
-          xp={user.xp}
-          level={user.level}
-          isPremium={user.isPremium}
-          onBuyPremium={() => setView('SEASON')}
-          lang={user.language}
-        />
-      </div>
-
-      {/* Cloud Save Card */}
+      {/* Cloud Save Card - MOVED TO TOP! */}
       <div className="mb-6 w-full px-2">
         <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -1619,6 +1601,32 @@ function App() {
           )}
         </div>
       </div>
+
+      {/* Logo & Title */}
+      <div className="flex flex-col items-center justify-center mb-6 animate-fade-in">
+        <div className="mb-4 relative">
+          <img
+            src={user.theme !== 'dark' ? "/logo.png?invert" : "/logo.png"}
+            alt="LexiMix"
+            className={`h-20 w-auto drop-shadow-xl ${user.theme !== 'dark' ? 'invert' : ''}`}
+          />
+        </div>
+        <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
+          {t.HOME.TAGLINE}
+        </div>
+      </div>
+
+      <div className="mb-8 w-full">
+        <SeasonPass
+          xp={user.xp}
+          level={user.level}
+          isPremium={user.isPremium}
+          onBuyPremium={() => setView('SEASON')}
+          lang={user.language}
+        />
+      </div>
+
+
 
       {/* Grid */}
       {console.log('[DEBUG] Rendering game modes grid...')}
@@ -1678,7 +1686,7 @@ function App() {
       <div className="text-center text-[10px] text-lexi-text-muted font-bold mt-4 pb-8 uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity">
         Made by Kevin Wagner 2025
       </div>
-    </div>
+    </div >
   );
 
   const renderLevels = () => (

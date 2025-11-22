@@ -20,6 +20,13 @@
     /* lexi-fuchsia */
     --color-glass-border: rgba(255, 255, 255, 0.5);
     --color-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+
+    /* Season Colors - Dynamic (will be set by JS) */
+    --season-primary: #d946ef;
+    --season-secondary: #a855f7;
+    --season-accent: #3b82f6;
+    --season-bg-dark: #0f172a;
+    --season-bg-card: #1e293b;
   }
 
   .dark {
@@ -85,6 +92,159 @@
     background: rgba(255, 255, 255, 0.1);
     border-radius: 2px;
   }
+
+  /* ============================================================================
+     SEASON 2: NEON UPRISING - Cyberpunk Theme
+     ============================================================================ */
+
+  .season-2-bg {
+    background: linear-gradient(135deg, var(--season-bg-dark) 0%, var(--season-bg-card) 100%);
+    position: relative;
+  }
+
+  /* Cyberpunk Grid Pattern */
+  .season-2-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(0deg, transparent 24%, rgba(0, 255, 159, 0.03) 25%, rgba(0, 255, 159, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 159, 0.03) 75%, rgba(0, 255, 159, 0.03) 76%, transparent 77%, transparent),
+      linear-gradient(90deg, transparent 24%, rgba(0, 255, 159, 0.03) 25%, rgba(0, 255, 159, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 159, 0.03) 75%, rgba(0, 255, 159, 0.03) 76%, transparent 77%, transparent);
+    background-size: 50px 50px;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* Neon Glow Effect */
+  .neon-glow {
+    box-shadow:
+      0 0 5px var(--season-primary),
+      0 0 10px var(--season-primary),
+      0 0 20px var(--season-primary);
+    animation: neon-pulse 2s ease-in-out infinite;
+  }
+
+  .neon-glow-strong {
+    box-shadow:
+      0 0 10px var(--season-primary),
+      0 0 20px var(--season-primary),
+      0 0 30px var(--season-primary),
+      0 0 40px var(--season-secondary);
+  }
+
+  /* Holographic Card Effect */
+  .holo-card {
+    background: linear-gradient(135deg,
+        rgba(0, 255, 159, 0.1) 0%,
+        rgba(255, 0, 255, 0.1) 50%,
+        rgba(0, 212, 255, 0.1) 100%);
+    border: 1px solid rgba(0, 255, 159, 0.3);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .holo-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%);
+    animation: holo-shimmer 3s ease-in-out infinite;
+  }
+
+  /* Scanline Overlay */
+  .scanlines {
+    position: relative;
+  }
+
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+        rgba(0, 0, 0, 0.1) 0px,
+        rgba(0, 0, 0, 0.1) 1px,
+        transparent 1px,
+        transparent 2px);
+    pointer-events: none;
+    opacity: 0.3;
+  }
+
+  /* Glitch Text Effect */
+  .glitch-text {
+    position: relative;
+    color: var(--season-primary);
+    animation: glitch 1s infinite;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--season-secondary);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+  }
+
+  .glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--season-accent);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+  }
+
+  /* Neon Button */
+  .neon-button {
+    background: rgba(0, 255, 159, 0.1);
+    border: 2px solid var(--season-primary);
+    color: var(--season-primary);
+    text-shadow: 0 0 10px var(--season-primary);
+    transition: all 0.3s ease;
+  }
+
+  .neon-button:hover {
+    background: var(--season-primary);
+    color: #000;
+    box-shadow:
+      0 0 20px var(--season-primary),
+      0 0 40px var(--season-primary);
+    text-shadow: none;
+  }
+
+  /* Season Theme Utility Classes */
+  .season-primary-text {
+    color: var(--season-primary);
+  }
+
+  .season-secondary-text {
+    color: var(--season-secondary);
+  }
+
+  .season-accent-text {
+    color: var(--season-accent);
+  }
+
+  .season-primary-bg {
+    background-color: var(--season-primary);
+  }
+
+  .season-gradient {
+    background: linear-gradient(135deg, var(--season-primary) 0%, var(--season-secondary) 100%);
+  }
 }
 
 @layer utilities {
@@ -92,6 +252,10 @@
     animation: pulse-once 0.4s ease-out forwards;
   }
 }
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
 
 @keyframes pulse-once {
   0% {
@@ -104,5 +268,132 @@
 
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes neon-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes holo-shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes glitch {
+
+  2%,
+  64% {
+    transform: translate(2px, 0) skew(0deg);
+  }
+
+  4%,
+  60% {
+    transform: translate(-2px, 0) skew(0deg);
+  }
+
+  62% {
+    transform: translate(0, 0) skew(5deg);
+  }
+}
+
+@keyframes glitch-anim {
+  0% {
+    clip: rect(42px, 9999px, 44px, 0);
+  }
+
+  5% {
+    clip: rect(12px, 9999px, 59px, 0);
+  }
+
+  10% {
+    clip: rect(48px, 9999px, 29px, 0);
+  }
+
+  15% {
+    clip: rect(42px, 9999px, 73px, 0);
+  }
+
+  20% {
+    clip: rect(63px, 9999px, 27px, 0);
+  }
+
+  25% {
+    clip: rect(34px, 9999px, 55px, 0);
+  }
+
+  30% {
+    clip: rect(86px, 9999px, 73px, 0);
+  }
+
+  35% {
+    clip: rect(20px, 9999px, 20px, 0);
+  }
+
+  40% {
+    clip: rect(26px, 9999px, 60px, 0);
+  }
+
+  45% {
+    clip: rect(25px, 9999px, 66px, 0);
+  }
+
+  50% {
+    clip: rect(57px, 9999px, 98px, 0);
+  }
+
+  55% {
+    clip: rect(5px, 9999px, 46px, 0);
+  }
+
+  60% {
+    clip: rect(82px, 9999px, 31px, 0);
+  }
+
+  65% {
+    clip: rect(54px, 9999px, 27px, 0);
+  }
+
+  70% {
+    clip: rect(28px, 9999px, 99px, 0);
+  }
+
+  75% {
+    clip: rect(45px, 9999px, 69px, 0);
+  }
+
+  80% {
+    clip: rect(23px, 9999px, 85px, 0);
+  }
+
+  85% {
+    clip: rect(54px, 9999px, 84px, 0);
+  }
+
+  90% {
+    clip: rect(45px, 9999px, 47px, 0);
+  }
+
+  95% {
+    clip: rect(37px, 9999px, 20px, 0);
+  }
+
+  100% {
+    clip: rect(4px, 9999px, 91px, 0);
   }
 }

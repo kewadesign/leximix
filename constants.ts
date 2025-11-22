@@ -1,5 +1,106 @@
 import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData } from './types';
 
+// ============================================================================
+// SEASON SYSTEM
+// ============================================================================
+
+export interface SeasonColors {
+  primary: string;
+  secondary: string;
+  accent: string;
+  bgDark: string;
+  bgCard: string;
+}
+
+export interface SeasonAvatar {
+  level: number;
+  name: string;
+  id: string;
+  dicebear: string;
+  desc: string;
+}
+
+export interface Season {
+  id: number;
+  name: string;
+  theme: 'cyberpunk' | 'fantasy' | 'space' | 'nature';
+  startDate: number;
+  endDate: number;
+  colors: SeasonColors;
+  avatars: SeasonAvatar[];
+}
+
+// Season 1: Agent Training (Purple/Space Theme)
+export const SEASON_1_AVATARS: SeasonAvatar[] = [
+  { level: 10, name: 'Space Explorer', id: 'space_explorer', dicebear: 'SpaceExplorer', desc: 'Cosmic wanderer' },
+  { level: 20, name: 'Cyberpunk Warrior', id: 'cyberpunk_warrior', dicebear: 'CyberpunkWarrior', desc: 'Neon fighter' },
+  { level: 30, name: 'Fantasy Wizard', id: 'fantasy_wizard', dicebear: 'FantasyWizard', desc: 'Arcane master' },
+  { level: 40, name: 'Ocean Guardian', id: 'ocean_guardian', dicebear: 'Ocean', desc: 'Deep sea protector' },
+  { level: 50, name: 'Mountain Sage', id: 'mountain_sage', dicebear: 'Sage', desc: 'Ancient wisdom' },
+  { level: 60, name: 'Forest Spirit', id: 'forest_spirit', dicebear: 'Spirit', desc: 'Nature voice' },
+  { level: 70, name: 'Desert Nomad', id: 'desert_nomad', dicebear: 'Nomad', desc: 'Sand walker' },
+  { level: 80, name: 'Arctic Hunter', id: 'arctic_hunter', dicebear: 'Hunter', desc: 'Ice stalker' },
+  { level: 90, name: 'Lava Titan', id: 'lava_titan', dicebear: 'Titan', desc: 'Molten fury' },
+  { level: 100, name: 'Storm Caller', id: 'storm_caller', dicebear: 'Storm', desc: 'Lightning master' }
+];
+
+// Season 2: Neon Uprising (Cyberpunk Theme) - NEW!
+export const SEASON_2_AVATARS: SeasonAvatar[] = [
+  { level: 10, name: 'Neon Hacker', id: 'neon_hacker', dicebear: 'NeonHacker', desc: 'Code breaker' },
+  { level: 20, name: 'Cyber Samurai', id: 'cyber_samurai', dicebear: 'CyberSamurai', desc: 'Digital warrior' },
+  { level: 30, name: 'Hologram Girl', id: 'hologram_girl', dicebear: 'HologramGirl', desc: 'Virtual beauty' },
+  { level: 40, name: 'Glitch Master', id: 'glitch_master', dicebear: 'GlitchMaster', desc: 'Reality bender' },
+  { level: 50, name: 'Neon Dragon', id: 'neon_dragon', dicebear: 'NeonDragon', desc: 'Electric beast' },
+  { level: 60, name: 'Circuit Breaker', id: 'circuit_breaker', dicebear: 'CircuitBreaker', desc: 'System destroyer' },
+  { level: 70, name: 'Data Phantom', id: 'data_phantom', dicebear: 'DataPhantom', desc: 'Digital ghost' },
+  { level: 80, name: 'Neon Ronin', id: 'neon_ronin', dicebear: 'NeonRonin', desc: 'Masterless AI' },
+  { level: 90, name: 'Quantum Hacker', id: 'quantum_hacker', dicebear: 'QuantumHacker', desc: 'Reality coder' },
+  { level: 100, name: 'Neon God', id: 'neon_god', dicebear: 'NeonGod', desc: 'Ultimate being' }
+];
+
+export const SEASONS: Season[] = [
+  {
+    id: 1,
+    name: 'Agent Training',
+    theme: 'space',
+    startDate: 0,
+    endDate: Date.parse('2025-02-28T23:59:59Z'),
+    colors: {
+      primary: '#d946ef',
+      secondary: '#a855f7',
+      accent: '#3b82f6',
+      bgDark: '#0f172a',
+      bgCard: '#1e293b'
+    },
+    avatars: SEASON_1_AVATARS
+  },
+  {
+    id: 2,
+    name: 'Neon Uprising',
+    theme: 'cyberpunk',
+    startDate: Date.parse('2025-03-01T00:00:00Z'),
+    endDate: Date.parse('2025-05-31T23:59:59Z'),
+    colors: {
+      primary: '#00ff9f',
+      secondary: '#ff00ff',
+      accent: '#00d4ff',
+      bgDark: '#0a0e1a',
+      bgCard: '#1a1f3a'
+    },
+    avatars: SEASON_2_AVATARS
+  }
+];
+
+/**
+ * Get the current active season based on current date
+ * Falls back to the latest season if no active season found
+ */
+export const getCurrentSeason = (): Season => {
+  const now = Date.now();
+  const activeSeason = SEASONS.find(s => now >= s.startDate && now <= s.endDate);
+  return activeSeason || SEASONS[SEASONS.length - 1]; // Default to latest season
+};
+
 export const TIER_COLORS: Record<Tier, string> = {
   [Tier.BEGINNER]: 'text-green-400',
   [Tier.LEARNER]: 'text-cyan-400',
@@ -822,69 +923,76 @@ export const AVATARS = [
   "Phoenix", "Griffin", "Dragon", "Hydra", "Chimera", "Sphinx", "Golem", "Wraith"
 ];
 
-// Season Pass Avatar Rewards
-export const SEASON_AVATARS = [
-  { level: 10, name: 'Space Explorer', id: 'space_explorer', path: '/avatars/space_explorer.png', desc: 'Cosmic wanderer' },
-  { level: 20, name: 'Cyberpunk Warrior', id: 'cyberpunk_warrior', path: '/avatars/cyberpunk_warrior.png', desc: 'Neon fighter' },
-  { level: 30, name: 'Fantasy Wizard', id: 'fantasy_wizard', path: '/avatars/fantasy_wizard.png', desc: 'Arcane master' },
-  { level: 40, name: 'Ocean Guardian', id: 'ocean_guardian', dicebear: 'Ocean', desc: 'Deep sea protector' },
-  { level: 50, name: 'Mountain Sage', id: 'mountain_sage', dicebear: 'Sage', desc: 'Ancient wisdom' },
-  { level: 60, name: 'Forest Spirit', id: 'forest_spirit', dicebear: 'Spirit', desc: 'Nature voice' },
-  { level: 70, name: 'Desert Nomad', id: 'desert_nomad', dicebear: 'Nomad', desc: 'Sand walker' },
-  { level: 80, name: 'Arctic Hunter', id: 'arctic_hunter', dicebear: 'Hunter', desc: 'Ice stalker' },
-  { level: 90, name: 'Lava Titan', id: 'lava_titan', dicebear: 'Titan', desc: 'Molten fury' },
-  { level: 100, name: 'Storm Caller', id: 'storm_caller', dicebear: 'Storm', desc: 'Lightning master' }
-];
+// Season Pass Avatar Rewards - Now using Season System!
+// Use getCurrentSeason().avatars to get current season's avatars
+export const SEASON_AVATARS = SEASON_1_AVATARS; // Legacy compatibility
 
-// Rewards Mock Data - Improved with specific items
-export const SEASON_REWARDS = Array.from({ length: 100 }, (_, i) => {
-  const level = i + 1;
-  const isPremiumLevel = level % 2 === 0;
+/**
+ * Generate Season Rewards dynamically based on season avatars
+ * Season 2 has enhanced rewards compared to Season 1
+ */
+export const generateSeasonRewards = (season: Season) => {
+  const isSeason2 = season.id === 2;
 
-  let freeReward = null;
-  let premiumReward = null;
+  return Array.from({ length: 100 }, (_, i) => {
+    const level = i + 1;
+    let freeReward = null;
+    let premiumReward = null;
 
-  // Free Track - Coins every 5 levels, less on other levels
-  if (level % 5 === 0) {
-    freeReward = { type: 'coins', amount: 500, name: 'Münzpaket', icon: 'gem' };
-  } else if (level % 2 === 0) {
-    freeReward = { type: 'coins', amount: 100, name: 'Kleine Münzen', icon: 'gem' };
-  }
-
-  // Premium Track - Avatars every 10, coins on even levels
-  if (isPremiumLevel) {
-    // Check if this level has an avatar reward
-    const avatarReward = SEASON_AVATARS.find(a => a.level === level);
-
-    if (avatarReward) {
-      premiumReward = {
-        type: 'avatar',
-        name: avatarReward.name,
-        desc: avatarReward.desc,
-        value: avatarReward.id,
-        preview: avatarReward.path || `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward.dicebear}`,
-        icon: 'star'
+    // Free Track - Season 2 gives MORE coins
+    if (level % 10 === 0) {
+      freeReward = {
+        type: 'coins',
+        amount: isSeason2 ? 1000 : 500,
+        name: isSeason2 ? 'Neon Cache' : 'Münzpaket',
+        icon: 'gem'
       };
-    } else if (level % 10 === 4) {
-      // Special cosmetic rewards
+    } else if (level % 5 === 0) {
+      freeReward = {
+        type: 'coins',
+        amount: isSeason2 ? 500 : 250,
+        name: isSeason2 ? 'Data Pack' : 'Kleine Münzen',
+        icon: 'gem'
+      };
+    }
+
+    // Premium Track
+    if (level % 10 === 0) {
+      const avatarReward = season.avatars.find(a => a.level === level);
+      if (avatarReward) {
+        premiumReward = {
+          type: 'avatar',
+          name: avatarReward.name,
+          desc: avatarReward.desc,
+          value: avatarReward.id,
+          preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward.dicebear}`,
+          icon: 'star',
+          rarity: level >= 80 ? 'legendary' : level >= 50 ? 'epic' : 'rare'
+        };
+      }
+    } else if (level % 5 === 0) {
+      premiumReward = {
+        type: 'coins',
+        amount: isSeason2 ? 2000 : 1000,
+        name: isSeason2 ? 'Quantum Credits' : 'Premium Münzen',
+        icon: 'gem'
+      };
+    } else if (level % 2 === 0) {
       premiumReward = {
         type: 'cosmetic',
-        name: 'Goldener Rahmen',
-        desc: 'Profilrahmen',
-        value: `frame_gold_${level}`,
+        name: isSeason2 ? 'Neon Trail' : 'Goldener Rahmen',
+        desc: 'Profile effect',
+        value: `${isSeason2 ? 'trail' : 'frame'}_${level}`,
         icon: 'sparkles'
       };
-    } else {
-      premiumReward = { type: 'coins', amount: 1000, name: 'Premium Münzen', icon: 'gem' };
     }
-  }
 
-  return {
-    level,
-    free: freeReward,
-    premium: premiumReward
-  };
-});
+    return { level, free: freeReward, premium: premiumReward };
+  });
+};
+
+// Legacy compatibility - defaults to current season
+export const SEASON_REWARDS = generateSeasonRewards(getCurrentSeason());
 
 // Shop Items
 export const SHOP_ITEMS: ShopItem[] = [
