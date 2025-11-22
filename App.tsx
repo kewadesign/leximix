@@ -554,25 +554,28 @@ export default function App() {
 
   // Cloud Save Handlers
   const handleCloudLogin = async (username: string) => {
-    setCloudUsername(username);
-    localStorage.setItem('leximix_cloud_user', username);
+    const { normalizeUsername, loadFromCloud } = await import('./utils/firebase');
+    const normalizedUser = normalizeUsername(username);
+
+    setCloudUsername(normalizedUser);
+    localStorage.setItem('leximix_cloud_user', normalizedUser);
 
     // Load from cloud
-    const { loadFromCloud } = await import('./utils/firebase');
-    const cloudData = await loadFromCloud(username);
+    const cloudData = await loadFromCloud(normalizedUser);
 
     if (cloudData) {
       // Load existing data
       setUser(prev => ({
         ...prev,
         ...cloudData,
+        name: normalizedUser // Enforce name consistency
       }));
       console.log('[Cloud] Loaded save from cloud');
     } else {
       // New user - set defaults
       setUser(prev => ({
         ...prev,
-        name: username,      // Use username as profile name
+        name: normalizedUser,      // Use username as profile name
         age: 18,             // Default age
         avatarId: AVATARS[0],
         ownedAvatars: [AVATARS[0]],
@@ -901,13 +904,31 @@ export default function App() {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     try {
-      localStorage.removeItem('leximix_user');
+      if (cloudUsername) {
+        const { deleteUserAccount } = await import('./utils/firebase');
+        const success = await deleteUserAccount(cloudUsername);
+        if (success) {
+          console.log('[LexiMix] Account deleted from cloud');
+        } else {
+          alert("Fehler beim Löschen des Accounts. Bitte versuche es später erneut.");
+          return;
+        }
+      }
+
+      // Use the existing logout handler to ensure clean state and redirection
+      handleCloudLogout();
+
+      // Optional: Reload to ensure memory is completely fresh
+      setTimeout(() => window.location.reload(), 100);
     } catch (error) {
-      console.error('[LexiMix] localStorage delete error:', error);
+      console.error('[LexiMix] Delete error:', error);
+      // Fallback
+      localStorage.removeItem('leximix_user');
+      localStorage.removeItem('leximix_cloud_user');
+      window.location.reload();
     }
-    window.location.reload();
   };
 
   const openProfile = () => {
@@ -1799,7 +1820,7 @@ export default function App() {
         <div className="h-full flex items-center justify-center p-6 animate-fade-in">
           <div className="max-w-md w-full space-y-6">
             <div className="text-center space-y-4">
-              <img src="/logo.png" alt="LexiMix" className="w-32 h-32 mx-auto invert dark:invert-0" />
+              <img src="/logo.png" alt="LexiMix" className={`w-32 h-32 mx-auto ${user.theme === 'dark' ? '' : 'invert'}`} />
               <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-lexi-fuchsia uppercase tracking-wider">
                 LexiMix
               </h1>

@@ -1,16 +1,29 @@
 {
     "rules": {
+        "system": {
+            ".read": true,
+            ".write": false
+        },
         "users": {
             "$username": {
                 ".read": true,
-                "password": {
-                    ".write": "!data.exists()"
-                },
-                "createdAt": {
-                    ".write": "!data.exists()"
-                },
+                ".write": "!data.exists() || !newData.exists()",
                 "saves": {
-                    ".write": true
+                    ".write": true,
+                    "current": {
+                        "xp": {
+                            ".validate": "newData.isNumber() && newData.val() >= 0"
+                        },
+                        "level": {
+                            ".validate": "newData.isNumber() && newData.val() >= 0"
+                        },
+                        "coins": {
+                            ".validate": "newData.isNumber() && newData.val() >= 0"
+                        },
+                        "isPremium": {
+                            ".validate": "newData.isBoolean()"
+                        }
+                    }
                 }
             }
         }

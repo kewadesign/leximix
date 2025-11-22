@@ -7,7 +7,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', fullWidth, size = 'md', className = '', ...props }) => {
+export const Button: React.FC<ButtonProps> = React.memo(({ children, variant = 'primary', fullWidth, size = 'md', className = '', ...props }) => {
   const base = "relative overflow-hidden font-bold rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider flex items-center justify-center";
 
   const sizes = {
@@ -28,15 +28,12 @@ export const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', f
       {children}
     </button>
   );
-};
+});
 
-export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: string; children: React.ReactNode; className?: string }> = ({ isOpen, onClose, title, children, className = "" }) => {
-  console.log('[Modal] Render called with isOpen:', isOpen, 'title:', title);
+export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: string; children: React.ReactNode; className?: string }> = React.memo(({ isOpen, onClose, title, children, className = "" }) => {
   if (!isOpen) {
-    console.log('[Modal] Not rendering - isOpen is false');
     return null;
   }
-  console.log('[Modal] Rendering modal');
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
       <div className={`relative w-full max-w-md bg-[#1e102e] border border-white/10 rounded-3xl shadow-2xl p-8 ${className}`}>
@@ -52,13 +49,13 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
       </div>
     </div>
   );
-};
+});
 
-export const TierBadge: React.FC<{ tier: any; color: string }> = ({ tier, color }) => (
+export const TierBadge: React.FC<{ tier: any; color: string }> = React.memo(({ tier, color }) => (
   <span className={`px-2 py-0.5 rounded text-xs font-bold border ${color}`}>
     TIER {tier}
   </span>
-);
+));
 
 export const RedeemCodeInput: React.FC<{ onRedeem: (code: string) => void; placeholder: string; buttonText: string; }> = ({ onRedeem, placeholder, buttonText }) => {
   const [code, setCode] = React.useState('');

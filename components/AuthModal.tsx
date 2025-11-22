@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from './UI';
 import { registerUser, loginUser } from '../utils/firebase';
-import { User, Lock, AlertCircle } from 'lucide-react';
+import { User, Lock, AlertCircle, Calculator } from 'lucide-react';
 
 interface Props {
     isOpen: boolean;
@@ -16,6 +16,24 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // CAPTCHA State
+    const [captcha, setCaptcha] = useState({ num1: 0, num2: 0 });
+    const [captchaInput, setCaptchaInput] = useState('');
+
+    const generateCaptcha = () => {
+        setCaptcha({
+            num1: Math.floor(Math.random() * 10) + 1,
+            num2: Math.floor(Math.random() * 10) + 1
+        });
+        setCaptchaInput('');
+    };
+
+    useEffect(() => {
+        if (isOpen && mode === 'register') {
+            generateCaptcha();
+        }
+    }, [isOpen, mode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,9 +55,19 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
             return;
         }
 
-        if (mode === 'register' && password !== confirmPassword) {
-            setError('Passwörter stimmen nicht überein');
-            return;
+        if (mode === 'register') {
+            if (password !== confirmPassword) {
+                setError('Passwörter stimmen nicht überein');
+                return;
+            }
+
+            // CAPTCHA Validation
+            const sum = captcha.num1 + captcha.num2;
+            if (parseInt(captchaInput) !== sum) {
+                setError('Falsches Ergebnis bei der Rechenaufgabe');
+                generateCaptcha(); // Reset on fail
+                return;
+            }
         }
 
         setLoading(true);
@@ -73,6 +101,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         setUsername('');
         setPassword('');
         setConfirmPassword('');
+        setCaptchaInput('');
         setError('');
     };
 
@@ -125,20 +154,38 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
                 {/* Confirm Password (only for register) */}
                 {mode === 'register' && (
-                    <div>
-                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Passwort bestätigen</label>
-                        <div className="relative">
-                            <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
+                    <>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Passwort bestätigen</label>
+                            <div className="relative">
+                                <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
+                                    placeholder="Passwort wiederholen"
+                                    disabled={loading}
+                                />
+                            </div>
+                        </div>
+
+                        {/* CAPTCHA */}
+                        <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <label className="block text-sm font-bold text-lexi-fuchsia mb-2 uppercase flex items-center gap-2">
+                                <Calculator size={16} />
+                                Sicherheitsfrage: {captcha.num1} + {captcha.num2} = ?
+                            </label>
                             <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                placeholder="Passwort wiederholen"
+                                type="number"
+                                value={captchaInput}
+                                onChange={(e) => setCaptchaInput(e.target.value)}
+                                className="w-full px-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors text-center font-bold text-lg"
+                                placeholder="Ergebnis"
                                 disabled={loading}
                             />
                         </div>
-                    </div>
+                    </>
                 )}
 
                 {/* Submit Button */}

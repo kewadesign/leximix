@@ -28,11 +28,35 @@ const simpleHash = (str: string): string => {
     return hash.toString(36);
 };
 
+// Rate Limiting
+let lastRequestTime = 0;
+const REQUEST_COOLDOWN = 2000; // 2 seconds
+
+const checkRateLimit = (): boolean => {
+    const now = Date.now();
+    if (now - lastRequestTime < REQUEST_COOLDOWN) {
+        return false;
+    }
+    lastRequestTime = now;
+    return true;
+};
+
+// Helper to normalize usernames (prevent duplicates like "User" vs "user")
+export const normalizeUsername = (username: string): string => {
+    return username.trim().toLowerCase();
+};
+
 // Auth functions
 export const registerUser = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    if (!checkRateLimit()) {
+        return { success: false, error: 'Bitte warte einen Moment...' };
+    }
+
+    const normalizedUsername = normalizeUsername(username);
+
     try {
         // Check if username exists
-        const userRef = ref(database, `users/${username}`);
+        const userRef = ref(database, `users/${normalizedUsername}`);
         const snapshot = await get(userRef);
 
         if (snapshot.exists()) {
@@ -60,8 +84,29 @@ export const registerUser = async (username: string, password: string): Promise<
 };
 
 export const loginUser = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    if (!checkRateLimit()) {
+        return { success: false, error: 'Bitte warte einen Moment...' };
+    }
+
+    const normalizedUsername = normalizeUsername(username);
+
     try {
-        const userRef = ref(database, `users/${username}`);
+        // 1. Check App Version
+        const versionRef = ref(database, 'system/min_version');
+        const versionSnapshot = await get(versionRef);
+
+        if (versionSnapshot.exists()) {
+            const minVersion = versionSnapshot.val();
+            const currentVersion = "2.1.0"; // Hardcoded to match package.json
+
+            // Simple string comparison (works for x.y.z if padded, but sufficient for now)
+            // Better: Semantic version comparison
+            if (currentVersion < minVersion) {
+                return { success: false, error: `Update erforderlich! (Benötigt: v${minVersion})` };
+            }
+        }
+
+        const userRef = ref(database, `users/${normalizedUsername}`);
         const snapshot = await get(userRef);
 
         if (!snapshot.exists()) {
@@ -83,8 +128,15 @@ export const loginUser = async (username: string, password: string): Promise<{ s
 };
 
 export const saveToCloud = async (username: string, userState: any): Promise<boolean> => {
+    if (!checkRateLimit()) {
+        console.warn('[Firebase] Rate limit hit for save');
+        return false;
+    }
+
+    const normalizedUsername = normalizeUsername(username);
+
     try {
-        const saveRef = ref(database, `users/${username}/saves/current`);
+        const saveRef = ref(database, `users/${normalizedUsername}/saves/current`);
         await set(saveRef, {
             ...userState,
             lastSaved: Date.now()
@@ -98,8 +150,11 @@ export const saveToCloud = async (username: string, userState: any): Promise<boo
 };
 
 export const loadFromCloud = async (username: string): Promise<any | null> => {
+    // No rate limit for loading (usually happens once at start)
+    const normalizedUsername = normalizeUsername(username);
+
     try {
-        const saveRef = ref(database, `users/${username}/saves/current`);
+        const saveRef = ref(database, `users/${normalizedUsername}/saves/current`);
         const snapshot = await get(saveRef);
 
         if (snapshot.exists()) {
@@ -122,6 +177,19 @@ export const loadFromCloud = async (username: string): Promise<any | null> => {
     } catch (error) {
         console.error('[Firebase] Load error:', error);
         return null;
+    }
+};
+
+export const deleteUserAccount = async (username: string): Promise<boolean> => {
+    const normalizedUsername = normalizeUsername(username);
+    try {
+        const userRef = ref(database, `users/${normalizedUsername}`);
+        // We use set(null) to delete in Firebase Realtime Database
+        await set(userRef, null);
+        return true;
+    } catch (error) {
+        console.error('[Firebase] Delete error:', error);
+        return false;
     }
 };
 
