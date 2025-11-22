@@ -297,6 +297,8 @@ function App() {
   const [editName, setEditName] = useState(user.name || "Player");
   const [editAge, setEditAge] = useState(user.age || 18);
   const [editAvatar, setEditAvatar] = useState(user.avatarId || AVATARS[0]);
+  const [editUsername, setEditUsername] = useState('');
+  const [usernameError, setUsernameError] = useState('');
 
   const [showPremiumRequiredModal, setShowPremiumRequiredModal] = useState(false);
   const [showCorrectWordModal, setShowCorrectWordModal] = useState(false);
@@ -940,7 +942,70 @@ function App() {
     setEditName(user.name || "");
     setEditAge(user.age || 18);
     setEditAvatar(user.avatarId || AVATARS[0]);
+    setEditUsername('');
+    setUsernameError('');
     setShowProfile(true);
+  };
+
+  const handleUsernameChange = async () => {
+    setUsernameError('');
+
+    // Validation
+    if (!editUsername || editUsername.length < 3) {
+      setUsernameError('Benutzername zu kurz (mindestens 3 Zeichen)');
+      return;
+    }
+
+    if (editUsername.length > 30) {
+      setUsernameError('Benutzername zu lang (maximal 30 Zeichen)');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9]+$/.test(editUsername)) {
+      setUsernameError('Nur Buchstaben und Zahlen erlaubt (a-z, 0-9)');
+      return;
+    }
+
+    // Check coins
+    if (user.coins < 2500) {
+      setUsernameError('Nicht genug Münzen (2500 benötigt)');
+      audio.playError();
+      return;
+    }
+
+    try {
+      // Check if username is taken
+      const { normalizeUsername, database } = await import('./utils/firebase');
+      const { ref, get } = await import('firebase/database');
+      const normalizedNew = normalizeUsername(editUsername);
+
+      const userRef = ref(database, `users/${normalizedNew}`);
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists() && normalizedNew !== normalizeUsername(cloudUsername || '')) {
+        setUsernameError('Benutzername bereits vergeben');
+        audio.playError();
+        return;
+      }
+
+      // Confirm change
+      const confirmed = confirm(`Benutzername ändern für 2500 Münzen?\n\nNeuer Benutzername: ${editUsername}\n\nDies kann nicht rückgängig gemacht werden!`);
+      if (!confirmed) return;
+
+      // Deduct coins and update
+      setUser(u => ({ ...u, coins: u.coins - 2500 }));
+      setCloudUsername(normalizedNew);
+      localStorage.setItem('leximix_cloud_user', normalizedNew);
+
+      audio.playWin();
+      alert('Benutzername erfolgreich geändert!');
+      setEditUsername('');
+      setShowProfile(false);
+    } catch (error) {
+      console.error('[Username Change] Error:', error);
+      setUsernameError('Fehler beim Ändern des Benutzernamens');
+      audio.playError();
+    }
   };
 
   const handleBuyItem = (item: ShopItem) => {
@@ -1043,7 +1108,7 @@ function App() {
               </div>
               <input
                 type="text"
-                maxLength={20}
+                maxLength={30}
                 value={tempUser.name}
                 onChange={(e) => setTempUser({ ...tempUser, name: e.target.value.replace(/[^a-zA-Z0-9]/g, '') })}
                 placeholder={t.ONBOARDING.NAME_PLACEHOLDER}
@@ -1908,7 +1973,7 @@ function App() {
             <input
               className="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-lg text-white focus:border-lexi-fuchsia outline-none font-bold"
               value={editName}
-              maxLength={20}
+              maxLength={30}
               onChange={(e) => setEditName(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
             />
           </div>
@@ -1923,6 +1988,44 @@ function App() {
               onChange={(e) => setEditAge(parseInt(e.target.value) || 0)}
             />
           </div>
+
+          {/* Username Change Section */}
+          {cloudUsername && (
+            <div className="border-t border-white/10 pt-4 mt-4">
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Benutzername ändern</h3>
+              <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-3 mb-3">
+                <p className="text-xs text-yellow-300 font-bold">
+                  Aktuell: <span className="text-white">{cloudUsername}</span>
+                </p>
+                <p className="text-xs text-yellow-400 mt-1">
+                  Kosten: 2500 Münzen
+                </p>
+              </div>
+              <input
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-lg text-white focus:border-lexi-fuchsia outline-none font-bold mb-2"
+                value={editUsername}
+                maxLength={30}
+                onChange={(e) => {
+                  setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
+                  setUsernameError('');
+                }}
+                placeholder="Neuer Benutzername"
+              />
+              <p className="text-xs text-gray-500 mb-2 text-right">{editUsername.length}/30 Zeichen</p>
+              {usernameError && (
+                <p className="text-xs text-red-400 font-bold mb-2 bg-red-900/20 border border-red-500/30 rounded p-2">
+                  {usernameError}
+                </p>
+              )}
+              <button
+                onClick={handleUsernameChange}
+                disabled={!editUsername || editUsername.length < 3}
+                className="w-full py-3 rounded-xl font-bold text-xs uppercase bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <User size={14} /> Benutzername ändern (2500 💎)
+              </button>
+            </div>
+          )}
 
           <Button fullWidth onClick={saveProfile}>{t.PROFILE.SAVE}</Button>
 

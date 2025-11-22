@@ -8,7 +8,7 @@
             "$username": {
                 ".read": true,
                 ".write": "!data.exists() || !newData.exists()",
-                ".validate": "$username.matches(/^[a-z0-9]+$/) && $username.length >= 3 && $username.length <= 20",
+                ".validate": "$username.matches(/^[a-z0-9]+$/) && $username.length >= 3 && $username.length <= 30",
                 "saves": {
                     ".write": true,
                     "current": {

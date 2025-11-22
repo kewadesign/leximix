@@ -46,7 +46,17 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         }
 
         if (username.length < 3) {
-            setError('Benutzername muss mindestens 3 Zeichen lang sein');
+            setError('Benutzername zu kurz (mindestens 3 Zeichen)');
+            return;
+        }
+
+        if (username.length > 30) {
+            setError('Benutzername zu lang (maximal 30 Zeichen)');
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9]+$/.test(username)) {
+            setError('Nur Buchstaben und Zahlen erlaubt (a-z, 0-9)');
             return;
         }
 
@@ -132,8 +142,10 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                             className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
                             placeholder="Dein Benutzername"
                             disabled={loading}
+                            maxLength={30}
                         />
                     </div>
+                    <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30 Zeichen</p>
                 </div>
 
                 {/* Password */}
