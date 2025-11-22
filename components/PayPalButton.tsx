@@ -20,7 +20,7 @@ export const PayPalButton: React.FC<PayPalButtonProps> = ({ amount, onSuccess })
                 color: 'gold',
                 shape: 'pill',
                 label: 'pay',
-                height: 40
+                height: 39
             },
             createOrder: (data: any, actions: any) => {
                 return actions.order.create({
