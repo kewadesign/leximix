@@ -14,6 +14,11 @@ import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Lin
 // --- Sub Components for Game Logic ---
 
 const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) => {
+  const vibrate = (duration: number = 30) => {
+    if (navigator && typeof navigator.vibrate === 'function') {
+      navigator.vibrate(duration);
+    }
+  };
   const rows = isMathMode ? [
     ['1', '2', '3'],
     ['4', '5', '6'],
@@ -208,6 +213,20 @@ export default function App() {
   }, []);
 
   // Anti-Cheat: Verify premium status with server every 60 seconds
+  // Sync user state to cloud on changes
+  useEffect(() => {
+    if (!cloudUsername) return;
+    const sync = async () => {
+      try {
+        const { saveToCloud } = await import('./utils/firebase');
+        await saveToCloud(cloudUsername, user);
+        console.log('[Sync] User data synced to cloud');
+      } catch (e) {
+        console.error('[Sync] Failed to sync:', e);
+      }
+    };
+    sync();
+  }, [cloudUsername, user]);
   useEffect(() => {
     if (!cloudUsername) return;
 
@@ -1226,7 +1245,7 @@ export default function App() {
             </button>
             <div className="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-white/10">
               <Gem size={14} className="text-blue-400" />
-              <span className="text-xs font-bold">{Math.max(0, user.coins)}</span>
+              <span className="text-sm font-bold">{Math.max(0, user.coins)}</span>
             </div>
           </div>
         </div>
@@ -1907,7 +1926,7 @@ export default function App() {
       </Modal>
 
       {/* Level Up Modal */}
-      <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title="LEVEL UP!">
+      <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title={t.GAME.LEVEL_UP || 'Level Up'}>
         <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-lexi-fuchsia/20 to-transparent animate-pulse-slow"></div>
 
