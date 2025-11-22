@@ -1,137 +1,180 @@
+# LexiMix - Game Design Document (GDD)
 
-# LexiMix - Game Design Document
-
-**Version:** 1.1  
-**Platform:** Web (PWA/React), Mobile Optimized  
-**Genre:** Puzzle / Word Game / RPG Elements  
-**Target Audience:** Ages 12+, Word Game Enthusiasts, Completionists
-
----
-
-## 1. Executive Summary
-
-**LexiMix** is a high-fidelity, modern word puzzle game that evolves the standard "Wordle" formula. It introduces RPG-like progression, a Season Pass system, and multiple game modes ranging from relaxed to time-attack. 
-
-The core aesthetic is "Cyber-Noir" – dark backgrounds, neon accents (Fuchsia/Cyan/Gold), glassmorphism, and fluid animations.
+**Version:** 2.0 (Codebase-Synced)
+**Date:** November 2025
+**Platform:** Android (via Capacitor), Web
+**Language:** English, German (Fully Localized)
 
 ---
 
-## 2. Core Gameplay Loop
+## 1. Game Overview
 
-1.  **Home:** Player views Season Rank, Avatar, and selects a Game Mode.
-2.  **Mode Selection:** Player chooses a mode (Classic, Speedrun, etc.).
-3.  **Level Selection:** Player selects a level from 5 Tiers of difficulty.
-4.  **Game Phase:**
-    *   Player guesses a word based on Topic and Description.
-    *   Letters provide feedback (Green/Yellow/Gray).
-    *   Hints can be purchased by watching "Ads" (simulated).
-5.  **Resolution:**
-    *   **Win:** Earn XP, Stars, unlock next level.
-    *   **Loss:** Retry or return to menu.
-6.  **Progression:** XP levels up the Season Pass, unlocking cosmetic rewards.
+**LexiMix** (also referred to as "Puzzle Pal" in-app) is a comprehensive word puzzle application designed for daily mental training. It combines multiple puzzle mechanics into a single cohesive experience, wrapped in a modern, high-fidelity "Black Market" / "Cyber" aesthetic.
+
+### Core Pillars
+1.  **Variety:** Multiple distinct game modes catering to different cognitive skills (vocabulary, logic, speed).
+2.  **Progression:** A deep tier-based system with XP, levels, and a Season Pass ("Genesis").
+3.  **Accessibility:** Fully localized in English and German with adaptive difficulty tiers.
+4.  **Premium Feel:** High-quality UI with animations, dark mode aesthetics, and haptic feedback.
 
 ---
 
-## 3. Game Modes
+## 2. Game Modes
 
-### 3.1 Classic Mode
-*   **Objective:** Guess the word in 6 tries.
-*   **Constraint:** None.
-*   **Difficulty:** Standard.
+The application features 6 distinct game modes, unlocked or accessed via the main dashboard.
 
-### 3.2 Speedrun Mode
-*   **Objective:** Guess the word before the timer runs out.
-*   **Constraint:** Time limit based on word length (e.g., 4s-8s).
-*   **Pressure:** Timer resets on correct guess, but fails level if it hits 0.
-
-### 3.3 Chain Mode
-*   **Objective:** Guess a word where the previous answer provides a clue.
-*   **Constraint:** The previous word is displayed as the "Chain Link".
-
-### 3.4 Category Mode (Themen-Rätsel)
-*   **Objective:** Guess words strictly related to a specific topic.
-*   **Helper:** Topic is displayed prominently.
-
-### 3.5 Letter Sudoku (Buchstaben-Sudoku)
-*   **Objective:** Fill a 9x9 grid with letters A-I.
-*   **Constraint:** No letter can repeat in a row, column, or 3x3 subgrid.
-*   **Difficulty:** Controlled by the number of pre-filled cells (Tiers remove more cells).
-
----
-
-## 4. Progression & Difficulty Tiers
-
-The game features **5 Tiers** of difficulty. Each tier contains **50 Levels**, totaling 250+ levels per mode.
-
-| Tier | Levels | Name (EN/DE) | Color | Characteristics |
-| :--- | :--- | :--- | :--- | :--- |
-| **1** | 1-50 | Beginner / Anfänger | Green | Common words, 4-5 letters. Sudoku: Easy. |
-| **2** | 51-100 | Learner / Fortgeschritten | Cyan | Common words, 5-6 letters. Sudoku: Moderate. |
-| **3** | 101-150 | Skilled / Erfahren | Blue | Abstract concepts, 6-7 letters. Sudoku: Hard. |
-| **4** | 151-200 | Expert / Experte | Purple | Scientific/Academic terms. Sudoku: Very Hard. |
-| **5** | 201+ | Master / Meister | Red | Rare, archaic, or complex words. Sudoku: Expert. |
-
----
-
-## 5. Season Pass System
-
-*   **Structure:** 100 Levels.
-*   **XP:** Earned by winning levels. 100 XP = 1 Level.
-*   **Rewards:**
-    *   **Currency:** Coins (Virtual).
-    *   **Avatars:** Animals/Symbols unlocked every 10 levels.
-    *   **Borders:** Profile colors unlocked every 5 levels.
-    *   **Premium:** Every even level is "Premium" (locked unless bought).
-*   **Monetization (Simulated):** "Buy Premium" button ($4.99 mock).
-
----
-
-## 6. Monetization & Ad Simulation
-
-### Hint System
-*   **Mechanic:** Hints are not free.
-*   **Cost:** User must watch an "Ad".
-*   **Ad Implementation:** An overlay appears with a wobbly clock.
-*   **Ad Duration:** Starts at 5 seconds. Increases by 5 seconds for every subsequent hint used in a session.
-*   **Visual:** "Hier wäre Werbung" (Here would be ads).
-*   **Result:** 
-    *   **Word Games:** A letter is permanently revealed in the grid (Golden Cell).
-    *   **Sudoku:** A random empty cell is correctly filled and locked.
-
----
-
-## 7. Technical Architecture
-
-### Stack
-*   **Framework:** React 19 (TypeScript)
-*   **Styling:** Tailwind CSS + Framer Motion (Animations)
-*   **Build:** Vite
-*   **Audio:** Web Audio API (Custom `utils/audio.ts` synthesizer, no external mp3s).
-
-### Data Structure
-*   **Language:** Strict separation of `WORDS_EN` and `WORDS_DE`.
-*   **State:**
-    *   `user` (Profile, XP, Premium status)
-    *   `progress` (Unlocked levels, stars)
-    *   `gameState` (Current grid, Sudoku board, status)
-*   **Persistence:** `localStorage`.
-
----
-
-## 8. UI/UX Design
-
-*   **Color Palette:** Dark Purple (`#0f0718`) background, Fuchsia primary, Cyan/Yellow accents.
-*   **Typography:** 'Inter' for UI, 'JetBrains Mono' for Grid/Code.
+### 2.1 CLASSIC (The Standard)
+*   **Mechanic:** Traditional Wordle-style gameplay.
+*   **Goal:** Guess the target word within 6 attempts.
 *   **Feedback:**
-    *   Shake on invalid word.
-    *   Confetti on win.
-    *   Pulse animations on hints.
-    *   Sound effects (Synth) for typing, winning, losing.
+    *   **Green:** Correct letter, correct spot.
+    *   **Yellow:** Correct letter, wrong spot.
+    *   **Gray:** Letter not in word.
+*   **Difficulty:** Scales with Tiers (Beginner to Master).
+
+### 2.2 SPEEDRUN (Race Against Time)
+*   **Mechanic:** Time-attack word guessing.
+*   **Constraint:** Players have a limited time window to solve the puzzle.
+*   **Time Logic:** Time is calculated based on word length (e.g., `length * 5` seconds).
+*   **Failure Condition:** Timer reaches zero before the word is solved.
+
+### 2.3 CHAIN (Link Words)
+*   **Mechanic:** Associative word chain.
+*   **Flow:** The answer to the previous puzzle becomes the *hint* for the next one.
+*   **Example:**
+    *   Hint: "RAIN" -> Target: "BOW"
+    *   Next Round Hint: "BOW" -> Target: "TIE" (Hypothetical example)
+*   **Data Source:** Specific "Chain Pairs" defined in constants (e.g., RAIN->BOW, SUN->LIGHT).
+
+### 2.4 CATEGORY (Context Based)
+*   **Mechanic:** Theme-based word guessing.
+*   **Structure:** Players select a category (e.g., SPACE, FOOD, TECH).
+*   **Gameplay:** All target words belong to the selected category.
+*   **Hints:** Hints are context-specific definitions.
+
+### 2.5 SUDOKU (Letter Sudoku)
+*   **Mechanic:** Logic puzzle using letters A-I instead of numbers 1-9.
+*   **Grid:** 9x9 grid divided into 3x3 subgrids.
+*   **Rules:** Each row, column, and 3x3 box must contain unique letters A through I.
+*   **Input:** Custom keyboard with letters A-I.
+
+### 2.6 CHALLENGE (Premium)
+*   **Access:** Restricted to **Premium Pass** holders.
+*   **Content:** High-difficulty tasks and Math challenges.
+*   **Math Mode:** Players solve arithmetic equations (e.g., "12 + 5", "10 * 2") instead of words.
+*   **Rewards:** Higher XP and Coin yields.
 
 ---
 
-## 9. Future Scope
+## 3. Progression System
 
-*   **Multiplayer:** Live 1v1 Speedrun.
-*   **Daily Quests:** Specific challenges for XP.
-*   **Cloud Save:** Firebase integration.
+### 3.1 Tiers (Difficulty Levels)
+The game uses a 5-tier system to categorize difficulty and visual themes.
+1.  **BEGINNER (Green):** Common, simple words (e.g., APPLE, HOUSE).
+2.  **LEARNER (Cyan):** Slightly longer, less concrete (e.g., PLANET, TRAVEL).
+3.  **SKILLED (Blue):** Abstract concepts (e.g., THEORY, ENERGY).
+4.  **EXPERT (Purple):** Scientific/Complex terms (e.g., QUANTUM, JUSTICE).
+5.  **MASTER (Red):** Obscure/Specific terms (e.g., ZEPHYR, SPHINX).
+
+### 3.2 User Stats
+*   **XP (Experience Points):** Gained by winning games. Unlocks Season Pass levels.
+*   **Level:** Global player level derived from total XP.
+*   **Coins:** Soft currency earned via gameplay or purchased.
+
+### 3.3 Season Pass ("Season I: Genesis")
+A dual-track battle pass system.
+*   **Free Track:** Available to all players. Rewards include basic Coin packs.
+*   **Premium Track:** Requires purchase (4.99€).
+    *   **Benefits:**
+        *   Exclusive Skins/Avatars.
+        *   Faster Hint cooldowns.
+        *   Golden Name Color.
+        *   Access to Challenge Mode.
+*   **Progression:** Levels 1-100.
+
+---
+
+## 4. Economy & Monetization
+
+### 4.1 Currency (Coins)
+*   **Earned:** By completing levels (amount varies by Tier/Mode).
+*   **Spent:**
+    *   Buying Hints in-game.
+    *   Purchasing Avatars in the Shop.
+
+### 4.2 The Shop ("Black Market")
+*   **Coin Packs:** Purchase bundles of coins (Simulated or Real Money links).
+*   **Avatar Terminal:** Buy and equip new player avatars using Coins.
+*   **Items:**
+    *   "Rare Item" (Placeholder/Future content).
+
+### 4.3 Ads & Hints
+*   **Hint System:**
+    *   **Cost:** Costs Coins OR watching an Ad.
+    *   **Ad Simulation:** Currently features a simulated "Ad Space" overlay that rewards the player after a wait time.
+    *   **Effect:** Reveals a letter or provides a definition hint.
+
+### 4.4 Code Redemption
+*   **System:** In-app modal to enter alphanumeric codes.
+*   **Rewards:** Can grant Premium status, Coins, or XP boosts.
+
+---
+
+## 5. User Interface & UX
+
+### 5.1 Onboarding
+*   **Flow:** Language Selection -> Name Entry -> Age Verification (1-120) -> Avatar Selection.
+*   **Validation:** Strict checks on Age and Name length.
+
+### 5.2 Main Menu (Home)
+*   **Header:** Player Name, Level, Coin Balance, Settings.
+*   **Dashboard:** Grid of Game Mode cards with icons and descriptions.
+*   **Season Banner:** Prominent display of current Season progress.
+
+### 5.3 Profile
+*   **Editable:** Name, Avatar.
+*   **Actions:** Save Profile, Delete Profile (with confirmation).
+*   **Visuals:** Displays current Avatar and "Member since" data.
+
+### 5.4 Localization
+*   **Languages:** English (EN) and German (DE).
+*   **Scope:** 100% text coverage including UI labels, buttons, error messages, tutorial text, and *all* word lists/hints.
+
+---
+
+## 6. Technical Architecture
+
+### 6.1 Stack
+*   **Frontend:** React 18 with TypeScript.
+*   **Build Tool:** Vite.
+*   **Styling:** Tailwind CSS (Utility-first).
+*   **Mobile Wrapper:** Capacitor (for Android APK generation).
+
+### 6.2 Data Structures
+*   **`WordData`:** `{ word: string, hint: string, tier: Tier }`
+*   **`UserState`:** Stores XP, Coins, Premium Status, Completed Levels, Inventory.
+*   **`LevelData`:** Defines specific level configurations.
+
+### 6.3 Persistence
+*   **Local Storage:** Primary method for saving UserState.
+*   **Cloud Sync:** Hooks exist (`handleCloudLogin`) for future Firebase/Backend integration.
+
+### 6.4 Security
+*   **Anti-Cheat:** Basic validation on inputs.
+*   **Obfuscation:** Production builds are minified.
+*   **APK Signing:** Android builds are signed with a release key.
+
+---
+
+## 7. Content Library
+
+### 7.1 Word Lists
+*   **English:** ~250+ words categorized by Tier.
+*   **German:** ~250+ words categorized by Tier.
+*   **Categories:** Space, Food, Tech (in both languages).
+
+### 7.2 Math Challenges
+*   Pre-defined set of arithmetic problems (e.g., "12 * 12", "100 - 33") for the Challenge mode.
+
+### 7.3 Chain Pairs
+*   Curated list of word associations for Chain mode (e.g., "Rain" -> "Bow", "Hand" -> "Schuh").

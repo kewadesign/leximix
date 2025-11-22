@@ -1,0 +1,18 @@
+{
+    "rules": {
+        "users": {
+            "$username": {
+                ".read": true,
+                "password": {
+                    ".write": "!data.exists()"
+                },
+                "createdAt": {
+                    ".write": "!data.exists()"
+                },
+                "saves": {
+                    ".write": true
+                }
+            }
+        }
+    }
+}

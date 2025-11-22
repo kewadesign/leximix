@@ -50,8 +50,11 @@ export const registerUser = async (username: string, password: string): Promise<
         });
 
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error('[Firebase] Register error:', error);
+        if (error.message && error.message.includes('permission_denied')) {
+            return { success: false, error: 'Benutzername bereits vergeben' };
+        }
         return { success: false, error: 'Registrierung fehlgeschlagen' };
     }
 };
