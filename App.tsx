@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
 import { SeasonPass } from './components/SeasonPass';
+import { AuthModal } from './components/AuthModal';
+import { PremiumStatus } from './components/PremiumStatus';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
@@ -181,19 +183,63 @@ export default function App() {
     };
   });
 
+  // Cloud Save State
+  const [cloudUsername, setCloudUsername] = useState<string | null>(() => {
+    return localStorage.getItem('leximix_cloud_user');
+  });
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [lastCloudSync, setLastCloudSync] = useState<number | null>(null);
+
   // Check for saved user on mount to decide initial view
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('leximix_user');
-      if (!saved) {
-        setView('ONBOARDING');
+      const cloudUser = localStorage.getItem('leximix_cloud_user');
+
+      // Must be logged in to use app
+      if (!cloudUser) {
+        setView('AUTH'); // Show login screen
+      } else {
+        setView('HOME'); // Go straight to home
       }
     } catch (error) {
-      console.error('[LexiMix] localStorage check error:', error);
-      // If localStorage fails, show onboarding
-      setView('ONBOARDING');
+      console.error('[LexiMix] Init error:', error);
+      setView('AUTH');
     }
   }, []);
+
+  // Anti-Cheat: Verify premium status with server every 60 seconds
+  useEffect(() => {
+    if (!cloudUsername) return;
+
+    const verifyPremiumStatus = async () => {
+      try {
+        const { loadFromCloud } = await import('./utils/firebase');
+        const cloudData = await loadFromCloud(cloudUsername);
+
+        if (cloudData) {
+          // Check if local premium status matches server
+          if (user.isPremium !== cloudData.isPremium) {
+            console.warn('[Anti-Cheat] Premium status mismatch detected - correcting from server');
+            setUser(prev => ({
+              ...prev,
+              isPremium: cloudData.isPremium,
+              premiumActivatedAt: cloudData.premiumActivatedAt
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('[Anti-Cheat] Verification failed:', error);
+      }
+    };
+
+    // Run immediately on mount
+    verifyPremiumStatus();
+
+    // Then run every 60 seconds
+    const interval = setInterval(verifyPremiumStatus, 60000);
+
+    return () => clearInterval(interval);
+  }, [cloudUsername, user.isPremium]);
 
   const t = TRANSLATIONS[view === 'ONBOARDING' ? tempUser.language : user.language]; // Handle lang during onboarding
 
@@ -236,11 +282,22 @@ export default function App() {
     if (view !== 'ONBOARDING') {
       try {
         localStorage.setItem('leximix_user', JSON.stringify(user));
+
+        // Auto-save to cloud if logged in
+        if (cloudUsername) {
+          import('./utils/firebase').then(({ saveToCloud }) => {
+            saveToCloud(cloudUsername, user).then((success) => {
+              if (success) {
+                setLastCloudSync(Date.now());
+              }
+            });
+          });
+        }
       } catch (error) {
         console.error('[LexiMix] localStorage save error:', error);
       }
     }
-  }, [user, view]);
+  }, [user, view, cloudUsername]);
 
   useEffect(() => {
     const initAudio = () => audio.playClick();
@@ -475,6 +532,76 @@ export default function App() {
       console.log("Target Word:", content.target); // DEBUG: For verification
     }
   }, [view, gameConfig, user.language]);
+
+  // Cloud Save Handlers
+  const handleCloudLogin = async (username: string) => {
+    setCloudUsername(username);
+    localStorage.setItem('leximix_cloud_user', username);
+
+    // Load from cloud
+    const { loadFromCloud } = await import('./utils/firebase');
+    const cloudData = await loadFromCloud(username);
+
+    if (cloudData) {
+      // Load existing data
+      setUser(prev => ({
+        ...prev,
+        ...cloudData,
+      }));
+      console.log('[Cloud] Loaded save from cloud');
+    } else {
+      // New user - set defaults
+      setUser(prev => ({
+        ...prev,
+        name: username,      // Use username as profile name
+        age: 18,             // Default age
+        avatarId: AVATARS[0],
+        ownedAvatars: [AVATARS[0]],
+        xp: 0,
+        level: 1,
+        coins: 0,
+        isPremium: false,
+        completedLevels: {},
+        playedWords: [],
+        language: Language.DE,
+        theme: user.theme || 'dark'
+      }));
+      console.log('[Cloud] New user - set defaults');
+    }
+
+    // Always go to HOME (no onboarding)
+    setView('HOME');
+  };
+
+  const handleCloudLogout = () => {
+    // Clear cloud login
+    setCloudUsername(null);
+    localStorage.removeItem('leximix_cloud_user');
+
+    // Clear user data
+    localStorage.removeItem('leximix_user');
+    setLastCloudSync(null);
+
+    // Reset to default state
+    setUser({
+      name: 'Player',
+      age: 0,
+      avatarId: AVATARS[0],
+      ownedAvatars: [AVATARS[0]],
+      xp: 0,
+      level: 1,
+      coins: 0,
+      isPremium: false,
+      completedLevels: {},
+      playedWords: [],
+      language: Language.DE,
+      theme: 'dark'
+    });
+
+    // Go back to AUTH
+    setView('AUTH');
+    console.log('[Cloud] Logged out - cleared all data');
+  };
 
   const startGame = () => {
     setView('GAME');
@@ -1245,6 +1372,9 @@ export default function App() {
             <Globe size={12} className="text-lexi-fuchsia animate-pulse-slow" />
             {user.language}
           </button>
+
+          {/* Premium Status */}
+          <PremiumStatus isPremium={user.isPremium} premiumActivatedAt={user.premiumActivatedAt} />
         </div>
       </header>
 
@@ -1269,6 +1399,52 @@ export default function App() {
           onBuyPremium={() => setView('SEASON')}
           lang={user.language}
         />
+      </div>
+
+      {/* Cloud Save Card */}
+      <div className="mb-6 w-full px-2">
+        <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {cloudUsername ? (
+              <>
+                <div className="w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center">
+                  <User size={20} className="text-green-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">{cloudUsername}</p>
+                  <p className="text-[10px] text-gray-400">
+                    {lastCloudSync ? `Sync: ${new Date(lastCloudSync).toLocaleTimeString('de-DE')}` : 'Cloud Sync aktiv'}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-10 h-10 bg-gray-800 border border-white/10 rounded-full flex items-center justify-center">
+                  <User size={20} className="text-gray-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">Cloud Save</p>
+                  <p className="text-[10px] text-gray-400">Nicht angemeldet</p>
+                </div>
+              </>
+            )}
+          </div>
+          {cloudUsername ? (
+            <button
+              onClick={handleCloudLogout}
+              className="px-4 py-2 bg-red-900/30 border border-red-500/30 text-red-400 hover:bg-red-900/50 rounded-xl text-xs font-bold uppercase transition-all"
+            >
+              Abmelden
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-xs font-bold uppercase hover:brightness-110 transition-all shadow-lg"
+            >
+              Anmelden
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Grid */}
@@ -1597,6 +1773,34 @@ export default function App() {
       {view === 'LEVELS' && renderLevels()}
       {view === 'GAME' && renderGame()}
       {view === 'TUTORIAL' && renderTutorial()}
+      {/* Navigation Icons */}
+
+      {/* Auth Screen (First screen) */}
+      {view === 'AUTH' && (
+        <div className="h-full flex items-center justify-center p-6 animate-fade-in">
+          <div className="max-w-md w-full space-y-6">
+            <div className="text-center space-y-4">
+              <img src="/logo.png" alt="LexiMix" className="w-32 h-32 mx-auto invert dark:invert-0" />
+              <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-lexi-fuchsia uppercase tracking-wider">
+                LexiMix
+              </h1>
+              <p className="text-gray-400 text-sm">
+                Melde dich an um zu spielen
+              </p>
+            </div>
+
+            <div className="glass-panel p-8 rounded-3xl">
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg"
+              >
+                Anmelden / Registrieren
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {view === 'SHOP' && renderShop()}
 
       {/* Ad/Hint Modal */}
@@ -2262,6 +2466,13 @@ export default function App() {
           </div>
         </div>
       </Modal>
+
+      {/* Cloud Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleCloudLogin}
+      />
 
     </div>
   );
