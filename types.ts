@@ -50,6 +50,7 @@ export interface UserState {
   avatarId: string;
   ownedAvatars: string[];
   redeemedCodes?: string[]; // Track redeemed gutschein codes
+  theme: 'light' | 'dark';
 }
 
 export interface GameConfig {

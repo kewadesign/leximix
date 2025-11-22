@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
 import { SeasonPass } from './components/SeasonPass';
-import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES } from './constants';
+import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
 
@@ -29,7 +29,7 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
         <div key={i} className="flex justify-center gap-1.5 mb-1.5">
           {row.map(char => {
             const status = usedKeys[char];
-            let bg = "bg-gray-800 text-white hover:bg-gray-700";
+            let bg = "glass-button text-lexi-text";
             if (status === 'correct') bg = "bg-green-600 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]";
             else if (status === 'present') bg = "bg-yellow-600 border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]";
             else if (status === 'absent') bg = "bg-red-900/80 text-white/50 border-red-900";
@@ -45,7 +45,7 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
             );
           })}
           {i === rows.length - 1 && (
-            <button onClick={onDelete} className="bg-gray-700 hover:bg-gray-600 h-12 sm:h-14 px-4 sm:px-6 rounded-lg text-sm uppercase font-bold active:scale-95 border-b-4 border-black/20 transition-all">
+            <button onClick={onDelete} className="glass-button h-12 sm:h-14 px-4 sm:px-6 rounded-lg text-sm uppercase font-bold active:scale-95 transition-all text-lexi-text">
               Del
             </button>
           )}
@@ -80,7 +80,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
       {turn < 6 && (
         <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${targetLength}, 1fr)` }}>
           {Array(targetLength).fill(null).map((_, i) => (
-            <div key={i} className={`aspect-square flex items-center justify-center rounded-lg border-4 ${currentGuess[i] ? 'border-lexi-fuchsia text-white bg-lexi-fuchsia/20 animate-pulse shadow-[0_0_15px_rgba(217,70,239,0.3)]' : 'border-gray-800 bg-gray-900/50'} font-mono font-bold text-2xl md:text-3xl uppercase transition-colors duration-200`}>
+            <div key={i} className={`aspect-square flex items-center justify-center rounded-lg border-4 ${currentGuess[i] ? 'border-lexi-fuchsia text-white bg-lexi-fuchsia/20 animate-pulse shadow-[0_0_15px_rgba(217,70,239,0.3)]' : 'border-lexi-border glass-panel'} font-mono font-bold text-2xl md:text-3xl uppercase transition-colors duration-200 text-lexi-text`}>
               {currentGuess[i] || ''}
             </div>
           ))}
@@ -90,7 +90,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
       {empties.map((_, i) => (
         <div key={`empty-${i}`} className="grid gap-2" style={{ gridTemplateColumns: `repeat(${targetLength}, 1fr)` }}>
           {Array(targetLength).fill(null).map((__, j) => (
-            <div key={j} className="aspect-square rounded-lg border-2 border-gray-800/30 bg-gray-900/10"></div>
+            <div key={j} className="aspect-square rounded-lg border-2 border-lexi-border/30 bg-lexi-surface/5"></div>
           ))}
         </div>
       ))}
@@ -103,7 +103,7 @@ const SudokuBoard = ({ puzzle, original, onCellClick, selectedCell }: any) => {
     <div className="w-full max-w-[360px] md:max-w-[550px] mx-auto aspect-square p-2 relative animate-scale-in transition-all duration-500">
       {/* Outer Glow & Border */}
       <div className="absolute inset-0 bg-lexi-fuchsia/20 rounded-2xl blur-2xl animate-pulse-slow"></div>
-      <div className="absolute inset-0 border-4 border-[#4a2b6b] rounded-2xl bg-[#1e102e] shadow-2xl"></div>
+      <div className="absolute inset-0 border-4 border-lexi-purple rounded-2xl bg-lexi-surface shadow-2xl"></div>
 
       {/* The Grid */}
       <div className="relative w-full h-full grid grid-cols-9 border-4 border-gray-800 bg-gray-900 rounded-xl overflow-hidden">
@@ -129,8 +129,8 @@ const SudokuBoard = ({ puzzle, original, onCellClick, selectedCell }: any) => {
                                 text-lg sm:text-2xl md:text-4xl font-mono font-bold cursor-pointer select-none
                                 transition-all duration-100
                                 ${isSelected ? 'bg-lexi-fuchsia text-white z-10 scale-110 shadow-[0_0_20px_rgba(217,70,239,0.8)] rounded-md' : ''}
-                                ${!isSelected && isFixed ? 'text-gray-500 bg-[#130b1f]' : ''}
-                                ${!isSelected && !isFixed ? 'text-cyan-400 bg-[#1a1225] hover:bg-gray-800' : ''}
+                                ${!isSelected && isFixed ? 'text-lexi-text-muted bg-lexi-bg' : ''}
+                                ${!isSelected && !isFixed ? 'text-lexi-cyan bg-lexi-surface-highlight hover:bg-lexi-surface' : ''}
                                 ${!isSelected && !isFixed && cell ? 'text-cyan-300' : ''}
                             `}
               >
@@ -157,7 +157,8 @@ export default function App() {
     try {
       const saved = localStorage.getItem('leximix_user');
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        return { ...parsed, theme: parsed.theme || 'dark' };
       }
     } catch (error) {
       console.error('[LexiMix] localStorage error:', error);
@@ -166,7 +167,7 @@ export default function App() {
 
     // Default state
     return {
-      name: 'Agent',
+      name: 'Player',
       age: 0,
       avatarId: AVATARS[0],
       ownedAvatars: [AVATARS[0]],
@@ -175,7 +176,8 @@ export default function App() {
       coins: 0,
       isPremium: false,
       completedLevels: {},
-      language: Language.DE
+      language: Language.DE,
+      theme: 'dark'
     };
   });
 
@@ -222,7 +224,7 @@ export default function App() {
   const [showPremiumInfo, setShowPremiumInfo] = useState(false); // Premium info modal
 
   // Edit Profile State
-  const [editName, setEditName] = useState(user.name || "Agent");
+  const [editName, setEditName] = useState(user.name || "Player");
   const [editAge, setEditAge] = useState(user.age || 18);
   const [editAvatar, setEditAvatar] = useState(user.avatarId || AVATARS[0]);
 
@@ -441,9 +443,8 @@ export default function App() {
   };
 
   // Load Level Content and Initialize Game State for non-Sudoku/Challenge modes
-  // Load Level Content and Initialize Game State for non‑Sudoku/Challenge/Speedrun modes
   useEffect(() => {
-    if (view === 'GAME' && gameConfig && gameConfig.mode !== GameMode.SUDOKU && gameConfig.mode !== GameMode.CHALLENGE && gameConfig.mode !== GameMode.SPEEDRUN) {
+    if (view === 'GAME' && gameConfig && gameConfig.mode !== GameMode.SUDOKU && gameConfig.mode !== GameMode.CHALLENGE) {
       const content = getLevelContent(
         gameConfig.mode,
         gameConfig.tier,
@@ -465,7 +466,9 @@ export default function App() {
         startTime: Date.now(),
         hintsUsed: 0,
         isMath: false,
-        isHintUnlocked: false
+        isHintUnlocked: false,
+        awaitingConfirmation: false,
+        confirmedWord: null
       });
 
       setShowWin(false);
@@ -528,44 +531,60 @@ export default function App() {
   };
 
   const handleWordEnter = () => {
-    const currentGameState = gameStateRef.current;
-    if (currentGameState?.status !== 'playing') return;
-    if (currentGameState.currentGuess.length !== currentGameState.targetWord.length) {
-      audio.playError();
-      return;
-    }
+    try {
+      const currentGameState = gameStateRef.current;
+      if (currentGameState?.status !== 'playing') return;
 
-    const result = checkGuess(currentGameState.currentGuess, currentGameState.targetWord);
-    const newGuess = { word: currentGameState.currentGuess, result };
-    const won = currentGameState.currentGuess === currentGameState.targetWord;
-    const currentTier = gameConfig!.tier;
+      // Check if word is correct
+      if (currentGameState.currentGuess === currentGameState.targetWord) {
+        // Match! Proceed to win IMMEDIATELY
+        if (!gameConfig) return;
+        const { mode, tier, levelId } = gameConfig;
+        const targetWord = currentGameState.targetWord; // Capture targetWord before state changes
+        const newGuess = { word: currentGameState.currentGuess, result: Array(currentGameState.currentGuess.length).fill('correct') };
 
-    // Update game state first
-    setGameState((prev: any) => {
-      const nextState = {
-        ...prev,
-        guesses: [...prev.guesses, newGuess],
-        currentGuess: '',
-        status: won ? 'won' : (prev.guesses.length + 1 >= 6 ? 'lost' : 'playing')
-      };
+        setGameState((prev: any) => ({
+          ...prev,
+          guesses: [...prev.guesses, newGuess],
+          status: 'won',
+          currentGuess: ''
+        }));
 
-      if (nextState.status === 'lost') audio.playLoss();
+        audio.playWin();
+        console.log('[handleWordEnter] Calling handleWin immediately with:', { mode, tier, levelId, targetWord });
+        handleWin(mode, tier, levelId, targetWord); // Pass targetWord as parameter
+        return;
+      }
 
-      return nextState;
-    });
+      // Check if word is valid length
+      if (currentGameState.currentGuess.length !== currentGameState.targetWord.length) {
+        audio.playError();
+        // Shake animation could be triggered here
+        return;
+      }
 
-    // Show confirmation modal if word is correct
-    if (won) {
-      audio.playWin();
-      setCorrectWord(currentGameState.currentGuess);
-      setShowCorrectWordModal(true);
-    }
-  };
+      // Check if word is in dictionary (Optional, but good for UX)
+      // For now, we just check if it's the target. If not, we process it as a guess.
 
-  const handleCorrectWordConfirm = () => {
-    setShowCorrectWordModal(false);
-    if (gameConfig) {
-      setTimeout(() => handleWin(gameConfig.tier), 100);
+      const result = checkGuess(currentGameState.currentGuess, currentGameState.targetWord);
+      const newGuess = { word: currentGameState.currentGuess, result };
+
+      // Incorrect guess - proceed as normal
+      setGameState((prev: any) => {
+        const nextState = {
+          ...prev,
+          guesses: [...prev.guesses, newGuess],
+          currentGuess: '',
+          status: prev.guesses.length + 1 >= 6 ? 'lost' : 'playing'
+        };
+
+        if (nextState.status === 'lost') audio.playLoss();
+
+        return nextState;
+      });
+    } catch (error) {
+      console.error('[handleWordEnter] Error:', error);
+      alert(`Error in handleWordEnter: ${error}`);
     }
   };
 
@@ -585,64 +604,73 @@ export default function App() {
       if (isCorrect) {
         audio.playWin();
         // Move handleWin outside to prevent race condition
-        setTimeout(() => handleWin(gameConfig!.tier), 100);
+        if (gameConfig) {
+          const { mode, tier, levelId } = gameConfig;
+          setTimeout(() => handleWin(mode, tier, levelId, ''), 100); // Sudoku doesn't have a targetWord
+        }
       }
     }
-  };
+  }
 
-  const handleWin = (tier: Tier) => {
-    // Scaling Rewards
-    let xpGain = tier * 20;
-    let coinGain = tier * 5;
 
-    // Challenge Mode Bonus
-    if (gameConfig?.mode === GameMode.CHALLENGE) {
-      xpGain *= 2; // Double XP
-      coinGain = tier * 20; // Higher Coin Reward (invested 50*tier, get back 20*tier + win? Maybe needs balancing. 
-      // User said: "kosten coins... aber geben auch mehr xp". 
-      // If cost is 50*Tier, reward should be higher to be worth it? Or is it just for XP?
-      // Let's make it: Cost 50*Tier. Reward: 100*Tier Coins + High XP.
-      coinGain = tier * 80; // Net profit 30*Tier
-    }
+  const handleWin = (mode: GameMode, tier: Tier, levelId: number, targetWord: string) => {
+    try {
+      console.log('[handleWin] Called with:', { mode, tier, levelId, targetWord });
+      console.log('[handleWin] Current showWin state:', showWin);
+      // Scaling Rewards
+      let xpGain = tier * 20;
+      let coinGain = tier * 5;
 
-    setWinStats({ xp: xpGain, coins: coinGain });
-    setShowWin(true);
-
-    setUser(prev => {
-      const newXp = prev.xp + xpGain;
-      const oldLevel = Math.floor(prev.xp / 100) + 1;
-      const newLevel = Math.floor(newXp / 100) + 1;
-
-      // Level Up Check
-      if (newLevel > oldLevel) {
-        setTimeout(() => {
-          setLevelUpData({ level: newLevel, xp: newXp });
-          setShowLevelUp(true);
-          audio.playWin(); // Extra fanfare
-        }, 1000); // Show after Win modal appears
+      // Challenge Mode Bonus
+      if (mode === GameMode.CHALLENGE) {
+        xpGain *= 2; // Double XP
+        coinGain = tier * 80; // Net profit 30*Tier
       }
 
-      // Mark level as completed
-      const levelKey = `${gameConfig?.mode}_${gameConfig?.tier}_${gameConfig?.levelId}`;
-      const newCompleted = { ...prev.completedLevels, [levelKey]: true };
+      console.log('[handleWin] Setting winStats:', { xp: xpGain, coins: coinGain });
+      setWinStats({ xp: xpGain, coins: coinGain });
+      console.log('[handleWin] Setting showWin to true');
+      setShowWin(true);
+      console.log('[handleWin] showWin set call completed');
 
-      // Add word to played history (if not already present)
-      const currentWord = gameState.targetWord;
-      const newPlayedWords = currentWord && !prev.playedWords?.includes(currentWord)
-        ? [...(prev.playedWords || []), currentWord]
-        : (prev.playedWords || []);
+      setUser(prev => {
+        const newXp = prev.xp + xpGain;
+        const oldLevel = Math.floor(prev.xp / 100) + 1;
+        const newLevel = Math.floor(newXp / 100) + 1;
 
-      return {
-        ...prev,
-        xp: newXp,
-        level: newLevel,
-        coins: prev.coins + coinGain,
-        completedLevels: newCompleted,
-        playedWords: newPlayedWords
-      };
-    });
+        // Level Up Check
+        if (newLevel > oldLevel) {
+          setTimeout(() => {
+            setLevelUpData({ level: newLevel, xp: newXp });
+            setShowLevelUp(true);
+            audio.playWin(); // Extra fanfare
+          }, 1000); // Show after Win modal appears
+        }
+
+        // Mark level as completed
+        const levelKey = `${mode}_${tier}_${levelId}`;
+        console.log('[handleWin] Marking level complete:', levelKey);
+        const newCompleted = { ...prev.completedLevels, [levelKey]: true };
+
+        // Add word to played history (if not already present)
+        const newPlayedWords = targetWord && !prev.playedWords?.includes(targetWord)
+          ? [...(prev.playedWords || []), targetWord]
+          : (prev.playedWords || []);
+
+        return {
+          ...prev,
+          xp: newXp,
+          level: newLevel,
+          coins: prev.coins + coinGain,
+          completedLevels: newCompleted,
+          playedWords: newPlayedWords
+        };
+      });
+    } catch (error) {
+      console.error('[handleWin] Error:', error);
+      alert(`Error in handleWin: ${error}`);
+    }
   };
-
   const triggerHint = () => {
     setShowAd(true);
     const cost = 5 + (hintCostMultiplier * 10);
@@ -813,20 +841,20 @@ export default function App() {
       <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
         <div className="w-full max-w-md relative z-10">
           {onboardingStep === 0 && (
-            <div className="space-y-6 text-center animate-slide-up bg-black/40 p-8 rounded-3xl border border-white/10 backdrop-blur-md">
+            <div className="space-y-6 text-center animate-slide-up glass-panel p-8 rounded-3xl">
               <Globe size={64} className="mx-auto text-lexi-cyan mb-4 animate-spin-slow" />
-              <h1 className="text-3xl font-black italic mb-8 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">{t.ONBOARDING.WELCOME}</h1>
+              <h1 className="text-3xl font-black italic mb-8 text-transparent bg-clip-text bg-gradient-to-r from-lexi-text to-lexi-text-muted">{t.ONBOARDING.WELCOME}</h1>
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => { setTempUser({ ...tempUser, language: Language.DE }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-6 bg-gray-800 border border-white/10 rounded-2xl hover:bg-lexi-fuchsia/20 hover:border-lexi-fuchsia transition-all group"
+                  className="p-6 glass-button rounded-2xl hover:bg-lexi-fuchsia/20 hover:border-lexi-fuchsia transition-all group"
                 >
                   <span className="text-4xl mb-2 block group-hover:scale-110 transition-transform">🇩🇪</span>
                   <span className="font-bold">DEUTSCH</span>
                 </button>
                 <button
                   onClick={() => { setTempUser({ ...tempUser, language: Language.EN }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-6 bg-gray-800 border border-white/10 rounded-2xl hover:bg-lexi-cyan/20 hover:border-lexi-cyan transition-all group"
+                  className="p-6 glass-button rounded-2xl hover:bg-lexi-cyan/20 hover:border-lexi-cyan transition-all group"
                 >
                   <span className="text-4xl mb-2 block group-hover:scale-110 transition-transform">🇺🇸</span>
                   <span className="font-bold">ENGLISH</span>
@@ -836,7 +864,7 @@ export default function App() {
           )}
 
           {onboardingStep === 1 && (
-            <div className="space-y-6 animate-slide-up bg-black/40 p-8 rounded-3xl border border-white/10 backdrop-blur-md">
+            <div className="space-y-6 animate-slide-up glass-panel p-8 rounded-3xl">
               <div className="text-center">
                 <User size={48} className="mx-auto text-lexi-fuchsia mb-4" />
                 <h2 className="text-2xl font-bold mb-1">{t.ONBOARDING.NAME_TITLE}</h2>
@@ -863,7 +891,7 @@ export default function App() {
           )}
 
           {onboardingStep === 2 && (
-            <div className="space-y-6 animate-slide-up bg-black/40 p-8 rounded-3xl border border-white/10 backdrop-blur-md">
+            <div className="space-y-6 animate-slide-up glass-panel p-8 rounded-3xl">
               <div className="text-center">
                 <Settings size={48} className="mx-auto text-lexi-gold mb-4" />
                 <h2 className="text-2xl font-bold mb-1">{t.ONBOARDING.AGE_TITLE}</h2>
@@ -998,10 +1026,11 @@ export default function App() {
 
                     {/* Left Side: Free */}
                     <div className="flex-1 pr-10 text-right flex flex-col items-end">
-                      {!isPremiumNode && (
-                        <div className={`bg-gray-800 p-4 rounded-2xl border border-white/10 w-32 md:w-40 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-green-500 bg-green-900/20' : ''}`}>
-                          <Gem size={24} className="text-blue-400 mb-1" />
-                          <span className="text-xs font-bold text-gray-400">100 {t.SEASON.COINS}</span>
+                      {SEASON_REWARDS[lvl - 1]?.free && (
+                        <div className={`bg-gray-800 p-4 rounded-2xl border border-white/10 w-36 md:w-44 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-green-500 bg-green-900/20' : ''}`}>
+                          <Gem size={28} className="text-blue-400 mb-2" />
+                          <span className="text-sm font-black text-white">{SEASON_REWARDS[lvl - 1].free.amount}</span>
+                          <span className="text-[10px] font-bold text-gray-400 uppercase">{SEASON_REWARDS[lvl - 1].free.name}</span>
                           {isClaimed && <div className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1 shadow-lg"><Check size={12} /></div>}
                         </div>
                       )}
@@ -1009,11 +1038,32 @@ export default function App() {
 
                     {/* Right Side: Premium */}
                     <div className="flex-1 pl-10">
-                      {isPremiumNode && (
-                        <div className={`bg-gradient-to-br from-purple-900 to-gray-900 p-4 rounded-2xl border border-purple-500/30 w-32 md:w-40 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-yellow-400 bg-yellow-900/20' : ''}`}>
-                          <Lock size={16} className={`absolute top-2 right-2 text-purple-400 ${user.isPremium ? 'hidden' : ''}`} />
-                          <Star size={24} className="text-yellow-400 mb-1" fill="currentColor" />
-                          <span className="text-xs font-bold text-yellow-100/80">{t.SEASON.RARE_ITEM}</span>
+                      {SEASON_REWARDS[lvl - 1]?.premium && (
+                        <div className={`bg-gradient-to-br from-purple-900 to-gray-900 p-4 rounded-2xl border border-purple-500/30 w-36 md:w-44 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-yellow-400 bg-yellow-900/20' : ''}`}>
+                          <Lock size={14} className={`absolute top-2 right-2 text-purple-400 ${user.isPremium ? 'hidden' : ''}`} />
+
+                          {SEASON_REWARDS[lvl - 1].premium.type === 'avatar' ? (
+                            <>
+                              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-yellow-400/30 mb-2">
+                                <img src={SEASON_REWARDS[lvl - 1].premium.preview} alt={SEASON_REWARDS[lvl - 1].premium.name} className="w-full h-full object-cover" />
+                              </div>
+                              <span className="text-xs font-black text-yellow-300 text-center leading-tight">{SEASON_REWARDS[lvl - 1].premium.name}</span>
+                              <span className="text-[9px] text-yellow-100/60">{SEASON_REWARDS[lvl - 1].premium.desc}</span>
+                            </>
+                          ) : SEASON_REWARDS[lvl - 1].premium.type === 'cosmetic' ? (
+                            <>
+                              <Sparkles size={28} className="text-yellow-400 mb-2" fill="currentColor" />
+                              <span className="text-xs font-black text-yellow-300 text-center leading-tight">{SEASON_REWARDS[lvl - 1].premium.name}</span>
+                              <span className="text-[9px] text-yellow-100/60">{SEASON_REWARDS[lvl - 1].premium.desc}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Gem size={28} className="text-blue-300 mb-2" />
+                              <span className="text-sm font-black text-white">{SEASON_REWARDS[lvl - 1].premium.amount}</span>
+                              <span className="text-[10px] font-bold text-gray-300 uppercase">{SEASON_REWARDS[lvl - 1].premium.name}</span>
+                            </>
+                          )}
+
                           {isClaimed && <div className="absolute -top-2 -left-2 bg-yellow-500 text-black rounded-full p-1 shadow-lg"><Check size={12} /></div>}
                         </div>
                       )}
@@ -1030,11 +1080,11 @@ export default function App() {
 
   const renderShop = () => {
     return (
-      <div className="h-full flex flex-col animate-fade-in bg-black/40 backdrop-blur-sm max-w-4xl mx-auto w-full">
+      <div className="h-full flex flex-col animate-fade-in glass-panel max-w-4xl mx-auto w-full rounded-none md:rounded-3xl overflow-hidden">
         {/* Shop Header */}
-        <div className="p-4 bg-[#1e102e]/90 backdrop-blur-xl border-b border-white/10 flex items-center justify-between z-20 sticky top-0">
-          <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition-colors border border-white/10">
-            <ArrowLeft size={20} />
+        <div className="p-4 glass-panel border-b border-lexi-border flex items-center justify-between z-20 sticky top-0 rounded-none">
+          <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full glass-button">
+            <ArrowLeft size={20} className="text-lexi-text" />
           </button>
           <div className="flex items-center gap-2">
             <ShoppingBag size={24} className="text-lexi-cyan" />
@@ -1089,7 +1139,7 @@ export default function App() {
                         <button
                           disabled={isEquipped}
                           onClick={() => setUser({ ...user, avatarId: item.value as string })}
-                          className={`w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider ${isEquipped ? 'bg-lexi-fuchsia text-white cursor-default' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'}`}
+                          className={`w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider ${isEquipped ? 'bg-lexi-fuchsia text-white cursor-default' : 'glass-button'}`}
                         >
                           {isEquipped ? t.SHOP.EQUIPPED : t.SHOP.EQUIP}
                         </button>
@@ -1155,9 +1205,9 @@ export default function App() {
   const renderHome = () => (
     <div className="flex flex-col h-full p-6 w-full max-w-4xl mx-auto overflow-y-auto pb-10 scrollbar-hide animate-fade-in">
       {/* Header */}
-      <header className="flex justify-between items-center mb-10 bg-black/30 p-4 rounded-3xl border border-white/5 backdrop-blur-md">
+      <header className="flex justify-between items-center mb-10 glass-panel p-4 rounded-3xl">
         <div className="flex items-center gap-4 group cursor-pointer" onClick={openProfile}>
-          <div className="w-16 h-16 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-white/10 flex items-center justify-center shadow-inner relative overflow-hidden transition-transform group-hover:scale-105">
+          <div className="w-16 h-16 bg-gradient-to-br from-lexi-surface-highlight to-lexi-surface rounded-2xl border border-lexi-border flex items-center justify-center shadow-inner relative overflow-hidden transition-transform group-hover:scale-105">
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-14 h-14" />
           </div>
           <div>
@@ -1166,25 +1216,31 @@ export default function App() {
             </div>
 
             <div className="mt-2">
-              <div className="text-[10px] text-gray-400 font-bold tracking-widest uppercase flex justify-between mb-1">
+              <div className="text-[10px] text-lexi-text-muted font-bold tracking-widest uppercase flex flex-col items-start mb-1 gap-1">
                 <span>{t.HOME.SEASON_LEVEL} {user.level}</span>
                 <span className="text-lexi-fuchsia">{user.xp % 100}/100 XP</span>
               </div>
-              <div className="h-1.5 w-32 bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-1.5 w-32 bg-lexi-surface-highlight rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-lexi-fuchsia to-purple-500" style={{ width: `${user.xp % 100}%` }}></div>
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <button onClick={() => setView('SHOP')} className="flex items-center gap-1 bg-black/50 px-4 py-2 rounded-full border border-white/10 shadow-lg hover:bg-white/5 transition-colors active:scale-95">
+          <button onClick={() => setView('SHOP')} className="flex items-center gap-1 glass-button px-4 py-2 rounded-full text-lexi-text">
             <Gem size={16} className="text-blue-400" />
             <span className="text-sm font-bold">{Math.max(0, user.coins)}</span>
             <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-[10px] text-black font-bold ml-1">+</div>
           </button>
           <button
+            onClick={() => setUser(u => ({ ...u, theme: u.theme === 'dark' ? 'light' : 'dark' }))}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-button text-[10px] font-bold text-lexi-text"
+          >
+            {user.theme === 'dark' ? '🌙' : '☀️'}
+          </button>
+          <button
             onClick={() => setUser(u => ({ ...u, language: u.language === Language.EN ? Language.DE : Language.EN }))}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/50 border border-white/10 text-[10px] font-bold hover:bg-gray-700 transition-all active:scale-95 hover:border-lexi-fuchsia/50"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-button text-[10px] font-bold text-lexi-text"
           >
             <Globe size={12} className="text-lexi-fuchsia animate-pulse-slow" />
             {user.language}
@@ -1198,7 +1254,7 @@ export default function App() {
           {/* Logo Image Only - Background cards removed to prevent double look */}
 
           {/* Text */}
-          <img src="/logo_graphic.png" alt="LEXiMiX" className="relative z-10 h-56 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500" />
+          <img src="/logo_graphic.png" alt="LEXiMiX" className="relative z-10 h-56 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500 invert dark:invert-0" />
         </div>
         <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
           {t.HOME.TAGLINE}
@@ -1269,7 +1325,7 @@ export default function App() {
         />
       </div>
 
-      <div className="text-center text-[10px] text-gray-600 font-bold mt-4 pb-8 uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity">
+      <div className="text-center text-[10px] text-lexi-text-muted font-bold mt-4 pb-8 uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity">
         Made by Kevin Wagner 2025
       </div>
     </div>
@@ -1277,14 +1333,14 @@ export default function App() {
 
   const renderLevels = () => (
     <div className="h-full overflow-y-auto animate-fade-in w-full max-w-4xl mx-auto">
-      <div className="sticky top-0 z-20 bg-lexi-dark/80 backdrop-blur-xl p-4 flex items-center justify-between border-b border-white/5">
-        <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition-colors border border-white/10">
-          <ArrowLeft size={20} />
+      <div className="sticky top-0 z-20 glass-panel p-4 flex items-center justify-between rounded-b-3xl mb-4">
+        <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full glass-button">
+          <ArrowLeft size={20} className="text-lexi-text" />
         </button>
         <h2 className="text-2xl font-black italic uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
           {t.MODES[gameConfig?.mode as keyof typeof t.MODES]?.title}
         </h2>
-        <div className="px-4 py-2 rounded-full bg-black/40 border border-white/10 text-xs font-bold text-lexi-gold flex items-center gap-2 shadow-inner">
+        <div className="px-4 py-2 rounded-full glass-button text-xs font-bold text-lexi-gold flex items-center gap-2">
           <User size={14} /> {user.level} {t.SEASON.LEVEL}
         </div>
       </div>
@@ -1296,15 +1352,15 @@ export default function App() {
           const xpReward = tier * 20;
 
           return (
-            <div key={tier} className="mb-12 animate-slide-up bg-black/20 p-6 rounded-3xl border border-white/5" style={{ animationDelay: `${idx * 100}ms` }}>
+            <div key={tier} className="mb-12 animate-slide-up glass-panel p-6 rounded-3xl" style={{ animationDelay: `${idx * 100}ms` }}>
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col items-start gap-1">
                   <div className={`text-sm sm:text-base md:text-lg font-black italic tracking-tight ${isLockedTier ? 'text-gray-600' : TIER_COLORS[tier]} drop-shadow-sm truncate max-w-[280px]`}>
                     {label}
                   </div>
                   {!isLockedTier && <span className="text-[10px] font-bold text-lexi-fuchsia bg-lexi-fuchsia/10 px-2 py-1 rounded border border-lexi-fuchsia/30 flex items-center gap-1"><Sparkles size={10} /> +{xpReward} XP</span>}
                 </div>
-                <div className="text-xs font-bold text-gray-500 tracking-widest bg-gray-900 px-3 py-1.5 rounded border border-white/5">
+                <div className="text-xs font-bold text-lexi-text-muted tracking-widest glass-button px-3 py-1.5 rounded cursor-default">
                   LEVEL {(tier - 1) * 50 + 1} — {tier * 50} {isLockedTier && <Lock size={12} className="inline ml-1" />}
                 </div>
               </div>
@@ -1345,7 +1401,7 @@ export default function App() {
                         className={`aspect-square rounded-2xl flex items-center justify-center font-bold text-lg md:text-xl
                              ${isCompleted
                             ? 'bg-green-600 border-green-500 text-white cursor-default shadow-[0_0_15px_rgba(34,197,94,0.4)]'
-                            : 'bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 text-white hover:border-lexi-fuchsia/50 hover:scale-110 shadow-lg'}
+                            : 'glass-button text-lexi-text hover:scale-110'}
                              relative group overflow-hidden transition-all`}
                       >
                         {!isCompleted && <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>}
@@ -1360,7 +1416,7 @@ export default function App() {
                     <button
                       key={lvl}
                       disabled={true}
-                      className="aspect-square rounded-2xl flex items-center justify-center bg-[#0a0510] border border-white/5 text-gray-800"
+                      className="aspect-square rounded-2xl flex items-center justify-center bg-lexi-bg/50 border border-lexi-border text-lexi-text-muted/50"
                     >
                       <Lock size={14} />
                     </button>
@@ -1428,20 +1484,21 @@ export default function App() {
     return (
       <div className="flex flex-col h-full max-h-screen relative z-10">
         {/* Header - Made more compact */}
-        <div className="pt-4 pb-2 px-4 md:px-8 text-center relative bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm shrink-0 max-w-4xl mx-auto w-full rounded-b-3xl">
-          <button onClick={() => setView('LEVELS')} className="absolute left-4 top-4 w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full border border-white/10 hover:bg-gray-700 transition-colors"><ArrowLeft size={20} /></button>
+        <div className="pt-4 pb-2 px-4 md:px-8 text-center relative glass-panel mb-4 mx-4 rounded-3xl mt-4">
+          <button onClick={() => setView('LEVELS')} className="absolute left-4 top-4 w-10 h-10 flex items-center justify-center glass-button rounded-full"><ArrowLeft size={20} className="text-lexi-text" /></button>
 
           <div className="inline-block px-3 py-1 rounded-full bg-purple-900/30 border border-purple-500/30 text-xs font-bold text-purple-300 uppercase tracking-widest mb-2 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
             {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : t.GAME.CLASSIC_TITLE)}
           </div>
 
-          <h1 className="text-2xl md:text-4xl font-black italic text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)] animate-slide-up leading-tight mb-2">
-            "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
+          <h1 className="text-2xl md:text-4xl font-black italic text-lexi-text drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)] animate-slide-up leading-tight mb-2">
+            "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}" <span className="text-xs text-red-500">[{gameState.targetWord}]</span>
           </h1>
 
           {/* Info Status Bar */}
-          <div className="flex items-center justify-center gap-2 text-xs font-mono text-gray-400 bg-black/40 py-1 px-3 rounded-full inline-block border border-white/5">
-            <Info size={12} /> {infoText}
+          <div className={`flex items-center justify-center gap-2 text-xs font-mono py-1 px-3 rounded-full inline-block border transition-colors duration-300 glass-button text-lexi-text-muted`}>
+            <Info size={12} />
+            {infoText}
           </div>
 
           {/* Timer (Speedrun / Challenge) */}
@@ -1475,33 +1532,19 @@ export default function App() {
               />
             )}
 
-            {/* Confirmation Prompt */}
-            {!isSudoku && gameState.awaitingConfirmation && (
-              <div className="mt-6 p-4 bg-green-500/20 border-2 border-green-500/50 rounded-2xl animate-scale-in shadow-[0_0_20px_rgba(34,197,94,0.3)] max-w-md">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Check size={24} className="text-green-400" />
-                  <h3 className="text-xl font-black text-green-400 uppercase">Correct!</h3>
-                </div>
-                <p className="text-center text-white font-bold mb-2">
-                  Enter the word again to confirm:
-                </p>
-                <div className="text-center text-2xl font-black text-green-300 tracking-widest uppercase bg-black/30 py-2 px-4 rounded-lg">
-                  {gameState.confirmedWord}
-                </div>
-              </div>
-            )}
+            {/* Confirmation Prompt Removed */}
           </div>
         </div>
 
         {/* Controls - Keyboard */}
-        <div className={`p-2 pb-6 bg-[#0f0718]/95 border-t border-white/5 backdrop-blur-md shrink-0 ${!isSudoku ? 'md:hidden' : ''}`}>
+        <div className={`p-2 pb-6 glass-panel border-t border-lexi-border shrink-0 ${!isSudoku ? 'md:hidden' : ''} rounded-t-3xl`}>
           {isSudoku ? (
             <div className="grid grid-cols-9 gap-2 max-w-3xl mx-auto animate-slide-up p-2">
               {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].map((char, i) => (
                 <button
                   key={char}
                   onClick={() => handleSudokuInput(char)}
-                  className="h-14 bg-gray-800 rounded-xl text-lexi-cyan text-xl font-bold active:bg-lexi-cyan active:text-black transition-colors border-b-4 border-black/40 hover:bg-gray-700 hover:scale-105"
+                  className="h-14 glass-button rounded-xl text-lexi-cyan text-xl font-bold active:bg-lexi-cyan active:text-black transition-colors hover:scale-105"
                   style={{ animationDelay: `${i * 30}ms` }}
                 >
                   {char}
@@ -1539,9 +1582,9 @@ export default function App() {
   );
 
   return (
-    <div className="h-screen w-full text-white font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white py-4" style={{ background: 'linear-gradient(135deg, #0a0510 0%, #1a0f2e 50%, #0f0718 100%)' }}>
+    <div className={`${user.theme} h-screen w-full text-lexi-text font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white py-4 transition-colors duration-300 ${user.theme === 'dark' ? 'bg-lexi-bg' : 'bg-gradient-to-br from-gray-200 to-gray-300'}`}>
       {/* Simplified grain texture using CSS */}
-      <div className="fixed inset-0 opacity-[0.08] pointer-events-none" style={{
+      <div className="fixed inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
         backgroundSize: '180px 180px'
       }}></div>
@@ -2052,14 +2095,14 @@ export default function App() {
                     key={plan.id}
                     onClick={() => setSelectedPlanIndex(index)}
                     className={`w-full p-4 rounded-xl border-2 transition-all text-left ${selectedPlanIndex === index
-                      ? 'border-yellow-400 bg-yellow-400/10 shadow-[0_0_20px_rgba(250,204,21,0.3)]'
-                      : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                      ? 'border-lexi-gold bg-lexi-gold/10 shadow-[0_0_20px_rgba(250,204,21,0.3)]'
+                      : 'border-lexi-border bg-lexi-surface-highlight/50 hover:border-lexi-text-muted'
                       }`}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h4 className="font-black text-base text-white">{plan.cost}</h4>
-                        <p className="text-xs text-gray-400">{plan.duration}</p>
+                        <h4 className="font-black text-base text-lexi-text">{plan.cost}</h4>
+                        <p className="text-xs text-lexi-text-muted">{plan.duration}</p>
                       </div>
                       {plan.levelBoost > 0 && (
                         <div className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-lg text-xs font-bold">
@@ -2069,7 +2112,7 @@ export default function App() {
                     </div>
                     <ul className="text-xs space-y-1">
                       {plan.features.slice(0, 3).map((feature, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-gray-300">
+                        <li key={idx} className="flex items-center gap-2 text-lexi-text-muted">
                           <span className="text-green-400">✓</span> {feature}
                         </li>
                       ))}
@@ -2135,7 +2178,7 @@ export default function App() {
               <Star className="text-white" size={48} fill="currentColor" />
             </div>
             <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              Werde Premium!
+              Werde Premiummitglied!
             </h3>
           </div>
 
@@ -2144,7 +2187,7 @@ export default function App() {
               <h4 className="font-bold text-purple-300 mb-3 flex items-center gap-2">
                 <Sparkles size={18} /> Exklusive Features
               </h4>
-              <ul className="space-y-2 text-sm text-gray-300">
+              <ul className="space-y-2 text-sm text-lexi-text-muted">
                 <li className="flex items-start gap-2">
                   <span className="text-green-400 mt-0.5">✓</span>
                   <span><strong>Challenge Mode:</strong> Zugriff auf Premium Herausforderungen</span>

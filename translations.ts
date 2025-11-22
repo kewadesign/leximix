@@ -55,7 +55,7 @@ export const TRANSLATIONS = {
         xpEarned: "XP EARNED",
         gameOver: "GAME OVER",
         targetIdentified: "TARGET IDENTIFIED",
-        
+
         // Marktplatz
         marktplatz: "Marktplatz",
         gutschein: "Gutschein",
@@ -82,8 +82,8 @@ export const TRANSLATIONS = {
         howOld: "Enter Age",
         continue: "Continue",
         identity: "Identity",
-        enterCodename: "Codename",
-        initialize: "INITIALIZE SYSTEM",
+        enterCodename: "Player Name",
+        initialize: "START PUZZLING",
         ageError: "Restricted Access: 12+ Only."
     },
     DE: {
@@ -153,7 +153,7 @@ export const TRANSLATIONS = {
         getExclusive: "Erhalte exklusive Inhalte",
         freeTier: "Gratis",
         premium: "Premium",
-        buy: "Pass Kaufen",
+        buy: "Werde Premiummitglied!",
         lvl: "Stufe",
 
         // Ad Overlay
@@ -167,7 +167,7 @@ export const TRANSLATIONS = {
         continue: "Weiter",
         identity: "Identität",
         enterCodename: "Spielername",
-        initialize: "SYSTEM STARTEN",
+        initialize: "RÄTSEL STARTEN",
         ageError: "Zugriff verweigert: Nur 12+."
     }
 };

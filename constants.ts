@@ -24,7 +24,7 @@ export const TRANSLATIONS = {
       WELCOME: "WELCOME",
       SELECT_LANG: "SELECT LANGUAGE",
       NAME_TITLE: "IDENTIFY YOURSELF",
-      NAME_PLACEHOLDER: "Enter Agent Name",
+      NAME_PLACEHOLDER: "Enter Name",
       AGE_TITLE: "VERIFY AGE",
       AGE_PLACEHOLDER: "Enter Age",
       CONTINUE: "CONTINUE",
@@ -33,7 +33,7 @@ export const TRANSLATIONS = {
       ERR_AGE: "Invalid age (1-120)"
     },
     HOME: {
-      PLAYER: "Agent",
+      PLAYER: "Puzzle Pal",
       SEASON_LEVEL: "Season Level",
       TAGLINE: "THE DAILY WORD TRAINING",
       LANG_BTN: "DEUTSCH",
@@ -105,7 +105,7 @@ export const TRANSLATIONS = {
       START: "START GAME"
     },
     PROFILE: {
-      TITLE: "AGENT PROFILE",
+      TITLE: "PLAYER PROFILE",
       SAVE: "SAVE CHANGES",
       NAME: "NAME",
       AGE: "AGE",
@@ -130,7 +130,7 @@ export const TRANSLATIONS = {
       WELCOME: "WILLKOMMEN",
       SELECT_LANG: "SPRACHE WÄHLEN",
       NAME_TITLE: "IDENTIFIZIERUNG",
-      NAME_PLACEHOLDER: "Agentenname eingeben",
+      NAME_PLACEHOLDER: "Name eingeben",
       AGE_TITLE: "ALTER VERIFIZIEREN",
       AGE_PLACEHOLDER: "Alter eingeben",
       CONTINUE: "WEITER",
@@ -139,7 +139,7 @@ export const TRANSLATIONS = {
       ERR_AGE: "Ungültiges Alter (1-120)"
     },
     HOME: {
-      PLAYER: "Agent",
+      PLAYER: "Rätselfreund",
       SEASON_LEVEL: "Saison Stufe",
       TAGLINE: "DAS TÄGLICHE WORTTRAINING",
       LANG_BTN: "ENGLISH",
@@ -211,7 +211,7 @@ export const TRANSLATIONS = {
       START: "SPIEL STARTEN"
     },
     PROFILE: {
-      TITLE: "AGENTEN PROFIL",
+      TITLE: "SPIELER PROFIL",
       SAVE: "SPEICHERN",
       NAME: "NAME",
       AGE: "ALTER",
@@ -822,29 +822,60 @@ export const AVATARS = [
   "Phoenix", "Griffin", "Dragon", "Hydra", "Chimera", "Sphinx", "Golem", "Wraith"
 ];
 
-// Rewards Mock Data
+// Season Pass Avatar Rewards
+export const SEASON_AVATARS = [
+  { level: 10, name: 'Space Explorer', id: 'space_explorer', path: '/avatars/space_explorer.png', desc: 'Cosmic wanderer' },
+  { level: 20, name: 'Cyberpunk Warrior', id: 'cyberpunk_warrior', path: '/avatars/cyberpunk_warrior.png', desc: 'Neon fighter' },
+  { level: 30, name: 'Fantasy Wizard', id: 'fantasy_wizard', path: '/avatars/fantasy_wizard.png', desc: 'Arcane master' },
+  { level: 40, name: 'Ocean Guardian', id: 'ocean_guardian', dicebear: 'Ocean', desc: 'Deep sea protector' },
+  { level: 50, name: 'Mountain Sage', id: 'mountain_sage', dicebear: 'Sage', desc: 'Ancient wisdom' },
+  { level: 60, name: 'Forest Spirit', id: 'forest_spirit', dicebear: 'Spirit', desc: 'Nature voice' },
+  { level: 70, name: 'Desert Nomad', id: 'desert_nomad', dicebear: 'Nomad', desc: 'Sand walker' },
+  { level: 80, name: 'Arctic Hunter', id: 'arctic_hunter', dicebear: 'Hunter', desc: 'Ice stalker' },
+  { level: 90, name: 'Lava Titan', id: 'lava_titan', dicebear: 'Titan', desc: 'Molten fury' },
+  { level: 100, name: 'Storm Caller', id: 'storm_caller', dicebear: 'Storm', desc: 'Lightning master' }
+];
+
+// Rewards Mock Data - Improved with specific items
 export const SEASON_REWARDS = Array.from({ length: 100 }, (_, i) => {
   const level = i + 1;
-  const isPremium = level % 2 === 0;
+  const isPremiumLevel = level % 2 === 0;
 
   let freeReward = null;
   let premiumReward = null;
 
-  // Free Track
+  // Free Track - Coins every 5 levels, less on other levels
   if (level % 5 === 0) {
-    freeReward = { type: 'coins', amount: 500 };
-  } else {
-    freeReward = { type: 'coins', amount: 100 };
+    freeReward = { type: 'coins', amount: 500, name: 'Münzpaket', icon: 'gem' };
+  } else if (level % 2 === 0) {
+    freeReward = { type: 'coins', amount: 100, name: 'Kleine Münzen', icon: 'gem' };
   }
 
-  // Premium Track
-  if (isPremium) {
-    if (level % 10 === 0) {
-      // Every 10 levels a new Avatar
-      const avatarIndex = Math.floor(level / 10) % AVATARS.length;
-      premiumReward = { type: 'item', name: `Avatar: ${AVATARS[avatarIndex]}`, value: AVATARS[avatarIndex] };
+  // Premium Track - Avatars every 10, coins on even levels
+  if (isPremiumLevel) {
+    // Check if this level has an avatar reward
+    const avatarReward = SEASON_AVATARS.find(a => a.level === level);
+
+    if (avatarReward) {
+      premiumReward = {
+        type: 'avatar',
+        name: avatarReward.name,
+        desc: avatarReward.desc,
+        value: avatarReward.id,
+        preview: avatarReward.path || `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward.dicebear}`,
+        icon: 'star'
+      };
+    } else if (level % 10 === 4) {
+      // Special cosmetic rewards
+      premiumReward = {
+        type: 'cosmetic',
+        name: 'Goldener Rahmen',
+        desc: 'Profilrahmen',
+        value: `frame_gold_${level}`,
+        icon: 'sparkles'
+      };
     } else {
-      premiumReward = { type: 'coins', amount: 1000 };
+      premiumReward = { type: 'coins', amount: 1000, name: 'Premium Münzen', icon: 'gem' };
     }
   }
 

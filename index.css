@@ -3,9 +3,53 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Light Mode Defaults - Glassmorphic & High Contrast */
+    --color-bg: #e5e7eb;
+    /* Gray 200 base */
+    --color-surface: rgba(255, 255, 255, 0.7);
+    /* Glassy surface */
+    --color-surface-highlight: rgba(255, 255, 255, 0.9);
+    --color-text: #1e293b;
+    /* Slate 800 - High contrast dark */
+    --color-text-muted: #64748b;
+    /* Slate 500 */
+    --color-border: rgba(255, 255, 255, 0.6);
+    /* Subtle white border */
+    --color-accent: #d946ef;
+    /* lexi-fuchsia */
+    --color-glass-border: rgba(255, 255, 255, 0.5);
+    --color-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  }
+
+  .dark {
+    /* Dark Mode Overrides - Deep Space Glass */
+    --color-bg: #0f0718;
+    --color-surface: rgba(30, 16, 46, 0.6);
+    /* Glassy dark surface */
+    --color-surface-highlight: rgba(45, 27, 78, 0.6);
+    --color-text: #f8fafc;
+    /* Slate 50 - High contrast light */
+    --color-text-muted: #94a3b8;
+    /* Slate 400 */
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-accent: #d946ef;
+    --color-glass-border: rgba(255, 255, 255, 0.1);
+    --color-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
   body {
-    @apply bg-[#0f0718] text-white overflow-x-hidden m-0 p-0 font-sans;
+    @apply bg-lexi-bg text-lexi-text overflow-x-hidden m-0 p-0 font-sans transition-colors duration-300;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Glassmorphism Utility Class */
+  .glass-panel {
+    @apply backdrop-blur-xl bg-lexi-surface border border-lexi-border shadow-[var(--color-glass-shadow)];
+  }
+
+  .glass-button {
+    @apply backdrop-blur-md bg-lexi-surface-highlight border border-lexi-border hover:bg-lexi-surface transition-all active:scale-95 shadow-lg;
   }
 
   /* Hide scrollbars globally */

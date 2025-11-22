@@ -9,7 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', fullWidth, size = 'md', className = '', ...props }) => {
   const base = "relative overflow-hidden font-bold rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider flex items-center justify-center";
-  
+
   const sizes = {
     sm: "py-1 px-3 text-xs",
     md: "py-3 px-6 text-sm",
@@ -30,10 +30,15 @@ export const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', f
   );
 };
 
-export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: string; children: React.ReactNode; className?: string }> = ({ isOpen, onClose, title, children, className="" }) => {
-  if (!isOpen) return null;
+export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: string; children: React.ReactNode; className?: string }> = ({ isOpen, onClose, title, children, className = "" }) => {
+  console.log('[Modal] Render called with isOpen:', isOpen, 'title:', title);
+  if (!isOpen) {
+    console.log('[Modal] Not rendering - isOpen is false');
+    return null;
+  }
+  console.log('[Modal] Rendering modal');
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
       <div className={`relative w-full max-w-md bg-[#1e102e] border border-white/10 rounded-3xl shadow-2xl p-8 ${className}`}>
         {onClose && (
           <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
