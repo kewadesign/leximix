@@ -196,6 +196,9 @@ function App() {
     return localStorage.getItem('leximix_cloud_user');
   });
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [voucherError, setVoucherError] = useState('');
+  const [voucherSuccess, setVoucherSuccess] = useState('');
   const [lastCloudSync, setLastCloudSync] = useState<number | null>(null);
 
   // Check for saved user on mount to decide initial view
@@ -292,6 +295,7 @@ function App() {
   const [selectedPlanIndex, setSelectedPlanIndex] = useState<number | null>(null); // Selected plan
   const [redeemError, setRedeemError] = useState<string | null>(null); // Error message for redemption
   const [showPremiumInfo, setShowPremiumInfo] = useState(false); // Premium info modal
+  const [showUsernameConfirm, setShowUsernameConfirm] = useState(false); // Username change confirmation
 
   // Edit Profile State
   const [editName, setEditName] = useState(user.name || "Player");
@@ -988,9 +992,19 @@ function App() {
         return;
       }
 
-      // Confirm change
-      const confirmed = confirm(`Benutzername ändern für 2500 Münzen?\n\nNeuer Benutzername: ${editUsername}\n\nDies kann nicht rückgängig gemacht werden!`);
-      if (!confirmed) return;
+      // Show confirmation modal
+      setShowUsernameConfirm(true);
+    } catch (error) {
+      console.error('[Username Change] Error:', error);
+      setUsernameError('Fehler beim Ändern des Benutzernamens');
+      audio.playError();
+    }
+  };
+
+  const confirmUsernameChange = async () => {
+    try {
+      const { normalizeUsername } = await import('./utils/firebase');
+      const normalizedNew = normalizeUsername(editUsername);
 
       // Deduct coins and update
       setUser(u => ({ ...u, coins: u.coins - 2500 }));
@@ -998,12 +1012,61 @@ function App() {
       localStorage.setItem('leximix_cloud_user', normalizedNew);
 
       audio.playWin();
-      alert('Benutzername erfolgreich geändert!');
+      setShowUsernameConfirm(false);
       setEditUsername('');
       setShowProfile(false);
+
+      // Show success message
+      setTimeout(() => {
+        alert('Benutzername erfolgreich geändert!');
+      }, 100);
     } catch (error) {
-      console.error('[Username Change] Error:', error);
+      console.error('[Confirm Username Change] Error:', error);
       setUsernameError('Fehler beim Ändern des Benutzernamens');
+      audio.playError();
+      setShowUsernameConfirm(false);
+    }
+  };
+
+  const handleVoucherRedeem = async () => {
+    if (!cloudUsername) {
+      setVoucherError('Du musst angemeldet sein, um Gutscheine einzulösen');
+      return;
+    }
+
+    if (!voucherCode.trim()) {
+      setVoucherError('Bitte gib einen Gutscheincode ein');
+      return;
+    }
+
+    try {
+      const { redeemVoucher } = await import('./utils/firebase');
+      const result = await redeemVoucher(cloudUsername, voucherCode);
+
+      if (result.success && result.coinsAwarded) {
+        // Award coins to user
+        setUser(u => ({ ...u, coins: u.coins + result.coinsAwarded! }));
+
+        // Show success message
+        setVoucherSuccess(`🎉 Gutschein eingelöst! +${result.coinsAwarded} Münzen`);
+        setVoucherError('');
+        setVoucherCode('');
+        audio.playWin();
+
+        // Close modal after 2 seconds
+        setTimeout(() => {
+          setShowRedeemModal(false);
+          setVoucherSuccess('');
+        }, 2000);
+      } else {
+        setVoucherError(result.error || 'Fehler beim Einlösen');
+        setVoucherSuccess('');
+        audio.playError();
+      }
+    } catch (error) {
+      console.error('[Voucher Redeem] Error:', error);
+      setVoucherError('Fehler beim Einlösen des Gutscheins');
+      setVoucherSuccess('');
       audio.playError();
     }
   };
@@ -1041,11 +1104,11 @@ function App() {
       disabled={locked}
       onClick={() => handleModeSelect(mode)}
       className={`
-        relative p - 6 md: p - 8 rounded - 3xl text - left overflow - hidden transition - all duration - 300 hover: scale - [1.03] active: scale - 95
-        ${color} h - 36 md: h - 48 flex flex - col justify - between shadow - xl group animate - scale -in
+        relative p-6 md:p-8 rounded-3xl text-left overflow-hidden transition-all duration-300 hover:scale-[1.03] active:scale-95
+        ${color} h-36 md:h-48 flex flex-col justify-between shadow-xl group animate-scale-in
   ${locked ? 'opacity-60 grayscale cursor-not-allowed' : ''}
 `}
-      style={{ animationDelay: `${delay} ms` }}
+      style={{ animationDelay: `${delay}ms` }}
     >
       <div className="absolute right-[-10px] top-[-10px] opacity-20 rotate-12 scale-125 group-hover:rotate-6 transition-transform duration-500">
         <Icon size={120} fill="currentColor" />
@@ -1494,7 +1557,7 @@ function App() {
           {/* Logo Image Only - Background cards removed to prevent double look */}
 
           {/* Text */}
-          <img src="/logo_graphic.png" alt="LEXiMiX" className="relative z-10 h-56 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500 invert dark:invert-0" />
+          <img src="/logo_graphic.png" alt="LEXiMiX" className={`relative z-10 h-56 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500 ${user.theme === 'dark' ? '' : 'invert'}`} />
         </div>
         <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
           {t.HOME.TAGLINE}
@@ -1558,6 +1621,7 @@ function App() {
       </div>
 
       {/* Grid */}
+      {console.log('[DEBUG] Rendering game modes grid...')}
       <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
         <GameCard
           mode={GameMode.CLASSIC}
@@ -2263,269 +2327,90 @@ function App() {
         </div>
       </Modal>
 
-      {/* Redeem Code Modal */}
+      {/* Redeem Code Modal - NEW VOUCHER SYSTEM */}
       <Modal
         isOpen={showRedeemModal}
         onClose={() => {
           setShowRedeemModal(false);
-          setRedeemCode('');
-          setRedeemStep('code');
-          setSelectedPlanIndex(null);
-          setRedeemError(null);
+          setVoucherCode('');
+          setVoucherError('');
+          setVoucherSuccess('');
         }}
-        title={redeemStep === 'code' ? t.SEASON.REDEEM_CODE : 'Plan Auswählen'}
+        title="🎁 Gutschein Einlösen"
       >
         <div className="text-center py-6 space-y-6">
-          {redeemStep === 'code' ? (
-            <>
-              <div className="inline-block p-6 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-4 shadow-[0_0_30px_rgba(234,179,8,0.3)]">
-                <Star className="text-yellow-400 drop-shadow-lg" size={48} fill="currentColor" />
+          <div className="inline-block p-6 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+            <Sparkles className="text-blue-400 drop-shadow-lg" size={48} />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-lg font-bold text-gray-300">Gutscheincode eingeben</h3>
+            <p className="text-xs text-gray-500">Gib deinen Gutscheincode ein um Münzen zu erhalten</p>
+          </div>
+
+          <div className="w-full">
+            <input
+              type="text"
+              value={voucherCode}
+              onChange={(e) => {
+                setVoucherCode(e.target.value.toUpperCase());
+                setVoucherError('');
+                setVoucherSuccess('');
+              }}
+              placeholder="GUTSCHEIN123"
+              className={`w-full bg-gray-900 border-2 ${voucherError
+                ? 'border-red-500 animate-shake'
+                : voucherSuccess
+                  ? 'border-green-500'
+                  : 'border-gray-700 focus:border-blue-400'
+                } rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors text-white uppercase`}
+              maxLength={20}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleVoucherRedeem();
+                }
+              }}
+            />
+
+            {voucherError && (
+              <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center justify-center gap-1">
+                <AlertTriangle size={12} /> {voucherError}
               </div>
+            )}
 
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold text-gray-300">Aktivierungscode eingeben</h3>
-                <p className="text-xs text-gray-500">Format: LEXIMIX-XXXX-XXXX-XXXX</p>
+            {voucherSuccess && (
+              <div className="mt-2 text-green-500 text-xs font-bold flex items-center justify-center gap-1">
+                <Check size={12} /> {voucherSuccess}
               </div>
+            )}
+          </div>
 
-              <div className="w-full">
-                <input
-                  type="text"
-                  value={redeemCode}
-                  onChange={(e) => {
-                    setRedeemCode(e.target.value.toUpperCase());
-                    setRedeemError(null);
-                  }}
-                  placeholder={t.SEASON.CODE_PLACEHOLDER}
-                  className={`w-full bg-gray-900 border-2 ${redeemError ? 'border-red-500 animate-shake' : 'border-gray-700 focus:border-yellow-400'} rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors text-white uppercase`}
-                  maxLength={24}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      const trimmedCode = redeemCode.trim();
-
-                      // Check Coin Codes
-                      if (COIN_CODES.includes(trimmedCode)) {
-                        if (user.redeemedCodes?.includes(trimmedCode)) {
-                          setRedeemError("Code bereits verwendet!");
-                          audio.playError();
-                          return;
-                        }
-
-                        audio.playWin();
-                        setUser(u => ({
-                          ...u,
-                          coins: u.coins + 1000,
-                          redeemedCodes: [...(u.redeemedCodes || []), trimmedCode]
-                        }));
-                        alert("Code erfolgreich eingelöst! +1000 Münzen");
-                        setShowRedeemModal(false);
-                        setRedeemCode('');
-                        setRedeemError(null);
-                        return;
-                      }
-
-                      // Check Premium Codes
-                      if (VALID_CODES.includes(trimmedCode)) {
-                        audio.playWin();
-                        const plan = PREMIUM_PLANS[1];
-                        const levelBoost = plan.levelBoost || 0;
-
-                        setUser(u => ({
-                          ...u,
-                          isPremium: true,
-                          level: u.level + levelBoost,
-                          xp: (u.level + levelBoost - 1) * 100
-                        }));
-
-                        alert(`Premium Aktiviert! Willkommen, Legende.`);
-
-                        setShowRedeemModal(false);
-                        setRedeemCode('');
-                        setRedeemStep('code');
-                        setSelectedPlanIndex(null);
-                        setRedeemError(null);
-                        return;
-                      }
-
-                      setRedeemError(t.SEASON.INVALID_CODE);
-                      audio.playError();
-                    }
-                  }}
-                />
-                {redeemError && (
-                  <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center justify-center gap-1">
-                    <AlertTriangle size={12} /> {redeemError}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex gap-3">
-                <Button
-                  className="flex-1"
-                  variant="secondary"
-                  onClick={() => {
-                    setShowRedeemModal(false);
-                    setRedeemCode('');
-                    setRedeemStep('code');
-                    setRedeemError(null);
-                  }}
-                >
-                  Abbrechen
-                </Button>
-                <Button
-                  className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:brightness-110"
-                  onClick={() => {
-                    const trimmedCode = redeemCode.trim();
-
-                    // Check Coin Codes
-                    if (COIN_CODES.includes(trimmedCode)) {
-                      if (user.redeemedCodes?.includes(trimmedCode)) {
-                        setRedeemError("Code bereits verwendet!");
-                        audio.playError();
-                        return;
-                      }
-
-                      audio.playWin();
-                      setUser(u => ({
-                        ...u,
-                        coins: u.coins + 1000,
-                        redeemedCodes: [...(u.redeemedCodes || []), trimmedCode]
-                      }));
-                      alert("Code erfolgreich eingelöst! +1000 Münzen");
-                      setShowRedeemModal(false);
-                      setRedeemCode('');
-                      setRedeemError(null);
-                      return;
-                    }
-
-                    // Check Premium Codes
-                    if (VALID_CODES.includes(trimmedCode)) {
-                      // Code is valid, immediately activate Standard Premium (30 days)
-                      audio.playWin();
-
-                      // Standard Plan is index 1 (30 days)
-                      const plan = PREMIUM_PLANS[1];
-                      const levelBoost = plan.levelBoost || 0;
-
-                      setUser(u => ({
-                        ...u,
-                        isPremium: true,
-                        level: u.level + levelBoost,
-                        xp: (u.level + levelBoost - 1) * 100
-                      }));
-
-                      alert(`Premium Aktiviert! Willkommen, Legende.`);
-
-                      setShowRedeemModal(false);
-                      setRedeemCode('');
-                      setRedeemStep('code');
-                      setSelectedPlanIndex(null);
-                      setRedeemError(null);
-                      return;
-                    }
-
-                    setRedeemError(t.SEASON.INVALID_CODE);
-                    audio.playError();
-                  }}
-                >
-                  Code Einlösen
-                </Button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="inline-block p-6 rounded-full bg-purple-500/10 border border-purple-500/20 mb-4 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
-                <Star className="text-purple-400 drop-shadow-lg" size={48} fill="currentColor" />
-              </div>
-
-              <div className="space-y-2 mb-4">
-                <h3 className="text-lg font-bold text-gray-300">Welchen Pass hast du gekauft?</h3>
-                <p className="text-xs text-gray-500">Wähle den gekauften Premium Pass</p>
-              </div>
-
-              {/* Plan Selection Cards */}
-              <div className="space-y-3">
-                {PREMIUM_PLANS.map((plan, index) => (
-                  <button
-                    key={plan.id}
-                    onClick={() => setSelectedPlanIndex(index)}
-                    className={`w-full p-4 rounded-xl border-2 transition-all text-left ${selectedPlanIndex === index
-                      ? 'border-lexi-gold bg-lexi-gold/10 shadow-[0_0_20px_rgba(250,204,21,0.3)]'
-                      : 'border-lexi-border bg-lexi-surface-highlight/50 hover:border-lexi-text-muted'
-                      }`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-black text-base text-lexi-text">{plan.cost}</h4>
-                        <p className="text-xs text-lexi-text-muted">{plan.duration}</p>
-                      </div>
-                      {plan.levelBoost > 0 && (
-                        <div className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-lg text-xs font-bold">
-                          +{plan.levelBoost} Level
-                        </div>
-                      )}
-                    </div>
-                    <ul className="text-xs space-y-1">
-                      {plan.features.slice(0, 3).map((feature, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-lexi-text-muted">
-                          <span className="text-green-400">✓</span> {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <Button
-                  className="flex-1"
-                  variant="secondary"
-                  onClick={() => {
-                    setRedeemStep('code');
-                    setSelectedPlanIndex(null);
-                  }}
-                >
-                  Zurück
-                </Button>
-                <Button
-                  className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:brightness-110"
-                  disabled={selectedPlanIndex === null}
-                  onClick={() => {
-                    if (selectedPlanIndex === null) return;
-
-                    const plan = PREMIUM_PLANS[selectedPlanIndex];
-                    const levelBoost = plan.levelBoost || 0;
-
-                    setUser(u => ({
-                      ...u,
-                      isPremium: true,
-                      level: u.level + levelBoost,
-                      xp: (u.level + levelBoost - 1) * 100
-                    }));
-
-                    audio.playWin();
-
-                    if (levelBoost > 0) {
-                      alert(`Premium Aktiviert! 🎁 Du hast ${levelBoost} Stufen freigeschaltet! Willkommen, Legende.`);
-                    } else {
-                      alert(`Premium Aktiviert! Willkommen, Legende.`);
-                    }
-
-                    setShowRedeemModal(false);
-                    setRedeemCode('');
-                    setRedeemStep('code');
-                    setSelectedPlanIndex(null);
-                  }}
-                >
-                  Aktivieren
-                </Button>
-              </div>
-            </>
-          )}
+          <div className="flex gap-3">
+            <Button
+              className="flex-1"
+              variant="secondary"
+              onClick={() => {
+                setShowRedeemModal(false);
+                setVoucherCode('');
+                setVoucherError('');
+                setVoucherSuccess('');
+              }}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:brightness-110"
+              onClick={handleVoucherRedeem}
+              disabled={!voucherCode.trim() || !!voucherSuccess}
+            >
+              {voucherSuccess ? '✓ Eingelöst' : 'Einlösen'}
+            </Button>
+          </div>
         </div>
       </Modal>
 
       {/* Premium Info Modal */}
-      <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Vorteile">
+      <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Vorteile" >
         <div className="py-6 space-y-6">
           <div className="flex flex-col items-center gap-4">
             <div className="inline-block p-6 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
@@ -2582,10 +2467,10 @@ function App() {
             Verstanden
           </Button>
         </div>
-      </Modal>
+      </Modal >
 
       {/* Premium Required Modal */}
-      <Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title="Premium Erforderlich">
+      < Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title="Premium Erforderlich" >
         <div className="text-center space-y-6">
           <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center border-2 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]">
             <Lock size={32} className="text-yellow-500" />
@@ -2615,16 +2500,56 @@ function App() {
             </Button>
           </div>
         </div>
-      </Modal>
+      </Modal >
+
+      {/* Username Change Confirmation Modal */}
+      < Modal
+        isOpen={showUsernameConfirm}
+        onClose={() => setShowUsernameConfirm(false)}
+        title="Benutzername ändern?"
+      >
+        <div className="text-center space-y-6">
+          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <User size={24} className="text-yellow-400" />
+              <h3 className="text-lg font-bold text-white">Bestätigung erforderlich</h3>
+            </div>
+            <p className="text-sm text-yellow-300 font-bold">
+              Neuer Benutzername: <span className="text-white">{editUsername}</span>
+            </p>
+            <p className="text-sm text-yellow-400 mt-2">
+              Kosten: 2500 Münzen
+            </p>
+            <p className="text-xs text-red-400 mt-3 font-bold">
+              ⚠️ Diese Änderung kann nicht rückgängig gemacht werden!
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowUsernameConfirm(false)}
+              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+            >
+              Abbrechen
+            </button>
+            <button
+              onClick={confirmUsernameChange}
+              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+            >
+              <User size={16} /> Bestätigen
+            </button>
+          </div>
+        </div>
+      </Modal >
 
       {/* Cloud Auth Modal */}
-      <AuthModal
+      < AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={handleCloudLogin}
       />
 
-    </div>
+    </div >
   );
 }
 // (c) KW 1998

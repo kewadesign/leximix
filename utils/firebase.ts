@@ -194,6 +194,170 @@ export const deleteUserAccount = async (username: string): Promise<boolean> => {
     }
 };
 
+// ============================================================================
+// VOUCHER SYSTEM
+// ============================================================================
+
+export interface VoucherData {
+    coins: number;
+    description: string;
+    expiresAt?: number;
+    maxUses?: number;
+    usedBy?: { [username: string]: number };
+}
+
+export interface VoucherRedemptionResult {
+    success: boolean;
+    error?: string;
+    coinsAwarded?: number;
+}
+
+/**
+ * Redeem a voucher code for the user
+ * This function checks if the code is valid, not expired, not fully used,
+ * and if the user hasn't already redeemed it. If valid, it marks the voucher
+ * as used by the user and creates a reward entry.
+ */
+export const redeemVoucher = async (
+    username: string,
+    voucherCode: string
+): Promise<VoucherRedemptionResult> => {
+    const normalizedUsername = normalizeUsername(username);
+    const normalizedCode = voucherCode.trim().toUpperCase();
+
+    try {
+        // 1. Check if voucher exists
+        const voucherRef = ref(database, `vouchers/${normalizedCode}`);
+        const voucherSnapshot = await get(voucherRef);
+
+        if (!voucherSnapshot.exists()) {
+            return { success: false, error: 'Ungültiger Gutscheincode' };
+        }
+
+        const voucherData: VoucherData = voucherSnapshot.val();
+
+        // 2. Check if expired
+        if (voucherData.expiresAt && Date.now() > voucherData.expiresAt) {
+            return { success: false, error: 'Gutschein ist abgelaufen' };
+        }
+
+        // 3. Check if max uses reached
+        if (voucherData.maxUses && voucherData.usedBy) {
+            const useCount = Object.keys(voucherData.usedBy).length;
+            if (useCount >= voucherData.maxUses) {
+                return { success: false, error: 'Gutschein wurde bereits vollständig eingelöst' };
+            }
+        }
+
+        // 4. Check if user already redeemed this voucher
+        const usedByRef = ref(database, `vouchers/${normalizedCode}/usedBy/${normalizedUsername}`);
+        const usedBySnapshot = await get(usedByRef);
+
+        if (usedBySnapshot.exists()) {
+            return { success: false, error: 'Du hast diesen Gutschein bereits eingelöst' };
+        }
+
+        // 5. Mark voucher as used by this user
+        await set(usedByRef, Date.now());
+
+        // 6. Create reward entry for the user
+        const rewardId = `reward_${Date.now()}`;
+        const rewardRef = ref(database, `users/${normalizedUsername}/voucherRewards/${rewardId}`);
+        await set(rewardRef, {
+            coins: voucherData.coins,
+            timestamp: Date.now(),
+            voucherCode: normalizedCode,
+        });
+
+        console.log(`[Firebase] Voucher ${normalizedCode} redeemed by ${normalizedUsername}`);
+        return {
+            success: true,
+            coinsAwarded: voucherData.coins,
+        };
+    } catch (error: any) {
+        console.error('[Firebase] Voucher redemption error:', error);
+        if (error.message && error.message.includes('permission_denied')) {
+            return { success: false, error: 'Du hast diesen Gutschein bereits eingelöst' };
+        }
+        return { success: false, error: 'Fehler beim Einlösen des Gutscheins' };
+    }
+};
+
+/**
+ * Listen to voucher rewards for a user and execute callback when new rewards arrive
+ * This allows real-time coin updates when a voucher is redeemed
+ */
+export const listenToVoucherRewards = (
+    username: string,
+    onReward: (coins: number, voucherCode: string) => void
+): (() => void) => {
+    const normalizedUsername = normalizeUsername(username);
+    const rewardsRef = ref(database, `users/${normalizedUsername}/voucherRewards`);
+
+    // Import onValue from firebase/database
+    import('firebase/database').then(({ onValue }) => {
+        const unsubscribe = onValue(rewardsRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const rewards = snapshot.val();
+                // Process only new rewards (not yet processed)
+                Object.keys(rewards).forEach((rewardId) => {
+                    const reward = rewards[rewardId];
+                    if (!reward.processed) {
+                        onReward(reward.coins, reward.voucherCode);
+
+                        // Mark as processed
+                        const processedRef = ref(database, `users/${normalizedUsername}/voucherRewards/${rewardId}/processed`);
+                        set(processedRef, true);
+                    }
+                });
+            }
+        });
+
+        return unsubscribe;
+    });
+
+    // Return empty cleanup function initially
+    return () => { };
+};
+
+/**
+ * ADMIN ONLY: Create a new voucher code
+ * This should only be called from admin panel or server-side
+ */
+export const createVoucher = async (
+    voucherCode: string,
+    coins: number,
+    description: string,
+    expiresAt?: number,
+    maxUses?: number
+): Promise<{ success: boolean; error?: string }> => {
+    const normalizedCode = voucherCode.trim().toUpperCase();
+
+    try {
+        const voucherRef = ref(database, `vouchers/${normalizedCode}`);
+        const snapshot = await get(voucherRef);
+
+        if (snapshot.exists()) {
+            return { success: false, error: 'Gutscheincode existiert bereits' };
+        }
+
+        const voucherData: VoucherData = {
+            coins,
+            description,
+        };
+
+        if (expiresAt) voucherData.expiresAt = expiresAt;
+        if (maxUses) voucherData.maxUses = maxUses;
+
+        await set(voucherRef, voucherData);
+        console.log(`[Firebase] Created voucher: ${normalizedCode}`);
+        return { success: true };
+    } catch (error) {
+        console.error('[Firebase] Create voucher error:', error);
+        return { success: false, error: 'Fehler beim Erstellen des Gutscheins' };
+    }
+};
+
 export { database };
 
 const _DEV_SIG = 'KW-1998';
