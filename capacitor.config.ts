@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'LexiMix',
   webDir: 'dist',
   server: {
-    url: 'http://s1073751747.online.de',
+    url: 'http://leximix.de',
     cleartext: true
   }
 };

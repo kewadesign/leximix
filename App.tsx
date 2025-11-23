@@ -398,7 +398,7 @@ export default function App() {
     };
   }, []);
 
-  // Auto-update version checking
+  // Auto-update version checking (Web + APK)
   useEffect(() => {
     const checkForUpdates = async () => {
       if (!isOnline) return;
@@ -410,7 +410,18 @@ export default function App() {
         const data = await response.json();
         const currentVersion = '2.1.0'; // From package.json
 
-        if (data.version && data.version !== currentVersion) {
+        // Check if running in Capacitor (Android)
+        const isCapacitor = (window as any).Capacitor !== undefined;
+
+        if (isCapacitor && data.apk) {
+          // Check APK version for Android
+          if (data.apk.version !== currentVersion) {
+            console.log(`[Update] New APK available: ${data.apk.version} (current: ${currentVersion})`);
+            setServerVersion(data.apk.version);
+            setUpdateAvailable(true);
+          }
+        } else if (data.version && data.version !== currentVersion) {
+          // Check web version for browser
           console.log(`[Update] New version available: ${data.version} (current: ${currentVersion})`);
           setServerVersion(data.version);
           setUpdateAvailable(true);
@@ -2665,7 +2676,9 @@ export default function App() {
           <div className="space-y-2">
             <h3 className="text-xl font-black text-white">Neue Version verfügbar!</h3>
             <p className="text-sm text-gray-300 leading-relaxed">
-              LexiMix wurde aktualisiert. Lade die App neu, um die neueste Version zu verwenden.
+              {(window as any).Capacitor !== undefined
+                ? 'Eine neue APK-Version ist verfügbar. Lade sie herunter und installiere sie, um die neuesten Features zu erhalten.'
+                : 'LexiMix wurde aktualisiert. Lade die App neu, um die neueste Version zu verwenden.'}
             </p>
             <div className="flex items-center justify-center gap-4 text-xs text-gray-400 mt-4">
               <div className="flex flex-col items-center">
@@ -2682,11 +2695,20 @@ export default function App() {
 
           <div className="flex flex-col gap-3">
             <Button
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                const isCapacitor = (window as any).Capacitor !== undefined;
+                if (isCapacitor) {
+                  // Download APK
+                  window.location.href = 'http://leximix.de/app-debug.apk';
+                } else {
+                  // Reload web app
+                  window.location.reload();
+                }
+              }}
               fullWidth
               className="bg-gradient-to-r from-green-600 to-blue-600 text-white font-black border-none hover:brightness-110"
             >
-              Jetzt aktualisieren
+              {(window as any).Capacitor !== undefined ? 'APK herunterladen' : 'Jetzt aktualisieren'}
             </Button>
             <Button
               onClick={() => setUpdateAvailable(false)}
