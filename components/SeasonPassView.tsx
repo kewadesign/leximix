@@ -24,14 +24,14 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
         }
     }, []);
 
-    const getFrameStyle = (frameId: string) => {
-        switch (frameId) {
-            case 'gold': return 'border-4 border-yellow-400 shadow-[0_0_10px_gold]';
-            case 'neon': return 'border-4 border-purple-500 shadow-[0_0_10px_purple]';
-            case 'fire': return 'border-4 border-red-500 shadow-[0_0_10px_red]';
-            case 'ice': return 'border-4 border-cyan-400 shadow-[0_0_10px_cyan]';
-            default: return 'border-2 border-gray-500';
-        }
+    const getEffectStyle = (effectId: string) => {
+        if (!effectId) return "";
+        if (effectId.includes('glow')) return "shadow-[0_0_30px_rgba(255,255,255,0.6)] ring-4 ring-white/50 animate-pulse";
+        if (effectId.includes('fire')) return "shadow-[0_0_30px_rgba(239,68,68,0.8)] ring-4 ring-red-500/50 animate-pulse";
+        if (effectId.includes('ice')) return "shadow-[0_0_30px_rgba(6,182,212,0.8)] ring-4 ring-cyan-400/50 animate-pulse";
+        if (effectId.includes('sparkle')) return "shadow-[0_0_30px_rgba(234,179,8,0.8)] ring-4 ring-yellow-300/50 animate-bounce-slow";
+        if (effectId.includes('neon')) return "shadow-[0_0_30px_rgba(217,70,239,0.8)] ring-4 ring-fuchsia-500/50 animate-pulse";
+        return "ring-2 ring-gray-500";
     };
 
     return (
@@ -123,9 +123,9 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                                                 
                                                 {premiumReward.type === 'avatar' ? (
                                                     <img src={premiumReward.preview} alt="Avatar" className="w-12 h-12 rounded-full border-2 border-white/20 shadow-md z-10" />
-                                                ) : premiumReward.type === 'cosmetic' ? (
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getFrameStyle(premiumReward.value as string)} z-10`}>
-                                                        <Sparkles size={20} className="text-yellow-400" />
+                                                ) : premiumReward.type === 'effect' ? (
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getEffectStyle(premiumReward.value as string)} z-10`}>
+                                                        <Sparkles size={20} className="text-white drop-shadow-lg" />
                                                     </div>
                                                 ) : premiumReward.type === 'mystery' ? (
                                                     <Box size={48} className="text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)] animate-bounce-slow z-10" />

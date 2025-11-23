@@ -970,15 +970,16 @@ export const generateSeasonRewards = (season: Season) => {
         rarity: 'legendary'
       };
     }
-    // 2. Cosmetics (Frames/Trails) (Every 5 levels, excluding 10s)
+    // 2. Cosmetics / Effects (Premium only, rarer)
     else if (level % 5 === 0) {
+      const effects = ['glow', 'fire', 'ice', 'sparkle', 'neon'];
+      const effect = effects[Math.floor(Math.random() * effects.length)];
       premiumReward = {
-        type: 'cosmetic',
-        name: isSeason2 ? `Neon Trail Mk.${level / 5}` : 'Golden Frame',
-        desc: 'Equip in Profile',
-        value: `${isSeason2 ? 'trail' : 'frame'}_${level}`,
-        icon: 'cosmetic_epic',
-        rarity: 'epic'
+        type: 'effect',
+        name: `${effect.charAt(0).toUpperCase() + effect.slice(1)} Effect`,
+        desc: 'Visual Avatar Effect',
+        value: `effect_${effect}`,
+        icon: 'magic_wand'
       };
     }
     // 3. Special Items (Boosters, Mystery Boxes) (Randomly distributed)

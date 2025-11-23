@@ -3,118 +3,113 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Sphere, MeshDistortMaterial, Float, Sparkles, Stars, Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { BuddyState } from '../types';
-import { Heart, Zap, Utensils, Play, Sparkles as SparklesIcon } from 'lucide-react';
+import { Heart, Zap, Utensils, Play, Sparkles as SparklesIcon, Brain, Cat, Dog, Rabbit, Bird, Fish } from 'lucide-react';
 import { audio } from '../utils/audio';
+import { BUDDY_RIDDLES, getRandomRiddle, Riddle } from './BuddyRiddles';
 
-interface Props {
+interface BuddyProps {
     buddy: BuddyState;
     onUpdate: (newBuddy: BuddyState) => void;
     onPlay: () => void;
     onBack?: () => void;
 }
 
-interface Riddle {
-    question: string;
-    answer: string; // simple string match for now
-    options?: string[]; // optional multiple choice
-    reward: { xp: number; coins: number };
-}
-
-const RIDDLES: Riddle[] = [
-    { question: "Was hat Zähne, beißt aber nicht?", answer: "kamm", reward: { xp: 50, coins: 20 } },
-    { question: "Was wird nass, wenn es trocknet?", answer: "handtuch", reward: { xp: 50, coins: 20 } },
-    { question: "Je mehr man wegnimmt, desto größer wird es.", answer: "loch", reward: { xp: 60, coins: 25 } },
-    { question: "Was hat ein Auge, kann aber nicht sehen?", answer: "nadel", reward: { xp: 40, coins: 15 } },
-    { question: "Was läuft ohne Beine?", answer: "wasser", reward: { xp: 40, coins: 15 } },
-    { question: "Was gehört dir, aber andere benutzen es öfter als du?", answer: "name", reward: { xp: 70, coins: 30 } }
-];
-
-const BuddyMesh = ({ buddy, animationType }: { buddy: BuddyState; animationType: string }) => {
-    const meshRef = useRef<THREE.Mesh>(null);
-    const [hovered, setHover] = useState(false);
-
-    useFrame((state) => {
-        if (meshRef.current) {
-            // Idle rotation
-            meshRef.current.rotation.y += 0.01;
-
-            // Animation reactions
-            if (animationType === 'happy') {
-                meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 10) * 0.2;
-                meshRef.current.scale.setScalar(1.2 + Math.sin(state.clock.elapsedTime * 20) * 0.1);
-            } else if (animationType === 'eating') {
-                meshRef.current.scale.setScalar(1 + Math.abs(Math.sin(state.clock.elapsedTime * 15)) * 0.2);
-            } else {
-                const scale = hovered ? 1.1 : 1;
-                meshRef.current.scale.lerp(new THREE.Vector3(scale, scale, scale), 0.1);
-            }
+// 2D Cute Buddy Component
+const CuteBuddy2D = ({ buddy, animationType, position }: { buddy: BuddyState; animationType: string; position: { x: number, y: number } }) => {
+    const getBuddyEmoji = () => {
+        // Map skins to Emojis
+        switch (buddy.skin) {
+            case 'gold': return '🦁'; // Lion for Gold
+            case 'neon': return '🦄'; // Unicorn for Neon
+            case 'ruby': return '🦊'; // Fox for Ruby
+            case 'emerald': return '🦖'; // Dino for Emerald
+            case 'obsidian': return '🐺'; // Wolf for Obsidian
+            default: return '🐱'; // Cat default
         }
-    });
-
-    const getColor = () => {
-        if (buddy.skin === 'gold') return '#FDB931';
-        if (buddy.skin === 'neon') return '#ff00ff';
-        if (buddy.hunger < 30) return '#ef4444'; // Red when hungry
-        return '#22d3ee'; // Default Cyan
     };
 
     return (
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-            <Sphere ref={meshRef} args={[1, 64, 64]} onPointerOver={() => setHover(true)} onPointerOut={() => setHover(false)}>
-                <MeshDistortMaterial
-                    color={getColor()}
-                    attach="material"
-                    distort={0.4}
-                    speed={2}
-                    roughness={0.2}
-                    metalness={0.8}
-                />
-            </Sphere>
+        <div 
+            className="absolute transition-all duration-1000 ease-in-out flex flex-col items-center justify-center"
+            style={{ 
+                left: `${position.x}%`, 
+                top: `${position.y}%`, 
+                transform: 'translate(-50%, -50%)' 
+            }}
+        >
+            {/* Status Bubbles */}
+            <div className="flex gap-1 mb-2 absolute -top-12">
+                {buddy.hunger < 30 && <div className="animate-bounce bg-white/80 p-1 rounded-full text-lg shadow-sm">🍗</div>}
+                {buddy.mood < 30 && <div className="animate-bounce delay-100 bg-white/80 p-1 rounded-full text-lg shadow-sm">💔</div>}
+                {buddy.energy < 30 && <div className="animate-bounce delay-200 bg-white/80 p-1 rounded-full text-lg shadow-sm">💤</div>}
+            </div>
 
-            {/* Eyes (Simple Spheres for now) */}
-            <group position={[0, 0.2, 0.85]}>
-                <mesh position={[-0.3, 0, 0]}>
-                    <sphereGeometry args={[0.1, 32, 32]} />
-                    <meshStandardMaterial color="black" />
-                </mesh>
-                <mesh position={[0.3, 0, 0]}>
-                    <sphereGeometry args={[0.1, 32, 32]} />
-                    <meshStandardMaterial color="black" />
-                </mesh>
-            </group>
+            {/* The Buddy Emoji */}
+            <div className={`text-9xl filter drop-shadow-2xl cursor-pointer select-none transition-transform duration-300
+                ${animationType === 'happy' ? 'animate-bounce' : ''}
+                ${animationType === 'eating' ? 'animate-pulse scale-110' : ''}
+                ${animationType === 'sleeping' ? 'opacity-80 grayscale-[0.3]' : 'animate-float-slow'}
+                hover:scale-110 active:scale-95
+            `}>
+                {getBuddyEmoji()}
+            </div>
 
-            {/* Mouth (Dynamic based on mood) */}
-            {buddy.mood < 50 ? (
-                <mesh position={[0, -0.2, 0.85]} rotation={[0, 0, Math.PI]}>
-                    <torusGeometry args={[0.1, 0.02, 16, 32, Math.PI]} />
-                    <meshStandardMaterial color="black" />
-                </mesh>
-            ) : (
-                <mesh position={[0, -0.2, 0.85]}>
-                    <torusGeometry args={[0.1, 0.02, 16, 32, Math.PI]} />
-                    <meshStandardMaterial color="black" />
-                </mesh>
+            {/* Expressions (Overlay) */}
+            {animationType === 'sleeping' && (
+                <div className="absolute -top-4 right-0 text-4xl font-bold text-white animate-pulse">Zzz...</div>
             )}
-        </Float>
+            {animationType === 'eating' && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl animate-ping opacity-50">🍖</div>
+            )}
+            {animationType === 'happy' && (
+                <div className="absolute -top-8 right-0 text-5xl animate-bounce">❤️</div>
+            )}
+        </div>
     );
 };
 
-export const SphereBuddy3D: React.FC<Props> = ({ buddy, onUpdate, onPlay, onBack }) => {
-    const [animationType, setAnimationType] = useState<'idle' | 'happy' | 'eating' | 'sleeping'>('idle');
+export const SphereBuddy3D: React.FC<BuddyProps> = ({ buddy, onUpdate, onPlay, onBack }) => {
+    const [animationType, setAnimationType] = useState<'idle' | 'happy' | 'eating' | 'sleeping' | 'pooping'>('idle');
     const [message, setMessage] = useState<string>("");
     const [showCustomize, setShowCustomize] = useState(false);
+    
+    // Tamagotchi State
+    const [position, setPosition] = useState({ x: 50, y: 50 }); // Center
+    const [poopCount, setPoopCount] = useState(0); // Number of poops on screen
 
-    // Quest State
+    // ... (Existing Quest State) ...
     const [activeQuest, setActiveQuest] = useState<Riddle | null>(null);
     const [questInput, setQuestInput] = useState("");
     const [showQuestModal, setShowQuestModal] = useState(false);
 
+    // Movement Logic
+    useEffect(() => {
+        const moveInterval = setInterval(() => {
+            if (animationType === 'idle') {
+                // Move to random position within bounds (20-80%)
+                const newX = 20 + Math.random() * 60;
+                const newY = 30 + Math.random() * 40; // Keep it somewhat centered vertically
+                setPosition({ x: newX, y: newY });
+                
+                // Random chance to poop (10% every move)
+                if (Math.random() < 0.1 && poopCount < 3) {
+                    setPoopCount(prev => prev + 1);
+                    setMessage("Ups... 💩");
+                    setTimeout(() => setMessage(""), 2000);
+                }
+            }
+        }, 4000); // Move every 4 seconds
+
+        return () => clearInterval(moveInterval);
+    }, [animationType, poopCount]);
+
+    // ... (Quest Trigger Effect) ...
     // Random Quest Trigger
     useEffect(() => {
         const interval = setInterval(() => {
             // 10% chance every 10 seconds if no quest active and idle
             if (!activeQuest && animationType === 'idle' && Math.random() < 0.1) {
-                const randomRiddle = RIDDLES[Math.floor(Math.random() * RIDDLES.length)];
+                const randomRiddle = getRandomRiddle();
                 setActiveQuest(randomRiddle);
                 setMessage("Ich habe ein Rätsel für dich! 💡");
                 audio.playClick(); // Sound cue
@@ -141,7 +136,29 @@ export const SphereBuddy3D: React.FC<Props> = ({ buddy, onUpdate, onPlay, onBack
         }
     }, []);
 
+    const handleClean = () => {
+        if (poopCount > 0) {
+            audio.playClick();
+            setPoopCount(0);
+            setMessage("Alles sauber! ✨");
+            setAnimationType('happy');
+            
+            // Boost mood slightly for cleaning
+            const newBuddy = { ...buddy, mood: Math.min(100, buddy.mood + 10) };
+            onUpdate(newBuddy);
+
+            setTimeout(() => {
+                setMessage("");
+                setAnimationType('idle');
+            }, 2000);
+        } else {
+            setMessage("Schon sauber! ✨");
+            setTimeout(() => setMessage(""), 1500);
+        }
+    };
+
     const handleInteract = (type: 'pet' | 'feed' | 'sleep') => {
+
         if (animationType !== 'idle') return;
 
         audio.playClick();
@@ -220,85 +237,100 @@ export const SphereBuddy3D: React.FC<Props> = ({ buddy, onUpdate, onPlay, onBack
         { id: 'gold', name: 'Golden Sun', color: '#FDB931' },
         { id: 'neon', name: 'Neon Pulse', color: '#ff00ff' },
         { id: 'obsidian', name: 'Obsidian', color: '#1f2937' },
-        { id: 'ruby', name: 'Ruby Red', color: '#ef4444' }
+        { id: 'ruby', name: 'Ruby Red', color: '#ef4444' },
+        { id: 'emerald', name: 'Emerald', color: '#10b981' }
     ];
 
+    // Brighter, Tamagotchi-style backgrounds
     const BACKGROUNDS = [
-        { id: 'default', name: 'Deep Space', class: 'bg-gradient-to-b from-indigo-900/20 to-purple-900/20' },
-        { id: 'sunset', name: 'Cyber Sunset', class: 'bg-gradient-to-b from-orange-500/20 to-purple-900/20' },
-        { id: 'forest', name: 'Digital Forest', class: 'bg-gradient-to-b from-green-900/20 to-emerald-900/20' }
+        { id: 'default', name: 'Pixel Sky', class: 'bg-gradient-to-b from-cyan-200 to-blue-300' },
+        { id: 'sunset', name: 'Candy Sunset', class: 'bg-gradient-to-b from-pink-200 to-purple-300' },
+        { id: 'forest', name: 'Happy Forest', class: 'bg-gradient-to-b from-green-200 to-emerald-300' },
+        { id: 'night', name: 'Dreamy Night', class: 'bg-gradient-to-b from-indigo-300 to-purple-400' }
     ];
 
     const currentBg = BACKGROUNDS.find(b => b.id === (buddy.selectedBackground || 'default'))?.class || BACKGROUNDS[0].class;
 
     return (
-        <div className="w-full max-w-md mx-auto bg-[#0f0518]/90 backdrop-blur-xl rounded-3xl p-6 border border-white/10 shadow-[0_0_50px_rgba(124,58,237,0.2)] animate-fade-in relative overflow-hidden flex flex-col h-full">
-
-            {/* Header Stats */}
-            <div className="flex justify-between items-center mb-4 relative z-10">
+        <div className={`w-full h-full flex flex-col relative overflow-hidden ${currentBg} transition-colors duration-500 rounded-3xl shadow-xl border-4 border-white`}>
+            
+            {/* Tamagotchi Header */}
+            <div className="p-4 flex justify-between items-center relative z-10 bg-white/30 backdrop-blur-sm border-b border-white/20">
                 <div className="flex flex-col">
                     <div className="flex items-center gap-2">
                         {onBack && (
-                            <button onClick={onBack} className="p-1 hover:bg-white/10 rounded-full transition-colors">
-                                <Play className="rotate-180 w-4 h-4 text-gray-400" fill="currentColor" />
+                            <button onClick={onBack} className="p-2 hover:bg-white/40 rounded-full transition-colors bg-white/20">
+                                <Play className="rotate-180 w-5 h-5 text-gray-700" fill="currentColor" />
                             </button>
                         )}
-                        <h3 className="text-white font-black text-xl tracking-wider drop-shadow-md">{buddy.name}</h3>
+                        <h3 className="text-gray-800 font-black text-2xl tracking-wider drop-shadow-sm">{buddy.name}</h3>
                     </div>
-                    <span className="text-xs text-cyan-400 font-bold ml-6">Lvl {buddy.level}</span>
+                    <span className="text-xs text-gray-600 font-bold ml-9 bg-white/40 px-2 py-0.5 rounded-full">Lvl {buddy.level}</span>
                 </div>
                 <div className="flex gap-2 items-center">
-                    <div className="flex flex-col gap-1 w-24">
-                        <div className="flex justify-between text-[10px] text-gray-300 font-bold"><span>HUNGER</span><span>{buddy.hunger}%</span></div>
-                        <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden border border-white/10"><div className={`h-full transition-all duration-500 ${buddy.hunger < 30 ? 'bg-red-500' : 'bg-green-500'}`} style={{ width: `${buddy.hunger}%` }}></div></div>
-
-                        <div className="flex justify-between text-[10px] text-gray-300 font-bold"><span>ENERGY</span><span>{buddy.energy}%</span></div>
-                        <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden border border-white/10"><div className={`h-full transition-all duration-500 ${buddy.energy < 30 ? 'bg-red-500' : 'bg-yellow-400'}`} style={{ width: `${buddy.energy}%` }}></div></div>
-
-                        <div className="flex justify-between text-[10px] text-gray-300 font-bold"><span>MOOD</span><span>{buddy.mood}%</span></div>
-                        <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden border border-white/10"><div className={`h-full transition-all duration-500 ${buddy.mood < 30 ? 'bg-red-500' : 'bg-pink-500'}`} style={{ width: `${buddy.mood}%` }}></div></div>
+                    {/* Compact Stats */}
+                    <div className="flex gap-1">
+                        <div className="flex flex-col items-center bg-white/40 p-1.5 rounded-lg" title="Hunger">
+                            <Utensils size={12} className="text-orange-500 mb-1" />
+                            <div className="h-8 w-2 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
+                                <div className={`w-full bg-orange-400 transition-all duration-500`} style={{ height: `${buddy.hunger}%` }}></div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center bg-white/40 p-1.5 rounded-lg" title="Energy">
+                            <Zap size={12} className="text-yellow-500 mb-1" />
+                            <div className="h-8 w-2 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
+                                <div className={`w-full bg-yellow-400 transition-all duration-500`} style={{ height: `${buddy.energy}%` }}></div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center bg-white/40 p-1.5 rounded-lg" title="Mood">
+                            <Heart size={12} className="text-pink-500 mb-1" />
+                            <div className="h-8 w-2 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
+                                <div className={`w-full bg-pink-400 transition-all duration-500`} style={{ height: `${buddy.mood}%` }}></div>
+                            </div>
+                        </div>
                     </div>
-                    <button onClick={() => setShowCustomize(!showCustomize)} className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
-                        <SparklesIcon size={16} className="text-yellow-400" />
+                    
+                    <button onClick={() => setShowCustomize(!showCustomize)} className="p-3 bg-white rounded-xl shadow-md hover:scale-105 transition-transform border-2 border-white/50">
+                        <SparklesIcon size={20} className="text-purple-500" />
                     </button>
                 </div>
             </div>
 
             {/* Customization Panel */}
             {showCustomize && (
-                <div className="absolute inset-0 z-30 bg-black/80 backdrop-blur-md p-6 flex flex-col animate-fade-in">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-white font-bold">Customize Sphere</h3>
-                        <button onClick={() => setShowCustomize(false)} className="text-gray-400 hover:text-white">Close</button>
+                <div className="absolute inset-0 z-30 bg-white/90 backdrop-blur-md p-6 flex flex-col animate-fade-in text-gray-800">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="font-black text-xl">Anpassen</h3>
+                        <button onClick={() => setShowCustomize(false)} className="bg-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-300">Schließen</button>
                     </div>
 
-                    <div className="space-y-4 overflow-y-auto">
+                    <div className="space-y-6 overflow-y-auto flex-1">
                         <div>
-                            <h4 className="text-xs text-gray-400 uppercase font-bold mb-2">Skins</h4>
-                            <div className="grid grid-cols-3 gap-2">
+                            <h4 className="text-sm text-gray-500 uppercase font-bold mb-3">Farbe / Skin</h4>
+                            <div className="grid grid-cols-3 gap-3">
                                 {SKINS.map(skin => (
                                     <button
                                         key={skin.id}
                                         onClick={() => onUpdate({ ...buddy, skin: skin.id })}
-                                        className={`p-2 rounded-lg border ${buddy.skin === skin.id ? 'border-yellow-400 bg-white/10' : 'border-white/10 hover:bg-white/5'} flex flex-col items-center gap-1`}
+                                        className={`p-3 rounded-xl border-2 ${buddy.skin === skin.id ? 'border-purple-500 bg-purple-50 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'} flex flex-col items-center gap-2 transition-all`}
                                     >
-                                        <div className="w-6 h-6 rounded-full" style={{ backgroundColor: skin.color }}></div>
-                                        <span className="text-[10px] text-gray-300">{skin.name}</span>
+                                        <div className="w-8 h-8 rounded-full shadow-sm" style={{ backgroundColor: skin.color }}></div>
+                                        <span className="text-xs font-bold text-gray-600">{skin.name}</span>
                                     </button>
                                 ))}
                             </div>
                         </div>
 
                         <div>
-                            <h4 className="text-xs text-gray-400 uppercase font-bold mb-2">Backgrounds</h4>
-                            <div className="grid grid-cols-1 gap-2">
+                            <h4 className="text-sm text-gray-500 uppercase font-bold mb-3">Hintergrund</h4>
+                            <div className="grid grid-cols-2 gap-3">
                                 {BACKGROUNDS.map(bg => (
                                     <button
                                         key={bg.id}
                                         onClick={() => onUpdate({ ...buddy, selectedBackground: bg.id })}
-                                        className={`p-2 rounded-lg border ${buddy.selectedBackground === bg.id ? 'border-yellow-400 bg-white/10' : 'border-white/10 hover:bg-white/5'} text-left`}
+                                        className={`p-4 rounded-xl border-2 text-left transition-all ${buddy.selectedBackground === bg.id ? 'border-purple-500 bg-purple-50 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'} ${bg.class}`}
                                     >
-                                        <span className="text-xs text-gray-300 font-bold">{bg.name}</span>
+                                        <span className="text-sm font-bold text-white drop-shadow-md">{bg.name}</span>
                                     </button>
                                 ))}
                             </div>
@@ -307,105 +339,140 @@ export const SphereBuddy3D: React.FC<Props> = ({ buddy, onUpdate, onPlay, onBack
                 </div>
             )}
 
-            {/* Quest Modal */}
+            {/* Quest Modal - Improved UI */}
             {showQuestModal && activeQuest && (
-                <div className="absolute inset-0 z-30 bg-black/80 backdrop-blur-md p-6 flex flex-col items-center justify-center animate-fade-in">
-                    <div className="bg-[#1e102e] border border-purple-500/30 p-6 rounded-2xl w-full max-w-sm shadow-2xl">
-                        <h3 className="text-center text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">RÄTSELZEIT!</h3>
-                        <p className="text-white text-center mb-6 font-medium">{activeQuest.question}</p>
+                <div className="absolute inset-0 z-30 bg-black/60 backdrop-blur-md p-6 flex flex-col items-center justify-center animate-fade-in">
+                    <div className="bg-white border-4 border-purple-400 p-6 rounded-3xl w-full max-w-md shadow-2xl transform scale-100 transition-transform">
+                        <div className="flex justify-center -mt-12 mb-4">
+                            <div className="bg-purple-500 text-white p-4 rounded-full shadow-lg border-4 border-white">
+                                <Brain size={32} />
+                            </div>
+                        </div>
+                        
+                        <h3 className="text-center text-xl font-black text-purple-600 mb-2">RÄTSELZEIT!</h3>
+                        <div className="bg-purple-50 p-4 rounded-xl mb-6 border border-purple-100">
+                            <p className="text-gray-700 text-center font-medium text-lg leading-relaxed">{activeQuest.question}</p>
+                        </div>
 
                         <input
                             type="text"
                             value={questInput}
                             onChange={(e) => setQuestInput(e.target.value)}
-                            placeholder="Antwort..."
-                            className="w-full bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-white mb-4 focus:border-purple-500 outline-none"
+                            placeholder="Deine Antwort..."
+                            className="w-full bg-gray-100 border-2 border-gray-300 rounded-xl px-4 py-4 text-gray-800 mb-4 focus:border-purple-500 focus:bg-white outline-none font-bold text-center text-lg"
+                            autoFocus
                         />
 
-                        <div className="flex gap-2">
-                            <button onClick={() => setShowQuestModal(false)} className="flex-1 py-3 rounded-xl font-bold text-gray-400 hover:bg-white/5">Später</button>
-                            <button onClick={submitQuest} className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 py-3 rounded-xl font-bold text-white hover:brightness-110 shadow-lg">Lösen</button>
+                        <div className="flex gap-3">
+                            <button onClick={() => setShowQuestModal(false)} className="flex-1 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 bg-gray-50">Später</button>
+                            <button onClick={submitQuest} className="flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold hover:bg-purple-600 shadow-lg transform active:scale-95 transition-all">Lösen</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* 3D Canvas */}
-            <div className={`relative flex-1 w-full mb-6 rounded-2xl overflow-hidden ${currentBg} border border-white/5 transition-colors duration-500`}>
-                {message && (
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 animate-bounce bg-white/90 backdrop-blur text-black px-4 py-2 rounded-xl font-black shadow-lg z-20 whitespace-nowrap pointer-events-none">
-                        {message}
+                {/* 2D Buddy Container */}
+                <div className="relative flex-1 w-full mb-0 overflow-hidden flex items-center justify-center">
+                    {message && (
+                        <div className="absolute top-8 animate-bounce bg-white text-gray-800 px-6 py-3 rounded-2xl font-black shadow-xl z-20 whitespace-nowrap pointer-events-none border-2 border-gray-100 text-sm">
+                            {message}
+                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-b-2 border-r-2 border-gray-100"></div>
+                        </div>
+                    )}
+
+                    {/* Poops */}
+                    {Array.from({ length: poopCount }).map((_, i) => (
+                        <div 
+                            key={i} 
+                            className="absolute text-4xl animate-bounce cursor-pointer hover:scale-110 transition-transform"
+                            style={{ left: `${20 + i * 20}%`, bottom: '20%' }}
+                            onClick={handleClean}
+                        >
+                            💩
+                        </div>
+                    ))}
+
+                    {/* Active Quest Indicator */}
+                    {activeQuest && !showQuestModal && (
+                        <button
+                            onClick={() => setShowQuestModal(true)}
+                            className="absolute top-24 left-1/2 -translate-x-1/2 z-20 animate-bounce bg-yellow-400 text-black px-4 py-2 rounded-full font-black shadow-[0_4px_0_rgb(202,138,4)] hover:translate-y-1 hover:shadow-none transition-all border-2 border-white"
+                        >
+                            ? RÄTSEL LÖSEN ?
+                        </button>
+                    )}
+
+                    {/* 2D Character */}
+                    <div onClick={() => handleInteract('pet')} className="cursor-pointer w-full h-full">
+                        <CuteBuddy2D buddy={buddy} animationType={animationType} position={position} />
                     </div>
-                )}
 
-                {/* Active Quest Indicator */}
-                {activeQuest && !showQuestModal && (
-                    <button
-                        onClick={() => setShowQuestModal(true)}
-                        className="absolute top-20 left-1/2 -translate-x-1/2 z-20 animate-bounce bg-yellow-400 text-black px-4 py-2 rounded-full font-black shadow-[0_0_20px_rgba(250,204,21,0.6)] hover:scale-110 transition-transform border-2 border-white"
-                    >
-                        ? RÄTSEL LÖSEN ?
-                    </button>
-                )}
+                    {/* Floating Particles for Atmosphere */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-ping opacity-50"></div>
+                        <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-white rounded-full animate-pulse opacity-30"></div>
+                        <div className="absolute bottom-1/3 left-1/3 w-1 h-1 bg-white rounded-full animate-bounce opacity-60"></div>
+                    </div>
+                </div>
 
-                <Canvas camera={{ position: [0, 0, 4], fov: 50 }}>
-                    {/* Enhanced Lighting */}
-                    <ambientLight intensity={0.8} />
-                    <pointLight position={[10, 10, 10]} intensity={1.5} />
-                    <pointLight position={[-10, -10, -10]} color="purple" intensity={0.8} />
-                    <spotLight position={[0, 10, 0]} intensity={1} angle={0.5} penumbra={1} />
+                {/* Control Bar - Tamagotchi Buttons */}
+                <div className="p-4 pb-6 bg-white/20 backdrop-blur-md border-t border-white/20">
+                    <div className="grid grid-cols-5 gap-2 max-w-lg mx-auto">
+                        <button
+                            onClick={() => handleInteract('feed')}
+                            disabled={animationType !== 'idle'}
+                            className="group flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-[0_4px_0_#e5e7eb] active:shadow-none active:translate-y-1 transition-all group-hover:bg-orange-50 border-2 border-gray-100">
+                                <Utensils size={20} className="text-orange-500 group-hover:scale-110 transition-transform" />
+                            </div>
+                            <span className="text-[9px] font-bold text-gray-700 uppercase tracking-wider bg-white/50 px-2 rounded-full">Essen</span>
+                        </button>
 
-                    <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-                    <Sparkles count={50} scale={3} size={2} speed={0.4} opacity={0.5} color={buddy.skin === 'neon' ? '#ff00ff' : '#22d3ee'} />
+                        <button
+                            onClick={() => handleInteract('pet')}
+                            disabled={animationType !== 'idle'}
+                            className="group flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-[0_4px_0_#e5e7eb] active:shadow-none active:translate-y-1 transition-all group-hover:bg-pink-50 border-2 border-gray-100">
+                                <Heart size={20} className="text-pink-500 group-hover:scale-110 transition-transform" />
+                            </div>
+                            <span className="text-[9px] font-bold text-gray-700 uppercase tracking-wider bg-white/50 px-2 rounded-full">Liebe</span>
+                        </button>
 
-                    <BuddyMesh buddy={buddy} animationType={animationType} />
-                </Canvas>
+                        <button
+                            onClick={handleClean}
+                            disabled={poopCount === 0 && animationType !== 'idle'}
+                            className="group flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-[0_4px_0_#e5e7eb] active:shadow-none active:translate-y-1 transition-all group-hover:bg-blue-50 border-2 border-gray-100">
+                                <SparklesIcon size={20} className="text-blue-500 group-hover:scale-110 transition-transform" />
+                            </div>
+                            <span className="text-[9px] font-bold text-gray-700 uppercase tracking-wider bg-white/50 px-2 rounded-full">Putzen</span>
+                        </button>
 
-                {/* Interaction Overlay */}
-                <div
-                    className="absolute inset-0 cursor-pointer z-10"
-                    onClick={() => handleInteract('pet')}
-                    title="Tap to Pet"
-                ></div>
-            </div>
+                        <button
+                            onClick={() => handleInteract('sleep')}
+                            disabled={animationType !== 'idle'}
+                            className="group flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-[0_4px_0_#e5e7eb] active:shadow-none active:translate-y-1 transition-all group-hover:bg-yellow-50 border-2 border-gray-100">
+                                <Zap size={20} className="text-yellow-500 group-hover:scale-110 transition-transform" />
+                            </div>
+                            <span className="text-[9px] font-bold text-gray-700 uppercase tracking-wider bg-white/50 px-2 rounded-full">Schlaf</span>
+                        </button>
 
-            {/* Actions */}
-            <div className="grid grid-cols-4 gap-3 relative z-10 mt-auto">
-                <button
-                    onClick={() => handleInteract('feed')}
-                    disabled={animationType !== 'idle'}
-                    className="flex flex-col items-center gap-1 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors active:scale-95 disabled:opacity-50 border border-white/5"
-                >
-                    <Utensils size={20} className="text-orange-400" />
-                    <span className="text-[10px] font-bold text-gray-300">Füttern</span>
-                </button>
-
-                <button
-                    onClick={() => handleInteract('pet')}
-                    disabled={animationType !== 'idle'}
-                    className="flex flex-col items-center gap-1 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors active:scale-95 disabled:opacity-50 border border-white/5"
-                >
-                    <Heart size={20} className="text-pink-400" />
-                    <span className="text-[10px] font-bold text-gray-300">Liebe</span>
-                </button>
-
-                <button
-                    onClick={() => handleInteract('sleep')}
-                    disabled={animationType !== 'idle'}
-                    className="flex flex-col items-center gap-1 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors active:scale-95 disabled:opacity-50 border border-white/5"
-                >
-                    <Zap size={20} className="text-yellow-400" />
-                    <span className="text-[10px] font-bold text-gray-300">Schlafen</span>
-                </button>
-
-                <button
-                    onClick={onPlay}
-                    className="flex flex-col items-center gap-1 p-3 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl hover:brightness-110 transition-all active:scale-95 shadow-lg border border-white/20"
-                >
-                    <Play size={20} className="text-white" fill="currentColor" />
-                    <span className="text-[10px] font-bold text-white">SPIELEN</span>
-                </button>
-            </div>
+                        <button
+                            onClick={onPlay}
+                            className="group flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center shadow-[0_4px_0_#4c1d95] active:shadow-none active:translate-y-1 transition-all border-2 border-purple-400">
+                                <Play size={20} className="text-white group-hover:scale-110 transition-transform" fill="currentColor" />
+                            </div>
+                            <span className="text-[9px] font-bold text-white uppercase tracking-wider bg-purple-500/80 px-2 rounded-full shadow-sm">Game</span>
+                        </button>
+                    </div>
+                </div>
 
         </div>
     );

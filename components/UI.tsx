@@ -36,15 +36,15 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
     return null;
   }
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
-      <div className={`relative w-full max-w-md bg-[#1e102e] border border-white/10 rounded-3xl shadow-2xl p-8 ${className}`}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className={`relative w-full max-w-md glass-panel rounded-3xl shadow-2xl p-8 ${className}`}>
         {onClose && (
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="absolute top-4 right-4 text-lexi-text-muted hover:text-lexi-text transition-colors">
             <X size={24} />
           </button>
         )}
         {title && <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-lexi-fuchsia mb-6 uppercase tracking-widest text-center">{title}</h2>}
-        <div className="text-gray-200">
+        <div className="text-lexi-text">
           {children}
         </div>
       </div>
@@ -75,7 +75,7 @@ export const RedeemCodeInput: React.FC<{ onRedeem: (code: string) => void; place
         value={code}
         onChange={(e) => setCode(e.target.value.toUpperCase())}
         placeholder={placeholder}
-        className="flex-grow bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2"
+        className="flex-grow glass-button text-lexi-text border-lexi-border rounded-lg px-4 py-2 placeholder:text-lexi-text-muted"
       />
       <Button onClick={handleRedeem} size="md">
         {buttonText}

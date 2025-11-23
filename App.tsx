@@ -155,6 +155,8 @@ transition-all duration-100
   );
 };
 
+import { FadeTransition } from './components/FadeTransition';
+
 // --- Main App Component ---
 
 // Define ViewType
@@ -162,6 +164,36 @@ type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL'
 
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Hook to handle view transitions with loading screen
+  const navigateTo = (newView: ViewType) => {
+    if (newView === view) return;
+    setIsTransitioning(true);
+    // Actual state change happens in the transition component callback
+    // But we store the target view in a ref or temp state if needed, 
+    // however the WaveTransition takes a callback to perform the switch mid-animation.
+    // So we'll use a small effect or just pass the setter.
+    // Let's refactor navigateTo to just set the flag, and let the component handle the timing via callback.
+    // Wait, React state updates are batched.
+    // We need to store "nextView" state.
+  };
+  
+  const [nextView, setNextView] = useState<ViewType | null>(null);
+
+  const handleNavigate = (target: ViewType) => {
+    if (target === view) return;
+    setNextView(target);
+    setIsTransitioning(true);
+  };
+
+  const onTransitionMidpoint = () => {
+    if (nextView) {
+      setView(nextView);
+      setNextView(null);
+    }
+    setTimeout(() => setIsTransitioning(false), 400); 
+  };
 
   // Onboarding State
   const [onboardingStep, setOnboardingStep] = useState(0); // 0=Lang, 1=Name, 2=Age
@@ -439,13 +471,19 @@ export default function App() {
     audio.playWin(); // Simple feedback
   };
 
-  // Helper to get active frame style
-  const getFrameStyle = (frameId?: string) => {
-    if (!frameId) return "";
-    // Map frame IDs to CSS classes or inline styles
-    if (frameId.includes('gold')) return "border-4 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.6)]";
-    if (frameId.includes('neon')) return "border-4 border-lexi-fuchsia shadow-[0_0_15px_rgba(217,70,239,0.6)]";
-    if (frameId.includes('frame_')) return "border-4 border-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]"; // Default generic frame
+  // Helper to get active effect style
+  const getAvatarEffect = (effectId?: string) => {
+    if (!effectId || effectId === 'none') return "";
+    // Map effect IDs to CSS classes
+    if (effectId.includes('gold')) return "shadow-[0_0_30px_rgba(250,204,21,0.6)] ring-4 ring-yellow-400/50 animate-pulse-slow";
+    if (effectId.includes('neon')) return "shadow-[0_0_30px_rgba(217,70,239,0.8)] ring-4 ring-fuchsia-500/50 animate-pulse";
+    if (effectId.includes('fire')) return "shadow-[0_0_30px_rgba(239,68,68,0.8)] ring-4 ring-red-500/50 animate-pulse";
+    if (effectId.includes('ice')) return "shadow-[0_0_30px_rgba(6,182,212,0.8)] ring-4 ring-cyan-400/50 animate-pulse";
+    if (effectId.includes('sparkle')) return "shadow-[0_0_30px_rgba(234,179,8,0.8)] ring-4 ring-yellow-300/50 animate-bounce-slow";
+    if (effectId.includes('glow')) return "shadow-[0_0_40px_rgba(255,255,255,0.5)] animate-pulse-slow";
+    
+    // Fallback for legacy frames
+    if (effectId.includes('frame_')) return "shadow-[0_0_20px_rgba(34,211,238,0.5)] ring-2 ring-cyan-400"; 
     return "";
   };
 
@@ -1409,6 +1447,25 @@ export default function App() {
   };
 
   const renderShop = () => {
+    const [currentBanner, setCurrentBanner] = useState(0);
+    const BANNERS = [
+      { title: "SEASON 2 IS LIVE", subtitle: "Unlock Cyberpunk Skins", color: "from-lexi-fuchsia to-blue-600", icon: <Zap size={64} className="text-white animate-pulse" /> },
+      { title: "NEW AVATARS", subtitle: "Check out the terminal", color: "from-green-500 to-teal-600", icon: <User size={64} className="text-white animate-bounce-slow" /> },
+      { title: "COIN SALE", subtitle: "Get rich quick", color: "from-yellow-400 to-orange-500", icon: <Coins size={64} className="text-white animate-spin-reverse" /> }
+    ];
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentBanner(prev => (prev + 1) % BANNERS.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }, []);
+
+    // Safe access to banner with fallback
+    const activeBanner = BANNERS[currentBanner] || BANNERS[0];
+
+    if (!activeBanner) return null; // Extra safety
+
     return (
       <div className="h-full flex flex-col animate-fade-in glass-panel max-w-4xl mx-auto w-full rounded-none md:rounded-3xl overflow-hidden">
         {/* Shop Header */}
@@ -1423,23 +1480,43 @@ export default function App() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
-              className="hidden md:flex items-center gap-1 bg-gray-800/50 px-3 py-1 rounded-full border border-white/10 hover:bg-white/10 transition-colors text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-white"
+              className="hidden md:flex items-center gap-1 bg-gray-800/50 px-3 py-1 rounded-full border border-white/10 hover:bg-white/10 transition-colors text-[10px] font-bold uppercase tracking-wider text-lexi-text hover:text-lexi-cyan"
             >
               <Sparkles size={12} /> Gutschein
             </button>
             <div className="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-white/10">
               <Gem size={14} className="text-blue-400" />
-              <span className="text-sm font-bold">{Math.max(0, user.coins)}</span>
+              <span className="text-sm font-bold text-lexi-text">{Math.max(0, user.coins)}</span>
             </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide">
+          {/* Featured Rotating Banner */}
+          <div className={`w-full h-40 rounded-3xl relative overflow-hidden shadow-2xl animate-scale-in transition-all duration-500 bg-gradient-to-r ${activeBanner.color}`}>
+             <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:250%_250%] animate-shimmer"></div>
+             <div className="absolute inset-0 flex items-center justify-between px-8">
+                <div className="z-10">
+                   <h3 className="text-3xl font-black italic text-white drop-shadow-lg mb-1 animate-slide-down">{activeBanner.title}</h3>
+                   <p className="text-white/80 font-bold tracking-widest uppercase text-xs">{activeBanner.subtitle}</p>
+                </div>
+                <div className="opacity-80 transform scale-110 transition-transform duration-1000">
+                   {activeBanner.icon}
+                </div>
+             </div>
+             {/* Dots Indicator */}
+             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                {BANNERS.map((_, i) => (
+                  <div key={i} className={`w-2 h-2 rounded-full transition-all ${i === currentBanner ? 'bg-white scale-125' : 'bg-white/40'}`}></div>
+                ))}
+             </div>
+          </div>
+
           {/* Mobile Redeem Button */}
           <div className="md:hidden w-full mb-4">
             <button
               onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
-              className="w-full py-3 rounded-xl bg-gray-800/50 border border-white/10 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+              className="w-full py-3 rounded-xl bg-gray-800/50 border border-white/10 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-lexi-text hover:text-lexi-cyan hover:bg-white/5 transition-all"
             >
               <Sparkles size={14} /> Gutschein einlösen
             </button>
@@ -1447,7 +1524,7 @@ export default function App() {
 
           {/* Avatar Section */}
           <div>
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><User size={16} /> {t.SHOP.AVATAR_SECTION}</h3>
+            <h3 className="text-sm font-bold text-lexi-text-muted uppercase tracking-widest mb-4 flex items-center gap-2"><User size={16} /> {t.SHOP.AVATAR_SECTION}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {SHOP_ITEMS.filter(i => i.type === 'avatar').map((item, idx) => {
                 const isOwned = (user.ownedAvatars || []).includes(item.value as string);
@@ -1456,13 +1533,13 @@ export default function App() {
                 return (
                   <div
                     key={item.id}
-                    className={`bg-gray-900/50 border ${isEquipped ? 'border-lexi-fuchsia bg-lexi-fuchsia/10' : 'border-white/10'} p-4 rounded-2xl flex flex-col items-center relative overflow-hidden group hover:border-lexi-fuchsia/50 transition-all animate-scale-in`}
+                    className={`glass-panel p-4 rounded-2xl flex flex-col items-center relative overflow-hidden group hover:border-lexi-fuchsia/50 transition-all animate-scale-in ${isEquipped ? 'border-lexi-fuchsia bg-lexi-fuchsia/10' : ''}`}
                     style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div className="w-20 h-20 bg-gray-800 rounded-full mb-3 overflow-hidden border-2 border-white/5 group-hover:scale-105 transition-transform">
                       <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${item.value}`} alt={item.name} />
                     </div>
-                    <span className="text-sm font-bold text-white mb-1 text-center leading-tight">{item.name}</span>
+                    <span className="text-sm font-bold text-lexi-text mb-1 text-center leading-tight">{item.name}</span>
 
                     <div className="mt-auto w-full">
                       {isOwned ? (
@@ -1490,7 +1567,7 @@ export default function App() {
 
           {/* Currency Section */}
           <div>
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"><CreditCard size={16} /> {t.SHOP.CURRENCY_SECTION}</h3>
+            <h3 className="text-sm font-bold text-lexi-text-muted uppercase tracking-widest mb-4 flex items-center gap-2"><CreditCard size={16} /> {t.SHOP.CURRENCY_SECTION}</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {SHOP_ITEMS.filter(i => i.type === 'currency').map((item, idx) => (
                 <div
@@ -1543,7 +1620,7 @@ export default function App() {
       {/* Header Section */}
       <div className="flex items-center justify-between w-full px-4 py-4 mb-6 relative z-10">
         <button className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity text-left" onClick={openProfile}>
-          <div className={`relative rounded-full p-1 ${getFrameStyle(user.activeFrame)}`}>
+          <div className={`relative rounded-full p-1 transition-all duration-500 ${getAvatarEffect(user.activeFrame)}`}>
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-14 h-14 rounded-full" />
           </div>
           <div>
@@ -1879,46 +1956,49 @@ export default function App() {
 
     return (
       <div className="flex flex-col h-full max-h-screen relative z-10">
-        {/* Header - Made more compact */}
-        <div className="pt-4 pb-2 px-4 md:px-8 text-center relative glass-panel mb-4 mx-4 rounded-3xl mt-4">
-          <button onClick={() => setView('LEVELS')} className="absolute left-4 top-4 w-10 h-10 flex items-center justify-center glass-button rounded-full"><ArrowLeft size={20} className="text-lexi-text" /></button>
-
-          <div className="inline-block px-3 py-1 rounded-full bg-purple-900/30 border border-purple-500/30 text-xs font-bold text-purple-300 uppercase tracking-widest mb-2 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
-            {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : t.GAME.CLASSIC_TITLE)}
+        {/* Header - Completely Redesigned for Space and Boldness */}
+        <div className="relative z-20 pt-6 pb-4 px-6 animate-slide-down flex flex-col items-center gap-2">
+          <div className="w-full flex items-center justify-between mb-4">
+             <button onClick={() => handleNavigate('LEVELS')} className="w-12 h-12 flex items-center justify-center glass-button rounded-full hover:bg-white/10 transition-colors active:scale-95">
+               <ArrowLeft size={24} className="text-lexi-text" />
+             </button>
+             
+             {/* Timer (Speedrun / Challenge) */}
+             {showTimer && (
+                <div className={`text-2xl font-black font-mono flex items-center gap-2 px-4 py-2 rounded-xl glass-panel ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-lexi-cyan'}`}>
+                  <Clock size={20} /> {gameState.timeLeft}s
+                </div>
+             )}
+             
+             <div className="w-12"></div> {/* Spacer for balance */}
           </div>
 
-          <h1 className="text-2xl md:text-4xl font-black italic text-lexi-text drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)] animate-slide-up leading-tight mb-2">
-            "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}" <span className="text-xs text-red-500">[{gameState.targetWord}]</span>
+          <h1 className="text-4xl md:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] animate-scale-in leading-none text-center mb-2">
+            {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : t.GAME.CLASSIC_TITLE)}
           </h1>
 
-          {/* Info Status Bar */}
-          <div className={`flex items-center justify-center gap-2 text-xs font-mono py-1 px-3 rounded-full inline-block border transition-colors duration-300 glass-button text-lexi-text-muted`}>
-            <Info size={12} />
-            {infoText}
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 px-6 py-3 rounded-2xl shadow-xl animate-fade-in">
+             <p className="text-lg md:text-xl font-bold text-lexi-text-muted text-center">
+               "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
+             </p>
           </div>
-
-          {/* Timer (Speedrun / Challenge) */}
-          {showTimer && (
-            <div className={`mt-2 text-3xl font-mono font-black flex items-center justify-center gap-2 drop-shadow-lg ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-cyan-400'}`}>
-              <Clock size={24} /> {gameState.timeLeft}s
-            </div>
-          )}
-
-          <button onClick={triggerHint} className="absolute right-4 top-4 w-10 h-10 flex items-center justify-center bg-yellow-500/20 rounded-full border border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/30 transition-colors shadow-[0_0_15px_rgba(234,179,8,0.2)] animate-pulse-slow">
-            <HelpCircle size={20} />
-          </button>
+          
+          {/* Target Word (Debug/Info) - Hidden or Subtle */}
+          {/* <span className="text-xs text-red-500/50">[{gameState.targetWord}]</span> */}
         </div>
 
-        {/* Game Board - Scrollable container with proper centering */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide w-full relative">
-          <div className="min-h-full flex flex-col items-center justify-center p-4">
+        {/* Game Board - Centered with more breathing room */}
+        <div className="flex-1 w-full relative flex flex-col justify-center py-8 overflow-hidden">
+          <div className="w-full max-w-3xl mx-auto px-4 animate-float-slow">
             {isSudoku ? (
-              <SudokuBoard
-                puzzle={gameState.currentGrid}
-                original={gameState.data.sudokuPuzzle}
-                selectedCell={gameState.selectedCell}
-                onCellClick={(r: number, c: number) => setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }))}
-              />
+              <div className="transform scale-95 md:scale-100 transition-transform">
+                <SudokuBoard
+                  puzzle={gameState.currentGrid}
+                  original={gameState.data.sudokuPuzzle}
+                  selectedCell={gameState.selectedCell}
+                  onCellClick={(r: number, c: number) => setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }))}
+                />
+              </div>
             ) : (
               <WordGrid
                 guesses={gameState.guesses}
@@ -1927,9 +2007,24 @@ export default function App() {
                 turn={gameState.guesses.length}
               />
             )}
-
-            {/* Confirmation Prompt Removed */}
           </div>
+        </div>
+
+        {/* Hint Button - Prominent, Animated, Lower */}
+        <div className="absolute bottom-8 right-6 z-30">
+           <button 
+             onClick={triggerHint} 
+             className="group relative w-20 h-20 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-[0_10px_30px_rgba(251,191,36,0.4)] transition-all hover:scale-110 active:scale-95 animate-bounce-slow"
+           >
+             <div className="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-20"></div>
+             <HelpCircle size={40} className="text-white drop-shadow-md group-hover:rotate-12 transition-transform" />
+             {/* Badge for Cost */}
+             {hintCostMultiplier > 0 && (
+               <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md border-2 border-white">
+                 -{hintCostMultiplier * 10}
+               </div>
+             )}
+           </button>
         </div>
 
         {/* Controls - Native Keyboard Input */}
@@ -1989,12 +2084,18 @@ export default function App() {
       <div className="fixed inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900/50 to-cyan-900/20 pointer-events-none"></div>
       <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
 
+      {/* Fade Transition */}
+      <FadeTransition 
+        isTransitioning={isTransitioning} 
+        onTransitionEnd={onTransitionMidpoint} 
+      />
+
       {view === 'ONBOARDING' && renderOnboarding()}
       {view === 'HOME' && renderHome()}
       {view === 'SEASON' && (
         <SeasonPassView
           user={user}
-          onClose={() => setView('HOME')}
+          onClose={() => handleNavigate('HOME')}
           onClaim={handleClaimReward}
           onShowPremium={() => setShowPremiumInfo(true)}
         />
@@ -2002,6 +2103,16 @@ export default function App() {
       {view === 'LEVELS' && renderLevels()}
       {view === 'GAME' && renderGame()}
       {view === 'TUTORIAL' && renderTutorial()}
+      {view === 'SPHERE' && (
+        <div className="h-full flex flex-col p-4 animate-fade-in">
+           <SphereBuddy3D 
+             buddy={user.buddy || { name: 'Sphere', level: 1, xp: 0, hunger: 80, energy: 80, mood: 80, skin: 'default', lastInteraction: Date.now() }}
+             onUpdate={(newBuddy) => setUser(prev => ({ ...prev, buddy: newBuddy }))}
+             onPlay={() => { handleNavigate('GAME'); setGameConfig({ mode: GameMode.CLASSIC, tier: Tier.BEGINNER, levelId: 1 }); }}
+             onBack={() => handleNavigate('HOME')}
+           />
+        </div>
+      )}
       {/* Navigation Icons */}
 
       {/* Auth Screen (First screen) */}
@@ -2073,17 +2184,17 @@ export default function App() {
               const nextIndex = (currentIndex + 1) % owned.length;
               setEditAvatar(owned[nextIndex]);
             }}>
-              <div className={`w-32 h-32 bg-gray-800 rounded-full overflow-hidden transition-transform group-hover:scale-105 ${getFrameStyle(editFrame)}`}>
+              <div className={`w-32 h-32 bg-gray-800 rounded-full overflow-hidden transition-transform group-hover:scale-105 ${getAvatarEffect(editFrame)}`}>
                 <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`} alt="Avatar" />
               </div>
-              <div className="absolute bottom-0 right-0 bg-gray-900 rounded-full p-3 border border-white/20 text-white">
+              <div className="absolute bottom-0 right-0 bg-lexi-surface rounded-full p-3 border border-white/20 text-lexi-text shadow-lg">
                 <Edit2 size={18} />
               </div>
             </div>
           </div>
 
           <div className="text-center text-xs text-gray-400 font-bold">
-            Click avatar to cycle through your owned collection
+            {t.PROFILE.AVATAR_HINT}
           </div>
 
           <div className="text-center border-b border-white/10 pb-4">
@@ -2141,21 +2252,21 @@ export default function App() {
           )}
 
           <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Select Frame</h3>
+            <h3 className="text-xs font-bold text-lexi-text-muted uppercase tracking-wider mb-2">Select Effect</h3>
             <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto scrollbar-hide">
               <button
                 onClick={() => setEditFrame('none')}
-                className={`relative rounded-xl overflow-hidden border-2 transition-all h-16 flex items-center justify-center bg-gray-800 ${editFrame === 'none' ? 'border-lexi-fuchsia scale-105' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                className={`relative rounded-full overflow-hidden transition-all h-14 w-14 flex items-center justify-center bg-gray-800 mx-auto ${editFrame === 'none' ? 'ring-2 ring-lexi-fuchsia scale-105' : 'opacity-50 hover:opacity-100'}`}
               >
-                <span className="text-[10px] font-bold text-gray-400 uppercase">None</span>
+                <span className="text-[8px] font-bold text-gray-400 uppercase">None</span>
               </button>
-              {(user.ownedFrames || []).map(frameId => (
+              {(user.ownedFrames || []).map(effectId => (
                 <button
-                  key={frameId}
-                  onClick={() => setEditFrame(frameId)}
-                  className={`relative rounded-xl overflow-hidden transition-all h-16 flex items-center justify-center bg-gray-800 ${getFrameStyle(frameId)} ${editFrame === frameId ? 'scale-105 ring-2 ring-white' : 'opacity-50 hover:opacity-100'}`}
+                  key={effectId}
+                  onClick={() => setEditFrame(effectId)}
+                  className={`relative rounded-full overflow-hidden transition-all h-14 w-14 flex items-center justify-center bg-gray-800 mx-auto ${getAvatarEffect(effectId)} ${editFrame === effectId ? 'scale-110 z-10' : 'opacity-70 hover:opacity-100'}`}
                 >
-                  <div className="w-10 h-10 bg-gray-700 rounded-full"></div>
+                  <div className="w-full h-full bg-gradient-to-br from-white/10 to-transparent rounded-full"></div>
                 </button>
               ))}
             </div>
