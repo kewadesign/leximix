@@ -900,7 +900,7 @@ export default function App() {
     console.log('[Cloud] Logged out - cleared all data');
   };
 
-  const startGame = () => {
+  const startGameFromTutorial = () => {
     setView('GAME');
     setTutorialMode(null);
   };
@@ -2716,8 +2716,8 @@ export default function App() {
               Abbrechen
             </button>
             <button
-              onClick={saveProfile}
-              className="flex-1 py-4 rounded-xl font-black text-sm uppercase bg-lexi-fuchsia hover:bg-lexi-fuchsia/80 text-white transition-colors shadow-[0_0_20px_rgba(217,70,239,0.4)]"
+              onClick={startGameFromTutorial}
+              className="py-4 rounded-xl font-black text-lg uppercase bg-lexi-cyan hover:bg-lexi-cyan/80 text-black transition-colors shadow-[0_0_20px_rgba(34,211,238,0.4)] flex items-center justify-center gap-2"
             >
               {t.PROFILE.SAVE}
             </button>
