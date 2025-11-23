@@ -12,7 +12,7 @@ import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon } from 'lucide-react';
 
 // --- Sub Components for Game Logic ---
 
@@ -1532,6 +1532,12 @@ export default function App() {
     );
   };
 
+  const toggleTheme = () => {
+    const newTheme = user.theme === 'dark' ? 'light' : 'dark';
+    setUser(prev => ({ ...prev, theme: newTheme }));
+    audio.playClick();
+  };
+
   const renderHome = () => (
     <div className="flex flex-col h-full p-6 w-full max-w-4xl mx-auto overflow-y-auto pb-10 scrollbar-hide animate-fade-in">
       {/* Header Section */}
@@ -1561,8 +1567,8 @@ export default function App() {
             <Gem size={16} className="text-blue-400" />
             <span className="font-bold text-sm">{user.coins}</span>
           </button>
-          <button onClick={openProfile} className="glass-button p-2 rounded-full">
-            <Settings size={16} className="text-lexi-text" />
+          <button onClick={toggleTheme} className="glass-button p-2 rounded-full">
+            {user.theme === 'dark' ? <Sun size={16} className="text-lexi-text" /> : <Moon size={16} className="text-lexi-text" />}
           </button>
         </div>
       </div>
@@ -1680,24 +1686,6 @@ export default function App() {
 
 
 
-        {/* Sphere Buddy Card */}
-        <div
-          onClick={() => setView('SPHERE')}
-          className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-indigo-600 to-purple-600 shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-purple-500/20 cursor-pointer group border border-white/10"
-        >
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Sparkles size={64} />
-          </div>
-          <div className="relative z-10 flex flex-col h-full justify-between">
-            <div className="bg-white/20 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 backdrop-blur-sm">
-              <span className="text-2xl">🟣</span>
-            </div>
-            <div>
-              <h3 className="text-xl font-black text-white mb-1 tracking-tight">SPHERE BUDDY</h3>
-              <p className="text-xs text-purple-100 font-medium opacity-80">Dein Begleiter</p>
-            </div>
-          </div>
-        </div>
         <GameCard
           mode={GameMode.CHAIN}
           title={t.MODES.CHAIN.title}
