@@ -1,4 +1,4 @@
-import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData } from './types';
+import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonReward } from './types';
 
 // ============================================================================
 // SEASON SYSTEM
@@ -44,18 +44,18 @@ export const SEASON_1_AVATARS: SeasonAvatar[] = [
   { level: 100, name: 'Storm Caller', id: 'storm_caller', dicebear: 'Storm', desc: 'Lightning master' }
 ];
 
-// Season 2: Neon Uprising (Cyberpunk Theme) - NEW!
+// Season 2: Neon Uprising (Cyberpunk Theme) - UPDATED with Nano Banana Pro Style
 export const SEASON_2_AVATARS: SeasonAvatar[] = [
-  { level: 10, name: 'Neon Hacker', id: 'neon_hacker', dicebear: 'NeonHacker', desc: 'Code breaker' },
-  { level: 20, name: 'Cyber Samurai', id: 'cyber_samurai', dicebear: 'CyberSamurai', desc: 'Digital warrior' },
-  { level: 30, name: 'Hologram Girl', id: 'hologram_girl', dicebear: 'HologramGirl', desc: 'Virtual beauty' },
-  { level: 40, name: 'Glitch Master', id: 'glitch_master', dicebear: 'GlitchMaster', desc: 'Reality bender' },
-  { level: 50, name: 'Neon Dragon', id: 'neon_dragon', dicebear: 'NeonDragon', desc: 'Electric beast' },
-  { level: 60, name: 'Circuit Breaker', id: 'circuit_breaker', dicebear: 'CircuitBreaker', desc: 'System destroyer' },
-  { level: 70, name: 'Data Phantom', id: 'data_phantom', dicebear: 'DataPhantom', desc: 'Digital ghost' },
-  { level: 80, name: 'Neon Ronin', id: 'neon_ronin', dicebear: 'NeonRonin', desc: 'Masterless AI' },
-  { level: 90, name: 'Quantum Hacker', id: 'quantum_hacker', dicebear: 'QuantumHacker', desc: 'Reality coder' },
-  { level: 100, name: 'Neon God', id: 'neon_god', dicebear: 'NeonGod', desc: 'Ultimate being' }
+  { level: 10, name: 'Nano Scout', id: 'nano_banana_pro_1', dicebear: 'nano_banana_pro_1', desc: 'Recon Unit' },
+  { level: 20, name: 'Cyber Banana', id: 'nano_banana_pro_2', dicebear: 'nano_banana_pro_2', desc: 'Enhanced organic' },
+  { level: 30, name: 'Neon Ape', id: 'nano_banana_pro_3', dicebear: 'nano_banana_pro_3', desc: 'City dweller' },
+  { level: 40, name: 'Glitch Monkey', id: 'nano_banana_pro_4', dicebear: 'nano_banana_pro_4', desc: 'System error' },
+  { level: 50, name: 'Mecha Kong', id: 'nano_banana_pro_5', dicebear: 'nano_banana_pro_5', desc: 'Heavy hitter' },
+  { level: 60, name: 'Circuit Simian', id: 'nano_banana_pro_6', dicebear: 'nano_banana_pro_6', desc: 'Network flow' },
+  { level: 70, name: 'Data Chimp', id: 'nano_banana_pro_7', dicebear: 'nano_banana_pro_7', desc: 'Info broker' },
+  { level: 80, name: 'Void Primate', id: 'nano_banana_pro_8', dicebear: 'nano_banana_pro_8', desc: 'Dark sector' },
+  { level: 90, name: 'Quantum Gorilla', id: 'nano_banana_pro_9', dicebear: 'nano_banana_pro_9', desc: 'Reality bender' },
+  { level: 100, name: 'Nano Banana God', id: 'nano_banana_pro_10', dicebear: 'nano_banana_pro_10', desc: 'Ascended' }
 ];
 
 export const SEASONS: Season[] = [
@@ -1062,7 +1062,32 @@ export const generateSeasonRewards = (season: Season) => {
 };
 
 // Legacy compatibility - defaults to current season
-export const SEASON_REWARDS = generateSeasonRewards(getCurrentSeason());
+const generatedRewards = generateSeasonRewards(getCurrentSeason());
+
+// Apply Manual Overrides for first 15 levels (Nano Banana Special)
+const overrides: Record<number, Partial<SeasonReward>> = {
+  1: { premium: { type: 'avatar', name: 'Nano Scout', value: 'nano_banana_pro_1', preview: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_1' } },
+  2: { premium: { type: 'effect', name: 'Rainbow Pulse', value: 'effect_rainbow', icon: '🌈' } },
+  4: { premium: { type: 'avatar', name: 'Space Explorer', value: 'space_explorer', preview: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=SpaceExplorer' } },
+  5: { premium: { type: 'effect', name: 'Gold Luxury', value: 'effect_gold', icon: '👑' } },
+  6: { premium: { type: 'avatar', name: 'Cyber Banana', value: 'nano_banana_pro_2', preview: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_2' } },
+  7: { premium: { type: 'effect', name: 'Diamond Shine', value: 'effect_diamond', icon: '💎' } },
+  8: { premium: { type: 'effect', name: 'Matrix Rain', value: 'effect_matrix', icon: '💻' } },
+  9: { premium: { type: 'avatar', name: 'Neon Ape', value: 'nano_banana_pro_3', preview: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_3' } },
+  10: { premium: { type: 'effect', name: 'Glitch Wild', value: 'effect_glitch_wild', icon: '👾' } },
+  11: { premium: { type: 'avatar', name: 'Glitch Monkey', value: 'nano_banana_pro_4', preview: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_4' } },
+  12: { premium: { type: 'effect', name: 'Holo Shimmer', value: 'effect_holo', icon: '💿' } },
+  14: { premium: { type: 'avatar', name: 'Mecha Kong', value: 'nano_banana_pro_5', preview: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_5' } },
+  15: { premium: { type: 'effect', name: 'Quantum Flux', value: 'effect_quantum', icon: '⚛️' } }
+};
+
+export const SEASON_REWARDS: SeasonReward[] = generatedRewards.map(reward => {
+  const override = overrides[reward.level];
+  if (override) {
+    return { ...reward, ...override };
+  }
+  return reward;
+});
 
 // Shop Items
 export const SHOP_ITEMS: ShopItem[] = [

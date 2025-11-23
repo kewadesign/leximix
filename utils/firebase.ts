@@ -226,6 +226,7 @@ export interface VoucherRedemptionResult {
     success: boolean;
     error?: string;
     coinsAwarded?: number;
+    isPremium?: boolean;
 }
 
 /**
@@ -294,10 +295,21 @@ export const redeemVoucher = async (
 
         // ---- PREMIUM ACTIVATION ----
         if (voucherData.isPremium) {
+            // UPDATE 1: Root level (for quick checks)
             const premiumRef = ref(database, `users/${normalizedUsername}/isPremium`);
             const activatedAtRef = ref(database, `users/${normalizedUsername}/premiumActivatedAt`);
+            
+            // UPDATE 2: Deep within saves/current (where the app actually reads/writes state)
+            const savePremiumRef = ref(database, `users/${normalizedUsername}/saves/current/isPremium`);
+            const saveActivatedAtRef = ref(database, `users/${normalizedUsername}/saves/current/premiumActivatedAt`);
+
+            const now = Date.now();
+            
             await set(premiumRef, true);
-            await set(activatedAtRef, Date.now());
+            await set(activatedAtRef, now);
+            await set(savePremiumRef, true);
+            await set(saveActivatedAtRef, now);
+            
             console.log(`[Firebase] Premium aktiviert für ${normalizedUsername}`);
         }
 
@@ -305,6 +317,7 @@ export const redeemVoucher = async (
         return {
             success: true,
             coinsAwarded: voucherData.coins,
+            isPremium: voucherData.isPremium // Pass this back to the frontend
         };
 
     } catch (error: any) {

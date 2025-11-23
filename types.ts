@@ -53,7 +53,8 @@ export interface UserState {
   activeFrame?: string; // ID of the equipped frame
   ownedFrames?: string[]; // List of owned frame IDs
   hintBooster?: number; // Level of hint speed booster (0 = none)
-  claimedSeasonRewards?: number[]; // Track which season levels have been claimed
+  claimedSeasonRewards?: number[]; // Track which FREE season levels have been claimed
+  claimedPremiumRewards?: number[]; // Track which PREMIUM season levels have been claimed
   redeemedCodes?: string[]; // Track redeemed gutschein codes
   stickers?: string[]; // Collected stickers
   theme: 'light' | 'dark';
@@ -98,7 +99,7 @@ export interface ShopItem {
 }
 
 export interface SeasonRewardItem {
-  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker';
+  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker' | 'effect';
   name: string;
   amount?: number;
   desc?: string;

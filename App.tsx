@@ -74,11 +74,18 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
 
 const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
   const empties = Array(Math.max(0, 6 - 1 - turn)).fill(null);
+  
+  // CSS Grid Logic for perfect sizing:
+  // min(14vw, 3.5rem) ensures cells are max 56px but shrink for mobile/long words
+  // w-fit ensures the container is only as wide as the grid
+  const gridStyle = {
+    gridTemplateColumns: `repeat(${targetLength}, min(14vw, 3.5rem))`
+  };
 
   return (
-    <div className="flex flex-col gap-2 w-full max-w-[300px] md:max-w-[350px] mx-auto">
+    <div className="flex flex-col gap-2 w-fit mx-auto transition-all">
       {guesses.map((guess: any, i: number) => (
-        <div key={i} className="grid gap-2" style={{ gridTemplateColumns: `repeat(${targetLength}, 1fr)` }}>
+        <div key={i} className="grid gap-2 justify-center" style={gridStyle}>
           {guess.word.split('').map((char: string, j: number) => (
             <div key={j} className={`aspect-square flex items-center justify-center rounded-lg font-mono font-bold text-2xl md:text-3xl uppercase transition-all duration-500 animate-scale-in
   ${guess.result[j] === 'correct' ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.5)] rotate-x-0' :
@@ -93,7 +100,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
       ))}
 
       {turn < 6 && (
-        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${targetLength}, 1fr)` }}>
+        <div className="grid gap-2 justify-center" style={gridStyle}>
           {Array(targetLength).fill(null).map((_, i) => (
             <div key={i} className={`aspect-square flex items-center justify-center rounded-xl border-2 ${currentGuess[i] ? 'border-cyan-400 text-white bg-cyan-900/40 animate-pulse shadow-[0_0_15px_rgba(34,211,238,0.3)]' : 'border-white/10 bg-white/5'} font-mono font-bold text-2xl md:text-3xl uppercase transition-colors duration-200 text-white`}>
               {currentGuess[i] || ''}
@@ -103,7 +110,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
       )}
 
       {empties.map((_, i) => (
-        <div key={`empty - ${i} `} className="grid gap-2" style={{ gridTemplateColumns: `repeat(${targetLength}, 1fr)` }}>
+        <div key={`empty - ${i} `} className="grid gap-2 justify-center" style={gridStyle}>
           {Array(targetLength).fill(null).map((__, j) => (
             <div key={j} className="aspect-square rounded-lg border-2 border-lexi-border/30 bg-lexi-surface/5"></div>
           ))}
@@ -312,7 +319,7 @@ export default function App() {
     const interval = setInterval(verifyPremiumStatus, 60000);
 
     return () => clearInterval(interval);
-  }, [cloudUsername, user.isPremium]);
+  }, [cloudUsername]);
 
   const t = TRANSLATIONS[view === 'ONBOARDING' ? tempUser.language : user.language]; // Handle lang during onboarding
 
@@ -335,6 +342,9 @@ export default function App() {
   const [showProfile, setShowProfile] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [tutorialMode, setTutorialMode] = useState<GameMode | null>(null);
+  const [showChallengeIntro, setShowChallengeIntro] = useState(false);
+  const [challengeIntroCallback, setChallengeIntroCallback] = useState<(() => void) | null>(null);
+
   const [winStats, setWinStats] = useState({ xp: 0, coins: 0 });
   const [levelUpData, setLevelUpData] = useState({ level: 1, xp: 0 }); // Data for Level Up Modal
   const [showRedeemModal, setShowRedeemModal] = useState(false); // Redeem Code Modal
@@ -380,12 +390,17 @@ export default function App() {
     }
   }, [user, view, cloudUsername]);
 
-  const handleClaimReward = (level: number) => {
+  const handleClaimReward = (level: number, isPremiumClaim: boolean = false) => {
     const reward = SEASON_REWARDS[level - 1];
     if (!reward) return;
 
-    // Check if already claimed
-    if (user.claimedSeasonRewards?.includes(level)) return;
+    // Check if already claimed based on type
+    if (isPremiumClaim) {
+      if (!user.isPremium) return;
+      if (user.claimedPremiumRewards?.includes(level)) return;
+    } else {
+      if (user.claimedSeasonRewards?.includes(level)) return;
+    }
 
     let coinsToAdd = 0;
     const newAvatars = [...(user.ownedAvatars || [])];
@@ -433,12 +448,10 @@ export default function App() {
       }
     };
 
-    // Add Free Reward
-    processReward(reward.free);
-
-    // Add Premium Reward
-    if (user.isPremium) {
+    if (isPremiumClaim) {
       processReward(reward.premium);
+    } else {
+      processReward(reward.free);
     }
 
     setUser(prev => ({
@@ -448,7 +461,8 @@ export default function App() {
       ownedFrames: newFrames,
       stickers: newStickers,
       hintBooster: newBooster,
-      claimedSeasonRewards: [...(prev.claimedSeasonRewards || []), level]
+      claimedSeasonRewards: !isPremiumClaim ? [...(prev.claimedSeasonRewards || []), level] : prev.claimedSeasonRewards,
+      claimedPremiumRewards: isPremiumClaim ? [...(prev.claimedPremiumRewards || []), level] : prev.claimedPremiumRewards
     }));
 
     audio.playWin(); // Simple feedback
@@ -477,12 +491,15 @@ export default function App() {
     if (effectId === 'effect_nebula_glow') return 'frame-nebula-glow';
     if (effectId === 'effect_void_edge') return 'frame-void-edge';
 
-    // Special frames
-    if (effectId === 'effect_rainbow_pulse') return 'frame-rainbow-pulse';
-    if (effectId === 'effect_gold_luxury') return 'frame-gold-luxury';
-    if (effectId === 'effect_diamond_shine') return 'frame-diamond-shine';
-    if (effectId === 'effect_shadow_flame') return 'frame-shadow-flame';
-    if (effectId === 'effect_aurora_wave') return 'frame-aurora-wave';
+    // NEW: Advanced Effects (Nano Banana Update)
+    if (effectId === 'effect_rainbow') return 'frame-rainbow-pulse';
+    if (effectId === 'effect_gold') return 'frame-gold-luxury';
+    if (effectId === 'effect_diamond') return 'frame-diamond-shine';
+    if (effectId === 'effect_shadow') return 'frame-shadow-flame';
+    if (effectId === 'effect_aurora') return 'frame-aurora-wave';
+    if (effectId === 'effect_pixel') return 'frame-pixel-glitch';
+    if (effectId === 'effect_holo') return 'frame-holo-shimmer';
+    if (effectId === 'effect_matrix') return 'frame-matrix-rain';
     if (effectId === 'effect_pixel_glitch') return 'frame-pixel-glitch';
     if (effectId === 'effect_holo_shimmer') return 'frame-holo-shimmer';
 
@@ -633,11 +650,13 @@ export default function App() {
         return;
       }
 
-      const cost = 50 * (gameConfig?.tier || 1); // Cost scales with Tier (default 1 if not set yet, but usually set in next step)
-      // Actually, tier is set AFTER this in handleLevelSelect usually, but for Challenge mode we might want to select Tier first?
-      // For now, let's assume a base cost of 50 for entering the mode selection, or handle it per level.
-      // The user request says "je höher die levels je teurer".
-      // Let's move the cost check to handleLevelSelect for Challenge Mode to be accurate.
+      // Show Intro Modal first
+      setChallengeIntroCallback(() => () => {
+        setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 });
+        setView('LEVELS');
+      });
+      setShowChallengeIntro(true);
+      return;
     }
 
     setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 }); // Default
@@ -1313,10 +1332,19 @@ export default function App() {
           setUser(u => ({ ...u, coins: u.coins + result.coinsAwarded! }));
         }
 
+        // Activating Premium if applicable
+        if (result.isPremium) {
+            setUser(u => ({ ...u, isPremium: true, premiumActivatedAt: Date.now() }));
+        }
+
         // Show success message
-        const msg = result.coinsAwarded
+        let msg = result.coinsAwarded
           ? `🎉 Gutschein eingelöst! + ${result.coinsAwarded} Münzen`
           : `🎉 Gutschein erfolgreich eingelöst!`;
+        
+        if (result.isPremium) {
+            msg = "🎉 PREMIUM STATUS AKTIVIERT! 👑";
+        }
 
         setVoucherSuccess(msg);
         setVoucherError('');
@@ -2044,6 +2072,48 @@ export default function App() {
       {view === 'TUTORIAL' && renderTutorial()}
       {/* Navigation Icons */}
 
+      {/* Challenge Mode Intro Modal */}
+      <Modal isOpen={showChallengeIntro} onClose={() => setShowChallengeIntro(false)} title={t.MODES.CHALLENGE.title}>
+        <div className="p-6 text-center space-y-6">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg animate-bounce-slow">
+            <Brain size={40} className="text-white" />
+          </div>
+          
+          <div>
+            <h3 className="text-xl font-black text-white mb-2 uppercase italic">Bereit für die ultimative Prüfung?</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Der Challenge Mode kombiniert <strong>Worträtsel</strong> und <strong>Matheaufgaben</strong>.
+              Die Schwierigkeit steigt mit jedem Level an!
+            </p>
+          </div>
+
+          <div className="bg-gray-900/50 p-4 rounded-xl border border-white/10 text-left space-y-2">
+            <div className="flex items-center gap-3">
+              <Zap size={16} className="text-yellow-400" />
+              <span className="text-xs text-gray-300">Begrenzte Zeit pro Aufgabe</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Skull size={16} className="text-red-400" />
+              <span className="text-xs text-gray-300">Keine Hinweise verfügbar</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Trophy size={16} className="text-purple-400" />
+              <span className="text-xs text-gray-300">Doppelte XP & Münzen</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              setShowChallengeIntro(false);
+              if (challengeIntroCallback) challengeIntroCallback();
+            }}
+            className="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-600 hover:brightness-110 text-white font-black uppercase tracking-widest rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+          >
+            <Play size={20} fill="currentColor" /> Challenge Starten
+          </button>
+        </div>
+      </Modal>
+
       {/* Auth Screen (First screen) */}
       {view === 'AUTH' && (
         <div className="h-full flex items-center justify-center p-6 animate-fade-in">
@@ -2625,16 +2695,16 @@ export default function App() {
             </div>
           </div>
 
-          {/* Age Input */}
+          {/* Age Input (LOCKED) */}
           <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Alter</h3>
-            <input
-              type="number"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white"
-              value={editAge}
-              min={1} max={120}
-              onChange={(e) => setEditAge(parseInt(e.target.value) || 0)}
-            />
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+              Alter <Lock size={12} className="text-red-400" />
+            </h3>
+            <div className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-gray-400 font-bold cursor-not-allowed flex items-center justify-between">
+              <span>{editAge}</span>
+              <span className="text-xs text-red-500 uppercase">Fixiert</span>
+            </div>
+            <p className="text-[10px] text-gray-600 mt-1">Das Alter kann nachträglich nicht geändert werden.</p>
           </div>
 
           {/* Stats Display */}
