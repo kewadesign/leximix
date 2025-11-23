@@ -133,18 +133,18 @@ const SudokuBoard = ({ puzzle, original, onCellClick, selectedCell }: any) => {
 
             return (
               <div
-                key={`${r} -${c} `}
+                key={`${r}-${c}`}
                 onClick={() => onCellClick(r, c)}
                 className={`
-                                ${borderClasses}
-                                flex items - center justify - center
-text - lg sm: text - 2xl md: text - 4xl font - mono font - bold cursor - pointer select - none
-transition-all duration-100
-                                ${isSelected ? 'bg-lexi-fuchsia text-white z-10 scale-110 shadow-[0_0_20px_rgba(217,70,239,0.8)] rounded-md' : ''}
-                                ${!isSelected && isFixed ? 'text-lexi-text-muted bg-lexi-bg' : ''}
-                                ${!isSelected && !isFixed ? 'text-lexi-cyan bg-lexi-surface-highlight hover:bg-lexi-surface' : ''}
-                                ${!isSelected && !isFixed && cell ? 'text-cyan-300' : ''}
-`}
+                  ${borderClasses}
+                  flex items-center justify-center
+                  text-lg sm:text-2xl md:text-4xl font-mono font-bold cursor-pointer select-none
+                  transition-all duration-100
+                  ${isSelected ? 'bg-lexi-fuchsia text-white z-10 scale-110 shadow-[0_0_20px_rgba(217,70,239,0.8)] rounded-md' : ''}
+                  ${!isSelected && isFixed ? 'text-lexi-text-muted bg-lexi-bg' : ''}
+                  ${!isSelected && !isFixed ? 'text-lexi-cyan bg-lexi-surface-highlight hover:bg-lexi-surface' : ''}
+                  ${!isSelected && !isFixed && cell ? 'text-cyan-300' : ''}
+                `}
               >
                 {cell || ''}
               </div>
@@ -376,6 +376,7 @@ export default function App() {
   const [showPremiumInfo, setShowPremiumInfo] = useState(false); // Premium info modal
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | '30days'>('monthly'); // Selected premium plan
   const [showUsernameConfirm, setShowUsernameConfirm] = useState(false); // Username change confirmation
+  const [deleteInput, setDeleteInput] = useState(''); // For delete confirmation
 
   // Edit Profile State
   const [editName, setEditName] = useState(user.name || "Player");
@@ -2544,6 +2545,7 @@ export default function App() {
             <>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Benutzername</h3>
               <div className="bg-gray-900 p-4 rounded-xl border border-white/10">
+                <p className="text-xs text-gray-400 mb-2">Aktuell: <span className="text-white font-bold">{cloudUsername}</span></p>
                 <input
                   type="text"
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white mb-2"
@@ -2551,6 +2553,7 @@ export default function App() {
                   onChange={(e) => {
                     setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
                   }}
+                  placeholder="Neuer Benutzername"
                 />
                 {usernameError && <p className="text-red-400 text-xs font-bold">{usernameError}</p>}
                 <p className="text-xs text-yellow-400 mt-2">Kosten: 2500 Münzen</p>
@@ -2654,6 +2657,16 @@ export default function App() {
             </div>
           </div>
 
+          {/* Delete Profile Button */}
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="w-full py-3 bg-red-900/20 hover:bg-red-900/40 text-red-500 font-bold uppercase rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <Skull size={16} /> Profil Löschen
+            </button>
+          </div>
+
           <div className="flex gap-3 pt-4">
             <button
               onClick={() => setShowProfile(false)}
@@ -2666,6 +2679,59 @@ export default function App() {
               className="flex-1 py-4 rounded-xl font-black text-sm uppercase bg-lexi-fuchsia hover:bg-lexi-fuchsia/80 text-white transition-colors shadow-[0_0_20px_rgba(217,70,239,0.4)]"
             >
               {t.PROFILE.SAVE}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Profile Confirmation Modal */}
+      <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title="Profil Löschen">
+        <div className="p-6 space-y-4">
+          <div className="flex items-start gap-3 bg-red-900/20 p-4 rounded-xl border border-red-500/30">
+            <AlertTriangle size={24} className="text-red-500 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-lg font-bold text-red-500 mb-2">Warnung!</h3>
+              <p className="text-sm text-gray-300">
+                Diese Aktion kann NICHT rückgängig gemacht werden. Alle deine Fortschritte, Käufe und Erfolge werden permanent gelöscht.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">
+              Tippe "delete" um zu bestätigen:
+            </label>
+            <input
+              type="text"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white"
+              value={deleteInput}
+              onChange={(e) => setDeleteInput(e.target.value)}
+              placeholder="delete"
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }}
+              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+            >
+              Abbrechen
+            </button>
+            <button
+              onClick={() => {
+                if (deleteInput.toLowerCase() === 'delete') {
+                  // TODO: Implement server deletion via Firebase
+                  alert('Profil-Löschung noch nicht implementiert. Bald verfügbar!');
+                  setShowDeleteConfirm(false);
+                  setDeleteInput('');
+                } else {
+                  alert('Bitte tippe "delete" um zu bestätigen.');
+                }
+              }}
+              disabled={deleteInput.toLowerCase() !== 'delete'}
+              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <Skull size={16} /> Endgültig Löschen
             </button>
           </div>
         </div>

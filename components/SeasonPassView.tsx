@@ -145,6 +145,8 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
 
                                 {/* PREMIUM REWARD (TOP) */}
                                 <div className={`absolute bottom-[55%] flex flex-col items-center justify-end h-32 w-full transition-all duration-300 ${isUnlocked ? 'opacity-100' : 'opacity-80 grayscale-[0.5]'}`}>
+                                    <div className="absolute -top-8 text-xs font-black uppercase tracking-widest bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg">Premium</div>
+
                                     {premiumReward ? (
                                         <div className={`relative w-28 h-32 bg-gradient-to-b from-indigo-900 to-slate-900 rounded-2xl border-2 border-indigo-500/30 p-3 flex flex-col items-center justify-between shadow-xl hover:scale-110 transition-transform hover:z-20 group-hover:shadow-indigo-500/40 ${isClaimed ? 'ring-2 ring-yellow-400 bg-yellow-900/20 grayscale' : 'hover:shadow-indigo-500/20'}`}>
                                             <div className="absolute -top-3 bg-indigo-600 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-indigo-400 shadow-lg z-10">Premium</div>
@@ -200,6 +202,8 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
 
                                 {/* FREE REWARD (BOTTOM) */}
                                 <div className={`absolute top-[55%] flex flex-col items-center justify-start h-32 w-full transition-all duration-300 ${isUnlocked ? 'opacity-100' : 'opacity-80 grayscale-[0.5]'}`}>
+                                    <div className="absolute -top-2 text-xs font-black uppercase tracking-widest text-gray-500">Free</div>
+
                                     {freeReward ? (
                                         <div className={`relative w-24 h-28 bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl border border-white/10 p-2 flex flex-col items-center justify-between shadow-lg hover:scale-105 transition-transform hover:z-20 group-hover:shadow-white/20 ${isClaimed ? 'opacity-50 grayscale' : 'hover:shadow-white/10'}`}>
                                             <div className="absolute -top-2 bg-slate-600 text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-slate-500 shadow-md z-10">Free</div>
@@ -238,6 +242,6 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                     })}
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
