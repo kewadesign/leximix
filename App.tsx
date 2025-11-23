@@ -1872,7 +1872,7 @@ export default function App() {
               <ArrowLeft size={14} /> {t.TUTORIAL.BACK}
             </button>
             <button
-              onClick={startGame}
+              onClick={startGameFromTutorial}
               className="flex-[2] py-3 rounded-xl font-bold text-xs uppercase bg-gradient-to-r from-lexi-fuchsia to-purple-600 hover:brightness-110 shadow-[0_0_20px_rgba(217,70,239,0.4)] flex items-center justify-center gap-2 text-white transition-all active:scale-95"
             >
               {t.TUTORIAL.START} <Play size={14} fill="currentColor" />
@@ -2716,8 +2716,8 @@ export default function App() {
               Abbrechen
             </button>
             <button
-              onClick={startGameFromTutorial}
-              className="py-4 rounded-xl font-black text-lg uppercase bg-lexi-cyan hover:bg-lexi-cyan/80 text-black transition-colors shadow-[0_0_20px_rgba(34,211,238,0.4)] flex items-center justify-center gap-2"
+              onClick={saveProfile}
+              className="flex-1 py-4 rounded-xl font-black text-sm uppercase bg-lexi-fuchsia hover:bg-lexi-fuchsia/80 text-white transition-colors shadow-[0_0_20px_rgba(217,70,239,0.4)]"
             >
               {t.PROFILE.SAVE}
             </button>
