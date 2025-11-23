@@ -52,6 +52,10 @@ class SoundManager {
   playError() {
     this.playTone(150, 'sawtooth', 0.2);
   }
+
+  playWrong() {
+    this.playError();
+  }
 }
 
 export const audio = new SoundManager();

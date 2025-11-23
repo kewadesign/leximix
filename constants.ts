@@ -198,7 +198,8 @@ export const TRANSLATIONS = {
       LOST_DESC: "GAME OVER",
       TARGET_ID: "TARGET IDENTIFIED",
       MENU: "MENU",
-      RETRY: "RETRY"
+      RETRY: "RETRY",
+      LEVEL_UP: "LEVEL UP"
     },
     TUTORIAL: {
       HEADER: "HOW TO PLAY",
@@ -304,7 +305,8 @@ export const TRANSLATIONS = {
       LOST_DESC: "SPIEL VORBEI",
       TARGET_ID: "ZIELWORT IDENTIFIZIERT",
       MENU: "MENÜ",
-      RETRY: "NOCHMAL"
+      RETRY: "NOCHMAL",
+      LEVEL_UP: "LEVEL AUFSTIEG"
     },
     TUTORIAL: {
       HEADER: "SPIELANLEITUNG",
@@ -939,52 +941,85 @@ export const generateSeasonRewards = (season: Season) => {
     let freeReward = null;
     let premiumReward = null;
 
-    // Free Track - Season 2 gives MORE coins
-    if (level % 10 === 0) {
-      freeReward = {
-        type: 'coins',
-        amount: isSeason2 ? 1000 : 500,
-        name: isSeason2 ? 'Neon Cache' : 'Münzpaket',
-        icon: 'gem'
-      };
-    } else if (level % 5 === 0) {
-      freeReward = {
-        type: 'coins',
-        amount: isSeason2 ? 500 : 250,
-        name: isSeason2 ? 'Data Pack' : 'Kleine Münzen',
-        icon: 'gem'
-      };
+    // --- FREE TRACK (Target: ~42 rewards) ---
+    // Pattern: Levels ending in 1, 3, 6, 9 (4 per 10 = 40) + Level 100 + Level 50 = 42 total
+    const lastDigit = level % 10;
+    if ([1, 3, 6, 9].includes(lastDigit) || level === 50 || level === 100) {
+      if (level % 10 === 0) {
+        // Big Milestones (10, 20...) - actually covered by logic below but let's be specific
+        freeReward = { type: 'coins', amount: 500, name: 'Big Coin Stash', icon: 'coins_large' };
+      } else if (level % 3 === 0) {
+        freeReward = { type: 'coins', amount: 100, name: 'Coin Pouch', icon: 'coins_small' };
+      } else {
+        freeReward = { type: 'coins', amount: 50, name: 'Loose Change', icon: 'coins_small' };
+      }
     }
 
-    // Premium Track
+    // --- PREMIUM TRACK (Target: 100 rewards - EVERY LEVEL) ---
+
+    // 1. Avatars (Every 10 levels)
     if (level % 10 === 0) {
       const avatarReward = season.avatars.find(a => a.level === level);
-      if (avatarReward) {
-        premiumReward = {
-          type: 'avatar',
-          name: avatarReward.name,
-          desc: avatarReward.desc,
-          value: avatarReward.id,
-          preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward.dicebear}`,
-          icon: 'star',
-          rarity: level >= 80 ? 'legendary' : level >= 50 ? 'epic' : 'rare'
-        };
-      }
-    } else if (level % 5 === 0) {
       premiumReward = {
-        type: 'coins',
-        amount: isSeason2 ? 2000 : 1000,
-        name: isSeason2 ? 'Quantum Credits' : 'Premium Münzen',
-        icon: 'gem'
+        type: 'avatar',
+        name: avatarReward?.name || 'Mystery Avatar',
+        desc: avatarReward?.desc || 'Exclusive Season Avatar',
+        value: avatarReward?.id,
+        preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward?.dicebear || 'mystery'}`,
+        icon: 'avatar_legendary',
+        rarity: 'legendary'
       };
-    } else if (level % 2 === 0) {
+    }
+    // 2. Cosmetics (Frames/Trails) (Every 5 levels, excluding 10s)
+    else if (level % 5 === 0) {
       premiumReward = {
         type: 'cosmetic',
-        name: isSeason2 ? 'Neon Trail' : 'Goldener Rahmen',
-        desc: 'Profile effect',
+        name: isSeason2 ? `Neon Trail Mk.${level / 5}` : 'Golden Frame',
+        desc: 'Equip in Profile',
         value: `${isSeason2 ? 'trail' : 'frame'}_${level}`,
-        icon: 'sparkles'
+        icon: 'cosmetic_epic',
+        rarity: 'epic'
       };
+    }
+    // 3. Special Items (Boosters, Mystery Boxes) (Randomly distributed)
+    else if (level % 4 === 0) {
+      premiumReward = {
+        type: 'booster',
+        name: 'XP Booster (1h)',
+        desc: 'Double XP for 1 hour',
+        value: 'xp_boost_1h',
+        icon: 'booster_pack', // Placeholder name for asset
+        rarity: 'rare'
+      };
+    }
+    else if (level % 3 === 0) {
+      premiumReward = {
+        type: 'mystery',
+        name: 'Mystery Box',
+        desc: 'Contains random loot',
+        value: 'box_common',
+        icon: 'mystery_box', // Placeholder name for asset
+        rarity: 'rare'
+      };
+    }
+    // 4. Filler (Coins, Stickers)
+    else {
+      if (Math.random() > 0.5) {
+        premiumReward = {
+          type: 'coins',
+          amount: 250 * (Math.floor(level / 20) + 1), // Scales with level
+          name: 'Premium Coins',
+          icon: 'coin_pile_huge'
+        };
+      } else {
+        premiumReward = {
+          type: 'sticker',
+          name: `Sticker #${level}`,
+          desc: 'Collectible Sticker',
+          value: `sticker_${level}`,
+          icon: 'sticker_pack'
+        };
+      }
     }
 
     return { level, free: freeReward, premium: premiumReward };

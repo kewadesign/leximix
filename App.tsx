@@ -3,13 +3,16 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
 import { SeasonPass } from './components/SeasonPass';
+import { SeasonPassView } from './components/SeasonPassView';
+import { PayPalButton } from './components/PayPalButton';
+import { SphereBuddy3D } from './components/SphereBuddy3D';
 import { AuthModal } from './components/AuthModal';
 import { PremiumStatus } from './components/PremiumStatus';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown } from 'lucide-react';
 
 // --- Sub Components for Game Logic ---
 
@@ -88,7 +91,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
       {turn < 6 && (
         <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${targetLength}, 1fr)` }}>
           {Array(targetLength).fill(null).map((_, i) => (
-            <div key={i} className={`aspect-square flex items-center justify-center rounded-lg border-4 ${currentGuess[i] ? 'border-lexi-fuchsia text-white bg-lexi-fuchsia/20 animate-pulse shadow-[0_0_15px_rgba(217,70,239,0.3)]' : 'border-lexi-border glass-panel'} font-mono font-bold text-2xl md:text-3xl uppercase transition-colors duration-200 text-lexi-text`}>
+            <div key={i} className={`aspect-square flex items-center justify-center rounded-xl border-2 ${currentGuess[i] ? 'border-cyan-400 text-white bg-cyan-900/40 animate-pulse shadow-[0_0_15px_rgba(34,211,238,0.3)]' : 'border-white/10 bg-white/5'} font-mono font-bold text-2xl md:text-3xl uppercase transition-colors duration-200 text-white`}>
               {currentGuess[i] || ''}
             </div>
           ))}
@@ -154,10 +157,11 @@ transition-all duration-100
 
 // --- Main App Component ---
 
-export default App;
-// (c) KW 1998
-function App() {
-  const [view, setView] = useState<'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP'>('HOME');
+// Define ViewType
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'SPHERE';
+
+export default function App() {
+  const [view, setView] = useState<ViewType>('ONBOARDING');
 
   // Onboarding State
   const [onboardingStep, setOnboardingStep] = useState(0); // 0=Lang, 1=Name, 2=Age
@@ -168,7 +172,14 @@ function App() {
       const saved = localStorage.getItem('leximix_user');
       if (saved) {
         const parsed = JSON.parse(saved);
-        return { ...parsed, theme: parsed.theme || 'dark' };
+        return {
+          ...parsed,
+          theme: parsed.theme || 'dark',
+          claimedSeasonRewards: parsed.claimedSeasonRewards || [],
+          ownedFrames: parsed.ownedFrames || [],
+          hintBooster: parsed.hintBooster || 0,
+          ownedAvatars: parsed.ownedAvatars || [AVATARS[0]]
+        };
       }
     } catch (error) {
       console.error('[LexiMix] localStorage error:', error);
@@ -187,7 +198,11 @@ function App() {
       isPremium: false,
       completedLevels: {},
       language: Language.DE,
-      theme: 'dark'
+      theme: 'dark',
+      activeFrame: undefined,
+      ownedFrames: [],
+      hintBooster: 0,
+      claimedSeasonRewards: []
     };
   });
 
@@ -314,12 +329,14 @@ function App() {
   const [selectedPlanIndex, setSelectedPlanIndex] = useState<number | null>(null); // Selected plan
   const [redeemError, setRedeemError] = useState<string | null>(null); // Error message for redemption
   const [showPremiumInfo, setShowPremiumInfo] = useState(false); // Premium info modal
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | '30days'>('monthly'); // Selected premium plan
   const [showUsernameConfirm, setShowUsernameConfirm] = useState(false); // Username change confirmation
 
   // Edit Profile State
   const [editName, setEditName] = useState(user.name || "Player");
   const [editAge, setEditAge] = useState(user.age || 18);
   const [editAvatar, setEditAvatar] = useState(user.avatarId || AVATARS[0]);
+  const [editFrame, setEditFrame] = useState(user.activeFrame || 'none');
   const [editUsername, setEditUsername] = useState('');
   const [usernameError, setUsernameError] = useState('');
 
@@ -347,6 +364,90 @@ function App() {
       }
     }
   }, [user, view, cloudUsername]);
+
+  const handleClaimReward = (level: number) => {
+    const reward = SEASON_REWARDS[level - 1];
+    if (!reward) return;
+
+    // Check if already claimed
+    if (user.claimedSeasonRewards?.includes(level)) return;
+
+    let coinsToAdd = 0;
+    const newAvatars = [...(user.ownedAvatars || [])];
+    const newFrames = [...(user.ownedFrames || [])];
+    const newStickers = [...(user.stickers || [])];
+    let newBooster = user.hintBooster || 0;
+
+    const processReward = (item: any) => {
+      if (!item) return;
+      if (item.type === 'coins') coinsToAdd += (item.amount as number);
+
+      if (item.type === 'avatar') {
+        const avatarId = item.value as string;
+        if (!newAvatars.includes(avatarId)) newAvatars.push(avatarId);
+      }
+
+      if (item.type === 'cosmetic') {
+        const frameId = item.value as string;
+        if (!newFrames.includes(frameId)) newFrames.push(frameId);
+      }
+
+      if (item.type === 'booster') {
+        // Increase booster level (reduces hint wait time)
+        newBooster += 1;
+      }
+
+      if (item.type === 'sticker') {
+        const stickerId = item.value as string;
+        if (!newStickers.includes(stickerId)) newStickers.push(stickerId);
+      }
+
+      if (item.type === 'mystery') {
+        // Mystery Box Logic: Random Coins (500-2000) or XP (handled via alert for now)
+        const roll = Math.random();
+        if (roll > 0.5) {
+          const bonusCoins = Math.floor(Math.random() * 1500) + 500;
+          coinsToAdd += bonusCoins;
+          alert(`Mystery Box: Du hast ${bonusCoins} Münzen gefunden!`);
+        } else {
+          // Just give coins for now as XP is hard to set directly without recalc
+          const bonusCoins = 1000;
+          coinsToAdd += bonusCoins;
+          alert(`Mystery Box: Du hast ${bonusCoins} Münzen gefunden!`);
+        }
+      }
+    };
+
+    // Add Free Reward
+    processReward(reward.free);
+
+    // Add Premium Reward
+    if (user.isPremium) {
+      processReward(reward.premium);
+    }
+
+    setUser(prev => ({
+      ...prev,
+      coins: prev.coins + coinsToAdd,
+      ownedAvatars: newAvatars,
+      ownedFrames: newFrames,
+      stickers: newStickers,
+      hintBooster: newBooster,
+      claimedSeasonRewards: [...(prev.claimedSeasonRewards || []), level]
+    }));
+
+    audio.playWin(); // Simple feedback
+  };
+
+  // Helper to get active frame style
+  const getFrameStyle = (frameId?: string) => {
+    if (!frameId) return "";
+    // Map frame IDs to CSS classes or inline styles
+    if (frameId.includes('gold')) return "border-4 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.6)]";
+    if (frameId.includes('neon')) return "border-4 border-lexi-fuchsia shadow-[0_0_15px_rgba(217,70,239,0.6)]";
+    if (frameId.includes('frame_')) return "border-4 border-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]"; // Default generic frame
+    return "";
+  };
 
   useEffect(() => {
     const initAudio = () => audio.playClick();
@@ -647,7 +748,17 @@ function App() {
       completedLevels: {},
       playedWords: [],
       language: Language.DE,
-      theme: 'dark'
+      theme: 'dark',
+      buddy: {
+        name: 'Sphere',
+        level: 1,
+        xp: 0,
+        hunger: 80,
+        energy: 80,
+        mood: 80,
+        skin: 'default',
+        lastInteraction: Date.now()
+      }
     });
 
     // Go back to AUTH
@@ -836,13 +947,23 @@ function App() {
           ? [...(prev.playedWords || []), targetWord]
           : (prev.playedWords || []);
 
+        // Update Buddy Stats on Win
+        const buddyUpdate = prev.buddy ? {
+          ...prev.buddy,
+          mood: Math.min(100, prev.buddy.mood + 10),
+          // Level up check for buddy
+          level: (prev.buddy.xp + 20) >= prev.buddy.level * 100 ? prev.buddy.level + 1 : prev.buddy.level,
+          xp: (prev.buddy.xp + 20) >= prev.buddy.level * 100 ? 0 : prev.buddy.xp + 20
+        } : undefined;
+
         return {
           ...prev,
           xp: newXp,
           level: newLevel,
           coins: prev.coins + coinGain,
           completedLevels: newCompleted,
-          playedWords: newPlayedWords
+          playedWords: newPlayedWords,
+          buddy: buddyUpdate || prev.buddy
         };
       });
     } catch (error) {
@@ -852,8 +973,10 @@ function App() {
   };
   const triggerHint = () => {
     setShowAd(true);
-    const cost = 5 + (hintCostMultiplier * 10);
-    setAdTimer(cost);
+    const baseCost = 5 + (hintCostMultiplier * 10);
+    // Booster reduces wait time by 1 second per level, minimum 1 second
+    const reducedCost = Math.max(1, baseCost - (user.hintBooster || 0));
+    setAdTimer(reducedCost);
   };
 
   useEffect(() => {
@@ -925,7 +1048,8 @@ function App() {
       ...prev,
       name: editName,
       age: ageNum,
-      avatarId: editAvatar
+      avatarId: editAvatar,
+      activeFrame: editFrame !== 'none' ? editFrame : undefined
     }));
     setShowProfile(false);
   };
@@ -965,6 +1089,7 @@ function App() {
     setEditName(user.name || "");
     setEditAge(user.age || 18);
     setEditAvatar(user.avatarId || AVATARS[0]);
+    setEditFrame(user.activeFrame || 'none');
     setEditUsername('');
     setUsernameError('');
     setShowProfile(true);
@@ -1240,162 +1365,48 @@ function App() {
     )
   }
 
-  const renderSeasonPassView = () => {
-    const levels = Array.from({ length: 100 }, (_, i) => i + 1);
+  const handlePayPalSuccess = async (details: any, planType: 'monthly' | '30days') => {
+    console.log('PayPal Success:', details);
+    audio.playWin();
 
-    return (
-      <div className="h-full flex flex-col animate-fade-in">
-        <div className="p-4 bg-[#1e102e]/90 backdrop-blur-xl border-b border-white/10 flex items-center justify-between z-20 shrink-0">
-          <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition-colors border border-white/10">
-            <ArrowLeft size={20} />
-          </button>
-          <div className="text-center">
-            <h2 className="text-xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">{t.SEASON.TITLE}</h2>
-          </div>
-          <div className="w-10"></div>
-        </div>
+    // Update User State
+    setUser(prev => {
+      const newState = {
+        ...prev,
+        isPremium: true,
+        premiumActivatedAt: Date.now()
+      };
 
-        {!user.isPremium && (
-          <div className="p-4 flex flex-col items-center gap-4 border-b border-white/10 shrink-0">
-            <button
-              onClick={() => setShowPremiumInfo(true)}
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold uppercase hover:brightness-110 transition-all shadow-lg flex items-center gap-2"
-            >
-              <Info size={18} /> Premium Vorteile Ansehen
-            </button>
+      // Bonus for Monthly Plan (7.99)
+      if (planType === 'monthly') {
+        newState.level = (newState.level || 1) + 10; // +10 Levels
+      }
 
-            <h3 className="text-center text-sm font-bold text-gray-400 uppercase tracking-wider">Premium Pass Optionen</h3>
+      return newState;
+    });
 
-            <div className="w-full max-w-3xl grid grid-cols-2 gap-3">
-              {/* Monthly Plan - 7,99€ */}
-              <div className="bg-gradient-to-br from-purple-900/50 to-gray-900 border-2 border-purple-500/30 p-6 rounded-3xl">
-                <div className="text-center mb-4">
-                  <h4 className="text-2xl font-black text-yellow-400 mb-1">{PREMIUM_PLANS[0].cost}</h4>
-                  <p className="text-xs text-gray-400">{PREMIUM_PLANS[0].duration}</p>
-                </div>
-                <ul className="text-xs space-y-2 mb-4">
-                  {PREMIUM_PLANS[0].features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-gray-300">
-                      <span className="text-green-400">✓</span> {feature}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => window.open(`https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=${PREMIUM_PLANS[0].planId}`, "_blank")}
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl font-black uppercase hover:scale-105 transition-transform shadow-lg"
-                >
-                  Monatlich Abonnieren
-                </button >
-              </div >
+    // Save to Cloud
+    if (cloudUsername) {
+      try {
+        const { saveToCloud } = await import('./utils/firebase');
+        // We need to save the new state. 
+        // Since we can't easily access the *new* state from setUser here without a ref or waiting,
+        // we'll construct a temporary object for saving.
+        const tempState = {
+          ...user,
+          isPremium: true,
+          premiumActivatedAt: Date.now(),
+          level: planType === 'monthly' ? (user.level || 1) + 10 : user.level
+        };
+        await saveToCloud(cloudUsername, tempState);
+      } catch (e) {
+        console.error("Failed to save premium status", e);
+      }
+    }
 
-              {/* 30-Day Plan - 4,99€ */}
-              < div className="bg-gradient-to-br from-blue-900/50 to-gray-900 border-2 border-blue-500/30 p-6 rounded-3xl" >
-                <div className="text-center mb-4">
-                  <h4 className="text-2xl font-black text-cyan-400 mb-1">{PREMIUM_PLANS[1].cost}</h4>
-                  <p className="text-xs text-gray-400">{PREMIUM_PLANS[1].duration}</p>
-                </div>
-                <ul className="text-xs space-y-2 mb-4">
-                  {PREMIUM_PLANS[1].features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-gray-300">
-                      <span className="text-green-400">✓</span> {feature}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => window.open(`https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=${PREMIUM_PLANS[1].planId}`, "_blank")}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-xl font-black uppercase hover:scale-105 transition-transform shadow-lg"
-                >
-                  30 Tage Kaufen
-                </button>
-              </div >
-            </div >
-
-            <button
-              onClick={() => setShowRedeemModal(true)}
-              className="mt-4 px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase rounded-xl shadow-[0_0_15px_rgba(234,179,8,0.4)] transition-all active:scale-95"
-            >
-              {t.SEASON.REDEEM_CODE}
-            </button>
-          </div >
-        )}
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
-          <div className="max-w-2xl mx-auto w-full">
-            {/* Tracks */}
-            <div className="relative pt-8 pb-8">
-              <div className="absolute left-[50%] top-0 bottom-0 w-1.5 bg-gray-800 -translate-x-1/2 rounded-full"></div>
-
-              {levels.map((lvl, i) => {
-                const isUnlocked = user.level >= lvl;
-                const isPremiumNode = lvl % 2 === 0;
-                const isClaimed = isUnlocked && (!isPremiumNode || user.isPremium);
-
-                return (
-                  <div
-                    key={lvl}
-                    className={`flex items-center mb-10 relative transition-all duration-500 ${isUnlocked ? 'opacity-100' : 'opacity-50 grayscale'}`}
-                    style={{ animationDelay: `${i * 50}ms` }}
-                  >
-                    {/* Level Indicator */}
-                    <div className={`absolute left-[50%] -translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center font-black text-sm border-4 border-lexi-dark z-10 transition-transform hover:scale-125
-                                    ${isUnlocked ? 'bg-lexi-fuchsia text-white shadow-[0_0_20px_rgba(217,70,239,0.6)]' : 'bg-gray-800 text-gray-500'}
-                                `}>
-                      {lvl}
-                    </div>
-
-                    {/* Left Side: Free */}
-                    <div className="flex-1 pr-10 text-right flex flex-col items-end">
-                      {SEASON_REWARDS[lvl - 1]?.free && (
-                        <div className={`bg-gray-800 p-4 rounded-2xl border border-white/10 w-36 md:w-44 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-green-500 bg-green-900/20' : ''}`}>
-                          <Gem size={28} className="text-blue-400 mb-2" />
-                          <span className="text-sm font-black text-white">{SEASON_REWARDS[lvl - 1].free.amount}</span>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase">{SEASON_REWARDS[lvl - 1].free.name}</span>
-                          {isClaimed && <div className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1 shadow-lg"><Check size={12} /></div>}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Right Side: Premium */}
-                    <div className="flex-1 pl-10">
-                      {SEASON_REWARDS[lvl - 1]?.premium && (
-                        <div className={`bg-gradient-to-br from-purple-900 to-gray-900 p-4 rounded-2xl border border-purple-500/30 w-36 md:w-44 flex flex-col items-center relative transition-all hover:scale-105 ${isClaimed ? 'ring-2 ring-yellow-400 bg-yellow-900/20' : ''}`}>
-                          <Lock size={14} className={`absolute top-2 right-2 text-purple-400 ${user.isPremium ? 'hidden' : ''}`} />
-
-                          {SEASON_REWARDS[lvl - 1].premium.type === 'avatar' ? (
-                            <>
-                              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-yellow-400/30 mb-2">
-                                <img src={SEASON_REWARDS[lvl - 1].premium.preview} alt={SEASON_REWARDS[lvl - 1].premium.name} className="w-full h-full object-cover" />
-                              </div>
-                              <span className="text-xs font-black text-yellow-300 text-center leading-tight">{SEASON_REWARDS[lvl - 1].premium.name}</span>
-                              <span className="text-[9px] text-yellow-100/60">{SEASON_REWARDS[lvl - 1].premium.desc}</span>
-                            </>
-                          ) : SEASON_REWARDS[lvl - 1].premium.type === 'cosmetic' ? (
-                            <>
-                              <Sparkles size={28} className="text-yellow-400 mb-2" fill="currentColor" />
-                              <span className="text-xs font-black text-yellow-300 text-center leading-tight">{SEASON_REWARDS[lvl - 1].premium.name}</span>
-                              <span className="text-[9px] text-yellow-100/60">{SEASON_REWARDS[lvl - 1].premium.desc}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Gem size={28} className="text-blue-300 mb-2" />
-                              <span className="text-sm font-black text-white">{SEASON_REWARDS[lvl - 1].premium.amount}</span>
-                              <span className="text-[10px] font-bold text-gray-300 uppercase">{SEASON_REWARDS[lvl - 1].premium.name}</span>
-                            </>
-                          )}
-
-                          {isClaimed && <div className="absolute -top-2 -left-2 bg-yellow-500 text-black rounded-full p-1 shadow-lg"><Check size={12} /></div>}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </div >
-    )
-  }
+    alert(`Premium erfolgreich aktiviert! (${planType === 'monthly' ? '+10 Level Boost' : '30 Tage'})`);
+    setShowPremiumInfo(false);
+  };
 
   const renderShop = () => {
     return (
@@ -1524,14 +1535,14 @@ function App() {
   const renderHome = () => (
     <div className="flex flex-col h-full p-6 w-full max-w-4xl mx-auto overflow-y-auto pb-10 scrollbar-hide animate-fade-in">
       {/* Header Section */}
-      <div className="flex items-center justify-between w-full px-4 py-4 mb-6">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-14 h-14" />
+      <div className="flex items-center justify-between w-full px-4 py-4 mb-6 relative z-10">
+        <button className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity text-left" onClick={openProfile}>
+          <div className={`relative rounded-full p-1 ${getFrameStyle(user.activeFrame)}`}>
+            <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-14 h-14 rounded-full" />
           </div>
           <div>
             <div className={`font-bold text-2xl leading-none tracking-tight flex items-center gap-2 ${user.isPremium ? 'text-yellow-400 drop-shadow-sm' : ''}`}>
-              {user.name} {user.isPremium && <CrownPattern className="w-4 h-4 text-yellow-500" />}
+              {user.name} {user.isPremium && <Crown className="w-4 h-4 text-yellow-500" fill="currentColor" />}
             </div>
 
             <div className="mt-2">
@@ -1544,7 +1555,7 @@ function App() {
               </div>
             </div>
           </div>
-        </div>
+        </button>
         <div className="flex flex-col items-end gap-2">
           <button onClick={() => setView('SHOP')} className="flex items-center gap-1 glass-button px-4 py-2 rounded-full text-lexi-text">
             <Gem size={16} className="text-blue-400" />
@@ -1617,6 +1628,26 @@ function App() {
       </div>
 
       <div className="mb-8 w-full">
+        {/* Sphere Buddy Teaser / Status */}
+        {user.buddy && (
+          <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 p-4 rounded-2xl border border-white/10 flex items-center justify-between" onClick={() => setView('SPHERE')}>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/50">
+                <span className="text-2xl">🟣</span>
+              </div>
+              <div>
+                <div className="font-bold text-white">{user.buddy.name}</div>
+                <div className="text-xs text-cyan-400">Lvl {user.buddy.level} • {user.buddy.mood > 50 ? 'Happy' : 'Needs Love'}</div>
+              </div>
+            </div>
+            <button className="px-4 py-2 bg-white/10 rounded-xl text-xs font-bold hover:bg-white/20 transition-colors">
+              VISIT
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="mb-8 w-full">
         <SeasonPass
           xp={user.xp}
           level={user.level}
@@ -1629,8 +1660,7 @@ function App() {
 
 
       {/* Grid */}
-      {console.log('[DEBUG] Rendering game modes grid...')}
-      <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
+      <div id="gamemodes" className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
         <GameCard
           mode={GameMode.CLASSIC}
           title={t.MODES.CLASSIC.title}
@@ -1648,6 +1678,26 @@ function App() {
           delay={50}
         />
 
+
+
+        {/* Sphere Buddy Card */}
+        <div
+          onClick={() => setView('SPHERE')}
+          className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-indigo-600 to-purple-600 shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-purple-500/20 cursor-pointer group border border-white/10"
+        >
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Sparkles size={64} />
+          </div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div className="bg-white/20 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 backdrop-blur-sm">
+              <span className="text-2xl">🟣</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-white mb-1 tracking-tight">SPHERE BUDDY</h3>
+              <p className="text-xs text-purple-100 font-medium opacity-80">Dein Begleiter</p>
+            </div>
+          </div>
+        </div>
         <GameCard
           mode={GameMode.CHAIN}
           title={t.MODES.CHAIN.title}
@@ -1941,18 +1991,26 @@ function App() {
   );
 
   return (
-    <div className={`${user.theme} h-screen w-full text-lexi-text font-sans overflow-hidden relative selection:bg-lexi-fuchsia selection:text-white py-4 transition-colors duration-300 ${user.theme === 'dark' ? 'bg-lexi-bg' : 'bg-gradient-to-br from-gray-200 to-gray-300'}`}>
+    <div className={`${user.theme} h-screen w-full text-lexi-text font-sans overflow-hidden relative selection:bg-cyan-400 selection:text-black py-4 transition-colors duration-300 ${user.theme === 'dark' ? 'bg-[#0b1120]' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       {/* Simplified grain texture using CSS */}
       <div className="fixed inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
         backgroundSize: '180px 180px'
       }}></div>
       {/* Dynamic Background Layers */}
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-900/15 via-transparent to-blue-900/15 pointer-events-none"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900/50 to-cyan-900/20 pointer-events-none"></div>
+      <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
 
       {view === 'ONBOARDING' && renderOnboarding()}
       {view === 'HOME' && renderHome()}
-      {view === 'SEASON' && renderSeasonPassView()}
+      {view === 'SEASON' && (
+        <SeasonPassView
+          user={user}
+          onClose={() => setView('HOME')}
+          onClaim={handleClaimReward}
+          onShowPremium={() => setShowPremiumInfo(true)}
+        />
+      )}
       {view === 'LEVELS' && renderLevels()}
       {view === 'GAME' && renderGame()}
       {view === 'TUTORIAL' && renderTutorial()}
@@ -2018,7 +2076,7 @@ function App() {
 
       {/* Profile Modal */}
       <Modal isOpen={showProfile} onClose={() => setShowProfile(false)} title={t.PROFILE.TITLE}>
-        <div className="flex flex-col space-y-6 pt-4">
+        <div className="flex flex-col space-y-6 pt-4 max-h-[60vh] overflow-y-auto scrollbar-hide px-1">
           <div className="flex justify-center">
             <div className="relative group cursor-pointer" onClick={() => {
               // Only allow selecting owned avatars
@@ -2027,7 +2085,7 @@ function App() {
               const nextIndex = (currentIndex + 1) % owned.length;
               setEditAvatar(owned[nextIndex]);
             }}>
-              <div className="w-32 h-32 bg-gray-800 rounded-full overflow-hidden border-4 border-lexi-fuchsia shadow-2xl transition-transform group-hover:scale-105">
+              <div className={`w-32 h-32 bg-gray-800 rounded-full overflow-hidden transition-transform group-hover:scale-105 ${getFrameStyle(editFrame)}`}>
                 <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`} alt="Avatar" />
               </div>
               <div className="absolute bottom-0 right-0 bg-gray-900 rounded-full p-3 border border-white/20 text-white">
@@ -2040,14 +2098,9 @@ function App() {
             Click avatar to cycle through your owned collection
           </div>
 
-          <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">{t.PROFILE.NAME}</label>
-            <input
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-lg text-white focus:border-lexi-fuchsia outline-none font-bold"
-              value={editName}
-              maxLength={30}
-              onChange={(e) => setEditName(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
-            />
+          <div className="text-center border-b border-white/10 pb-4">
+            <h3 className="text-2xl font-black text-white uppercase tracking-tight">{user.name}</h3>
+            {user.isPremium && <div className="text-xs font-bold text-yellow-400 tracking-widest uppercase mt-1 flex items-center justify-center gap-1"><CrownPattern className="w-3 h-3" /> Premium Agent</div>}
           </div>
 
           <div>
@@ -2099,7 +2152,26 @@ function App() {
             </div>
           )}
 
-          <Button fullWidth onClick={saveProfile}>{t.PROFILE.SAVE}</Button>
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Select Frame</h3>
+            <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto scrollbar-hide">
+              <button
+                onClick={() => setEditFrame('none')}
+                className={`relative rounded-xl overflow-hidden border-2 transition-all h-16 flex items-center justify-center bg-gray-800 ${editFrame === 'none' ? 'border-lexi-fuchsia scale-105' : 'border-transparent opacity-50 hover:opacity-100'}`}
+              >
+                <span className="text-[10px] font-bold text-gray-400 uppercase">None</span>
+              </button>
+              {(user.ownedFrames || []).map(frameId => (
+                <button
+                  key={frameId}
+                  onClick={() => setEditFrame(frameId)}
+                  className={`relative rounded-xl overflow-hidden transition-all h-16 flex items-center justify-center bg-gray-800 ${getFrameStyle(frameId)} ${editFrame === frameId ? 'scale-105 ring-2 ring-white' : 'opacity-50 hover:opacity-100'}`}
+                >
+                  <div className="w-10 h-10 bg-gray-700 rounded-full"></div>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="border-t border-white/10 pt-4 mt-4">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Select Avatar</h3>
@@ -2116,6 +2188,8 @@ function App() {
               ))}
             </div>
           </div>
+
+          <Button fullWidth onClick={saveProfile}>{t.PROFILE.SAVE}</Button>
 
           <div className="border-t border-white/10 pt-4 mt-2">
             <button
@@ -2418,64 +2492,100 @@ function App() {
       </Modal>
 
       {/* Premium Info Modal */}
-      <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Vorteile" >
-        <div className="py-6 space-y-6">
-          <div className="flex flex-col items-center gap-4">
-            <div className="inline-block p-6 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
-              <Star className="text-white" size={48} fill="currentColor" />
+      {/* Premium Info Modal */}
+      <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Store">
+        <div className="p-4 space-y-6">
+          {/* Header */}
+          <div className="text-center">
+            <div className="inline-block p-4 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)] mb-4">
+              <Crown className="text-white" size={32} fill="currentColor" />
             </div>
-            <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              Werde Premiummitglied!
+            <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+              Wähle deinen Plan
             </h3>
+            <p className="text-gray-400 text-sm mt-1">Schalte alle Features frei & dominiere die Liga!</p>
           </div>
 
-          <div className="space-y-4">
-            <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-xl p-4">
-              <h4 className="font-bold text-purple-300 mb-3 flex items-center gap-2">
-                <Sparkles size={18} /> Exklusive Features
-              </h4>
-              <ul className="space-y-2 text-sm text-lexi-text-muted">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">✓</span>
-                  <span><strong>Challenge Mode:</strong> Zugriff auf Premium Herausforderungen</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">✓</span>
-                  <span><strong>Schnellere Hinweise:</strong> Reduzierte Wartezeiten</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">✓</span>
-                  <span><strong>Goldener Name:</strong> Hebe dich von anderen ab</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">✓</span>
-                  <span><strong>Exklusive Avatare:</strong> Freischaltung seltener Skins</span>
-                </li>
+          {/* Plans Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Plan 1: 7.99 */}
+            <div
+              className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === 'monthly' ? 'border-yellow-400 bg-yellow-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
+              onClick={() => setSelectedPlan('monthly')}
+            >
+              <div className="absolute -top-3 right-4 bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse">BEST VALUE</div>
+              <h4 className="font-bold text-lg text-white">Monatlich</h4>
+              <div className="text-3xl font-black text-yellow-400 my-2">7,99€</div>
+              <ul className="text-xs text-gray-300 space-y-2">
+                <li className="flex items-center gap-2"><Check size={12} className="text-green-400" /> Alle Premium Features</li>
+                <li className="flex items-center gap-2 text-yellow-300 font-bold"><Sparkles size={12} /> + 10 Level Boost (Sofort!)</li>
+                <li className="flex items-center gap-2"><Clock size={12} className="text-blue-400" /> Automatische Verlängerung</li>
               </ul>
             </div>
 
-            <div className="bg-gradient-to-r from-yellow-900/30 to-amber-900/30 border border-yellow-500/30 rounded-xl p-4">
-              <h4 className="font-bold text-yellow-300 mb-3 flex items-center gap-2">
-                <Zap size={18} /> Zwei Optionen
-              </h4>
-              <div className="space-y-3 text-sm text-gray-300">
-                <div className="bg-black/30 rounded-lg p-3">
-                  <p className="font-bold text-purple-300 mb-1">Monatlich (7,99€)</p>
-                  <p className="text-xs">🎁 Sofort +10 Stufen Boost + alle Premium Features</p>
-                </div>
-                <div className="bg-black/30 rounded-lg p-3">
-                  <p className="font-bold text-cyan-300 mb-1">30 Tage (4,99€)</p>
-                  <p className="text-xs">⚡ Selbst hocharbeiten + alle Premium Features</p>
-                </div>
-              </div>
+            {/* Plan 2: 4.99 */}
+            <div
+              className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === '30days' ? 'border-purple-400 bg-purple-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
+              onClick={() => setSelectedPlan('30days')}
+            >
+              <h4 className="font-bold text-lg text-white">30 Tage Pass</h4>
+              <div className="text-3xl font-black text-purple-400 my-2">4,99€</div>
+              <ul className="text-xs text-gray-300 space-y-2">
+                <li className="flex items-center gap-2"><Check size={12} className="text-green-400" /> Alle Premium Features</li>
+                <li className="flex items-center gap-2"><CreditCard size={12} className="text-gray-400" /> Kein Abo (Einmalig)</li>
+              </ul>
             </div>
           </div>
 
-          <Button fullWidth onClick={() => setShowPremiumInfo(false)} variant="primary">
-            Verstanden
-          </Button>
+          {/* Payment Section */}
+          <div className="bg-black/40 p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center min-h-[100px]">
+            <h4 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider text-center flex items-center gap-2">
+              <CreditCard size={16} /> Bezahlen mit PayPal
+            </h4>
+            <div className="w-full max-w-[250px] relative z-0">
+              {selectedPlan === 'monthly' && (
+                <PayPalButton amount="7.99" onSuccess={(d: any) => handlePayPalSuccess(d, 'monthly')} />
+              )}
+              {selectedPlan === '30days' && (
+                <PayPalButton amount="4.99" onSuccess={(d: any) => handlePayPalSuccess(d, '30days')} />
+              )}
+            </div>
+          </div>
+
+          {/* Voucher Section */}
+          <div className="border-t border-white/10 pt-6">
+            <h4 className="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
+              <Gem size={16} /> Gutscheincode einlösen
+            </h4>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={voucherCode}
+                onChange={(e) => setVoucherCode(e.target.value)}
+                placeholder="Code eingeben..."
+                className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-yellow-400 outline-none transition-colors font-mono uppercase"
+              />
+              <button
+                onClick={handleVoucherRedeem}
+                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-bold transition-colors"
+              >
+                Einlösen
+              </button>
+            </div>
+            {/* Error/Success Messages reuse existing states */}
+            {voucherError && (
+              <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center gap-1">
+                <AlertTriangle size={12} /> {voucherError}
+              </div>
+            )}
+            {voucherSuccess && (
+              <div className="mt-2 text-green-500 text-xs font-bold flex items-center gap-1">
+                <Check size={12} /> {voucherSuccess}
+              </div>
+            )}
+          </div>
         </div>
-      </Modal >
+      </Modal>
 
       {/* Premium Required Modal */}
       < Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title="Premium Erforderlich" >

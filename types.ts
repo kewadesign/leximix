@@ -50,8 +50,28 @@ export interface UserState {
   age: number;
   avatarId: string;
   ownedAvatars: string[];
+  activeFrame?: string; // ID of the equipped frame
+  ownedFrames?: string[]; // List of owned frame IDs
+  hintBooster?: number; // Level of hint speed booster (0 = none)
+  claimedSeasonRewards?: number[]; // Track which season levels have been claimed
   redeemedCodes?: string[]; // Track redeemed gutschein codes
+  stickers?: string[]; // Collected stickers
   theme: 'light' | 'dark';
+  buddy?: BuddyState;
+}
+
+export interface BuddyState {
+  name: string;
+  level: number;
+  xp: number;
+  hunger: number; // 0-100
+  energy: number; // 0-100
+  mood: number;   // 0-100
+  skin: string;   // Skin ID
+  lastInteraction: number; // Timestamp
+  unlockedSkins?: string[];
+  unlockedBackgrounds?: string[];
+  selectedBackground?: string;
 }
 
 export interface GameConfig {
@@ -83,11 +103,28 @@ export interface TutorialContent {
 
 export interface ShopItem {
   id: string;
-  type: 'currency' | 'avatar';
+  type: 'currency' | 'avatar' | 'frame' | 'booster';
   name: string;
   cost: number | string; // Number = Coins, String = Real Money (Display)
-  value: number | string; // Amount of coins OR Avatar ID
+  value: number | string; // Amount of coins OR Avatar ID OR Frame ID
   currencyAmount?: number; // For currency packs
   isRealMoney?: boolean;
   paypalLink?: string;
+}
+
+export interface SeasonRewardItem {
+  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker';
+  name: string;
+  amount?: number;
+  desc?: string;
+  value?: string | number;
+  preview?: string;
+  icon?: string;
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+}
+
+export interface SeasonReward {
+  level: number;
+  free: SeasonRewardItem | null;
+  premium: SeasonRewardItem | null;
 }

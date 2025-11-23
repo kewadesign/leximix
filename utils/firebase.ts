@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 // KW1998 - Firebase Integration
 // WICHTIG: runTransaction wurde hier hinzugefügt
 import { getDatabase, ref, set, get, child, runTransaction, onValue } from 'firebase/database';
+import { UserState, Language } from '../types';
+import { AVATARS } from '../constants';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -48,6 +50,22 @@ export const normalizeUsername = (username: string): string => {
     return username.replace(/\s+/g, '').toLowerCase();
 };
 
+// Default User State (copied from App.tsx to ensure consistency on register)
+const DEFAULT_USER_STATE: UserState = {
+    name: 'Player',
+    age: 0,
+    avatarId: AVATARS[0],
+    ownedAvatars: [AVATARS[0]],
+    xp: 0,
+    level: 1,
+    coins: 0,
+    isPremium: false,
+    completedLevels: {},
+    playedWords: [],
+    language: Language.DE,
+    theme: 'dark'
+};
+
 // ============================================================================
 // AUTH FUNCTIONS (Unverändert)
 // ============================================================================
@@ -68,19 +86,31 @@ export const registerUser = async (username: string, password: string): Promise<
         }
 
         const hashedPassword = simpleHash(password);
+        
+        // Create user with full default state
         await set(userRef, {
             password: hashedPassword,
             createdAt: Date.now(),
-            saves: { current: null }
+            saves: { 
+                current: {
+                    ...DEFAULT_USER_STATE,
+                    name: username, // Use the entered username as the display name initially
+                    lastSaved: Date.now()
+                }
+            }
         });
 
         return { success: true };
     } catch (error: any) {
         console.error('[Firebase] Register error:', error);
+        // Log specific details to help debugging
+        if (error.code) console.error('Error code:', error.code);
+        if (error.message) console.error('Error message:', error.message);
+
         if (error.message && error.message.includes('permission_denied')) {
-            return { success: false, error: 'Benutzername bereits vergeben' };
+            return { success: false, error: 'Benutzername bereits vergeben (oder Zugriff verweigert)' };
         }
-        return { success: false, error: 'Registrierung fehlgeschlagen' };
+        return { success: false, error: 'Registrierung fehlgeschlagen. Prüfe die Konsole.' };
     }
 };
 

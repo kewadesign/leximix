@@ -19,39 +19,19 @@
         "users": {
             "$username": {
                 ".read": true,
-                ".write": "!data.exists() || !newData.exists()",
-                ".validate": "$username.matches(/^[a-z0-9]+$/) && $username.length >= 3 && $username.length <= 30",
+                ".validate": "$username.matches(/^[a-zA-Z0-9]+$/) && $username.length >= 3 && $username.length <= 30",
+                ".write": "!data.exists()",
                 "saves": {
-                    ".write": true,
-                    "current": {
-                        "xp": {
-                            ".validate": "newData.isNumber() && newData.val() >= 0 && (newData.val() <= data.val() + 1000 || !data.exists())"
-                        },
-                        "level": {
-                            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
-                        },
-                        "coins": {
-                            ".validate": "newData.isNumber() && newData.val() >= 0 && (newData.val() <= data.val() || !data.exists())"
-                        },
-                        "isPremium": {
-                            ".validate": "newData.isBoolean() && (newData.val() == data.val() || !data.exists())"
-                        },
-                        "name": {
-                            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60"
-                        },
-                        "age": {
-                            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 120"
-                        },
-                        "avatarId": {
-                            ".validate": "newData.isNumber() && newData.val() >= 0"
-                        }
-                    }
+                    ".write": true
                 },
                 "voucherRewards": {
-                    "$rewardId": {
-                        ".write": true,
-                        ".validate": "newData.hasChildren(['coins', 'timestamp', 'voucherCode'])"
-                    }
+                    ".write": true
+                },
+                "isPremium": {
+                    ".write": true
+                },
+                "premiumActivatedAt": {
+                    ".write": true
                 }
             }
         }
