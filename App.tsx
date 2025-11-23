@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 // KW1998 - Core Application Logic
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
@@ -187,13 +187,13 @@ export default function App() {
     setIsTransitioning(true);
   };
 
-  const onTransitionMidpoint = () => {
+  const onTransitionMidpoint = useCallback(() => {
     if (nextView) {
       setView(nextView);
       setNextView(null);
     }
     setTimeout(() => setIsTransitioning(false), 400); 
-  };
+  }, [nextView]);
 
   // Onboarding State
   const [onboardingStep, setOnboardingStep] = useState(0); // 0=Lang, 1=Name, 2=Age
@@ -1463,8 +1463,6 @@ export default function App() {
 
     // Safe access to banner with fallback
     const activeBanner = BANNERS[currentBanner] || BANNERS[0];
-
-    if (!activeBanner) return null; // Extra safety
 
     return (
       <div className="h-full flex flex-col animate-fade-in glass-panel max-w-4xl mx-auto w-full rounded-none md:rounded-3xl overflow-hidden">
