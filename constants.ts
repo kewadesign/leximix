@@ -1010,6 +1010,17 @@ export const generateSeasonRewards = (season: Season) => {
         { id: 'aurora_wave', name: 'Aurora', desc: 'Northern lights' },
         { id: 'pixel_glitch', name: 'Pixel Glitch', desc: 'Retro pixels' },
         { id: 'holo_shimmer', name: 'Holographic', desc: 'Holo shine' },
+        // Advanced
+        { id: 'wave_motion', name: 'Wave Motion', desc: 'Flowing waves' },
+        { id: 'color_morph', name: 'Color Morph', desc: 'Rainbow cycle' },
+        { id: 'matrix_rain', name: 'Matrix Rain', desc: 'Code cascade' },
+        { id: 'prism_split', name: 'Prism Split', desc: 'RGB split' },
+        { id: 'glitch_wild', name: 'Glitch Wild', desc: 'Chaotic glitch' },
+        { id: 'lava_flow', name: 'Lava Flow', desc: 'Molten lava' },
+        { id: 'electric_pulse', name: 'Electric', desc: 'Lightning zaps' },
+        { id: 'oil_slick', name: 'Oil Slick', desc: 'Iridescent oil' },
+        { id: 'chromatic_abberation', name: 'Chromatic', desc: 'Color split' },
+        { id: 'quantum_flux', name: 'Quantum', desc: 'Phase shift' },
       ];
 
       // Distribute effects predictably: cycle through all effects
@@ -1022,7 +1033,7 @@ export const generateSeasonRewards = (season: Season) => {
         desc: effect.desc,
         value: `effect_${effect.id}`,
         icon: 'magic_wand',
-        rarity: effectIndex < 5 ? 'rare' : effectIndex < 13 ? 'epic' : 'legendary'
+        rarity: effectIndex < 5 ? 'rare' : effectIndex < 20 ? 'epic' : 'legendary'
       };
     }
     // 3. XP Boosters - Every 4 levels (not divisible by 3 or 5)

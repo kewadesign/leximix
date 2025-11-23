@@ -516,6 +516,18 @@ export default function App() {
     if (effectId === 'effect_pixel_glitch') return 'frame-pixel-glitch';
     if (effectId === 'effect_holo_shimmer') return 'frame-holo-shimmer';
 
+    // Advanced frames
+    if (effectId === 'effect_wave_motion') return 'frame-wave-motion';
+    if (effectId === 'effect_color_morph') return 'frame-color-morph';
+    if (effectId === 'effect_matrix_rain') return 'frame-matrix-rain';
+    if (effectId === 'effect_prism_split') return 'frame-prism-split';
+    if (effectId === 'effect_glitch_wild') return 'frame-glitch-wild';
+    if (effectId === 'effect_lava_flow') return 'frame-lava-flow';
+    if (effectId === 'effect_electric_pulse') return 'frame-electric-pulse';
+    if (effectId === 'effect_oil_slick') return 'frame-oil-slick';
+    if (effectId === 'effect_chromatic_abberation') return 'frame-chromatic-abberation';
+    if (effectId === 'effect_quantum_flux') return 'frame-quantum-flux';
+
     // Fallback for legacy frames
     if (effectId.includes('frame_')) return "shadow-[0_0_20px_rgba(34,211,238,0.5)] ring-2 ring-cyan-400";
     return "";
@@ -625,12 +637,12 @@ export default function App() {
     audio.playClick();
     if (!gameConfig) return;
 
-    // Challenge Mode Cost Check
+    // Challenge Mode Cost Check - 100-500 coins based on tier
     if (gameConfig.mode === GameMode.CHALLENGE) {
-      const cost = tier * 50;
+      const cost = 100 + ((tier - 1) * 100); // Tier 1 = 100, Tier 2 = 200, Tier 3 = 300
       if (user.coins < cost) {
         audio.playError();
-        alert(`${t.SHOP.INSUFFICIENT} (${cost})`);
+        alert(`${t.SHOP.INSUFFICIENT} (${cost} Münzen benötigt)`);
         return;
       }
       setUser(u => ({ ...u, coins: u.coins - cost }));
@@ -990,6 +1002,12 @@ export default function App() {
       // Scaling Rewards
       let xpGain = tier * 20;
       let coinGain = tier * 5;
+
+      // Grant bonus XP for challenge mode completion
+      if (mode === GameMode.CHALLENGE) {
+        const bonusXP = 50 * tier; // 50/100/150 XP for tiers 1/2/3
+        xpGain += bonusXP;
+      }
 
       // Challenge Mode Bonus
       if (mode === GameMode.CHALLENGE) {
