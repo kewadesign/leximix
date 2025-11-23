@@ -17,7 +17,7 @@ import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from '
 import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download } from 'lucide-react';
 
 // --- Sub Components for Game Logic ---
 
@@ -2905,6 +2905,21 @@ export default function App() {
         onClose={() => setShowAuthModal(false)}
         onSuccess={handleCloudLogin}
       />
+
+      {/* Web Version: APK Download Button */}
+      {(window as any).Capacitor === undefined && (
+        <div className="fixed bottom-4 right-4 z-[50]">
+          <a
+            href="https://leximix-aecac.web.app/app-release.apk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-black/40 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white/50 hover:text-white px-4 py-2 rounded-full transition-all text-[10px] font-bold uppercase tracking-widest group"
+          >
+            <Download size={14} className="group-hover:text-lexi-fuchsia transition-colors" />
+            <span>Android App</span>
+          </a>
+        </div>
+      )}
 
     </div>
   );

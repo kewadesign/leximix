@@ -5,7 +5,7 @@ import { AlertTriangle, ArrowLeft, Sparkles, Download } from 'lucide-react';
 import { ChangelogModal, ChangelogEntry } from './ChangelogModal';
 
 // Current App Version
-export const APP_VERSION = '2.3.0';
+export const APP_VERSION = '2.3.1';
 
 interface Props {
   isOnline: boolean;
@@ -18,6 +18,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
   const [showForceUpdate, setShowForceUpdate] = useState(false);
   const [showOptionalUpdate, setShowOptionalUpdate] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
+  const [viewingChangelogFromForce, setViewingChangelogFromForce] = useState(false);
   
   const [changelogData, setChangelogData] = useState<ChangelogEntry[]>([]);
 
@@ -34,7 +35,6 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
     const unsubscribe = onValue(systemRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        // data should look like: { min_version: "2.1.0", latest_version: "2.3.0", latest_apk_version: "2.3.0" }
         
         const latest = isCapacitor ? (data.latest_apk_version || data.latest_version) : data.latest_version;
         const minimum = data.min_version || '0.0.0';
@@ -90,9 +90,6 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
     const lastSeen = localStorage.getItem('last_seen_version');
     if (!lastSeen || compare(current, lastSeen) > 0) {
        // Only show changelog if we are not showing update modals
-       // But strictly, changelog is for when you HAVE updated.
-       // So if current == latest (or just freshly opened new version), show it.
-       // We don't want to show it if we need to update.
        if (compare(current, latest) >= 0) {
            setShowChangelog(true);
            localStorage.setItem('last_seen_version', current);
@@ -103,7 +100,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
   const handleDownload = () => {
     if (isCapacitor) {
         // Direct download link for APK
-        window.open('https://leximix.web.app/app-release.apk', '_system');
+        window.open('https://leximix-aecac.web.app/app-release.apk', '_system');
     } else {
         window.location.reload();
     }
@@ -137,16 +134,42 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
             </div>
           </div>
 
-          <button
-            onClick={handleDownload}
-            className="w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
-          >
-            <Download size={20} />
-            Jetzt Aktualisieren
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={handleDownload}
+              className="w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
+            >
+              <Download size={20} />
+              Jetzt Aktualisieren
+            </button>
+
+            <button
+              onClick={() => {
+                  setViewingChangelogFromForce(true);
+                  setShowChangelog(true);
+              }}
+              className="text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors"
+            >
+              Was ist neu?
+            </button>
+          </div>
           
           <p className="text-[10px] text-gray-600 uppercase tracking-widest">Sicherheits-Update</p>
         </div>
+        
+        {/* Show Changelog on top if requested */}
+        {showChangelog && viewingChangelogFromForce && (
+            <div className="absolute inset-0 z-[100000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                <ChangelogModal 
+                    isOpen={true} 
+                    onClose={() => {
+                        setShowChangelog(false);
+                        setViewingChangelogFromForce(false);
+                    }} 
+                    entries={changelogData} 
+                />
+            </div>
+        )}
       </div>
     );
   }

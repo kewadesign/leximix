@@ -1,0 +1,350 @@
+{
+  "system": {
+    "min_version": "2.1.0",
+    "latest_version": "2.3.0",
+    "latest_apk_version": "2.3.0"
+  },
+  "users": {
+    "kevin": {
+      "createdAt": 1763922771569,
+      "password": "-cgp46i",
+      "saves": {
+        "current": {
+          "age": 0,
+          "avatarId": "Felix",
+          "coins": 0,
+          "isPremium": false,
+          "language": "DE",
+          "lastSaved": 1763922771569,
+          "level": 1,
+          "name": "Kevin",
+          "ownedAvatars": [
+            "Felix"
+          ],
+          "theme": "dark",
+          "xp": 0
+        }
+      }
+    },
+    "kewa": {
+      "createdAt": 1763924889070,
+      "password": "-cgp46i",
+      "saves": {
+        "current": {
+          "age": 0,
+          "avatarId": "Felix",
+          "coins": 0,
+          "isPremium": false,
+          "language": "DE",
+          "lastSaved": 1763924889073,
+          "level": 1,
+          "name": "Kewa",
+          "ownedAvatars": [
+            "Felix"
+          ],
+          "theme": "dark",
+          "xp": 0
+        }
+      }
+    },
+    "neunziger": {
+      "createdAt": 1763919646600,
+      "password": "-pf0l61",
+      "saves": {
+        "current": {
+          "age": 0,
+          "avatarId": "Felix",
+          "coins": 0,
+          "isPremium": false,
+          "language": "DE",
+          "lastSaved": 1763919646600,
+          "level": 1,
+          "name": "neunziger",
+          "ownedAvatars": [
+            "Felix"
+          ],
+          "theme": "dark",
+          "xp": 0
+        }
+      }
+    }
+  },
+  "vouchers": {
+    "04JLYB": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "0AC55Q": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "1M91RS": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "1RJGJW": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "1UDR15": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "4GBYVM": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "6G7FA7": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "7NTMKP": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "CRZ86A": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "HT1JEL": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "JBXVS6": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "JD0LDD": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "JTPBL6": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "KA2NZV": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "KUB406": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "LEXIMIX-04JL-YB5F-WONX": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-0AC5-5QCR-Z86A": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-4GBY-VMKA-2NZV": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-6G7F-A7W4-J006": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-7NTM-KPYP-RASU": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-BTN5-OMZF-E68I": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-HPAI-SR9O-71HO": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true,
+      "usedBy": {
+        "goobuddy": 1763893808438
+      }
+    },
+    "LEXIMIX-HT1J-ELJT-PBL6": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-I1C9-QSNY-KNU1": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-JBXV-S6YA-FYKQ": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-JD0L-DDOQ-HP5I": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-JDWL-AGRL-6606": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-JLKH-MDYH-5RBK": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-KUB4-061U-DR15": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-LKCW-Y709-2NZO": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-MHSQ-MAIN-NAC3": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-MZFN-0M1R-JGJW": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-NBUY-18GN-EOBQ": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-NTBT-N5R2-4U3T": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-NUYB-XI1M-91RS": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-O115-X5CH-93QC": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-RAFK-S9TS-KZ74": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-RH2R-CN15-9WQ9": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-RY7J-V0LE-VQOY": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-SC9B-FOZD-P0EW": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true,
+      "usedBy": {
+        "123123": 1763910993052
+      }
+    },
+    "LEXIMIX-T3DD-DYDC-IKSP": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-VHXX-PYDI-0TP7": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-WC72-03TQ-0JB3": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-WCY0-QOCR-P3PL": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LEXIMIX-X27F-FDJF-C8EC": {
+      "coins": 0,
+      "description": "Premium Upgrade",
+      "isPremium": true
+    },
+    "LKCWY7": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "MHSQMA": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "MZFN0M": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "NBUY18": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "NTBTN5": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "NYKNU1": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "R24U3T": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "RAFKS9": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "T3DDDY": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "TSKZ74": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "VHXXPY": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "W4J006": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "YAFYKQ": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "YPRASU": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    },
+    "ZDP0EW": {
+      "coins": 1000,
+      "description": "1000 Coins"
+    }
+  }
+}
