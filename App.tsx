@@ -5,7 +5,6 @@ import { Button, Modal } from './components/UI';
 import { SeasonPass } from './components/SeasonPass';
 import { SeasonPassView } from './components/SeasonPassView';
 import { PayPalButton } from './components/PayPalButton';
-import { SphereBuddy3D } from './components/SphereBuddy3D';
 import { AuthModal } from './components/AuthModal';
 import { PremiumStatus } from './components/PremiumStatus';
 import { ShopView } from './components/ShopView';
@@ -160,7 +159,7 @@ const SudokuBoard = ({ puzzle, original, onCellClick, selectedCell }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'SPHERE';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH';
 
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
@@ -882,17 +881,7 @@ export default function App() {
       completedLevels: {},
       playedWords: [],
       language: Language.DE,
-      theme: 'dark',
-      buddy: {
-        name: 'Sphere',
-        level: 1,
-        xp: 0,
-        hunger: 80,
-        energy: 80,
-        mood: 80,
-        skin: 'default',
-        lastInteraction: Date.now()
-      }
+      theme: 'dark'
     });
 
     // Go back to AUTH
@@ -1087,23 +1076,13 @@ export default function App() {
           ? [...(prev.playedWords || []), targetWord]
           : (prev.playedWords || []);
 
-        // Update Buddy Stats on Win
-        const buddyUpdate = prev.buddy ? {
-          ...prev.buddy,
-          mood: Math.min(100, prev.buddy.mood + 10),
-          // Level up check for buddy
-          level: (prev.buddy.xp + 20) >= prev.buddy.level * 100 ? prev.buddy.level + 1 : prev.buddy.level,
-          xp: (prev.buddy.xp + 20) >= prev.buddy.level * 100 ? 0 : prev.buddy.xp + 20
-        } : undefined;
-
         return {
           ...prev,
           xp: newXp,
           level: newLevel,
           coins: prev.coins + coinGain,
           completedLevels: newCompleted,
-          playedWords: newPlayedWords,
-          buddy: buddyUpdate || prev.buddy
+          playedWords: newPlayedWords
         };
       });
     } catch (error) {
@@ -1595,6 +1574,17 @@ export default function App() {
         </button >
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const newLang = user.language === Language.DE ? Language.EN : Language.DE;
+              setUser({ ...user, language: newLang });
+              audio.playClick();
+            }}
+            className="glass-button w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm hover:bg-white/10 transition-colors border border-white/20"
+          >
+            {user.language === Language.DE ? 'DE' : 'EN'}
+          </button>
+
           <button onClick={toggleTheme} className="glass-button p-3 rounded-full hover:bg-white/10 transition-colors">
             {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-indigo-400" />}
           </button>
@@ -2041,16 +2031,6 @@ export default function App() {
       {view === 'LEVELS' && renderLevels()}
       {view === 'GAME' && renderGame()}
       {view === 'TUTORIAL' && renderTutorial()}
-      {view === 'SPHERE' && (
-        <div className="h-full flex flex-col p-4">
-          <SphereBuddy3D
-            buddy={user.buddy || { name: 'Sphere', level: 1, xp: 0, hunger: 80, energy: 80, mood: 80, skin: 'default', lastInteraction: Date.now() }}
-            onUpdate={(newBuddy) => setUser(prev => ({ ...prev, buddy: newBuddy }))}
-            onPlay={() => { handleNavigate('GAME'); setGameConfig({ mode: GameMode.CLASSIC, tier: Tier.BEGINNER, levelId: 1 }); }}
-            onBack={() => handleNavigate('HOME')}
-          />
-        </div>
-      )}
       {/* Navigation Icons */}
 
       {/* Auth Screen (First screen) */}

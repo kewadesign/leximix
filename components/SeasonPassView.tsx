@@ -73,7 +73,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
 
             {/* Premium CTA */}
             {!user.isPremium && (
-                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 animate-bounce-slow">
+                <div className="absolute top-28 left-1/2 -translate-x-1/2 z-30 animate-bounce-slow">
                     <button
                         onClick={onShowPremium}
                         className="px-8 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-full font-black uppercase hover:brightness-110 transition-all shadow-[0_0_30px_rgba(8,145,178,0.5)] flex items-center gap-2 border-2 border-white/20"

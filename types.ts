@@ -57,21 +57,6 @@ export interface UserState {
   redeemedCodes?: string[]; // Track redeemed gutschein codes
   stickers?: string[]; // Collected stickers
   theme: 'light' | 'dark';
-  buddy?: BuddyState;
-}
-
-export interface BuddyState {
-  name: string;
-  level: number;
-  xp: number;
-  hunger: number; // 0-100
-  energy: number; // 0-100
-  mood: number;   // 0-100
-  skin: string;   // Skin ID
-  lastInteraction: number; // Timestamp
-  unlockedSkins?: string[];
-  unlockedBackgrounds?: string[];
-  selectedBackground?: string;
 }
 
 export interface GameConfig {
