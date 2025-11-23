@@ -1470,20 +1470,27 @@ export default function App() {
             <div className="space-y-6 text-center animate-slide-up glass-panel p-8 rounded-3xl">
               <Globe size={64} className="mx-auto text-lexi-cyan mb-4 animate-spin-slow" />
               <h1 className="text-3xl font-black italic mb-8 text-transparent bg-clip-text bg-gradient-to-r from-lexi-text to-lexi-text-muted">{t.ONBOARDING.WELCOME}</h1>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => { setTempUser({ ...tempUser, language: Language.DE }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-6 glass-button rounded-2xl hover:bg-lexi-fuchsia/20 hover:border-lexi-fuchsia transition-all group"
+                  className="p-4 glass-button rounded-2xl hover:bg-lexi-fuchsia/20 hover:border-lexi-fuchsia transition-all group flex flex-col items-center justify-center"
                 >
-                  <span className="text-4xl mb-2 block group-hover:scale-110 transition-transform">🇩🇪</span>
-                  <span className="font-bold">DEUTSCH</span>
+                  <span className="text-3xl mb-2 block group-hover:scale-110 transition-transform">🇩🇪</span>
+                  <span className="font-bold text-xs md:text-sm">DEUTSCH</span>
                 </button>
                 <button
                   onClick={() => { setTempUser({ ...tempUser, language: Language.EN }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-6 glass-button rounded-2xl hover:bg-lexi-cyan/20 hover:border-lexi-cyan transition-all group"
+                  className="p-4 glass-button rounded-2xl hover:bg-lexi-cyan/20 hover:border-lexi-cyan transition-all group flex flex-col items-center justify-center"
                 >
-                  <span className="text-4xl mb-2 block group-hover:scale-110 transition-transform">🇺🇸</span>
-                  <span className="font-bold">ENGLISH</span>
+                  <span className="text-3xl mb-2 block group-hover:scale-110 transition-transform">🇺🇸</span>
+                  <span className="font-bold text-xs md:text-sm">ENGLISH</span>
+                </button>
+                <button
+                  onClick={() => { setTempUser({ ...tempUser, language: Language.ES }); setOnboardingStep(1); audio.playClick(); }}
+                  className="p-4 glass-button rounded-2xl hover:bg-yellow-500/20 hover:border-yellow-500 transition-all group flex flex-col items-center justify-center"
+                >
+                  <span className="text-3xl mb-2 block group-hover:scale-110 transition-transform">🇪🇸</span>
+                  <span className="font-bold text-xs md:text-sm">ESPAÑOL</span>
                 </button>
               </div>
             </div>
@@ -1597,37 +1604,46 @@ export default function App() {
     audio.playClick();
   };
 
+  const toggleLanguage = () => {
+    const langs = [Language.DE, Language.EN, Language.ES];
+    const currentIndex = langs.indexOf(user.language);
+    const nextIndex = (currentIndex + 1) % langs.length;
+    setUser(prev => ({ ...prev, language: langs[nextIndex] }));
+    audio.playClick();
+  };
+
+  const getLanguageName = (lang: Language) => {
+    switch(lang) {
+      case Language.DE: return "DEUTSCH";
+      case Language.EN: return "ENGLISH";
+      case Language.ES: return "ESPAÑOL";
+      default: return "DEUTSCH";
+    }
+  };
+
   const renderHome = () => (
-    <div className="flex flex-col h-full p-6 w-full max-w-4xl mx-auto overflow-y-auto pb-10 scrollbar-hide">
-      {/* Header Section */}
-      <div className="flex items-center justify-between w-full px-4 py-4 mb-6 relative z-10">
-        <button className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity text-left" onClick={openProfile}>
-          <div className={`w-14 h-14 rounded-full border-2 border-white/20 overflow-hidden relative shadow-lg ${getAvatarEffect(user.activeFrame)} `}>
-            <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full bg-gray-800" />
-          </div >
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-lexi-text-muted uppercase tracking-wider">{t.HOME.PLAYER}</span>
-            <span className={`text-xl font-black ${user.isPremium ? 'text-yellow-400 drop-shadow-md' : 'text-lexi-text'}`}>
-              {cloudUsername || user.name}
-            </span>
+    <div className="h-full flex flex-col relative z-10">
+      <div className="flex justify-between items-center p-6 animate-slide-down">
+        <div className="flex items-center gap-3" onClick={openProfile}>
+          <div className={`w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-gray-800 cursor-pointer ${getAvatarEffect(user.activeFrame)}`}>
+            <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
           </div>
-        </button >
+          <div>
+            <h2 className={`font-black text-lg leading-none ${user.isPremium ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 animate-shimmer' : 'text-white'}`}>
+              {user.name}
+            </h2>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 text-xs font-bold text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded-full border border-yellow-400/30">
+                <Coins size={10} className="fill-yellow-400" /> {user.coins}
+              </div>
+              <div className="flex items-center gap-1 text-xs font-bold text-lexi-fuchsia bg-lexi-fuchsia/10 px-2 py-0.5 rounded-full border border-lexi-fuchsia/30">
+                <Trophy size={10} /> Lvl {user.level}
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
-          <button
-            onClick={() => {
-              const newLang = user.language === Language.DE ? Language.EN : Language.DE;
-              setUser({ ...user, language: newLang });
-              audio.playClick();
-            }}
-            className="glass-button w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm hover:bg-white/10 transition-colors border border-white/20"
-          >
-            {user.language === Language.DE ? 'DE' : 'EN'}
-          </button>
-
-          <button onClick={toggleTheme} className="glass-button w-10 h-10 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center">
-            {user.theme === 'dark' ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-indigo-400" />}
-          </button>
+        <div className="flex items-center gap-3">
           <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors group">
             <div className="relative">
               <Coins className="text-yellow-400 group-hover:rotate-12 transition-transform" size={18} />
@@ -1636,8 +1652,13 @@ export default function App() {
             <span className="font-black text-base text-yellow-400 drop-shadow-md">{user.coins}</span>
             <Plus size={12} className="bg-yellow-400 text-black rounded-full p-0.5" />
           </button>
+
+          <button onClick={toggleLanguage} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors">
+            <Globe size={18} className="text-lexi-cyan" />
+            <span className="font-bold text-xs text-lexi-cyan uppercase">{getLanguageName(user.language)}</span>
+          </button>
         </div>
-      </div >
+      </div>
 
       {/* Cloud Save Card - MOVED TO TOP! */}
       < div className="mb-6 w-full px-2" >

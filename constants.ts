@@ -367,6 +367,130 @@ export const TRANSLATIONS = {
       COOL: "COOLE SACHE!",
       NOTES: "UPDATE NOTES"
     }
+  },
+  [Language.ES]: {
+    ONBOARDING: {
+      WELCOME: "BIENVENIDO",
+      SELECT_LANG: "SELECCIONAR IDIOMA",
+      NAME_TITLE: "IDENTIFÍCATE",
+      NAME_PLACEHOLDER: "Ingresar nombre",
+      AGE_TITLE: "VERIFICAR EDAD",
+      AGE_PLACEHOLDER: "Ingresar edad",
+      CONTINUE: "CONTINUAR",
+      START: "INICIAR SISTEMA",
+      ERR_NAME: "Máx 20 caracteres",
+      ERR_AGE: "Edad inválida (1-120)"
+    },
+    HOME: {
+      PLAYER: "Jugador",
+      SEASON_LEVEL: "Nivel de Temporada",
+      TAGLINE: "EL ENTRENAMIENTO DIARIO",
+      LANG_BTN: "ESPAÑOL",
+      PLAY: "JUGAR"
+    },
+    MODES: {
+      CLASSIC: { title: "CLÁSICO", desc: "El Estándar" },
+      SPEEDRUN: { title: "CONTRARRELOJ", desc: "Carrera contra el tiempo" },
+      CHAIN: { title: "CADENA", desc: "Enlaza palabras" },
+      CATEGORY: { title: "TEMAS", desc: "Basado en contexto" },
+      SUDOKU: { title: "SUDOKU DE LETRAS", desc: "Lógica (A-I)" },
+      CHALLENGE: { title: "DESAFÍO", desc: "Retos Premium" },
+      LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
+    },
+    SEASON: {
+      TITLE: "TEMPORADA I: GÉNESIS",
+      SUBTITLE: "PASE DE BATALLA",
+      PREMIUM_ACTIVE: "PREMIUM ACTIVO",
+      FREE_ACTIVE: "PASE GRATIS ACTIVO",
+      GET_PREMIUM: "OBTENER PREMIUM",
+      PREMIUM_DESC: "Desbloquea skins exclusivos, pistas más rápidas y nombre dorado.",
+      UNLOCK_BTN: "DESBLOQUEAR 4,99€",
+      LEVEL: "NIVEL",
+      COINS: "Monedas",
+      RARE_ITEM: "Objeto Raro",
+      DAYS_LEFT: "DÍAS RESTANTES",
+      REDEEM_CODE: "CANJEAR CÓDIGO",
+      CODE_PLACEHOLDER: "Ingresar Código",
+      INVALID_CODE: "Código Inválido",
+      PREMIUM_REQUIRED: "¡Pase de Temporada Requerido!",
+      PREMIUM_OPTIONS: "OPCIONES PASE PREMIUM",
+      VIEW_BENEFITS: "VER BENEFICIOS PREMIUM"
+    },
+    LEVELS: {
+      BACK: "VOLVER",
+      TIERS: ["PRINCIPIANTE", "APRENDIZ", "HABILIDOSO", "EXPERTO", "MAESTRO"]
+    },
+    GAME: {
+      HINT_TITLE: "PISTA",
+      UNLOCK_HINT: "DESBLOQUEAR PISTA",
+      SUDOKU_TITLE: "SUDOKU",
+      CLASSIC_TITLE: "CLÁSICO",
+      SUDOKU_DESC: "Rellena la cuadrícula",
+      SPEEDRUN_DESC: "Tiempo Restante",
+      WIN_TITLE: "VICTORIA",
+      WIN_DESC: "¡Nivel Completado!",
+      XP_GAINED: "XP GANADA",
+      COINS_GAINED: "MONEDAS",
+      NEXT_BTN: "SIGUIENTE NIVEL",
+      PASS_BTN: "VER PASE",
+      HINT_MODAL_TITLE: "DESBLOQUEAR PISTA",
+      AD_SIM: "ESPACIO PUBLICITARIO\n(Simulación)",
+      WATCHING: "VIENDO...",
+      CLAIM: "RECLAMAR PISTA",
+      REWARD: "RECOMPENSA LISTA",
+      HINT_COST_PREFIX: "+",
+      HINT_COST_SUFFIX: "s Tiempo de Espera",
+      INFO_BAR: "letras. Verde = Correcto.",
+      ENTER_GUESS: "INGRESAR",
+      LOST_TITLE: "MISIÓN FALLIDA",
+      LOST_DESC: "JUEGO TERMINADO",
+      TARGET_ID: "OBJETIVO IDENTIFICADO",
+      MENU: "MENÚ",
+      RETRY: "REINTENTAR",
+      LEVEL_UP: "SUBIDA DE NIVEL"
+    },
+    TUTORIAL: {
+      HEADER: "CÓMO JUGAR",
+      BACK: "VOLVER",
+      START: "INICIAR JUEGO"
+    },
+    PROFILE: {
+      TITLE: "PERFIL DE JUGADOR",
+      SAVE: "GUARDAR CAMBIOS",
+      NAME: "NOMBRE",
+      AGE: "EDAD",
+      AVATAR: "SELECCIONAR AVATAR",
+      DELETE_PROFILE: "BORRAR PERFIL",
+      AVATAR_HINT: "Haz clic en el avatar para ver tu colección"
+    },
+    SHOP: {
+      TITLE: "MERCADO NEGRO",
+      CURRENCY_SECTION: "PACKS DE MONEDAS",
+      AVATAR_SECTION: "TERMINAL DE AVATARES",
+      BUY: "COMPRAR",
+      OWNED: "EN PROPIEDAD",
+      EQUIP: "EQUIPAR",
+      EQUIPPED: "EQUIPADO",
+      INSUFFICIENT: "MONEDAS INSUFICIENTES",
+      SUCCESS: "COMPRADO"
+    },
+    UPDATES: {
+      REQUIRED_TITLE: "ACTUALIZACIÓN REQUERIDA",
+      REQUIRED_DESC: "Tu versión de LexiMix está obsoleta. Debes actualizar para seguir jugando.",
+      INSTALLED: "INSTALADO",
+      REQUIRED: "REQUERIDO",
+      UPDATE_NOW: "ACTUALIZAR AHORA",
+      WHATS_NEW: "¿Qué hay de nuevo?",
+      SECURITY: "ACTUALIZACIÓN DE SEGURIDAD",
+      AVAILABLE_TITLE: "ACTUALIZACIÓN DISPONIBLE",
+      NEW_VERSION: "Nueva Versión v",
+      AVAILABLE_DESC_APP: "¡Nueva versión APK disponible. Descárgala para las últimas novedades!",
+      AVAILABLE_DESC_WEB: "LexiMix se ha actualizado. Recarga la app.",
+      DOWNLOAD: "DESCARGAR",
+      RELOAD: "RECARGAR",
+      COOL: "¡GENIAL!",
+      NOTES: "NOTAS DE ACTUALIZACIÓN"
+    }
   }
 };
 
@@ -924,30 +1048,179 @@ export const CATEGORY_DATA_DE: Record<string, string[]> = {
   "TECHNIK": ["CODE", "DATEN", "WLAN", "LINK", "CHIP"]
 };
 
+export const WORDS_ES: WordData[] = [
+  // Beginner (Tier 1)
+  { word: "CASA", hint: "Lugar donde vives.", tier: Tier.BEGINNER },
+  { word: "PERRO", hint: "Mejor amigo del hombre.", tier: Tier.BEGINNER },
+  { word: "GATO", hint: "Felino doméstico.", tier: Tier.BEGINNER },
+  { word: "AGUA", hint: "Líquido vital.", tier: Tier.BEGINNER },
+  { word: "PAN", hint: "Alimento básico.", tier: Tier.BEGINNER },
+  { word: "SOL", hint: "Estrella del sistema solar.", tier: Tier.BEGINNER },
+  { word: "LUNA", hint: "Satélite de la Tierra.", tier: Tier.BEGINNER },
+  { word: "FLOR", hint: "Parte colorida de una planta.", tier: Tier.BEGINNER },
+  { word: "ROJO", hint: "Color de la sangre.", tier: Tier.BEGINNER },
+  { word: "MANO", hint: "Parte del cuerpo con dedos.", tier: Tier.BEGINNER },
+  { word: "PIE", hint: "Parte del cuerpo para caminar.", tier: Tier.BEGINNER },
+  { word: "OJO", hint: "Órgano de la vista.", tier: Tier.BEGINNER },
+  { word: "MAR", hint: "Masa de agua salada.", tier: Tier.BEGINNER },
+  { word: "SAL", hint: "Condimento blanco.", tier: Tier.BEGINNER },
+  { word: "LUZ", hint: "Ilumina la oscuridad.", tier: Tier.BEGINNER },
+  { word: "DIA", hint: "Tiempo de luz.", tier: Tier.BEGINNER },
+  { word: "MES", hint: "Parte de un año.", tier: Tier.BEGINNER },
+  { word: "DOS", hint: "Número después del uno.", tier: Tier.BEGINNER },
+  { word: "TRES", hint: "Número después del dos.", tier: Tier.BEGINNER },
+  { word: "UNO", hint: "Primer número.", tier: Tier.BEGINNER },
+  { word: "OLA", hint: "Movimiento del mar.", tier: Tier.BEGINNER },
+  { word: "REY", hint: "Gobernante monárquico.", tier: Tier.BEGINNER },
+  { word: "SUR", hint: "Punto cardinal.", tier: Tier.BEGINNER },
+  { word: "LECHE", hint: "Bebida blanca.", tier: Tier.BEGINNER },
+  { word: "MESA", hint: "Mueble con patas.", tier: Tier.BEGINNER },
+
+  // Learner (Tier 2)
+  { word: "LIBRO", hint: "Conjunto de hojas escritas.", tier: Tier.LEARNER },
+  { word: "SILLA", hint: "Asiento con respaldo.", tier: Tier.LEARNER },
+  { word: "COCHE", hint: "Vehículo de cuatro ruedas.", tier: Tier.LEARNER },
+  { word: "ARBOL", hint: "Planta grande con tronco.", tier: Tier.LEARNER },
+  { word: "VERDE", hint: "Color de la hierba.", tier: Tier.LEARNER },
+  { word: "PADRE", hint: "Progenitor masculino.", tier: Tier.LEARNER },
+  { word: "MADRE", hint: "Progenitora femenina.", tier: Tier.LEARNER },
+  { word: "PLAYA", hint: "Costa con arena.", tier: Tier.LEARNER },
+  { word: "NOCHE", hint: "Tiempo de oscuridad.", tier: Tier.LEARNER },
+  { word: "TARDE", hint: "Después del mediodía.", tier: Tier.LEARNER },
+  { word: "MUNDO", hint: "Planeta Tierra.", tier: Tier.LEARNER },
+  { word: "CIELO", hint: "Espacio sobre la tierra.", tier: Tier.LEARNER },
+  { word: "VIAJE", hint: "Desplazamiento a otro lugar.", tier: Tier.LEARNER },
+  { word: "CAMPO", hint: "Terreno fuera de la ciudad.", tier: Tier.LEARNER },
+  { word: "CIUDAD", hint: "Población grande.", tier: Tier.LEARNER },
+  { word: "PAPEL", hint: "Material para escribir.", tier: Tier.LEARNER },
+  { word: "LAPIZ", hint: "Utensilio para escribir.", tier: Tier.LEARNER },
+  { word: "CLASE", hint: "Grupo de alumnos.", tier: Tier.LEARNER },
+  { word: "AMIGO", hint: "Persona cercana.", tier: Tier.LEARNER },
+  { word: "FELIZ", hint: "Estado de alegría.", tier: Tier.LEARNER },
+  { word: "TRISTE", hint: "Estado de pena.", tier: Tier.LEARNER },
+  { word: "JUEGO", hint: "Actividad divertida.", tier: Tier.LEARNER },
+  { word: "CARTA", hint: "Mensaje escrito.", tier: Tier.LEARNER },
+  { word: "QUESO", hint: "Alimento lácteo.", tier: Tier.LEARNER },
+  { word: "RELOJ", hint: "Marca el tiempo.", tier: Tier.LEARNER },
+
+  // Skilled (Tier 3)
+  { word: "TIEMPO", hint: "Duración de las cosas.", tier: Tier.SKILLED },
+  { word: "DINERO", hint: "Moneda de cambio.", tier: Tier.SKILLED },
+  { word: "CAMINO", hint: "Vía para transitar.", tier: Tier.SKILLED },
+  { word: "FUERZA", hint: "Capacidad física.", tier: Tier.SKILLED },
+  { word: "MENTE", hint: "Facultad intelectual.", tier: Tier.SKILLED },
+  { word: "SALUD", hint: "Estado de bienestar.", tier: Tier.SKILLED },
+  { word: "COMIDA", hint: "Alimento.", tier: Tier.SKILLED },
+  { word: "MUSICA", hint: "Arte de los sonidos.", tier: Tier.SKILLED },
+  { word: "JARDIN", hint: "Terreno con plantas.", tier: Tier.SKILLED },
+  { word: "DOCTOR", hint: "Médico.", tier: Tier.SKILLED },
+  { word: "ESCUELA", hint: "Lugar de enseñanza.", tier: Tier.SKILLED },
+  { word: "SEMANA", hint: "Siete días.", tier: Tier.SKILLED },
+  { word: "FAMILIA", hint: "Grupo de parientes.", tier: Tier.SKILLED },
+  { word: "CUERPO", hint: "Organismo vivo.", tier: Tier.SKILLED },
+  { word: "SANGRE", hint: "Líquido rojo vital.", tier: Tier.SKILLED },
+  { word: "TIERRA", hint: "Planeta o suelo.", tier: Tier.SKILLED },
+  { word: "VIENTO", hint: "Aire en movimiento.", tier: Tier.SKILLED },
+  { word: "LLUVIA", hint: "Agua que cae del cielo.", tier: Tier.SKILLED },
+  { word: "NIEVE", hint: "Agua helada blanca.", tier: Tier.SKILLED },
+  { word: "FUEGO", hint: "Combustión con llama.", tier: Tier.SKILLED },
+  { word: "PIEDRA", hint: "Materia mineral dura.", tier: Tier.SKILLED },
+  { word: "HIERRO", hint: "Metal fuerte.", tier: Tier.SKILLED },
+  { word: "ORO", hint: "Metal precioso amarillo.", tier: Tier.SKILLED },
+  { word: "PLATA", hint: "Metal precioso gris.", tier: Tier.SKILLED },
+  { word: "METAL", hint: "Material conductor.", tier: Tier.SKILLED },
+
+  // Expert (Tier 4)
+  { word: "ESPACIO", hint: "Lugar fuera de la atmósfera.", tier: Tier.EXPERT },
+  { word: "PLANETA", hint: "Cuerpo celeste.", tier: Tier.EXPERT },
+  { word: "ESTRELLA", hint: "Astro con luz propia.", tier: Tier.EXPERT },
+  { word: "GALAXIA", hint: "Conjunto de estrellas.", tier: Tier.EXPERT },
+  { word: "CIENCIA", hint: "Conocimiento sistemático.", tier: Tier.EXPERT },
+  { word: "HISTORIA", hint: "Estudio del pasado.", tier: Tier.EXPERT },
+  { word: "CULTURA", hint: "Conjunto de saberes.", tier: Tier.EXPERT },
+  { word: "SISTEMA", hint: "Conjunto de reglas.", tier: Tier.EXPERT },
+  { word: "TEORIA", hint: "Hipótesis probada.", tier: Tier.EXPERT },
+  { word: "ENERGIA", hint: "Capacidad de obrar.", tier: Tier.EXPERT },
+  { word: "JUSTICIA", hint: "Dar a cada uno lo suyo.", tier: Tier.EXPERT },
+  { word: "LIBERTAD", hint: "Facultad de obrar.", tier: Tier.EXPERT },
+  { word: "DERECHO", hint: "Conjunto de leyes.", tier: Tier.EXPERT },
+  { word: "MEMORIA", hint: "Facultad de recordar.", tier: Tier.EXPERT },
+  { word: "FUTURO", hint: "Lo que vendrá.", tier: Tier.EXPERT },
+  { word: "PASADO", hint: "Lo que ya ocurrió.", tier: Tier.EXPERT },
+  { word: "ORIGEN", hint: "Principio o causa.", tier: Tier.EXPERT },
+  { word: "DESTINO", hint: "Lo que está por suceder.", tier: Tier.EXPERT },
+  { word: "ACCION", hint: "Acto o hecho.", tier: Tier.EXPERT },
+  { word: "EFECTO", hint: "Resultado de una causa.", tier: Tier.EXPERT },
+  { word: "CAUSA", hint: "Motivo o razón.", tier: Tier.EXPERT },
+  { word: "MOTIVO", hint: "Causa o razón.", tier: Tier.EXPERT },
+  { word: "RAZON", hint: "Facultad de pensar.", tier: Tier.EXPERT },
+  { word: "VERDAD", hint: "Conformidad con la realidad.", tier: Tier.EXPERT },
+  { word: "FALSO", hint: "Contrario a la verdad.", tier: Tier.EXPERT },
+
+  // Master (Tier 5)
+  { word: "ABSOLUTO", hint: "Sin límites.", tier: Tier.MASTER },
+  { word: "ABSTRACTO", hint: "No concreto.", tier: Tier.MASTER },
+  { word: "ANALISIS", hint: "Examen detallado.", tier: Tier.MASTER },
+  { word: "BIOLOGIA", hint: "Ciencia de la vida.", tier: Tier.MASTER },
+  { word: "QUIMICA", hint: "Ciencia de la materia.", tier: Tier.MASTER },
+  { word: "FISICA", hint: "Ciencia de la naturaleza.", tier: Tier.MASTER },
+  { word: "POLITICA", hint: "Arte de gobernar.", tier: Tier.MASTER },
+  { word: "ECONOMIA", hint: "Administración de recursos.", tier: Tier.MASTER },
+  { word: "SOCIEDAD", hint: "Conjunto de personas.", tier: Tier.MASTER },
+  { word: "RELIGION", hint: "Creencia espiritual.", tier: Tier.MASTER },
+  { word: "FILOSOFIA", hint: "Amor a la sabiduría.", tier: Tier.MASTER },
+  { word: "PSICOLOGIA", hint: "Estudio de la mente.", tier: Tier.MASTER },
+  { word: "LITERATURA", hint: "Arte de la palabra.", tier: Tier.MASTER },
+  { word: "MATEMATICA", hint: "Ciencia de los números.", tier: Tier.MASTER },
+  { word: "GEOGRAFIA", hint: "Descripción de la Tierra.", tier: Tier.MASTER },
+  { word: "TECNOLOGIA", hint: "Conjunto de técnicas.", tier: Tier.MASTER },
+  { word: "INFORMATICA", hint: "Procesamiento de datos.", tier: Tier.MASTER },
+  { word: "INTELIGENCIA", hint: "Facultad de entender.", tier: Tier.MASTER },
+  { word: "CONCIENCIA", hint: "Conocimiento de sí mismo.", tier: Tier.MASTER },
+  { word: "EXISTENCIA", hint: "Hecho de existir.", tier: Tier.MASTER }
+];
+
+export const CHAIN_PAIRS_ES = [
+  ["ARCO", "IRIS"], ["LUNA", "LLENA"], ["MEDIO", "DIA"], ["SALVA", "VIDAS"], ["GIRA", "SOL"],
+  ["PINTA", "LABIOS"], ["CORTA", "UÑAS"], ["LAVA", "PLATOS"], ["BOCA", "CALLE"], ["VIDEO", "JUEGO"]
+];
+
+export const CATEGORY_DATA_ES: Record<string, string[]> = {
+  "ESPACIO": ["LUNA", "MARTE", "SOL", "ORBITA", "ASTRO"],
+  "COMIDA": ["PAN", "SOPA", "PIZZA", "FRUTA", "CARNE"],
+  "TECNOLOGIA": ["WIFI", "DATOS", "RED", "CHIP", "LINK"]
+};
+
 export const TUTORIALS: Record<GameMode, Record<Language, TutorialContent>> = {
   [GameMode.CLASSIC]: {
     [Language.EN]: { title: "Classic Mode", text: "Guess the word in 6 tries. Green means correct spot, Yellow means wrong spot, Gray means not in word." },
-    [Language.DE]: { title: "Klassisch", text: "Errate das Wort in 6 Versuchen. Grün ist richtig, Gelb ist falsche Stelle, Grau ist nicht im Wort." }
+    [Language.DE]: { title: "Klassisch", text: "Errate das Wort in 6 Versuchen. Grün ist richtig, Gelb ist falsche Stelle, Grau ist nicht im Wort." },
+    [Language.ES]: { title: "Modo Clásico", text: "Adivina la palabra en 6 intentos. Verde significa lugar correcto, Amarillo lugar incorrecto, Gris no está en la palabra." }
   },
   [GameMode.SPEEDRUN]: {
     [Language.EN]: { title: "Speedrun", text: "Race against the clock! You have limited time to guess based on word length." },
-    [Language.DE]: { title: "Zeitrennen", text: "Wettlauf gegen die Zeit! Du hast nur begrenzte Zeit, abhängig von der Wortlänge." }
+    [Language.DE]: { title: "Zeitrennen", text: "Wettlauf gegen die Zeit! Du hast nur begrenzte Zeit, abhängig von der Wortlänge." },
+    [Language.ES]: { title: "Contrarreloj", text: "¡Carrera contra el reloj! Tienes tiempo limitado para adivinar según la longitud de la palabra." }
   },
   [GameMode.CHAIN]: {
     [Language.EN]: { title: "Chain Reaction", text: "The previous answer is your hint for the next word. E.g. RAIN -> BOW." },
-    [Language.DE]: { title: "Wortkette", text: "Die vorherige Antwort ist dein Hinweis für das nächste Wort. Z.B. HAUS -> TIER." }
+    [Language.DE]: { title: "Wortkette", text: "Die vorherige Antwort ist dein Hinweis für das nächste Wort. Z.B. HAUS -> TIER." },
+    [Language.ES]: { title: "Reacción en Cadena", text: "La respuesta anterior es tu pista para la siguiente palabra. Ej. ARCO -> IRIS." }
   },
   [GameMode.CATEGORY]: {
     [Language.EN]: { title: "Topic Puzzle", text: "All words belong to a specific category shown at the top." },
-    [Language.DE]: { title: "Themen-Rätsel", text: "Alle Wörter gehören zu einer bestimmten Kategorie, die oben angezeigt wird." }
+    [Language.DE]: { title: "Themen-Rätsel", text: "Alle Wörter gehören zu einer bestimmten Kategorie, die oben angezeigt wird." },
+    [Language.ES]: { title: "Puzzle de Temas", text: "Todas las palabras pertenecen a una categoría específica mostrada arriba." }
   },
   [GameMode.SUDOKU]: {
     [Language.EN]: { title: "Letter Sudoku", text: "Fill the 9x9 grid with letters A-I. No repeats in rows, columns, or 3x3 boxes." },
-    [Language.DE]: { title: "Buchstaben-Sudoku", text: "Fülle das 9x9 Gitter mit A-I. Keine Wiederholungen in Zeilen, Spalten oder 3x3 Boxen." }
+    [Language.DE]: { title: "Buchstaben-Sudoku", text: "Fülle das 9x9 Gitter mit A-I. Keine Wiederholungen in Zeilen, Spalten oder 3x3 Boxen." },
+    [Language.ES]: { title: "Sudoku de Letras", text: "Rellena la cuadrícula 9x9 con letras A-I. Sin repeticiones en filas, columnas o cajas de 3x3." }
   },
   [GameMode.CHALLENGE]: {
     [Language.EN]: { title: "Challenge", text: "Solve math problems and words. Premium only. Costs coins." },
-    [Language.DE]: { title: "Herausforderung", text: "Löse Matheaufgaben und Wörter. Nur Premium. Kostet Münzen." }
+    [Language.DE]: { title: "Herausforderung", text: "Löse Matheaufgaben und Wörter. Nur Premium. Kostet Münzen." },
+    [Language.ES]: { title: "Desafío", text: "Resuelve problemas matemáticos y palabras. Solo Premium. Cuesta monedas." }
   }
 };
 

@@ -1,9 +1,18 @@
 [
   {
+    "version": "2.3.2",
+    "date": "24.11.2025",
+    "changes": [
+      "🇪🇸 Nuevo idioma: ¡Español!",
+      "🌐 Full language support: EN, DE, ES",
+      "🛠️ Improved download system"
+    ]
+  },
+  {
     "version": "2.3.1",
     "date": "23.11.2025",
     "changes": [
-      "fix: point APK download links to IONOS (leximix.de)"
+      "feat: internationalize update modals and changelog"
     ]
   },
   {

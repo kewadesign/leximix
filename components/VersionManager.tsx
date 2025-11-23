@@ -42,7 +42,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
         const minimum = data.min_version || '0.0.0';
         
         // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
-        const url = data.download_url || (isCapacitor ? 'https://leximix-aecac.web.app/app-release.apk' : '/app-release.apk');
+        const url = data.download_url || (isCapacitor ? 'http://leximix.de/app-release.apk' : '/app-release.apk');
 
         setServerVersion(latest);
         setMinVersion(minimum);

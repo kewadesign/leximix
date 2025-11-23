@@ -18,7 +18,8 @@ export enum Tier {
 
 export enum Language {
   EN = 'EN',
-  DE = 'DE'
+  DE = 'DE',
+  ES = 'ES'
 }
 
 export interface LevelData {

@@ -1,5 +1,5 @@
 import { Language, Tier, LevelData, GameMode } from '../types';
-import { WORDS_EN, WORDS_DE, CHAIN_PAIRS_DE, CHAIN_PAIRS_EN, CATEGORY_DATA_DE, CATEGORY_DATA_EN, MATH_CHALLENGES } from '../constants';
+import { WORDS_EN, WORDS_DE, WORDS_ES, CHAIN_PAIRS_DE, CHAIN_PAIRS_EN, CHAIN_PAIRS_ES, CATEGORY_DATA_DE, CATEGORY_DATA_EN, CATEGORY_DATA_ES, MATH_CHALLENGES } from '../constants';
 import { LEVEL_DATA } from './levelData';
 
 // --- Word Logic ---
@@ -22,32 +22,51 @@ export const getLevelContent = (mode: GameMode, tier: Tier, levelId: number, lan
   const pseudoRandom = (offset: number) => (seed + offset) * 9301 + 49297 % 233280;
 
   if (mode === GameMode.CHAIN) {
-    const pairs = lang === Language.DE ? CHAIN_PAIRS_DE : CHAIN_PAIRS_EN;
+    let pairs = lang === Language.DE ? CHAIN_PAIRS_DE : CHAIN_PAIRS_EN;
+    if (lang === Language.ES) pairs = CHAIN_PAIRS_ES;
+    
     const pair = pairs[Math.floor(pseudoRandom(0) % pairs.length)];
+    
+    let hintTitle = "CHAIN LINK";
+    if (lang === Language.DE) hintTitle = "WORTKETTE";
+    if (lang === Language.ES) hintTitle = "CADENA";
+
+    let hintPrefix = "Prev:";
+    if (lang === Language.DE) hintPrefix = "Vorher:";
+    if (lang === Language.ES) hintPrefix = "Ant:";
+
     return {
       target: pair[1],
-      hintTitle: lang === Language.DE ? "WORTKETTE" : "CHAIN LINK",
-      hintDesc: `${lang === Language.DE ? "Vorher:" : "Prev:"} ${pair[0]}`,
+      hintTitle,
+      hintDesc: `${hintPrefix} ${pair[0]}`,
       timeLimit: undefined
     };
   }
 
   if (mode === GameMode.CATEGORY) {
-    const cats = lang === Language.DE ? CATEGORY_DATA_DE : CATEGORY_DATA_EN;
+    let cats = lang === Language.DE ? CATEGORY_DATA_DE : CATEGORY_DATA_EN;
+    if (lang === Language.ES) cats = CATEGORY_DATA_ES;
+
     const catKeys = Object.keys(cats);
     const cat = catKeys[Math.floor(pseudoRandom(0) % catKeys.length)];
     const words = cats[cat];
     const word = words[Math.floor(pseudoRandom(1) % words.length)];
+    
+    let hintTitle = "TOPIC";
+    if (lang === Language.DE) hintTitle = "THEMA";
+    if (lang === Language.ES) hintTitle = "TEMA";
+
     return {
       target: word,
-      hintTitle: lang === Language.DE ? "THEMA" : "TOPIC",
+      hintTitle,
       hintDesc: cat,
       timeLimit: undefined
     };
   }
 
   // Fallback / Classic / Speedrun
-  const allWords = lang === Language.EN ? WORDS_EN : WORDS_DE;
+  let allWords = lang === Language.EN ? WORDS_EN : WORDS_DE;
+  if (lang === Language.ES) allWords = WORDS_ES;
 
   // Filter by Tier
   let availableWords = allWords.filter(w => w.tier === tier);
@@ -67,9 +86,19 @@ export const getLevelContent = (mode: GameMode, tier: Tier, levelId: number, lan
     if (timeLimit < 15) timeLimit = 15;
   }
 
+  let hintTitle = "CLASSIC";
+  if (mode === GameMode.SPEEDRUN) hintTitle = "SPEEDRUN";
+  
+  if (lang === Language.DE) {
+      hintTitle = mode === GameMode.SPEEDRUN ? "ZEITRENNEN" : "KLASSISCH";
+  }
+  if (lang === Language.ES) {
+      hintTitle = mode === GameMode.SPEEDRUN ? "CONTRARRELOJ" : "CLÁSICO";
+  }
+
   return {
     target: word,
-    hintTitle: mode === GameMode.SPEEDRUN ? (lang === Language.DE ? "ZEITRENNEN" : "SPEEDRUN") : (lang === Language.DE ? "KLASSISCH" : "CLASSIC"),
+    hintTitle,
     hintDesc: wordData.hint, // Use specific hint
     timeLimit
   };
