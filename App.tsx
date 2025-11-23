@@ -609,10 +609,52 @@ export default function App() {
       }
     };
 
+    ```
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [view, gameConfig]);
 
+
+  const startGame = (config: GameConfig) => {
+    audio.playClick();
+    
+    // Deduct coins for Challenge mode
+    if (config.mode === GameMode.CHALLENGE) {
+      const cost = 100 + ((config.tier - 1) * 100);
+      setUser(u => ({ ...u, coins: u.coins - cost }));
+    }
+
+    if (config.mode === GameMode.SUDOKU) {
+      if (!user.isPremium) {
+        setShowPremiumRequiredModal(true);
+        return;
+      }
+      const data = generateSudoku(config.tier);
+      setGameState({
+        data,
+        currentGrid: JSON.parse(JSON.stringify(data.sudokuPuzzle)),
+        selectedCell: null,
+        history: []
+      });
+    } else if (config.mode === GameMode.CHALLENGE) {
+      const data = generateChallenge(user.language, config.tier, config.levelId);
+      setGameState({
+        targetWord: data.target,
+        hintTitle: "CHALLENGE",
+        hintDesc: data.question,
+        guesses: [],
+        currentGuess: '',
+        status: 'playing',
+        hintsUsed: 0,
+        isMath: data.type === 'math',
+        timeLeft: data.timeLimit
+      });
+    }
+    // For other modes, the useEffect will handle state initialization
+
+    setTutorialMode(config.mode);
+    setView('TUTORIAL');
+  };
 
   const handleModeSelect = (mode: GameMode) => {
     audio.playClick();
@@ -638,15 +680,15 @@ export default function App() {
     audio.playClick();
     if (!gameConfig) return;
 
-    // Challenge Mode Cost Check - 100-500 coins based on tier
+    // Challenge Mode Cost Check - will be charged when game starts
     if (gameConfig.mode === GameMode.CHALLENGE) {
       const cost = 100 + ((tier - 1) * 100); // Tier 1 = 100, Tier 2 = 200, Tier 3 = 300
       if (user.coins < cost) {
         audio.playError();
-        alert(`${t.SHOP.INSUFFICIENT} (${cost} Münzen benötigt)`);
+        alert(`${ t.SHOP.INSUFFICIENT } (${ cost } Münzen benötigt)`);
         return;
       }
-      setUser(u => ({ ...u, coins: u.coins - cost }));
+      // Don't deduct yet - will deduct in startGame
     }
 
     const config = { ...gameConfig, tier, levelId };
@@ -967,7 +1009,7 @@ export default function App() {
       });
     } catch (error) {
       console.error('[handleWordEnter] Error:', error);
-      alert(`Error in handleWordEnter: ${error} `);
+      alert(`Error in handleWordEnter: ${ error } `);
     }
   };
 
@@ -1037,7 +1079,7 @@ export default function App() {
         }
 
         // Mark level as completed
-        const levelKey = `${mode}_${tier}_${levelId} `;
+        const levelKey = `${ mode }_${ tier }_${ levelId } `;
         console.log('[handleWin] Marking level complete:', levelKey);
         const newCompleted = { ...prev.completedLevels, [levelKey]: true };
 
@@ -1067,7 +1109,7 @@ export default function App() {
       });
     } catch (error) {
       console.error('[handleWin] Error:', error);
-      alert(`Error in handleWin: ${error} `);
+      alert(`Error in handleWin: ${ error } `);
     }
   };
   const triggerHint = () => {
@@ -1243,7 +1285,7 @@ export default function App() {
       const { ref, get } = await import('firebase/database');
       const normalizedNew = normalizeUsername(editUsername);
 
-      const userRef = ref(database, `users/${normalizedNew}`);
+      const userRef = ref(database, `users / ${ normalizedNew } `);
       const snapshot = await get(userRef);
 
       if (snapshot.exists() && normalizedNew !== normalizeUsername(cloudUsername || '')) {
@@ -1311,7 +1353,7 @@ export default function App() {
 
         // Show success message
         const msg = result.coinsAwarded
-          ? `🎉 Gutschein eingelöst! +${result.coinsAwarded} Münzen`
+          ? `🎉 Gutschein eingelöst! + ${ result.coinsAwarded } Münzen`
           : `🎉 Gutschein erfolgreich eingelöst!`;
 
         setVoucherSuccess(msg);
@@ -1346,7 +1388,7 @@ export default function App() {
         // Simulate In-App Purchase (Fallback)
         audio.playWin(); // "Ca-ching"
         setUser(u => ({ ...u, coins: u.coins + (item.currencyAmount || 0) }));
-        alert(`${t.SHOP.SUCCESS}: ${item.name} `);
+        alert(`${ t.SHOP.SUCCESS }: ${ item.name } `);
       }
     } else {
       // Buy Avatar
@@ -1370,11 +1412,11 @@ export default function App() {
       disabled={locked}
       onClick={() => handleModeSelect(mode)}
       className={`
-        relative p-6 md:p-8 rounded-3xl text-left overflow-hidden transition-all duration-300 hover:scale-[1.03] active:scale-95
-        ${color} h-36 md:h-48 flex flex-col justify-between shadow-xl group animate-scale-in
-  ${locked ? 'opacity-60 grayscale cursor-not-allowed' : ''}
-`}
-      style={{ animationDelay: `${delay}ms` }}
+        relative p - 6 md: p - 8 rounded - 3xl text - left overflow - hidden transition - all duration - 300 hover: scale - [1.03] active: scale - 95
+        ${ color } h - 36 md: h - 48 flex flex - col justify - between shadow - xl group animate - scale -in
+    ${ locked ? 'opacity-60 grayscale cursor-not-allowed' : '' }
+  `}
+      style={{ animationDelay: `${ delay } ms` }}
     >
       <div className="absolute right-[-10px] top-[-10px] opacity-20 rotate-12 scale-125 group-hover:rotate-6 transition-transform duration-500">
         <Icon size={120} fill="currentColor" />
@@ -1526,7 +1568,7 @@ export default function App() {
       }
     }
 
-    alert(`Premium erfolgreich aktiviert! (${planType === 'monthly' ? '+10 Level Boost' : '30 Tage'})`);
+    alert(`Premium erfolgreich aktiviert!(${ planType === 'monthly' ? '+10 Level Boost' : '30 Tage'})`);
     setShowPremiumInfo(false);
   };
 
@@ -1542,80 +1584,80 @@ export default function App() {
       {/* Header Section */}
       <div className="flex items-center justify-between w-full px-4 py-4 mb-6 relative z-10">
         <button className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity text-left" onClick={openProfile}>
-          <div className={`w-14 h-14 rounded-full border-2 border-white/20 overflow-hidden relative shadow-lg ${getAvatarEffect(user.activeFrame)}`}>
+          <div className={`w - 14 h - 14 rounded - full border - 2 border - white / 20 overflow - hidden relative shadow - lg ${ getAvatarEffect(user.activeFrame) } `}>
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full bg-gray-800" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-lexi-text-muted uppercase tracking-wider">{t.HOME.PLAYER}</span>
-            <span className={`text-xl font-black ${user.isPremium ? 'text-yellow-400 drop-shadow-md' : 'text-lexi-text'}`}>
-              {user.name}
-            </span>
-          </div>
-        </button>
+          </div >
+  <div className="flex flex-col">
+    <span className="text-xs font-bold text-lexi-text-muted uppercase tracking-wider">{t.HOME.PLAYER}</span>
+    <span className={`text-xl font-black ${user.isPremium ? 'text-yellow-400 drop-shadow-md' : 'text-lexi-text'}`}>
+      {user.name}
+    </span>
+  </div>
+        </button >
 
-        <div className="flex items-center gap-2">
-          <button onClick={toggleTheme} className="glass-button p-3 rounded-full hover:bg-white/10 transition-colors">
-            {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-indigo-400" />}
-          </button>
-          <button onClick={() => setView('SHOP')} className="glass-button px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors group">
-            <div className="relative">
-              <Coins className="text-yellow-400 group-hover:rotate-12 transition-transform" size={20} />
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+  <div className="flex items-center gap-2">
+    <button onClick={toggleTheme} className="glass-button p-3 rounded-full hover:bg-white/10 transition-colors">
+      {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-indigo-400" />}
+    </button>
+    <button onClick={() => setView('SHOP')} className="glass-button px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors group">
+      <div className="relative">
+        <Coins className="text-yellow-400 group-hover:rotate-12 transition-transform" size={20} />
+        <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+      </div>
+      <span className="font-black text-lg text-yellow-400 drop-shadow-md">{user.coins}</span>
+      <Plus size={14} className="bg-yellow-400 text-black rounded-full p-0.5" />
+    </button>
+  </div>
+      </div >
+
+  {/* Cloud Save Card - MOVED TO TOP! */ }
+  < div className = "mb-6 w-full px-2" >
+    <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        {cloudUsername ? (
+          <>
+            <div className="w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center">
+              <User size={20} className="text-green-400" />
             </div>
-            <span className="font-black text-lg text-yellow-400 drop-shadow-md">{user.coins}</span>
-            <Plus size={14} className="bg-yellow-400 text-black rounded-full p-0.5" />
-          </button>
-        </div>
+            <div>
+              <p className="text-sm font-bold text-white">{cloudUsername}</p>
+              <p className="text-[10px] text-gray-400">
+                {lastCloudSync ? `Sync: ${new Date(lastCloudSync).toLocaleTimeString('de-DE')}` : 'Cloud Sync aktiv'}
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="w-10 h-10 bg-gray-800 border border-white/10 rounded-full flex items-center justify-center">
+              <User size={20} className="text-gray-500" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">Cloud Save</p>
+              <p className="text-[10px] text-gray-400">Nicht angemeldet</p>
+            </div>
+          </>
+        )}
       </div>
+      {cloudUsername ? (
+        <button
+          onClick={handleCloudLogout}
+          className="px-4 py-2 bg-red-900/30 border border-red-500/30 text-red-400 hover:bg-red-900/50 rounded-xl text-xs font-bold uppercase transition-all"
+        >
+          Abmelden
+        </button>
+      ) : (
+        <button
+          onClick={() => setShowAuthModal(true)}
+          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-xs font-bold uppercase hover:brightness-110 transition-all shadow-lg"
+        >
+          Anmelden
+        </button>
+      )}
+    </div>
+      </div >
 
-      {/* Cloud Save Card - MOVED TO TOP! */}
-      <div className="mb-6 w-full px-2">
-        <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {cloudUsername ? (
-              <>
-                <div className="w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center">
-                  <User size={20} className="text-green-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-white">{cloudUsername}</p>
-                  <p className="text-[10px] text-gray-400">
-                    {lastCloudSync ? `Sync: ${new Date(lastCloudSync).toLocaleTimeString('de-DE')}` : 'Cloud Sync aktiv'}
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="w-10 h-10 bg-gray-800 border border-white/10 rounded-full flex items-center justify-center">
-                  <User size={20} className="text-gray-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-white">Cloud Save</p>
-                  <p className="text-[10px] text-gray-400">Nicht angemeldet</p>
-                </div>
-              </>
-            )}
-          </div>
-          {cloudUsername ? (
-            <button
-              onClick={handleCloudLogout}
-              className="px-4 py-2 bg-red-900/30 border border-red-500/30 text-red-400 hover:bg-red-900/50 rounded-xl text-xs font-bold uppercase transition-all"
-            >
-              Abmelden
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowAuthModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-xs font-bold uppercase hover:brightness-110 transition-all shadow-lg"
-            >
-              Anmelden
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Logo & Title */}
-      <div className="flex flex-col items-center justify-center mb-6 animate-fade-in">
+  {/* Logo & Title */ }
+  < div className = "flex flex-col items-center justify-center mb-6 animate-fade-in" >
         <div className="mb-4 relative">
           <img
             src={user.theme !== 'dark' ? "/logo.png?invert" : "/logo.png"}
@@ -1626,7 +1668,7 @@ export default function App() {
         <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
           {t.HOME.TAGLINE}
         </div>
-      </div>
+      </div >
 
       <div className="mb-8 w-full">
       </div>
@@ -1643,7 +1685,7 @@ export default function App() {
 
 
 
-      {/* Grid */}
+{/* Grid */ }
       <div id="gamemodes" className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
         <GameCard
           mode={GameMode.CLASSIC}
@@ -1705,1046 +1747,1046 @@ export default function App() {
     </div >
   );
 
-  const renderLevels = () => (
-    <div className="h-full overflow-y-auto animate-fade-in w-full max-w-4xl mx-auto">
-      <div className="sticky top-0 z-20 glass-panel p-4 flex items-center justify-between rounded-b-3xl mb-4">
-        <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full glass-button">
-          <ArrowLeft size={20} className="text-lexi-text" />
-        </button>
-        <h2 className="text-2xl font-black italic uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-          {t.MODES[gameConfig?.mode as keyof typeof t.MODES]?.title}
-        </h2>
-        <div className="px-4 py-2 rounded-full glass-button text-xs font-bold text-lexi-gold flex items-center gap-2">
-          <User size={14} /> {user.level} {t.SEASON.LEVEL}
-        </div>
+const renderLevels = () => (
+  <div className="h-full overflow-y-auto animate-fade-in w-full max-w-4xl mx-auto">
+    <div className="sticky top-0 z-20 glass-panel p-4 flex items-center justify-between rounded-b-3xl mb-4">
+      <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full glass-button">
+        <ArrowLeft size={20} className="text-lexi-text" />
+      </button>
+      <h2 className="text-2xl font-black italic uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+        {t.MODES[gameConfig?.mode as keyof typeof t.MODES]?.title}
+      </h2>
+      <div className="px-4 py-2 rounded-full glass-button text-xs font-bold text-lexi-gold flex items-center gap-2">
+        <User size={14} /> {user.level} {t.SEASON.LEVEL}
       </div>
+    </div>
 
-      <div className="p-8 w-full">
-        {[Tier.BEGINNER, Tier.LEARNER, Tier.SKILLED, Tier.EXPERT, Tier.MASTER].map((tier, idx) => {
-          const isLockedTier = tier > 2;
-          const label = t.LEVELS.TIERS[tier - 1];
-          const xpReward = tier * 20;
+    <div className="p-8 w-full">
+      {[Tier.BEGINNER, Tier.LEARNER, Tier.SKILLED, Tier.EXPERT, Tier.MASTER].map((tier, idx) => {
+        const isLockedTier = tier > 2;
+        const label = t.LEVELS.TIERS[tier - 1];
+        const xpReward = tier * 20;
 
-          return (
-            <div key={tier} className="mb-12 animate-slide-up glass-panel p-6 rounded-3xl" style={{ animationDelay: `${idx * 100}ms` }}>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex flex-col items-start gap-1">
-                  <div className={`text-sm sm:text-base md:text-lg font-black italic tracking-tight ${isLockedTier ? 'text-gray-600' : TIER_COLORS[tier]} drop-shadow-sm truncate max-w-[280px]`}>
-                    {label}
-                  </div>
-                  {!isLockedTier && <span className="text-[10px] font-bold text-lexi-fuchsia bg-lexi-fuchsia/10 px-2 py-1 rounded border border-lexi-fuchsia/30 flex items-center gap-1"><Sparkles size={10} /> +{xpReward} XP</span>}
+        return (
+          <div key={tier} className="mb-12 animate-slide-up glass-panel p-6 rounded-3xl" style={{ animationDelay: `${idx * 100}ms` }}>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col items-start gap-1">
+                <div className={`text-sm sm:text-base md:text-lg font-black italic tracking-tight ${isLockedTier ? 'text-gray-600' : TIER_COLORS[tier]} drop-shadow-sm truncate max-w-[280px]`}>
+                  {label}
                 </div>
-                <div className="text-xs font-bold text-lexi-text-muted tracking-widest glass-button px-3 py-1.5 rounded cursor-default">
-                  LEVEL {(tier - 1) * 50 + 1} — {tier * 50} {isLockedTier && <Lock size={12} className="inline ml-1" />}
-                </div>
+                {!isLockedTier && <span className="text-[10px] font-bold text-lexi-fuchsia bg-lexi-fuchsia/10 px-2 py-1 rounded border border-lexi-fuchsia/30 flex items-center gap-1"><Sparkles size={10} /> +{xpReward} XP</span>}
               </div>
+              <div className="text-xs font-bold text-lexi-text-muted tracking-widest glass-button px-3 py-1.5 rounded cursor-default">
+                LEVEL {(tier - 1) * 50 + 1} — {tier * 50} {isLockedTier && <Lock size={12} className="inline ml-1" />}
+              </div>
+            </div>
 
-              <div className="grid grid-cols-5 md:grid-cols-8 gap-3 md:gap-4">
-                {Array.from({ length: 50 }).map((_, i) => {
-                  const lvl = (tier - 1) * 50 + i + 1;
-                  // Sequential Unlock Logic:
-                  // Level 1 is always unlocked.
-                  // Subsequent levels require the previous level to be completed.
-                  const prevLevelKey = `${gameConfig?.mode}_${tier}_${lvl - 1}`;
+            <div className="grid grid-cols-5 md:grid-cols-8 gap-3 md:gap-4">
+              {Array.from({ length: 50 }).map((_, i) => {
+                const lvl = (tier - 1) * 50 + i + 1;
+                // Sequential Unlock Logic:
+                // Level 1 is always unlocked.
+                // Subsequent levels require the previous level to be completed.
+                const prevLevelKey = `${gameConfig?.mode}_${tier}_${lvl - 1}`;
 
-                  let isUnlocked = false;
+                let isUnlocked = false;
 
-                  if (lvl === 1) {
-                    // Very first level is always open
-                    isUnlocked = true;
-                  } else if (i === 0) {
-                    // First level of a new tier (e.g. 51, 101, etc.)
-                    // Check if the last level of the previous tier is done.
-                    // Previous Tier Last Level ID: lvl - 1
-                    const prevTierLastLevelKey = `${gameConfig?.mode}_${tier - 1}_${lvl - 1}`;
-                    isUnlocked = !!user.completedLevels[prevTierLastLevelKey];
-                  } else {
-                    // Normal in-tier progression
-                    isUnlocked = !!user.completedLevels[prevLevelKey];
-                  }
+                if (lvl === 1) {
+                  // Very first level is always open
+                  isUnlocked = true;
+                } else if (i === 0) {
+                  // First level of a new tier (e.g. 51, 101, etc.)
+                  // Check if the last level of the previous tier is done.
+                  // Previous Tier Last Level ID: lvl - 1
+                  const prevTierLastLevelKey = `${gameConfig?.mode}_${tier - 1}_${lvl - 1}`;
+                  isUnlocked = !!user.completedLevels[prevTierLastLevelKey];
+                } else {
+                  // Normal in-tier progression
+                  isUnlocked = !!user.completedLevels[prevLevelKey];
+                }
 
-                  if (isUnlocked) {
-                    const levelKey = `${gameConfig?.mode}_${tier}_${lvl}`;
-                    const isCompleted = user.completedLevels[levelKey];
-
-                    return (
-                      <button
-                        key={lvl}
-                        onClick={() => !isCompleted && handleLevelSelect(tier, lvl)}
-                        disabled={isCompleted}
-                        className={`aspect-square rounded-2xl flex items-center justify-center font-bold text-lg md:text-xl
-                             ${isCompleted
-                            ? 'bg-green-600 border-green-500 text-white cursor-default shadow-[0_0_15px_rgba(34,197,94,0.4)]'
-                            : 'glass-button text-lexi-text hover:scale-110'}
-                             relative group overflow-hidden transition-all`}
-                      >
-                        {!isCompleted && <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>}
-                        <span className={`relative z-10 ${!isCompleted ? 'group-hover:text-lexi-fuchsia' : ''} transition-colors`}>
-                          {isCompleted ? <Check size={24} strokeWidth={4} /> : lvl}
-                        </span>
-                      </button>
-                    )
-                  }
+                if (isUnlocked) {
+                  const levelKey = `${gameConfig?.mode}_${tier}_${lvl}`;
+                  const isCompleted = user.completedLevels[levelKey];
 
                   return (
                     <button
                       key={lvl}
-                      disabled={true}
-                      className="aspect-square rounded-2xl flex items-center justify-center bg-lexi-bg/50 border border-lexi-border text-lexi-text-muted/50"
+                      onClick={() => !isCompleted && handleLevelSelect(tier, lvl)}
+                      disabled={isCompleted}
+                      className={`aspect-square rounded-2xl flex items-center justify-center font-bold text-lg md:text-xl
+                             ${isCompleted
+                          ? 'bg-green-600 border-green-500 text-white cursor-default shadow-[0_0_15px_rgba(34,197,94,0.4)]'
+                          : 'glass-button text-lexi-text hover:scale-110'}
+                             relative group overflow-hidden transition-all`}
                     >
-                      <Lock size={14} />
+                      {!isCompleted && <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>}
+                      <span className={`relative z-10 ${!isCompleted ? 'group-hover:text-lexi-fuchsia' : ''} transition-colors`}>
+                        {isCompleted ? <Check size={24} strokeWidth={4} /> : lvl}
+                      </span>
                     </button>
                   )
-                })}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  );
-
-  const renderTutorial = () => {
-    const content = TUTORIALS[tutorialMode!]?.[user.language];
-    if (!content) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
-        <div className="bg-[#1e102e] w-full max-w-md rounded-[2rem] border border-white/10 p-8 shadow-2xl relative overflow-hidden animate-scale-in">
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lexi-fuchsia to-lexi-cyan animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
-
-          <div className="flex flex-col items-center mb-8">
-            <Puzzle size={48} className="text-green-400 mb-4 drop-shadow-[0_0_15px_rgba(74,222,128,0.5)] animate-bounce" fill="currentColor" fillOpacity={0.2} />
-            <h2 className="text-2xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 uppercase">
-              {content.title}
-            </h2>
-            <p className="text-[10px] font-bold text-gray-500 tracking-[0.3em] mt-1">{t.TUTORIAL.HEADER}</p>
-          </div>
-
-          <p className="text-center text-gray-300 mb-8 leading-relaxed font-medium">{content.text}</p>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => setView('LEVELS')}
-              className="flex-1 py-3 rounded-xl font-bold text-xs uppercase bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors flex items-center justify-center gap-2"
-            >
-              <ArrowLeft size={14} /> {t.TUTORIAL.BACK}
-            </button>
-            <button
-              onClick={startGame}
-              className="flex-[2] py-3 rounded-xl font-bold text-xs uppercase bg-gradient-to-r from-lexi-fuchsia to-purple-600 hover:brightness-110 shadow-[0_0_20px_rgba(217,70,239,0.4)] flex items-center justify-center gap-2 text-white transition-all active:scale-95"
-            >
-              {t.TUTORIAL.START} <Play size={14} fill="currentColor" />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderGame = () => {
-    if (!gameState) return null;
-    const isSudoku = gameConfig?.mode === GameMode.SUDOKU;
-    const isSpeedrun = gameConfig?.mode === GameMode.SPEEDRUN;
-    const isChallenge = gameConfig?.mode === GameMode.CHALLENGE;
-    const showTimer = gameState.timeLeft !== undefined;
-
-    // Determine Help Text based on Mode for "Info Bar"
-    let infoText = "Good Luck!";
-    if (isSudoku) infoText = "Fill grid (A-I). No repeats.";
-    else if (gameState.isMath) infoText = "Solve the math expression.";
-    else infoText = `${gameState.targetWord.length} ${t.GAME.INFO_BAR}`;
-
-    return (
-      <div className="flex flex-col h-full max-h-screen relative z-10">
-        {/* Header - Completely Redesigned for Space and Boldness */}
-        <div className="relative z-20 pt-6 pb-4 px-6 animate-slide-down flex flex-col items-center gap-2">
-          <div className="w-full flex items-center justify-between mb-4">
-            <button onClick={() => handleNavigate('LEVELS')} className="w-12 h-12 flex items-center justify-center glass-button rounded-full hover:bg-white/10 transition-colors active:scale-95">
-              <ArrowLeft size={24} className="text-lexi-text" />
-            </button>
-
-            {/* Timer (Speedrun / Challenge) */}
-            {showTimer && (
-              <div className={`text-2xl font-black font-mono flex items-center gap-2 px-4 py-2 rounded-xl glass-panel ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-lexi-cyan'}`}>
-                <Clock size={20} /> {gameState.timeLeft}s
-              </div>
-            )}
-
-            <div className="w-12"></div> {/* Spacer for balance */}
-          </div>
-
-          <h1 className="text-4xl md:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] animate-scale-in leading-none text-center mb-2">
-            {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : t.GAME.CLASSIC_TITLE)}
-          </h1>
-
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 px-6 py-3 rounded-2xl shadow-xl animate-fade-in">
-            <p className="text-lg md:text-xl font-bold text-lexi-text-muted text-center">
-              "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
-            </p>
-          </div>
-
-          {/* Target Word (Debug/Info) - Hidden or Subtle */}
-          {/* <span className="text-xs text-red-500/50">[{gameState.targetWord}]</span> */}
-        </div>
-
-        {/* Game Board - Centered with more breathing room */}
-        <div className="flex-1 w-full relative flex flex-col justify-center py-8 overflow-hidden">
-          <div className="w-full max-w-3xl mx-auto px-4 animate-float-slow">
-            {isSudoku ? (
-              <div className="transform scale-95 md:scale-100 transition-transform">
-                <SudokuBoard
-                  puzzle={gameState.currentGrid}
-                  original={gameState.data.sudokuPuzzle}
-                  selectedCell={gameState.selectedCell}
-                  onCellClick={(r: number, c: number) => setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }))}
-                />
-              </div>
-            ) : (
-              <WordGrid
-                guesses={gameState.guesses}
-                currentGuess={gameState.currentGuess}
-                targetLength={gameState.targetWord.length}
-                turn={gameState.guesses.length}
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Hint Button - Prominent, Animated, Lower */}
-        <div className="absolute bottom-8 right-6 z-30">
-          <button
-            onClick={triggerHint}
-            className="group relative w-20 h-20 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-[0_10px_30px_rgba(251,191,36,0.4)] transition-all hover:scale-110 active:scale-95 animate-bounce-slow"
-          >
-            <div className="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-20"></div>
-            <HelpCircle size={40} className="text-white drop-shadow-md group-hover:rotate-12 transition-transform" />
-            {/* Badge for Cost */}
-            {hintCostMultiplier > 0 && (
-              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md border-2 border-white">
-                -{hintCostMultiplier * 10}
-              </div>
-            )}
-          </button>
-        </div>
-
-        {/* Controls - Native Keyboard Input */}
-        <input
-          ref={hiddenInputRef}
-          type="text"
-          className="opacity-0 absolute top-0 left-0 h-full w-full z-0 cursor-default"
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="characters"
-          spellCheck="false"
-          value=""
-          onChange={(e) => {
-            const val = e.target.value.toUpperCase();
-            const char = val.slice(-1);
-            if (/^[A-Z0-9]$/.test(char)) {
-              if (isSudoku) handleSudokuInput(char);
-              else handleWordKey(char);
-            }
-            // Reset input to keep it empty
-            e.target.value = "";
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Backspace') {
-              if (!isSudoku) handleWordDelete();
-            } else if (e.key === 'Enter') {
-              if (!isSudoku) handleWordEnter();
-            }
-          }}
-          onBlur={(e) => {
-            // Try to keep focus if playing
-            if (gameState?.status === 'playing') {
-              setTimeout(() => e.target.focus(), 10);
-            }
-          }}
-        />
-      </div>
-    );
-  };
-
-  // Helper component for crown svg
-  const CrownPattern = ({ className }: { className?: string }) => (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M2 20h20v-2H2v2zm2-12l2 5h2l-2-5-2 5zm6 0l2 5h2l-2-5-2 5zm6 0l2 5h2l-2-5-2 5z" />
-      <path d="M12 2l-3 6 3 2 3-2-3-6z" opacity="0.5" />
-    </svg>
-  );
-
-  return (
-    <div className={`${user.theme} h-screen w-full text-lexi-text font-sans overflow-hidden relative selection:bg-cyan-400 selection:text-black py-4 transition-colors duration-300 ${user.theme === 'dark' ? 'bg-[#0b1120]' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
-      {/* Simplified grain texture using CSS */}
-      <div className="fixed inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        backgroundSize: '180px 180px'
-      }}></div>
-      {/* Dynamic Background Layers */}
-      <div className="fixed inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900/50 to-cyan-900/20 pointer-events-none"></div>
-      <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
-
-      {/* Fade Transition Removed */}
-
-      {view === 'ONBOARDING' && renderOnboarding()}
-      {view === 'HOME' && renderHome()}
-      {view === 'SEASON' && (
-        <SeasonPassView
-          user={user}
-          onClose={() => handleNavigate('HOME')}
-          onClaim={handleClaimReward}
-          onShowPremium={() => setShowPremiumInfo(true)}
-        />
-      )}
-      {view === 'LEVELS' && renderLevels()}
-      {view === 'GAME' && renderGame()}
-      {view === 'TUTORIAL' && renderTutorial()}
-      {view === 'SPHERE' && (
-        <div className="h-full flex flex-col p-4">
-          <SphereBuddy3D
-            buddy={user.buddy || { name: 'Sphere', level: 1, xp: 0, hunger: 80, energy: 80, mood: 80, skin: 'default', lastInteraction: Date.now() }}
-            onUpdate={(newBuddy) => setUser(prev => ({ ...prev, buddy: newBuddy }))}
-            onPlay={() => { handleNavigate('GAME'); setGameConfig({ mode: GameMode.CLASSIC, tier: Tier.BEGINNER, levelId: 1 }); }}
-            onBack={() => handleNavigate('HOME')}
-          />
-        </div>
-      )}
-      {/* Navigation Icons */}
-
-      {/* Auth Screen (First screen) */}
-      {view === 'AUTH' && (
-        <div className="h-full flex items-center justify-center p-6 animate-fade-in">
-          <div className="max-w-md w-full space-y-6">
-            <div className="text-center space-y-4">
-              <img
-                src="/logo.png"
-                alt="LexiMix Logo"
-                className="w-32 h-32 mx-auto"
-              />
-              <p className="text-gray-400 text-sm">
-                Melde dich an um zu spielen
-              </p>
-            </div>
-
-            <div className="glass-panel p-8 rounded-3xl">
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg"
-              >
-                Anmelden / Registrieren
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {view === 'SHOP' && (
-        <ShopView
-          user={user}
-          setUser={setUser}
-          setView={setView}
-          t={t}
-          setShowRedeemModal={setShowRedeemModal}
-          setRedeemStep={setRedeemStep}
-          handleBuyItem={handleBuyItem}
-        />
-      )}
-
-      {/* Ad/Hint Modal */}
-      <Modal isOpen={showAd} title={t.GAME.HINT_MODAL_TITLE}>
-        <div className="flex flex-col items-center justify-center py-6 space-y-6">
-          <div className="w-full h-32 bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-2xl flex items-center justify-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
-            <span className="text-center text-xs text-gray-500 uppercase font-bold tracking-widest whitespace-pre-line">
-              {t.GAME.AD_SIM}
-            </span>
-          </div>
-          <div className="text-4xl font-mono text-lexi-fuchsia font-bold drop-shadow-[0_0_10px_rgba(217,70,239,0.5)]">
-            {adTimer > 0 ? `00:0${adTimer}` : t.GAME.REWARD}
-          </div>
-          {hintCostMultiplier > 0 && (
-            <div className="text-xs text-red-400 font-bold uppercase tracking-wider">
-              {t.GAME.HINT_COST_PREFIX}{hintCostMultiplier * 10}{t.GAME.HINT_COST_SUFFIX}
-            </div>
-          )}
-          <Button
-            fullWidth
-            disabled={adTimer > 0}
-            variant={adTimer > 0 ? 'ghost' : 'primary'}
-            onClick={closeAdAndReward}
-            className="transition-all duration-300"
-          >
-            {adTimer > 0 ? t.GAME.WATCHING : t.GAME.CLAIM}
-          </Button>
-        </div>
-      </Modal>
-
-      <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title={t.GAME.LEVEL_UP || 'Level Up'}>
-        <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-lexi-fuchsia/20 to-transparent animate-pulse-slow"></div>
-
-          <div className="relative">
-            <div className="absolute inset-0 bg-lexi-fuchsia blur-3xl opacity-50 animate-pulse"></div>
-            <div className="w-32 h-32 bg-gradient-to-br from-lexi-fuchsia to-purple-800 rounded-full flex items-center justify-center border-4 border-white/20 shadow-[0_0_50px_rgba(217,70,239,0.6)] relative z-10 animate-bounce">
-              <span className="text-6xl font-black text-white drop-shadow-lg">{levelUpData.level}</span>
-            </div>
-          </div>
-
-          <div className="relative z-10 space-y-2">
-            <h3 className="text-2xl font-black italic text-white">AGENT PROMOTED</h3>
-            <p className="text-gray-400 font-bold">Total XP: {levelUpData.xp}</p>
-          </div>
-          <Button fullWidth onClick={() => setShowLevelUp(false)}>CONTINUE</Button>
-        </div>
-      </Modal>
-
-      {/* Delete Confirmation Modal */}
-      <Modal isOpen={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title="⚠️ PROFIL LÖSCHEN">
-        <div className="flex flex-col items-center justify-center py-6 space-y-6 text-center">
-          <div className="bg-red-900/30 border-2 border-red-500 rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <Skull className="text-red-500" size={32} />
-              <h3 className="text-2xl font-black text-red-500 uppercase">Achtung!</h3>
-              <Skull className="text-red-500" size={32} />
-            </div>
-
-            <div className="text-left space-y-3 text-sm">
-              <p className="font-bold text-white">
-                Diese Aktion löscht <span className="text-red-400 underline">UNWIDERRUFLICH</span>:
-              </p>
-              <ul className="space-y-2 text-gray-300">
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span>Deinen gesamten Spielfortschritt</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span>Alle gesammelten Münzen</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span>Season Pass Level & XP</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span><strong className="text-yellow-400">Gekaufte Premium-Pässe</strong></span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span><strong className="text-yellow-400">Gekaufte Coin-Pakete</strong></span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span>Alle freigespielten Avatare</span>
-                </li>
-              </ul>
-
-              <div className="bg-red-950/50 border border-red-500/30 rounded-lg p-3 mt-4">
-                <p className="text-red-400 font-bold text-xs">
-                  ⚠️ Diese Aktion kann NICHT rückgängig gemacht werden!
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full space-y-3">
-            <button
-              onClick={confirmDelete}
-              className="w-full py-4 rounded-xl font-black text-sm uppercase bg-red-600 hover:bg-red-700 text-white transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-red-500/50"
-            >
-              <Skull size={18} />
-              JA, ALLES LÖSCHEN
-            </button>
-
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              className="w-full py-4 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
-            >
-              Abbrechen
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Win Modal */}
-      <Modal isOpen={showWin} onClose={() => setShowWin(false)} title={t.GAME.WIN_TITLE}>
-        <div className="text-center py-6">
-          <div className="inline-block p-6 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6 shadow-[0_0_30px_rgba(234,179,8,0.3)] relative">
-            <div className="absolute inset-0 rounded-full animate-ping opacity-20 bg-yellow-500"></div>
-            <Trophy className="text-yellow-400 drop-shadow-lg relative z-10 animate-pulse-fast" size={64} />
-          </div>
-          <div className="text-3xl font-black italic mb-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-300">{t.GAME.WIN_DESC}</div>
-
-          {/* Stats */}
-          <div className="flex justify-center gap-4 mb-8 mt-4">
-            <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 min-w-[100px] flex flex-col items-center animate-scale-in" style={{ animationDelay: '100ms' }}>
-              <Sparkles className="text-lexi-fuchsia mb-1" size={20} />
-              <span className="text-xl font-bold text-white">{winStats.xp}</span>
-              <span className="text-[10px] font-bold text-gray-500 uppercase">{t.GAME.XP_GAINED}</span>
-            </div>
-            <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 min-w-[100px] flex flex-col items-center animate-scale-in" style={{ animationDelay: '200ms' }}>
-              <Gem className="text-blue-400 mb-1" size={20} />
-              <span className="text-xl font-bold text-white">{winStats.coins}</span>
-              <span className="text-[10px] font-bold text-gray-500 uppercase">{t.GAME.COINS_GAINED}</span>
-            </div>
-          </div>
-
-          {/* Level Up Progress */}
-          <div className="mb-8 px-4">
-            <div className="flex justify-between text-xs font-bold text-gray-400 mb-1">
-              <span>LVL {user.level}</span>
-              <span>{(user.xp % 100)} / 100 XP</span>
-            </div>
-            <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-lexi-fuchsia to-purple-600 transition-all duration-1000 ease-out" style={{ width: `${user.xp % 100}%` }}></div>
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <Button className="flex-1" variant="secondary" onClick={() => { setShowWin(false); setView('LEVELS'); }}>
-              Zurück zur Übersicht
-            </Button>
-            <Button className="flex-1" onClick={() => { setShowWin(false); handleNextLevel(); }}>
-              Nächstes Level
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Game Over Modal */}
-      <Modal isOpen={gameState?.status === 'lost'} onClose={() => setView('LEVELS')} title="MISSION FAILED">
-        <div className="text-center py-6">
-          <div className="inline-block p-6 rounded-full bg-red-500/10 border border-red-500/20 mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)] relative">
-            <Skull className="text-red-500 drop-shadow-lg relative z-10 animate-pulse" size={64} />
-          </div>
-
-          <div className="text-3xl font-black italic mb-2 tracking-tight text-white">GAME OVER</div>
-
-          <div className="mb-8">
-            <p className="text-gray-400 text-sm font-bold uppercase tracking-widest mb-2">TARGET IDENTIFIED</p>
-            <div className="text-4xl font-mono font-black text-lexi-cyan drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-              {gameState?.targetWord}
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <Button className="flex-1" variant="secondary" onClick={() => setView('LEVELS')}>MENU</Button>
-            <Button
-              className="flex-1 bg-red-600 hover:bg-red-500 border-red-500 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
-              onClick={() => {
-                const mode = gameConfig!.mode;
-
-                if (mode === GameMode.SUDOKU) {
-                  setGameState((prev: any) => ({
-                    ...prev,
-                    currentGrid: JSON.parse(JSON.stringify(prev.data.sudokuPuzzle)),
-                    selectedCell: null,
-                    history: [],
-                    status: 'playing'
-                  }));
-                } else if (mode === GameMode.CHALLENGE) {
-                  const data = generateChallenge(user.language, gameConfig!.tier, gameConfig!.levelId);
-                  setGameState({
-                    targetWord: data.target,
-                    hintTitle: "CHALLENGE",
-                    hintDesc: data.question,
-                    guesses: [],
-                    currentGuess: '',
-                    status: 'playing',
-                    hintsUsed: 0,
-                    isMath: data.type === 'math',
-                    timeLeft: data.timeLimit
-                  });
-                } else {
-                  const content = getLevelContent(
-                    mode,
-                    gameConfig!.tier,
-                    gameConfig!.levelId,
-                    user.language,
-                    user.playedWords || []
-                  );
-                  setGameState({
-                    guesses: [],
-                    currentGuess: '',
-                    status: 'playing',
-                    targetWord: content.target,
-                    hintTitle: content.hintTitle,
-                    hintDesc: content.hintDesc,
-                    timeLeft: content.timeLimit,
-                    startTime: Date.now(),
-                    hintsUsed: 0,
-                    isMath: false,
-                    isHintUnlocked: false
-                  });
                 }
-              }}
-            >
-              RETRY
-            </Button>
-          </div>
-        </div>
-      </Modal>
 
-      {/* Redeem Code Modal - NEW VOUCHER SYSTEM */}
-      <Modal
-        isOpen={showRedeemModal}
-        onClose={() => {
-          setShowRedeemModal(false);
-          setVoucherCode('');
-          setVoucherError('');
-          setVoucherSuccess('');
-        }}
-        title="🎁 Gutschein Einlösen"
-      >
-        <div className="text-center py-6 space-y-6">
-          <div className="inline-block p-6 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-            <Sparkles className="text-blue-400 drop-shadow-lg" size={48} />
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-lg font-bold text-gray-300">Gutscheincode eingeben</h3>
-            <p className="text-xs text-gray-500">Gib deinen Gutscheincode ein um Münzen zu erhalten</p>
-          </div>
-
-          <div className="w-full">
-            <input
-              type="text"
-              value={voucherCode}
-              onChange={(e) => {
-                setVoucherCode(e.target.value.toUpperCase());
-                setVoucherError('');
-                setVoucherSuccess('');
-              }}
-              placeholder="GUTSCHEIN123"
-              className={`w-full bg-gray-900 border-2 ${voucherError
-                ? 'border-red-500 animate-shake'
-                : voucherSuccess
-                  ? 'border-green-500'
-                  : 'border-gray-700 focus:border-blue-400'
-                } rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors text-white uppercase`}
-              maxLength={20}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleVoucherRedeem();
-                }
-              }}
-            />
-
-            {voucherError && (
-              <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center justify-center gap-1">
-                <AlertTriangle size={12} /> {voucherError}
-              </div>
-            )}
-
-            {voucherSuccess && (
-              <div className="mt-2 text-green-500 text-xs font-bold flex items-center justify-center gap-1">
-                <Check size={12} /> {voucherSuccess}
-              </div>
-            )}
-          </div>
-
-          <div className="flex gap-3">
-            <Button
-              className="flex-1"
-              variant="secondary"
-              onClick={() => {
-                setShowRedeemModal(false);
-                setVoucherCode('');
-                setVoucherError('');
-                setVoucherSuccess('');
-              }}
-            >
-              Abbrechen
-            </Button>
-            <Button
-              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:brightness-110"
-              onClick={handleVoucherRedeem}
-              disabled={!voucherCode.trim() || !!voucherSuccess}
-            >
-              {voucherSuccess ? '✓ Eingelöst' : 'Einlösen'}
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Premium Info Modal */}
-      {/* Premium Info Modal */}
-      <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Store">
-        <div className="p-4 space-y-6">
-          {/* Header */}
-          <div className="text-center">
-            <div className="inline-block p-4 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)] mb-4">
-              <Crown className="text-white" size={32} fill="currentColor" />
-            </div>
-            <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-              Wähle deinen Plan
-            </h3>
-            <p className="text-gray-400 text-sm mt-1">Schalte alle Features frei & dominiere die Liga!</p>
-          </div>
-
-          {/* Plans Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Plan 1: 7.99 */}
-            <div
-              className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === 'monthly' ? 'border-yellow-400 bg-yellow-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
-              onClick={() => setSelectedPlan('monthly')}
-            >
-              <div className="absolute -top-3 right-4 bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse">BEST VALUE</div>
-              <h4 className="font-bold text-lg text-white">Monatlich</h4>
-              <div className="text-3xl font-black text-yellow-400 my-2">7,99€</div>
-              <ul className="text-xs text-gray-300 space-y-2">
-                <li className="flex items-center gap-2"><Check size={12} className="text-green-400" /> Alle Premium Features</li>
-                <li className="flex items-center gap-2 text-yellow-300 font-bold"><Sparkles size={12} /> + 10 Level Boost (Sofort!)</li>
-                <li className="flex items-center gap-2"><Clock size={12} className="text-blue-400" /> Automatische Verlängerung</li>
-              </ul>
-            </div>
-
-            {/* Plan 2: 4.99 */}
-            <div
-              className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === '30days' ? 'border-purple-400 bg-purple-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
-              onClick={() => setSelectedPlan('30days')}
-            >
-              <h4 className="font-bold text-lg text-white">30 Tage Pass</h4>
-              <div className="text-3xl font-black text-purple-400 my-2">4,99€</div>
-              <ul className="text-xs text-gray-300 space-y-2">
-                <li className="flex items-center gap-2"><Check size={12} className="text-green-400" /> Alle Premium Features</li>
-                <li className="flex items-center gap-2"><CreditCard size={12} className="text-gray-400" /> Kein Abo (Einmalig)</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Payment Section */}
-          <div className="bg-black/40 p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center min-h-[100px]">
-            <h4 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider text-center flex items-center gap-2">
-              <CreditCard size={16} /> Bezahlen mit PayPal
-            </h4>
-            <div className="w-full max-w-[250px] relative z-0">
-              {selectedPlan === 'monthly' && (
-                <PayPalButton amount="7.99" onSuccess={(d: any) => handlePayPalSuccess(d, 'monthly')} />
-              )}
-              {selectedPlan === '30days' && (
-                <PayPalButton amount="4.99" onSuccess={(d: any) => handlePayPalSuccess(d, '30days')} />
-              )}
-            </div>
-          </div>
-
-          {/* Voucher Section */}
-          <div className="border-t border-white/10 pt-6">
-            <h4 className="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
-              <Gem size={16} /> Gutscheincode einlösen
-            </h4>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={voucherCode}
-                onChange={(e) => setVoucherCode(e.target.value)}
-                placeholder="Code eingeben..."
-                className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-yellow-400 outline-none transition-colors font-mono uppercase"
-              />
-              <button
-                onClick={handleVoucherRedeem}
-                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-bold transition-colors"
-              >
-                Einlösen
-              </button>
-            </div>
-            {/* Error/Success Messages reuse existing states */}
-            {voucherError && (
-              <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center gap-1">
-                <AlertTriangle size={12} /> {voucherError}
-              </div>
-            )}
-            {voucherSuccess && (
-              <div className="mt-2 text-green-500 text-xs font-bold flex items-center gap-1">
-                <Check size={12} /> {voucherSuccess}
-              </div>
-            )}
-          </div>
-        </div>
-      </Modal>
-
-      {/* Premium Required Modal */}
-      < Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title="Premium Erforderlich" >
-        <div className="text-center space-y-6">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center border-2 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]">
-            <Lock size={32} className="text-yellow-500" />
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-xl font-black text-white">Challenge Mode Gesperrt</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Dieser Modus ist exklusiv für Premium-Mitglieder. Hole dir den Season Pass, um tägliche Herausforderungen und exklusive Belohnungen freizuschalten!
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <Button
-              onClick={() => { setShowPremiumRequiredModal(false); setView('SEASON'); }}
-              fullWidth
-              className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black font-black border-none hover:brightness-110"
-            >
-              Zum Season Pass
-            </Button>
-            <Button
-              onClick={() => setShowPremiumRequiredModal(false)}
-              fullWidth
-              className="bg-transparent border border-white/10 text-gray-400 hover:text-white hover:bg-white/5"
-            >
-              Vielleicht später
-            </Button>
-          </div>
-        </div>
-      </Modal >
-
-      {/* Username Change Confirmation Modal */}
-      < Modal
-        isOpen={showUsernameConfirm}
-        onClose={() => setShowUsernameConfirm(false)}
-        title="Benutzername ändern?"
-      >
-        <div className="text-center space-y-6">
-          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <User size={24} className="text-yellow-400" />
-              <h3 className="text-lg font-bold text-white">Bestätigung erforderlich</h3>
-            </div>
-            <p className="text-sm text-yellow-300 font-bold">
-              Neuer Benutzername: <span className="text-white">{editUsername}</span>
-            </p>
-            <p className="text-sm text-yellow-400 mt-2">
-              Kosten: 2500 Münzen
-            </p>
-            <p className="text-xs text-red-400 mt-3 font-bold">
-              ⚠️ Diese Änderung kann nicht rückgängig gemacht werden!
-            </p>
-          </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowUsernameConfirm(false)}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
-            >
-              Abbrechen
-            </button>
-            <button
-              onClick={confirmUsernameChange}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
-            >
-              <User size={16} /> Bestätigen
-            </button>
-          </div>
-        </div>
-      </Modal >
-
-      {/* Profile Modal */}
-      <Modal isOpen={showProfile} onClose={() => setShowProfile(false)} title={t.PROFILE.TITLE}>
-        <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
-          {/* Username Section */}
-          {cloudUsername && (
-            <>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Benutzername</h3>
-              <div className="bg-gray-900 p-4 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-400 mb-2">Aktuell: <span className="text-white font-bold">{cloudUsername}</span></p>
-                <input
-                  type="text"
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white mb-2"
-                  value={editUsername}
-                  onChange={(e) => {
-                    setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
-                  }}
-                  placeholder="Neuer Benutzername"
-                />
-                {usernameError && <p className="text-red-400 text-xs font-bold">{usernameError}</p>}
-                <p className="text-xs text-yellow-400 mt-2">Kosten: 2500 Münzen</p>
-                <button
-                  onClick={handleUsernameChange}
-                  className="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase rounded-lg mt-2 transition-colors"
-                >
-                  Ändern
-                </button>
-              </div>
-            </>
-          )}
-
-          {/* Avatar Preview */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Vorschau</h3>
-            <div className="flex justify-center mb-4">
-              <div className={`w-24 h-24 rounded-full border-4 border-white/20 overflow-hidden ${getAvatarEffect(editFrame)}`}>
-                <img
-                  src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`}
-                  alt="Avatar"
-                  className="w-full h-full bg-gray-800"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Avatar Selection */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Wählen</h3>
-            <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
-              {(user.ownedAvatars || [AVATARS[0]]).map(avatar => (
-                <button
-                  key={avatar}
-                  onClick={() => setEditAvatar(avatar)}
-                  className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${editAvatar === avatar ? 'border-lexi-fuchsia scale-105' : 'border-white/10 opacity-50 hover:opacity-100'}`}
-                >
-                  <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full bg-gray-800" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Age Input */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Alter</h3>
-            <input
-              type="number"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white"
-              value={editAge}
-              min={1} max={120}
-              onChange={(e) => setEditAge(parseInt(e.target.value) || 0)}
-            />
-          </div>
-
-          {/* Stats Display */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Statistiken</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-500">Level</p>
-                <p className="text-xl font-black text-white">{user.level}</p>
-              </div>
-              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-500">Gesamt XP</p>
-                <p className="text-xl font-black text-white">{user.xp}</p>
-              </div>
-              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-500">Münzen</p>
-                <p className="text-xl font-black text-yellow-400">{user.coins}</p>
-              </div>
-              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-500">Gelöste Rätsel</p>
-                <p className="text-xl font-black text-cyan-400">{user.completedLevels?.length || 0}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Frames / Effects Selection */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rahmen & Effekte</h3>
-            <div className="grid grid-cols-4 gap-2">
-              <button
-                onClick={() => setEditFrame('none')}
-                className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-gray-800 ${editFrame === 'none' ? 'border-lexi-fuchsia' : 'border-white/10'}`}
-              >
-                <span className="text-xs text-gray-500">Kein</span>
-              </button>
-              {(user.ownedFrames || []).map((frameId) => {
-                const effectClass = getAvatarEffect(frameId);
                 return (
                   <button
-                    key={frameId}
-                    onClick={() => setEditFrame(frameId)}
-                    className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-gray-800 relative overflow-hidden ${editFrame === frameId ? 'border-lexi-fuchsia' : 'border-white/10'}`}
+                    key={lvl}
+                    disabled={true}
+                    className="aspect-square rounded-2xl flex items-center justify-center bg-lexi-bg/50 border border-lexi-border text-lexi-text-muted/50"
                   >
-                    <div className={`w-8 h-8 rounded-full bg-gray-700 ${effectClass}`}></div>
+                    <Lock size={14} />
                   </button>
-                );
+                )
               })}
             </div>
           </div>
+        )
+      })}
+    </div>
+  </div>
+);
 
-          {/* Delete Profile Button */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="w-full py-3 bg-red-900/20 hover:bg-red-900/40 text-red-500 font-bold uppercase rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              <Skull size={16} /> Profil Löschen
-            </button>
+const renderTutorial = () => {
+  const content = TUTORIALS[tutorialMode!]?.[user.language];
+  if (!content) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-[#1e102e] w-full max-w-md rounded-[2rem] border border-white/10 p-8 shadow-2xl relative overflow-hidden animate-scale-in">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lexi-fuchsia to-lexi-cyan animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
+
+        <div className="flex flex-col items-center mb-8">
+          <Puzzle size={48} className="text-green-400 mb-4 drop-shadow-[0_0_15px_rgba(74,222,128,0.5)] animate-bounce" fill="currentColor" fillOpacity={0.2} />
+          <h2 className="text-2xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 uppercase">
+            {content.title}
+          </h2>
+          <p className="text-[10px] font-bold text-gray-500 tracking-[0.3em] mt-1">{t.TUTORIAL.HEADER}</p>
+        </div>
+
+        <p className="text-center text-gray-300 mb-8 leading-relaxed font-medium">{content.text}</p>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => setView('LEVELS')}
+            className="flex-1 py-3 rounded-xl font-bold text-xs uppercase bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors flex items-center justify-center gap-2"
+          >
+            <ArrowLeft size={14} /> {t.TUTORIAL.BACK}
+          </button>
+          <button
+            onClick={startGame}
+            className="flex-[2] py-3 rounded-xl font-bold text-xs uppercase bg-gradient-to-r from-lexi-fuchsia to-purple-600 hover:brightness-110 shadow-[0_0_20px_rgba(217,70,239,0.4)] flex items-center justify-center gap-2 text-white transition-all active:scale-95"
+          >
+            {t.TUTORIAL.START} <Play size={14} fill="currentColor" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const renderGame = () => {
+  if (!gameState) return null;
+  const isSudoku = gameConfig?.mode === GameMode.SUDOKU;
+  const isSpeedrun = gameConfig?.mode === GameMode.SPEEDRUN;
+  const isChallenge = gameConfig?.mode === GameMode.CHALLENGE;
+  const showTimer = gameState.timeLeft !== undefined;
+
+  // Determine Help Text based on Mode for "Info Bar"
+  let infoText = "Good Luck!";
+  if (isSudoku) infoText = "Fill grid (A-I). No repeats.";
+  else if (gameState.isMath) infoText = "Solve the math expression.";
+  else infoText = `${gameState.targetWord.length} ${t.GAME.INFO_BAR}`;
+
+  return (
+    <div className="flex flex-col h-full max-h-screen relative z-10">
+      {/* Header - Completely Redesigned for Space and Boldness */}
+      <div className="relative z-20 pt-6 pb-4 px-6 animate-slide-down flex flex-col items-center gap-2">
+        <div className="w-full flex items-center justify-between mb-4">
+          <button onClick={() => handleNavigate('LEVELS')} className="w-12 h-12 flex items-center justify-center glass-button rounded-full hover:bg-white/10 transition-colors active:scale-95">
+            <ArrowLeft size={24} className="text-lexi-text" />
+          </button>
+
+          {/* Timer (Speedrun / Challenge) */}
+          {showTimer && (
+            <div className={`text-2xl font-black font-mono flex items-center gap-2 px-4 py-2 rounded-xl glass-panel ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-lexi-cyan'}`}>
+              <Clock size={20} /> {gameState.timeLeft}s
+            </div>
+          )}
+
+          <div className="w-12"></div> {/* Spacer for balance */}
+        </div>
+
+        <h1 className="text-4xl md:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] animate-scale-in leading-none text-center mb-2">
+          {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : t.GAME.CLASSIC_TITLE)}
+        </h1>
+
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 px-6 py-3 rounded-2xl shadow-xl animate-fade-in">
+          <p className="text-lg md:text-xl font-bold text-lexi-text-muted text-center">
+            "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
+          </p>
+        </div>
+
+        {/* Target Word (Debug/Info) - Hidden or Subtle */}
+        {/* <span className="text-xs text-red-500/50">[{gameState.targetWord}]</span> */}
+      </div>
+
+      {/* Game Board - Centered with more breathing room */}
+      <div className="flex-1 w-full relative flex flex-col justify-center py-8 overflow-hidden">
+        <div className="w-full max-w-3xl mx-auto px-4 animate-float-slow">
+          {isSudoku ? (
+            <div className="transform scale-95 md:scale-100 transition-transform">
+              <SudokuBoard
+                puzzle={gameState.currentGrid}
+                original={gameState.data.sudokuPuzzle}
+                selectedCell={gameState.selectedCell}
+                onCellClick={(r: number, c: number) => setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }))}
+              />
+            </div>
+          ) : (
+            <WordGrid
+              guesses={gameState.guesses}
+              currentGuess={gameState.currentGuess}
+              targetLength={gameState.targetWord.length}
+              turn={gameState.guesses.length}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Hint Button - Prominent, Animated, Lower */}
+      <div className="absolute bottom-8 right-6 z-30">
+        <button
+          onClick={triggerHint}
+          className="group relative w-20 h-20 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-[0_10px_30px_rgba(251,191,36,0.4)] transition-all hover:scale-110 active:scale-95 animate-bounce-slow"
+        >
+          <div className="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-20"></div>
+          <HelpCircle size={40} className="text-white drop-shadow-md group-hover:rotate-12 transition-transform" />
+          {/* Badge for Cost */}
+          {hintCostMultiplier > 0 && (
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md border-2 border-white">
+              -{hintCostMultiplier * 10}
+            </div>
+          )}
+        </button>
+      </div>
+
+      {/* Controls - Native Keyboard Input */}
+      <input
+        ref={hiddenInputRef}
+        type="text"
+        className="opacity-0 absolute top-0 left-0 h-full w-full z-0 cursor-default"
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="characters"
+        spellCheck="false"
+        value=""
+        onChange={(e) => {
+          const val = e.target.value.toUpperCase();
+          const char = val.slice(-1);
+          if (/^[A-Z0-9]$/.test(char)) {
+            if (isSudoku) handleSudokuInput(char);
+            else handleWordKey(char);
+          }
+          // Reset input to keep it empty
+          e.target.value = "";
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Backspace') {
+            if (!isSudoku) handleWordDelete();
+          } else if (e.key === 'Enter') {
+            if (!isSudoku) handleWordEnter();
+          }
+        }}
+        onBlur={(e) => {
+          // Try to keep focus if playing
+          if (gameState?.status === 'playing') {
+            setTimeout(() => e.target.focus(), 10);
+          }
+        }}
+      />
+    </div>
+  );
+};
+
+// Helper component for crown svg
+const CrownPattern = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M2 20h20v-2H2v2zm2-12l2 5h2l-2-5-2 5zm6 0l2 5h2l-2-5-2 5zm6 0l2 5h2l-2-5-2 5z" />
+    <path d="M12 2l-3 6 3 2 3-2-3-6z" opacity="0.5" />
+  </svg>
+);
+
+return (
+  <div className={`${user.theme} h-screen w-full text-lexi-text font-sans overflow-hidden relative selection:bg-cyan-400 selection:text-black py-4 transition-colors duration-300 ${user.theme === 'dark' ? 'bg-[#0b1120]' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+    {/* Simplified grain texture using CSS */}
+    <div className="fixed inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay" style={{
+      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+      backgroundSize: '180px 180px'
+    }}></div>
+    {/* Dynamic Background Layers */}
+    <div className="fixed inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900/50 to-cyan-900/20 pointer-events-none"></div>
+    <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
+
+    {/* Fade Transition Removed */}
+
+    {view === 'ONBOARDING' && renderOnboarding()}
+    {view === 'HOME' && renderHome()}
+    {view === 'SEASON' && (
+      <SeasonPassView
+        user={user}
+        onClose={() => handleNavigate('HOME')}
+        onClaim={handleClaimReward}
+        onShowPremium={() => setShowPremiumInfo(true)}
+      />
+    )}
+    {view === 'LEVELS' && renderLevels()}
+    {view === 'GAME' && renderGame()}
+    {view === 'TUTORIAL' && renderTutorial()}
+    {view === 'SPHERE' && (
+      <div className="h-full flex flex-col p-4">
+        <SphereBuddy3D
+          buddy={user.buddy || { name: 'Sphere', level: 1, xp: 0, hunger: 80, energy: 80, mood: 80, skin: 'default', lastInteraction: Date.now() }}
+          onUpdate={(newBuddy) => setUser(prev => ({ ...prev, buddy: newBuddy }))}
+          onPlay={() => { handleNavigate('GAME'); setGameConfig({ mode: GameMode.CLASSIC, tier: Tier.BEGINNER, levelId: 1 }); }}
+          onBack={() => handleNavigate('HOME')}
+        />
+      </div>
+    )}
+    {/* Navigation Icons */}
+
+    {/* Auth Screen (First screen) */}
+    {view === 'AUTH' && (
+      <div className="h-full flex items-center justify-center p-6 animate-fade-in">
+        <div className="max-w-md w-full space-y-6">
+          <div className="text-center space-y-4">
+            <img
+              src="/logo.png"
+              alt="LexiMix Logo"
+              className="w-32 h-32 mx-auto"
+            />
+            <p className="text-gray-400 text-sm">
+              Melde dich an um zu spielen
+            </p>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="glass-panel p-8 rounded-3xl">
             <button
-              onClick={() => setShowProfile(false)}
-              className="flex-1 py-4 rounded-xl font-bold text-sm uppercase bg-gray-800 hover:bg-gray-700 text-white transition-colors"
+              onClick={() => setShowAuthModal(true)}
+              className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg"
             >
-              Abbrechen
-            </button>
-            <button
-              onClick={saveProfile}
-              className="flex-1 py-4 rounded-xl font-black text-sm uppercase bg-lexi-fuchsia hover:bg-lexi-fuchsia/80 text-white transition-colors shadow-[0_0_20px_rgba(217,70,239,0.4)]"
-            >
-              {t.PROFILE.SAVE}
+              Anmelden / Registrieren
             </button>
           </div>
         </div>
-      </Modal>
+      </div>
+    )}
 
-      {/* Delete Profile Confirmation Modal */}
-      <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title="Profil Löschen">
-        <div className="p-6 space-y-4">
-          <div className="flex items-start gap-3 bg-red-900/20 p-4 rounded-xl border border-red-500/30">
-            <AlertTriangle size={24} className="text-red-500 flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="text-lg font-bold text-red-500 mb-2">Warnung!</h3>
-              <p className="text-sm text-gray-300">
-                Diese Aktion kann NICHT rückgängig gemacht werden. Alle deine Fortschritte, Käufe und Erfolge werden permanent gelöscht.
+    {view === 'SHOP' && (
+      <ShopView
+        user={user}
+        setUser={setUser}
+        setView={setView}
+        t={t}
+        setShowRedeemModal={setShowRedeemModal}
+        setRedeemStep={setRedeemStep}
+        handleBuyItem={handleBuyItem}
+      />
+    )}
+
+    {/* Ad/Hint Modal */}
+    <Modal isOpen={showAd} title={t.GAME.HINT_MODAL_TITLE}>
+      <div className="flex flex-col items-center justify-center py-6 space-y-6">
+        <div className="w-full h-32 bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-2xl flex items-center justify-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
+          <span className="text-center text-xs text-gray-500 uppercase font-bold tracking-widest whitespace-pre-line">
+            {t.GAME.AD_SIM}
+          </span>
+        </div>
+        <div className="text-4xl font-mono text-lexi-fuchsia font-bold drop-shadow-[0_0_10px_rgba(217,70,239,0.5)]">
+          {adTimer > 0 ? `00:0${adTimer}` : t.GAME.REWARD}
+        </div>
+        {hintCostMultiplier > 0 && (
+          <div className="text-xs text-red-400 font-bold uppercase tracking-wider">
+            {t.GAME.HINT_COST_PREFIX}{hintCostMultiplier * 10}{t.GAME.HINT_COST_SUFFIX}
+          </div>
+        )}
+        <Button
+          fullWidth
+          disabled={adTimer > 0}
+          variant={adTimer > 0 ? 'ghost' : 'primary'}
+          onClick={closeAdAndReward}
+          className="transition-all duration-300"
+        >
+          {adTimer > 0 ? t.GAME.WATCHING : t.GAME.CLAIM}
+        </Button>
+      </div>
+    </Modal>
+
+    <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title={t.GAME.LEVEL_UP || 'Level Up'}>
+      <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-lexi-fuchsia/20 to-transparent animate-pulse-slow"></div>
+
+        <div className="relative">
+          <div className="absolute inset-0 bg-lexi-fuchsia blur-3xl opacity-50 animate-pulse"></div>
+          <div className="w-32 h-32 bg-gradient-to-br from-lexi-fuchsia to-purple-800 rounded-full flex items-center justify-center border-4 border-white/20 shadow-[0_0_50px_rgba(217,70,239,0.6)] relative z-10 animate-bounce">
+            <span className="text-6xl font-black text-white drop-shadow-lg">{levelUpData.level}</span>
+          </div>
+        </div>
+
+        <div className="relative z-10 space-y-2">
+          <h3 className="text-2xl font-black italic text-white">AGENT PROMOTED</h3>
+          <p className="text-gray-400 font-bold">Total XP: {levelUpData.xp}</p>
+        </div>
+        <Button fullWidth onClick={() => setShowLevelUp(false)}>CONTINUE</Button>
+      </div>
+    </Modal>
+
+    {/* Delete Confirmation Modal */}
+    <Modal isOpen={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title="⚠️ PROFIL LÖSCHEN">
+      <div className="flex flex-col items-center justify-center py-6 space-y-6 text-center">
+        <div className="bg-red-900/30 border-2 border-red-500 rounded-2xl p-6 space-y-4">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <Skull className="text-red-500" size={32} />
+            <h3 className="text-2xl font-black text-red-500 uppercase">Achtung!</h3>
+            <Skull className="text-red-500" size={32} />
+          </div>
+
+          <div className="text-left space-y-3 text-sm">
+            <p className="font-bold text-white">
+              Diese Aktion löscht <span className="text-red-400 underline">UNWIDERRUFLICH</span>:
+            </p>
+            <ul className="space-y-2 text-gray-300">
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">✗</span>
+                <span>Deinen gesamten Spielfortschritt</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">✗</span>
+                <span>Alle gesammelten Münzen</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">✗</span>
+                <span>Season Pass Level & XP</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">✗</span>
+                <span><strong className="text-yellow-400">Gekaufte Premium-Pässe</strong></span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">✗</span>
+                <span><strong className="text-yellow-400">Gekaufte Coin-Pakete</strong></span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">✗</span>
+                <span>Alle freigespielten Avatare</span>
+              </li>
+            </ul>
+
+            <div className="bg-red-950/50 border border-red-500/30 rounded-lg p-3 mt-4">
+              <p className="text-red-400 font-bold text-xs">
+                ⚠️ Diese Aktion kann NICHT rückgängig gemacht werden!
               </p>
             </div>
           </div>
+        </div>
 
-          <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">
-              Tippe "delete" um zu bestätigen:
-            </label>
-            <input
-              type="text"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white"
-              value={deleteInput}
-              onChange={(e) => setDeleteInput(e.target.value)}
-              placeholder="delete"
-            />
+        <div className="w-full space-y-3">
+          <button
+            onClick={confirmDelete}
+            className="w-full py-4 rounded-xl font-black text-sm uppercase bg-red-600 hover:bg-red-700 text-white transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-red-500/50"
+          >
+            <Skull size={18} />
+            JA, ALLES LÖSCHEN
+          </button>
+
+          <button
+            onClick={() => setShowDeleteConfirm(false)}
+            className="w-full py-4 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+          >
+            Abbrechen
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    {/* Win Modal */}
+    <Modal isOpen={showWin} onClose={() => setShowWin(false)} title={t.GAME.WIN_TITLE}>
+      <div className="text-center py-6">
+        <div className="inline-block p-6 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6 shadow-[0_0_30px_rgba(234,179,8,0.3)] relative">
+          <div className="absolute inset-0 rounded-full animate-ping opacity-20 bg-yellow-500"></div>
+          <Trophy className="text-yellow-400 drop-shadow-lg relative z-10 animate-pulse-fast" size={64} />
+        </div>
+        <div className="text-3xl font-black italic mb-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-300">{t.GAME.WIN_DESC}</div>
+
+        {/* Stats */}
+        <div className="flex justify-center gap-4 mb-8 mt-4">
+          <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 min-w-[100px] flex flex-col items-center animate-scale-in" style={{ animationDelay: '100ms' }}>
+            <Sparkles className="text-lexi-fuchsia mb-1" size={20} />
+            <span className="text-xl font-bold text-white">{winStats.xp}</span>
+            <span className="text-[10px] font-bold text-gray-500 uppercase">{t.GAME.XP_GAINED}</span>
           </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
-            >
-              Abbrechen
-            </button>
-            <button
-              onClick={() => {
-                if (deleteInput.toLowerCase() === 'delete') {
-                  // TODO: Implement server deletion via Firebase
-                  alert('Profil-Löschung noch nicht implementiert. Bald verfügbar!');
-                  setShowDeleteConfirm(false);
-                  setDeleteInput('');
-                } else {
-                  alert('Bitte tippe "delete" um zu bestätigen.');
-                }
-              }}
-              disabled={deleteInput.toLowerCase() !== 'delete'}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              <Skull size={16} /> Endgültig Löschen
-            </button>
+          <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 min-w-[100px] flex flex-col items-center animate-scale-in" style={{ animationDelay: '200ms' }}>
+            <Gem className="text-blue-400 mb-1" size={20} />
+            <span className="text-xl font-bold text-white">{winStats.coins}</span>
+            <span className="text-[10px] font-bold text-gray-500 uppercase">{t.GAME.COINS_GAINED}</span>
           </div>
         </div>
-      </Modal>
 
-      {/* Cloud Auth Modal */}
-      < AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onSuccess={handleCloudLogin}
-      />
+        {/* Level Up Progress */}
+        <div className="mb-8 px-4">
+          <div className="flex justify-between text-xs font-bold text-gray-400 mb-1">
+            <span>LVL {user.level}</span>
+            <span>{(user.xp % 100)} / 100 XP</span>
+          </div>
+          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-lexi-fuchsia to-purple-600 transition-all duration-1000 ease-out" style={{ width: `${user.xp % 100}%` }}></div>
+          </div>
+        </div>
 
-    </div >
-  );
+        <div className="flex gap-3">
+          <Button className="flex-1" variant="secondary" onClick={() => { setShowWin(false); setView('LEVELS'); }}>
+            Zurück zur Übersicht
+          </Button>
+          <Button className="flex-1" onClick={() => { setShowWin(false); handleNextLevel(); }}>
+            Nächstes Level
+          </Button>
+        </div>
+      </div>
+    </Modal>
+
+    {/* Game Over Modal */}
+    <Modal isOpen={gameState?.status === 'lost'} onClose={() => setView('LEVELS')} title="MISSION FAILED">
+      <div className="text-center py-6">
+        <div className="inline-block p-6 rounded-full bg-red-500/10 border border-red-500/20 mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)] relative">
+          <Skull className="text-red-500 drop-shadow-lg relative z-10 animate-pulse" size={64} />
+        </div>
+
+        <div className="text-3xl font-black italic mb-2 tracking-tight text-white">GAME OVER</div>
+
+        <div className="mb-8">
+          <p className="text-gray-400 text-sm font-bold uppercase tracking-widest mb-2">TARGET IDENTIFIED</p>
+          <div className="text-4xl font-mono font-black text-lexi-cyan drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+            {gameState?.targetWord}
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <Button className="flex-1" variant="secondary" onClick={() => setView('LEVELS')}>MENU</Button>
+          <Button
+            className="flex-1 bg-red-600 hover:bg-red-500 border-red-500 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
+            onClick={() => {
+              const mode = gameConfig!.mode;
+
+              if (mode === GameMode.SUDOKU) {
+                setGameState((prev: any) => ({
+                  ...prev,
+                  currentGrid: JSON.parse(JSON.stringify(prev.data.sudokuPuzzle)),
+                  selectedCell: null,
+                  history: [],
+                  status: 'playing'
+                }));
+              } else if (mode === GameMode.CHALLENGE) {
+                const data = generateChallenge(user.language, gameConfig!.tier, gameConfig!.levelId);
+                setGameState({
+                  targetWord: data.target,
+                  hintTitle: "CHALLENGE",
+                  hintDesc: data.question,
+                  guesses: [],
+                  currentGuess: '',
+                  status: 'playing',
+                  hintsUsed: 0,
+                  isMath: data.type === 'math',
+                  timeLeft: data.timeLimit
+                });
+              } else {
+                const content = getLevelContent(
+                  mode,
+                  gameConfig!.tier,
+                  gameConfig!.levelId,
+                  user.language,
+                  user.playedWords || []
+                );
+                setGameState({
+                  guesses: [],
+                  currentGuess: '',
+                  status: 'playing',
+                  targetWord: content.target,
+                  hintTitle: content.hintTitle,
+                  hintDesc: content.hintDesc,
+                  timeLeft: content.timeLimit,
+                  startTime: Date.now(),
+                  hintsUsed: 0,
+                  isMath: false,
+                  isHintUnlocked: false
+                });
+              }
+            }}
+          >
+            RETRY
+          </Button>
+        </div>
+      </div>
+    </Modal>
+
+    {/* Redeem Code Modal - NEW VOUCHER SYSTEM */}
+    <Modal
+      isOpen={showRedeemModal}
+      onClose={() => {
+        setShowRedeemModal(false);
+        setVoucherCode('');
+        setVoucherError('');
+        setVoucherSuccess('');
+      }}
+      title="🎁 Gutschein Einlösen"
+    >
+      <div className="text-center py-6 space-y-6">
+        <div className="inline-block p-6 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+          <Sparkles className="text-blue-400 drop-shadow-lg" size={48} />
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-lg font-bold text-gray-300">Gutscheincode eingeben</h3>
+          <p className="text-xs text-gray-500">Gib deinen Gutscheincode ein um Münzen zu erhalten</p>
+        </div>
+
+        <div className="w-full">
+          <input
+            type="text"
+            value={voucherCode}
+            onChange={(e) => {
+              setVoucherCode(e.target.value.toUpperCase());
+              setVoucherError('');
+              setVoucherSuccess('');
+            }}
+            placeholder="GUTSCHEIN123"
+            className={`w-full bg-gray-900 border-2 ${voucherError
+              ? 'border-red-500 animate-shake'
+              : voucherSuccess
+                ? 'border-green-500'
+                : 'border-gray-700 focus:border-blue-400'
+              } rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors text-white uppercase`}
+            maxLength={20}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleVoucherRedeem();
+              }
+            }}
+          />
+
+          {voucherError && (
+            <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center justify-center gap-1">
+              <AlertTriangle size={12} /> {voucherError}
+            </div>
+          )}
+
+          {voucherSuccess && (
+            <div className="mt-2 text-green-500 text-xs font-bold flex items-center justify-center gap-1">
+              <Check size={12} /> {voucherSuccess}
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3">
+          <Button
+            className="flex-1"
+            variant="secondary"
+            onClick={() => {
+              setShowRedeemModal(false);
+              setVoucherCode('');
+              setVoucherError('');
+              setVoucherSuccess('');
+            }}
+          >
+            Abbrechen
+          </Button>
+          <Button
+            className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:brightness-110"
+            onClick={handleVoucherRedeem}
+            disabled={!voucherCode.trim() || !!voucherSuccess}
+          >
+            {voucherSuccess ? '✓ Eingelöst' : 'Einlösen'}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+
+    {/* Premium Info Modal */}
+    {/* Premium Info Modal */}
+    <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Store">
+      <div className="p-4 space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <div className="inline-block p-4 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)] mb-4">
+            <Crown className="text-white" size={32} fill="currentColor" />
+          </div>
+          <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+            Wähle deinen Plan
+          </h3>
+          <p className="text-gray-400 text-sm mt-1">Schalte alle Features frei & dominiere die Liga!</p>
+        </div>
+
+        {/* Plans Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Plan 1: 7.99 */}
+          <div
+            className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === 'monthly' ? 'border-yellow-400 bg-yellow-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
+            onClick={() => setSelectedPlan('monthly')}
+          >
+            <div className="absolute -top-3 right-4 bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse">BEST VALUE</div>
+            <h4 className="font-bold text-lg text-white">Monatlich</h4>
+            <div className="text-3xl font-black text-yellow-400 my-2">7,99€</div>
+            <ul className="text-xs text-gray-300 space-y-2">
+              <li className="flex items-center gap-2"><Check size={12} className="text-green-400" /> Alle Premium Features</li>
+              <li className="flex items-center gap-2 text-yellow-300 font-bold"><Sparkles size={12} /> + 10 Level Boost (Sofort!)</li>
+              <li className="flex items-center gap-2"><Clock size={12} className="text-blue-400" /> Automatische Verlängerung</li>
+            </ul>
+          </div>
+
+          {/* Plan 2: 4.99 */}
+          <div
+            className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === '30days' ? 'border-purple-400 bg-purple-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
+            onClick={() => setSelectedPlan('30days')}
+          >
+            <h4 className="font-bold text-lg text-white">30 Tage Pass</h4>
+            <div className="text-3xl font-black text-purple-400 my-2">4,99€</div>
+            <ul className="text-xs text-gray-300 space-y-2">
+              <li className="flex items-center gap-2"><Check size={12} className="text-green-400" /> Alle Premium Features</li>
+              <li className="flex items-center gap-2"><CreditCard size={12} className="text-gray-400" /> Kein Abo (Einmalig)</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Payment Section */}
+        <div className="bg-black/40 p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center min-h-[100px]">
+          <h4 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider text-center flex items-center gap-2">
+            <CreditCard size={16} /> Bezahlen mit PayPal
+          </h4>
+          <div className="w-full max-w-[250px] relative z-0">
+            {selectedPlan === 'monthly' && (
+              <PayPalButton amount="7.99" onSuccess={(d: any) => handlePayPalSuccess(d, 'monthly')} />
+            )}
+            {selectedPlan === '30days' && (
+              <PayPalButton amount="4.99" onSuccess={(d: any) => handlePayPalSuccess(d, '30days')} />
+            )}
+          </div>
+        </div>
+
+        {/* Voucher Section */}
+        <div className="border-t border-white/10 pt-6">
+          <h4 className="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
+            <Gem size={16} /> Gutscheincode einlösen
+          </h4>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={voucherCode}
+              onChange={(e) => setVoucherCode(e.target.value)}
+              placeholder="Code eingeben..."
+              className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-yellow-400 outline-none transition-colors font-mono uppercase"
+            />
+            <button
+              onClick={handleVoucherRedeem}
+              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-bold transition-colors"
+            >
+              Einlösen
+            </button>
+          </div>
+          {/* Error/Success Messages reuse existing states */}
+          {voucherError && (
+            <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center gap-1">
+              <AlertTriangle size={12} /> {voucherError}
+            </div>
+          )}
+          {voucherSuccess && (
+            <div className="mt-2 text-green-500 text-xs font-bold flex items-center gap-1">
+              <Check size={12} /> {voucherSuccess}
+            </div>
+          )}
+        </div>
+      </div>
+    </Modal>
+
+    {/* Premium Required Modal */}
+    < Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title="Premium Erforderlich" >
+      <div className="text-center space-y-6">
+        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center border-2 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]">
+          <Lock size={32} className="text-yellow-500" />
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-xl font-black text-white">Challenge Mode Gesperrt</h3>
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Dieser Modus ist exklusiv für Premium-Mitglieder. Hole dir den Season Pass, um tägliche Herausforderungen und exklusive Belohnungen freizuschalten!
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <Button
+            onClick={() => { setShowPremiumRequiredModal(false); setView('SEASON'); }}
+            fullWidth
+            className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black font-black border-none hover:brightness-110"
+          >
+            Zum Season Pass
+          </Button>
+          <Button
+            onClick={() => setShowPremiumRequiredModal(false)}
+            fullWidth
+            className="bg-transparent border border-white/10 text-gray-400 hover:text-white hover:bg-white/5"
+          >
+            Vielleicht später
+          </Button>
+        </div>
+      </div>
+    </Modal >
+
+    {/* Username Change Confirmation Modal */}
+    < Modal
+      isOpen={showUsernameConfirm}
+      onClose={() => setShowUsernameConfirm(false)}
+      title="Benutzername ändern?"
+    >
+      <div className="text-center space-y-6">
+        <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <User size={24} className="text-yellow-400" />
+            <h3 className="text-lg font-bold text-white">Bestätigung erforderlich</h3>
+          </div>
+          <p className="text-sm text-yellow-300 font-bold">
+            Neuer Benutzername: <span className="text-white">{editUsername}</span>
+          </p>
+          <p className="text-sm text-yellow-400 mt-2">
+            Kosten: 2500 Münzen
+          </p>
+          <p className="text-xs text-red-400 mt-3 font-bold">
+            ⚠️ Diese Änderung kann nicht rückgängig gemacht werden!
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowUsernameConfirm(false)}
+            className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+          >
+            Abbrechen
+          </button>
+          <button
+            onClick={confirmUsernameChange}
+            className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+          >
+            <User size={16} /> Bestätigen
+          </button>
+        </div>
+      </div>
+    </Modal >
+
+    {/* Profile Modal */}
+    <Modal isOpen={showProfile} onClose={() => setShowProfile(false)} title={t.PROFILE.TITLE}>
+      <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
+        {/* Username Section */}
+        {cloudUsername && (
+          <>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Benutzername</h3>
+            <div className="bg-gray-900 p-4 rounded-xl border border-white/10">
+              <p className="text-xs text-gray-400 mb-2">Aktuell: <span className="text-white font-bold">{cloudUsername}</span></p>
+              <input
+                type="text"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white mb-2"
+                value={editUsername}
+                onChange={(e) => {
+                  setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
+                }}
+                placeholder="Neuer Benutzername"
+              />
+              {usernameError && <p className="text-red-400 text-xs font-bold">{usernameError}</p>}
+              <p className="text-xs text-yellow-400 mt-2">Kosten: 2500 Münzen</p>
+              <button
+                onClick={handleUsernameChange}
+                className="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase rounded-lg mt-2 transition-colors"
+              >
+                Ändern
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Avatar Preview */}
+        <div className="border-t border-white/10 pt-4 mt-4">
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Vorschau</h3>
+          <div className="flex justify-center mb-4">
+            <div className={`w-24 h-24 rounded-full border-4 border-white/20 overflow-hidden ${getAvatarEffect(editFrame)}`}>
+              <img
+                src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`}
+                alt="Avatar"
+                className="w-full h-full bg-gray-800"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Avatar Selection */}
+        <div className="border-t border-white/10 pt-4 mt-4">
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Wählen</h3>
+          <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+            {(user.ownedAvatars || [AVATARS[0]]).map(avatar => (
+              <button
+                key={avatar}
+                onClick={() => setEditAvatar(avatar)}
+                className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${editAvatar === avatar ? 'border-lexi-fuchsia scale-105' : 'border-white/10 opacity-50 hover:opacity-100'}`}
+              >
+                <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full bg-gray-800" />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Age Input */}
+        <div className="border-t border-white/10 pt-4 mt-4">
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Alter</h3>
+          <input
+            type="number"
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white"
+            value={editAge}
+            min={1} max={120}
+            onChange={(e) => setEditAge(parseInt(e.target.value) || 0)}
+          />
+        </div>
+
+        {/* Stats Display */}
+        <div className="border-t border-white/10 pt-4 mt-4">
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Statistiken</h3>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
+              <p className="text-xs text-gray-500">Level</p>
+              <p className="text-xl font-black text-white">{user.level}</p>
+            </div>
+            <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
+              <p className="text-xs text-gray-500">Gesamt XP</p>
+              <p className="text-xl font-black text-white">{user.xp}</p>
+            </div>
+            <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
+              <p className="text-xs text-gray-500">Münzen</p>
+              <p className="text-xl font-black text-yellow-400">{user.coins}</p>
+            </div>
+            <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
+              <p className="text-xs text-gray-500">Gelöste Rätsel</p>
+              <p className="text-xl font-black text-cyan-400">{user.completedLevels?.length || 0}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Frames / Effects Selection */}
+        <div className="border-t border-white/10 pt-4 mt-4">
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rahmen & Effekte</h3>
+          <div className="grid grid-cols-4 gap-2">
+            <button
+              onClick={() => setEditFrame('none')}
+              className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-gray-800 ${editFrame === 'none' ? 'border-lexi-fuchsia' : 'border-white/10'}`}
+            >
+              <span className="text-xs text-gray-500">Kein</span>
+            </button>
+            {(user.ownedFrames || []).map((frameId) => {
+              const effectClass = getAvatarEffect(frameId);
+              return (
+                <button
+                  key={frameId}
+                  onClick={() => setEditFrame(frameId)}
+                  className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-gray-800 relative overflow-hidden ${editFrame === frameId ? 'border-lexi-fuchsia' : 'border-white/10'}`}
+                >
+                  <div className={`w-8 h-8 rounded-full bg-gray-700 ${effectClass}`}></div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Delete Profile Button */}
+        <div className="border-t border-white/10 pt-4 mt-4">
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="w-full py-3 bg-red-900/20 hover:bg-red-900/40 text-red-500 font-bold uppercase rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <Skull size={16} /> Profil Löschen
+          </button>
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <button
+            onClick={() => setShowProfile(false)}
+            className="flex-1 py-4 rounded-xl font-bold text-sm uppercase bg-gray-800 hover:bg-gray-700 text-white transition-colors"
+          >
+            Abbrechen
+          </button>
+          <button
+            onClick={saveProfile}
+            className="flex-1 py-4 rounded-xl font-black text-sm uppercase bg-lexi-fuchsia hover:bg-lexi-fuchsia/80 text-white transition-colors shadow-[0_0_20px_rgba(217,70,239,0.4)]"
+          >
+            {t.PROFILE.SAVE}
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    {/* Delete Profile Confirmation Modal */}
+    <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title="Profil Löschen">
+      <div className="p-6 space-y-4">
+        <div className="flex items-start gap-3 bg-red-900/20 p-4 rounded-xl border border-red-500/30">
+          <AlertTriangle size={24} className="text-red-500 flex-shrink-0 mt-1" />
+          <div>
+            <h3 className="text-lg font-bold text-red-500 mb-2">Warnung!</h3>
+            <p className="text-sm text-gray-300">
+              Diese Aktion kann NICHT rückgängig gemacht werden. Alle deine Fortschritte, Käufe und Erfolge werden permanent gelöscht.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">
+            Tippe "delete" um zu bestätigen:
+          </label>
+          <input
+            type="text"
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white"
+            value={deleteInput}
+            onChange={(e) => setDeleteInput(e.target.value)}
+            placeholder="delete"
+          />
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }}
+            className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+          >
+            Abbrechen
+          </button>
+          <button
+            onClick={() => {
+              if (deleteInput.toLowerCase() === 'delete') {
+                // TODO: Implement server deletion via Firebase
+                alert('Profil-Löschung noch nicht implementiert. Bald verfügbar!');
+                setShowDeleteConfirm(false);
+                setDeleteInput('');
+              } else {
+                alert('Bitte tippe "delete" um zu bestätigen.');
+              }
+            }}
+            disabled={deleteInput.toLowerCase() !== 'delete'}
+            className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            <Skull size={16} /> Endgültig Löschen
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    {/* Cloud Auth Modal */}
+    < AuthModal
+      isOpen={showAuthModal}
+      onClose={() => setShowAuthModal(false)}
+      onSuccess={handleCloudLogin}
+    />
+
+  </div >
+);
 }
 // (c) KW 1998
