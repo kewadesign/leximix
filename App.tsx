@@ -74,7 +74,7 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
 
 const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
   const empties = Array(Math.max(0, 6 - 1 - turn)).fill(null);
-  
+
   // CSS Grid Logic for perfect sizing:
   // min(14vw, 3.5rem) ensures cells are max 56px but shrink for mobile/long words
   // w-fit ensures the container is only as wide as the grid
@@ -153,16 +153,16 @@ export default function App() {
 
       if (saved) {
         const parsed = JSON.parse(saved);
-        
+
         // Sanitize Debug State: If user has exactly 100,000 XP (debug value), reset to 0
         // unless they have played a significant number of levels (unlikely to hit exactly 100k)
         let sanitizedXp = parsed.xp;
         let sanitizedLevel = parsed.level;
-        
+
         if (sanitizedXp === 100000 && (!parsed.playedWords || parsed.playedWords.length < 50)) {
-             console.log("Resetting debug XP/Level state");
-             sanitizedXp = 0;
-             sanitizedLevel = 1;
+          console.log("Resetting debug XP/Level state");
+          sanitizedXp = 0;
+          sanitizedLevel = 1;
         }
 
         return {
@@ -847,10 +847,10 @@ export default function App() {
         language: Language.DE, // Default, will be chosen in onboarding
         theme: user.theme || 'dark'
       }));
-      
+
       // Pre-fill onboarding name with username
       setTempUser(prev => ({ ...prev, name: normalizedUser }));
-      
+
       console.log('[Cloud] New user - redirecting to onboarding');
       setView('ONBOARDING');
       setOnboardingStep(0); // Start at Language
@@ -1334,16 +1334,16 @@ export default function App() {
 
         // Activating Premium if applicable
         if (result.isPremium) {
-            setUser(u => ({ ...u, isPremium: true, premiumActivatedAt: Date.now() }));
+          setUser(u => ({ ...u, isPremium: true, premiumActivatedAt: Date.now() }));
         }
 
         // Show success message
         let msg = result.coinsAwarded
           ? `🎉 Gutschein eingelöst! + ${result.coinsAwarded} Münzen`
           : `🎉 Gutschein erfolgreich eingelöst!`;
-        
+
         if (result.isPremium) {
-            msg = "🎉 PREMIUM STATUS AKTIVIERT! 👑";
+          msg = "🎉 PREMIUM STATUS AKTIVIERT! 👑";
         }
 
         setVoucherSuccess(msg);
@@ -1898,8 +1898,8 @@ export default function App() {
     else if (gameState.isMath) infoText = "Solve the math expression.";
     else infoText = `${gameState.targetWord.length} ${t.GAME.INFO_BAR}`;
 
-    const validationStatus = (isSudoku && gameState.data?.sudokuGrid) 
-      ? validateSudoku(gameState.currentGrid, gameState.data.sudokuGrid) 
+    const validationStatus = (isSudoku && gameState.data?.sudokuGrid)
+      ? validateSudoku(gameState.currentGrid, gameState.data.sudokuGrid)
       : undefined;
 
     return (
@@ -1949,7 +1949,7 @@ export default function App() {
                     setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }));
                     // Focus input to ensure mobile keyboard opens
                     if (hiddenInputRef.current) {
-                        hiddenInputRef.current.focus();
+                      hiddenInputRef.current.focus();
                     }
                   }}
                 />
@@ -2078,7 +2078,7 @@ export default function App() {
           <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg animate-bounce-slow">
             <Brain size={40} className="text-white" />
           </div>
-          
+
           <div>
             <h3 className="text-xl font-black text-white mb-2 uppercase italic">Bereit für die ultimative Prüfung?</h3>
             <p className="text-gray-300 text-sm leading-relaxed">
@@ -2234,8 +2234,8 @@ export default function App() {
                 <p className="text-red-400 font-bold text-xs mb-2">
                   ⚠️ Zur Bestätigung bitte "DELETE" eingeben:
                 </p>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={deleteInput}
                   onChange={(e) => setDeleteInput(e.target.value)}
                   placeholder="DELETE"
@@ -2469,53 +2469,53 @@ export default function App() {
       {/* Premium Info Modal */}
       {/* Premium Info Modal */}
       <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Store">
-        <div className="p-4 space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="text-center">
-            <div className="inline-block p-4 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)] mb-4">
-              <Crown className="text-white" size={32} fill="currentColor" />
+            <div className="inline-block p-3 sm:p-4 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)] mb-3 sm:mb-4">
+              <Crown className="text-white" size={24} fill="currentColor" />
             </div>
-            <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+            <h3 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
               Wähle deinen Plan
             </h3>
-            <p className="text-gray-400 text-sm mt-1">Schalte alle Features frei & dominiere die Liga!</p>
+            <p className="text-gray-400 text-xs sm:text-sm mt-1">Schalte alle Features frei & dominiere die Liga!</p>
           </div>
 
           {/* Plans Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {/* Plan 1: 7.99 */}
             <div
-              className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === 'monthly' ? 'border-yellow-400 bg-yellow-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
+              className={`relative p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === 'monthly' ? 'border-yellow-400 bg-yellow-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
               onClick={() => setSelectedPlan('monthly')}
             >
-              <div className="absolute -top-3 right-4 bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse">BEST VALUE</div>
-              <h4 className="font-bold text-lg text-white">Monatlich</h4>
-              <div className="text-3xl font-black text-yellow-400 my-2">7,99€</div>
-              <ul className="text-xs text-gray-300 space-y-2">
-                <li className="flex items-center gap-2"><Check size={12} className="text-green-400" /> Alle Premium Features</li>
-                <li className="flex items-center gap-2 text-yellow-300 font-bold"><Sparkles size={12} /> + 10 Level Boost (Sofort!)</li>
-                <li className="flex items-center gap-2"><Clock size={12} className="text-blue-400" /> Automatische Verlängerung</li>
+              <div className="absolute -top-2 sm:-top-3 right-2 sm:right-4 bg-yellow-500 text-black text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full shadow-lg animate-pulse">BEST VALUE</div>
+              <h4 className="font-bold text-base sm:text-lg text-white">Monatlich</h4>
+              <div className="text-2xl sm:text-3xl font-black text-yellow-400 my-1 sm:my-2">7,99€</div>
+              <ul className="text-[10px] sm:text-xs text-gray-300 space-y-1 sm:space-y-2">
+                <li className="flex items-center gap-1 sm:gap-2"><Check size={10} className="sm:w-3 sm:h-3 text-green-400" /> Alle Premium Features</li>
+                <li className="flex items-center gap-1 sm:gap-2 text-yellow-300 font-bold"><Sparkles size={10} className="sm:w-3 sm:h-3" /> + 10 Level Boost (Sofort!)</li>
+                <li className="flex items-center gap-1 sm:gap-2"><Clock size={10} className="sm:w-3 sm:h-3 text-blue-400" /> Automatische Verlängerung</li>
               </ul>
             </div>
 
             {/* Plan 2: 4.99 */}
             <div
-              className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === '30days' ? 'border-purple-400 bg-purple-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
+              className={`relative p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === '30days' ? 'border-purple-400 bg-purple-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
               onClick={() => setSelectedPlan('30days')}
             >
-              <h4 className="font-bold text-lg text-white">30 Tage Pass</h4>
-              <div className="text-3xl font-black text-purple-400 my-2">4,99€</div>
-              <ul className="text-xs text-gray-300 space-y-2">
-                <li className="flex items-center gap-2"><Check size={12} className="text-green-400" /> Alle Premium Features</li>
-                <li className="flex items-center gap-2"><CreditCard size={12} className="text-gray-400" /> Kein Abo (Einmalig)</li>
+              <h4 className="font-bold text-base sm:text-lg text-white">30 Tage Pass</h4>
+              <div className="text-2xl sm:text-3xl font-black text-purple-400 my-1 sm:my-2">4,99€</div>
+              <ul className="text-[10px] sm:text-xs text-gray-300 space-y-1 sm:space-y-2">
+                <li className="flex items-center gap-1 sm:gap-2"><Check size={10} className="sm:w-3 sm:h-3 text-green-400" /> Alle Premium Features</li>
+                <li className="flex items-center gap-1 sm:gap-2"><CreditCard size={10} className="sm:w-3 sm:h-3 text-gray-400" /> Kein Abo (Einmalig)</li>
               </ul>
             </div>
           </div>
 
           {/* Payment Section */}
-          <div className="bg-black/40 p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center min-h-[100px]">
-            <h4 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider text-center flex items-center gap-2">
-              <CreditCard size={16} /> Bezahlen mit PayPal
+          <div className="bg-black/40 p-3 sm:p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center min-h-[80px] sm:min-h-[100px]">
+            <h4 className="text-xs sm:text-sm font-bold text-gray-400 mb-3 sm:mb-4 uppercase tracking-wider text-center flex items-center gap-2">
+              <CreditCard size={14} className="sm:w-4 sm:h-4" /> Bezahlen mit PayPal
             </h4>
             <div className="w-full max-w-[250px] relative z-0">
               {selectedPlan === 'monthly' && (
@@ -2528,9 +2528,9 @@ export default function App() {
           </div>
 
           {/* Voucher Section */}
-          <div className="border-t border-white/10 pt-6">
-            <h4 className="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
-              <Gem size={16} /> Gutscheincode einlösen
+          <div className="border-t border-white/10 pt-4 sm:pt-6">
+            <h4 className="text-xs sm:text-sm font-bold text-gray-400 mb-2 sm:mb-3 flex items-center gap-2">
+              <Gem size={14} className="sm:w-4 sm:h-4" /> Gutscheincode einlösen
             </h4>
             <div className="flex gap-2">
               <input
@@ -2538,11 +2538,11 @@ export default function App() {
                 value={voucherCode}
                 onChange={(e) => setVoucherCode(e.target.value)}
                 placeholder="Code eingeben..."
-                className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-yellow-400 outline-none transition-colors font-mono uppercase"
+                className="flex-1 bg-black/30 border border-white/10 rounded-lg px-2 sm:px-3 py-2 text-sm sm:text-base text-white focus:border-yellow-400 outline-none transition-colors font-mono uppercase"
               />
               <button
                 onClick={handleVoucherRedeem}
-                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-bold transition-colors"
+                className="bg-white/10 hover:bg-white/20 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-colors"
               >
                 Einlösen
               </button>
@@ -2846,4 +2846,4 @@ export default function App() {
   );
 }
 // (c) KW 1998
- 1998
+1998

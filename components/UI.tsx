@@ -36,14 +36,14 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
     return null;
   }
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className={`relative w-full max-w-md glass-panel rounded-3xl shadow-2xl p-8 ${className}`}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+      <div className={`relative w-full max-w-md glass-panel rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-8 my-auto max-h-[95vh] overflow-y-auto ${className}`}>
         {onClose && (
-          <button onClick={onClose} className="absolute top-4 right-4 text-lexi-text-muted hover:text-lexi-text transition-colors">
-            <X size={24} />
+          <button onClick={onClose} className="absolute top-3 right-3 sm:top-4 sm:right-4 text-lexi-text-muted hover:text-lexi-text transition-colors z-10">
+            <X size={20} className="sm:w-6 sm:h-6" />
           </button>
         )}
-        {title && <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-lexi-fuchsia mb-6 uppercase tracking-widest text-center">{title}</h2>}
+        {title && <h2 className="text-lg sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-lexi-fuchsia mb-4 sm:mb-6 uppercase tracking-widest text-center pr-8">{title}</h2>}
         <div className="text-lexi-text">
           {children}
         </div>
