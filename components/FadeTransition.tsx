@@ -11,17 +11,22 @@ export const FadeTransition: React.FC<TransitionProps> = ({ isTransitioning, onT
   useEffect(() => {
     if (isTransitioning) {
       setPhase('in');
-      // Wait for fade out
-      setTimeout(() => {
+      // Wait for fade in (black screen)
+      const t1 = setTimeout(() => {
         onTransitionEnd(); // Switch content here
-        setPhase('out');
-        // Wait for fade in
-        setTimeout(() => {
+        setPhase('out'); // Start fading out
+        
+        // Wait for fade out
+        const t2 = setTimeout(() => {
           setPhase('idle');
         }, 400);
+        
+        return () => clearTimeout(t2);
       }, 400);
+
+      return () => clearTimeout(t1);
     }
-  }, [isTransitioning, onTransitionEnd]);
+  }, [isTransitioning]); // Removed onTransitionEnd to prevent loop
 
   if (phase === 'idle') return null;
 
