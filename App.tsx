@@ -369,6 +369,8 @@ export default function App() {
   const [showCorrectWordModal, setShowCorrectWordModal] = useState(false);
   const [correctWord, setCorrectWord] = useState('');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [serverVersion, setServerVersion] = useState('');
 
   // Online/Offline monitoring
   useEffect(() => {
@@ -395,6 +397,37 @@ export default function App() {
       clearInterval(interval);
     };
   }, []);
+
+  // Auto-update version checking
+  useEffect(() => {
+    const checkForUpdates = async () => {
+      if (!isOnline) return;
+
+      try {
+        const response = await fetch('/version.json?t=' + Date.now()); // Cache bust
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const currentVersion = '2.1.0'; // From package.json
+
+        if (data.version && data.version !== currentVersion) {
+          console.log(`[Update] New version available: ${data.version} (current: ${currentVersion})`);
+          setServerVersion(data.version);
+          setUpdateAvailable(true);
+        }
+      } catch (error) {
+        console.error('[Update] Failed to check for updates:', error);
+      }
+    };
+
+    // Check immediately on mount
+    checkForUpdates();
+
+    // Check every 30 seconds
+    const interval = setInterval(checkForUpdates, 30000);
+
+    return () => clearInterval(interval);
+  }, [isOnline]);
 
   useEffect(() => {
     if (view !== 'ONBOARDING') {
@@ -2618,6 +2651,51 @@ export default function App() {
                 <Check size={12} /> {voucherSuccess}
               </div>
             )}
+          </div>
+        </div>
+      </Modal>
+
+      {/* Update Available Modal */}
+      <Modal isOpen={updateAvailable} onClose={() => setUpdateAvailable(false)} title="Update Verfügbar">
+        <div className="text-center space-y-6">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-pulse">
+            <Sparkles size={40} className="text-white" />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-xl font-black text-white">Neue Version verfügbar!</h3>
+            <p className="text-sm text-gray-300 leading-relaxed">
+              LexiMix wurde aktualisiert. Lade die App neu, um die neueste Version zu verwenden.
+            </p>
+            <div className="flex items-center justify-center gap-4 text-xs text-gray-400 mt-4">
+              <div className="flex flex-col items-center">
+                <span className="text-gray-500">Aktuell</span>
+                <span className="font-mono text-white">2.1.0</span>
+              </div>
+              <ArrowLeft size={16} className="rotate-180 text-green-500" />
+              <div className="flex flex-col items-center">
+                <span className="text-gray-500">Neu</span>
+                <span className="font-mono text-green-400 font-bold">{serverVersion}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={() => window.location.reload()}
+              fullWidth
+              className="bg-gradient-to-r from-green-600 to-blue-600 text-white font-black border-none hover:brightness-110"
+            >
+              Jetzt aktualisieren
+            </Button>
+            <Button
+              onClick={() => setUpdateAvailable(false)}
+              fullWidth
+              variant="ghost"
+              className="text-gray-400 hover:text-white"
+            >
+              Später erinnern
+            </Button>
           </div>
         </div>
       </Modal>
