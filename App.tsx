@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 // KW1998 - Core Application Logic
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
@@ -155,7 +155,6 @@ transition-all duration-100
   );
 };
 
-import { FadeTransition } from './components/FadeTransition';
 
 // --- Main App Component ---
 
@@ -164,36 +163,17 @@ type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL'
 
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Hook to handle view transitions with loading screen
+  // Navigation
   const navigateTo = (newView: ViewType) => {
     if (newView === view) return;
-    setIsTransitioning(true);
-    // Actual state change happens in the transition component callback
-    // But we store the target view in a ref or temp state if needed, 
-    // however the WaveTransition takes a callback to perform the switch mid-animation.
-    // So we'll use a small effect or just pass the setter.
-    // Let's refactor navigateTo to just set the flag, and let the component handle the timing via callback.
-    // Wait, React state updates are batched.
-    // We need to store "nextView" state.
+    setView(newView);
   };
   
-  const [nextView, setNextView] = useState<ViewType | null>(null);
-
   const handleNavigate = (target: ViewType) => {
     if (target === view) return;
-    setNextView(target);
-    setIsTransitioning(true);
+    setView(target);
   };
-
-  const onTransitionMidpoint = useCallback(() => {
-    if (nextView) {
-      setView(nextView);
-      setNextView(null);
-    }
-    setTimeout(() => setIsTransitioning(false), 400); 
-  }, [nextView]);
 
   // Onboarding State
   const [onboardingStep, setOnboardingStep] = useState(0); // 0=Lang, 1=Name, 2=Age
@@ -2082,11 +2062,7 @@ export default function App() {
       <div className="fixed inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900/50 to-cyan-900/20 pointer-events-none"></div>
       <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
 
-      {/* Fade Transition */}
-      <FadeTransition 
-        isTransitioning={isTransitioning} 
-        onTransitionEnd={onTransitionMidpoint} 
-      />
+      {/* Fade Transition Removed */}
 
       {view === 'ONBOARDING' && renderOnboarding()}
       {view === 'HOME' && renderHome()}
