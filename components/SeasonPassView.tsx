@@ -49,12 +49,20 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                     <h2 className="text-2xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 uppercase tracking-tighter drop-shadow-sm">
                         Season 2: Neon Uprising
                     </h2>
-                    <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                        <span>Level {user.level}</span>
+                    <div className="flex items-center gap-3 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                        <span className="flex items-center gap-1">
+                            {user.isPremium && <Crown size={14} className="text-yellow-400" fill="currentColor" />}
+                            Level {user.level}
+                        </span>
                         <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
                             <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-600" style={{ width: `${user.xp % 100}%` }}></div>
                         </div>
                         <span>{user.xp % 100}/100 XP</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] text-gray-500 mt-1">
+                        <span>Gesamt XP: {user.xp}</span>
+                        <span>•</span>
+                        <span>01.01.2025 - 31.03.2025</span>
                     </div>
                 </div>
                 <div className="w-10"></div>
@@ -73,10 +81,36 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                 </div>
             )}
 
+            {/* Reward Legend */}
+            <div className="px-4 py-2 bg-black/20 border-y border-white/5 flex items-center justify-center gap-4 text-[10px] font-bold uppercase tracking-wider z-20">
+                <div className="flex items-center gap-1">
+                    <Sparkles size={12} className="text-purple-400" />
+                    <span className="text-gray-400">Frame</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <ImageIcon size={12} className="text-blue-400" />
+                    <span className="text-gray-400">Avatar</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <Zap size={12} className="text-yellow-400" />
+                    <span className="text-gray-400">Booster</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <Coins size={12} className="text-yellow-300" />
+                    <span className="text-gray-400">Münzen</span>
+                </div>
+            </div>
+
             {/* Scroll Track */}
             <div
                 ref={scrollRef}
                 className="flex-1 overflow-x-auto overflow-y-hidden p-0 scrollbar-hide relative"
+                onWheel={(e) => {
+                    if (scrollRef.current) {
+                        scrollRef.current.scrollLeft += e.deltaY;
+                        e.preventDefault();
+                    }
+                }}
             >
                 <div className="flex items-center h-full px-[50vw] min-w-max gap-0 py-8">
                     {/* Background Track Line */}

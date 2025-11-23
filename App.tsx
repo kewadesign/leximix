@@ -205,7 +205,10 @@ export default function App() {
           claimedSeasonRewards: parsed.claimedSeasonRewards || [],
           ownedFrames: parsed.ownedFrames || [],
           hintBooster: parsed.hintBooster || 0,
-          ownedAvatars: parsed.ownedAvatars || [AVATARS[0]]
+          ownedAvatars: parsed.ownedAvatars || [AVATARS[0]],
+          // UNLOCK SEASON PASS FOR TESTING
+          xp: 100000, // Level 100+
+          isPremium: true
         };
       }
 
@@ -215,13 +218,13 @@ export default function App() {
         language: Language.DE,
         avatarId: 'Felix',
         coins: 1000,
-        xp: 0,
-        level: 1,
+        xp: 100000, // Level 100+
+        level: 100,
         completedLevels: allLevelsUnlocked,
         theme: 'dark',
         inventory: [],
         ownedAvatars: ['Felix'],
-        isPremium: false
+        isPremium: true
       };
     } catch (error) {
       console.error('[LexiMix] localStorage error:', error);
@@ -429,7 +432,7 @@ export default function App() {
         if (!newAvatars.includes(avatarId)) newAvatars.push(avatarId);
       }
 
-      if (item.type === 'cosmetic') {
+      if (item.type === 'cosmetic' || item.type === 'effect') {
         const frameId = item.value as string;
         if (!newFrames.includes(frameId)) newFrames.push(frameId);
       }
@@ -484,13 +487,34 @@ export default function App() {
   // Helper to get active effect style
   const getAvatarEffect = (effectId?: string) => {
     if (!effectId || effectId === 'none') return "";
-    // Map effect IDs to CSS classes
-    if (effectId.includes('gold')) return "shadow-[0_0_30px_rgba(250,204,21,0.6)] ring-4 ring-yellow-400/50 animate-pulse-slow";
-    if (effectId.includes('neon')) return "shadow-[0_0_30px_rgba(217,70,239,0.8)] ring-4 ring-fuchsia-500/50 animate-pulse";
-    if (effectId.includes('fire')) return "shadow-[0_0_30px_rgba(239,68,68,0.8)] ring-4 ring-red-500/50 animate-pulse";
-    if (effectId.includes('ice')) return "shadow-[0_0_30px_rgba(6,182,212,0.8)] ring-4 ring-cyan-400/50 animate-pulse";
-    if (effectId.includes('sparkle')) return "shadow-[0_0_30px_rgba(234,179,8,0.8)] ring-4 ring-yellow-300/50 animate-bounce-slow";
-    if (effectId.includes('glow')) return "shadow-[0_0_40px_rgba(255,255,255,0.5)] animate-pulse-slow";
+
+    // Original 5 effects
+    if (effectId === 'effect_glow') return 'frame-glow';
+    if (effectId === 'effect_fire') return 'frame-fire';
+    if (effectId === 'effect_ice') return 'frame-ice';
+    if (effectId === 'effect_neon') return 'frame-neon';
+    if (effectId === 'effect_sparkle') return 'frame-sparkle';
+
+    // Elemental frames
+    if (effectId === 'effect_flame_burst') return 'frame-flame-burst';
+    if (effectId === 'effect_frost_aura') return 'frame-frost-aura';
+    if (effectId === 'effect_lightning_arc') return 'frame-lightning-arc';
+    if (effectId === 'effect_water_ripple') return 'frame-water-ripple';
+
+    // Cosmic frames
+    if (effectId === 'effect_galaxy_swirl') return 'frame-galaxy-swirl';
+    if (effectId === 'effect_star_field') return 'frame-star-field';
+    if (effectId === 'effect_nebula_glow') return 'frame-nebula-glow';
+    if (effectId === 'effect_void_edge') return 'frame-void-edge';
+
+    // Special frames
+    if (effectId === 'effect_rainbow_pulse') return 'frame-rainbow-pulse';
+    if (effectId === 'effect_gold_luxury') return 'frame-gold-luxury';
+    if (effectId === 'effect_diamond_shine') return 'frame-diamond-shine';
+    if (effectId === 'effect_shadow_flame') return 'frame-shadow-flame';
+    if (effectId === 'effect_aurora_wave') return 'frame-aurora-wave';
+    if (effectId === 'effect_pixel_glitch') return 'frame-pixel-glitch';
+    if (effectId === 'effect_holo_shimmer') return 'frame-holo-shimmer';
 
     // Fallback for legacy frames
     if (effectId.includes('frame_')) return "shadow-[0_0_20px_rgba(34,211,238,0.5)] ring-2 ring-cyan-400";
@@ -1260,12 +1284,18 @@ export default function App() {
       const { redeemVoucher } = await import('./utils/firebase');
       const result = await redeemVoucher(cloudUsername, voucherCode);
 
-      if (result.success && result.coinsAwarded) {
-        // Award coins to user
-        setUser(u => ({ ...u, coins: u.coins + result.coinsAwarded! }));
+      if (result.success) {
+        // Award coins to user if applicable
+        if (result.coinsAwarded) {
+          setUser(u => ({ ...u, coins: u.coins + result.coinsAwarded! }));
+        }
 
         // Show success message
-        setVoucherSuccess(`🎉 Gutschein eingelöst! +${result.coinsAwarded} Münzen`);
+        const msg = result.coinsAwarded
+          ? `🎉 Gutschein eingelöst! +${result.coinsAwarded} Münzen`
+          : `🎉 Gutschein erfolgreich eingelöst!`;
+
+        setVoucherSuccess(msg);
         setVoucherError('');
         setVoucherCode('');
         audio.playWin();
@@ -1571,7 +1601,7 @@ export default function App() {
           <img
             src={user.theme !== 'dark' ? "/logo.png?invert" : "/logo.png"}
             alt="LexiMix"
-            className={`h-20 w-auto drop-shadow-xl ${user.theme !== 'dark' ? 'invert' : ''}`}
+            className={`h-32 md:h-40 w-auto drop-shadow-xl ${user.theme !== 'dark' ? 'invert' : ''}`}
           />
         </div>
         <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
@@ -2031,135 +2061,6 @@ export default function App() {
         </div>
       </Modal>
 
-      {/* Profile Modal */}
-      <Modal isOpen={showProfile} onClose={() => setShowProfile(false)} title={t.PROFILE.TITLE}>
-        <div className="flex flex-col space-y-6 pt-4 max-h-[60vh] overflow-y-auto scrollbar-hide px-1">
-          <div className="flex justify-center">
-            <div className="relative group cursor-pointer" onClick={() => {
-              // Only allow selecting owned avatars
-              const owned = user.ownedAvatars || [AVATARS[0]];
-              const currentIndex = owned.indexOf(editAvatar);
-              const nextIndex = (currentIndex + 1) % owned.length;
-              setEditAvatar(owned[nextIndex]);
-            }}>
-              <div className={`w-32 h-32 bg-gray-800 rounded-full overflow-hidden transition-transform group-hover:scale-105 ${getAvatarEffect(editFrame)}`}>
-                <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`} alt="Avatar" />
-              </div>
-              <div className="absolute bottom-0 right-0 bg-lexi-surface rounded-full p-3 border border-white/20 text-lexi-text shadow-lg">
-                <Edit2 size={18} />
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center text-xs text-gray-400 font-bold">
-            {t.PROFILE.AVATAR_HINT}
-          </div>
-
-          <div className="text-center border-b border-white/10 pb-4">
-            <h3 className="text-2xl font-black text-white uppercase tracking-tight">{user.name}</h3>
-            {user.isPremium && <div className="text-xs font-bold text-yellow-400 tracking-widest uppercase mt-1 flex items-center justify-center gap-1"><CrownPattern className="w-3 h-3" /> Premium Agent</div>}
-          </div>
-
-          <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">{t.PROFILE.AGE}</label>
-            <input
-              type="number"
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-lg text-white focus:border-lexi-fuchsia outline-none font-bold"
-              value={editAge}
-              min={1} max={120}
-              onChange={(e) => setEditAge(parseInt(e.target.value) || 0)}
-            />
-          </div>
-
-          {/* Username Change Section */}
-          {cloudUsername && (
-            <div className="border-t border-white/10 pt-4 mt-4">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Benutzername ändern</h3>
-              <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-3 mb-3">
-                <p className="text-xs text-yellow-300 font-bold">
-                  Aktuell: <span className="text-white">{cloudUsername}</span>
-                </p>
-                <p className="text-xs text-yellow-400 mt-1">
-                  Kosten: 2500 Münzen
-                </p>
-              </div>
-              <input
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-lg text-white focus:border-lexi-fuchsia outline-none font-bold mb-2"
-                value={editUsername}
-                maxLength={30}
-                onChange={(e) => {
-                  setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
-                  setUsernameError('');
-                }}
-                placeholder="Neuer Benutzername"
-              />
-              <p className="text-xs text-gray-500 mb-2 text-right">{editUsername.length}/30 Zeichen</p>
-              {usernameError && (
-                <p className="text-xs text-red-400 font-bold mb-2 bg-red-900/20 border border-red-500/30 rounded p-2">
-                  {usernameError}
-                </p>
-              )}
-              <button
-                onClick={handleUsernameChange}
-                disabled={!editUsername || editUsername.length < 3}
-                className="w-full py-3 rounded-xl font-bold text-xs uppercase bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                <User size={14} /> Benutzername ändern (2500 💎)
-              </button>
-            </div>
-          )}
-
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-lexi-text-muted uppercase tracking-wider mb-2">Select Effect</h3>
-            <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto scrollbar-hide">
-              <button
-                onClick={() => setEditFrame('none')}
-                className={`relative rounded-full overflow-hidden transition-all h-14 w-14 flex items-center justify-center bg-gray-800 mx-auto ${editFrame === 'none' ? 'ring-2 ring-lexi-fuchsia scale-105' : 'opacity-50 hover:opacity-100'}`}
-              >
-                <span className="text-[8px] font-bold text-gray-400 uppercase">None</span>
-              </button>
-              {(user.ownedFrames || []).map(effectId => (
-                <button
-                  key={effectId}
-                  onClick={() => setEditFrame(effectId)}
-                  className={`relative rounded-full overflow-hidden transition-all h-14 w-14 flex items-center justify-center bg-gray-800 mx-auto ${getAvatarEffect(effectId)} ${editFrame === effectId ? 'scale-110 z-10' : 'opacity-70 hover:opacity-100'}`}
-                >
-                  <div className="w-full h-full bg-gradient-to-br from-white/10 to-transparent rounded-full"></div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Select Avatar</h3>
-            <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto scrollbar-hide">
-              {(user.ownedAvatars || [AVATARS[0]]).map(avatar => (
-                <button
-                  key={avatar}
-                  onClick={() => setEditAvatar(avatar)}
-                  className={`relative rounded-xl overflow-hidden border-2 transition-all ${editAvatar === avatar ? 'border-lexi-fuchsia scale-105' : 'border-transparent opacity-50 hover:opacity-100'}`}
-                >
-                  <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar}`} alt="Avatar" />
-                  {editAvatar === avatar && <div className="absolute inset-0 bg-lexi-fuchsia/20"></div>}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <Button fullWidth onClick={saveProfile}>{t.PROFILE.SAVE}</Button>
-
-          <div className="border-t border-white/10 pt-4 mt-2">
-            <button
-              onClick={deleteProfile}
-              className="w-full py-3 rounded-xl font-bold text-xs uppercase bg-red-900/20 text-red-500 hover:bg-red-900/40 transition-colors flex items-center justify-center gap-2"
-            >
-              <Skull size={14} /> Delete Profile
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Level Up Modal */}
       <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title={t.GAME.LEVEL_UP || 'Level Up'}>
         <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-lexi-fuchsia/20 to-transparent animate-pulse-slow"></div>
@@ -2616,6 +2517,141 @@ export default function App() {
           </div>
         </div>
       </Modal >
+
+      {/* Profile Modal */}
+      <Modal isOpen={showProfile} onClose={() => setShowProfile(false)} title={t.PROFILE.TITLE}>
+        <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
+          {/* Username Section */}
+          {cloudUsername && (
+            <>
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Benutzername</h3>
+              <div className="bg-gray-900 p-4 rounded-xl border border-white/10">
+                <input
+                  type="text"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white mb-2"
+                  value={editUsername}
+                  onChange={(e) => {
+                    setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
+                  }}
+                />
+                {usernameError && <p className="text-red-400 text-xs font-bold">{usernameError}</p>}
+                <p className="text-xs text-yellow-400 mt-2">Kosten: 2500 Münzen</p>
+                <button
+                  onClick={handleUsernameChange}
+                  className="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase rounded-lg mt-2 transition-colors"
+                >
+                  Ändern
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* Avatar Preview */}
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Vorschau</h3>
+            <div className="flex justify-center mb-4">
+              <div className={`w-24 h-24 rounded-full border-4 border-white/20 overflow-hidden ${getAvatarEffect(editFrame)}`}>
+                <img
+                  src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`}
+                  alt="Avatar"
+                  className="w-full h-full bg-gray-800"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Avatar Selection */}
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Wählen</h3>
+            <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+              {(user.ownedAvatars || [AVATARS[0]]).map(avatar => (
+                <button
+                  key={avatar}
+                  onClick={() => setEditAvatar(avatar)}
+                  className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${editAvatar === avatar ? 'border-lexi-fuchsia scale-105' : 'border-white/10 opacity-50 hover:opacity-100'}`}
+                >
+                  <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full bg-gray-800" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Age Input */}
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Alter</h3>
+            <input
+              type="number"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white"
+              value={editAge}
+              min={1} max={120}
+              onChange={(e) => setEditAge(parseInt(e.target.value) || 0)}
+            />
+          </div>
+
+          {/* Stats Display */}
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Statistiken</h3>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
+                <p className="text-xs text-gray-500">Level</p>
+                <p className="text-xl font-black text-white">{user.level}</p>
+              </div>
+              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
+                <p className="text-xs text-gray-500">Gesamt XP</p>
+                <p className="text-xl font-black text-white">{user.xp}</p>
+              </div>
+              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
+                <p className="text-xs text-gray-500">Münzen</p>
+                <p className="text-xl font-black text-yellow-400">{user.coins}</p>
+              </div>
+              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
+                <p className="text-xs text-gray-500">Gelöste Rätsel</p>
+                <p className="text-xl font-black text-cyan-400">{user.completedLevels?.length || 0}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Frames / Effects Selection */}
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rahmen & Effekte</h3>
+            <div className="grid grid-cols-4 gap-2">
+              <button
+                onClick={() => setEditFrame('none')}
+                className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-gray-800 ${editFrame === 'none' ? 'border-lexi-fuchsia' : 'border-white/10'}`}
+              >
+                <span className="text-xs text-gray-500">Kein</span>
+              </button>
+              {(user.ownedFrames || []).map((frameId) => {
+                const effectClass = getAvatarEffect(frameId);
+                return (
+                  <button
+                    key={frameId}
+                    onClick={() => setEditFrame(frameId)}
+                    className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-gray-800 relative overflow-hidden ${editFrame === frameId ? 'border-lexi-fuchsia' : 'border-white/10'}`}
+                  >
+                    <div className={`w-8 h-8 rounded-full bg-gray-700 ${effectClass}`}></div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => setShowProfile(false)}
+              className="flex-1 py-4 rounded-xl font-bold text-sm uppercase bg-gray-800 hover:bg-gray-700 text-white transition-colors"
+            >
+              Abbrechen
+            </button>
+            <button
+              onClick={saveProfile}
+              className="flex-1 py-4 rounded-xl font-black text-sm uppercase bg-lexi-fuchsia hover:bg-lexi-fuchsia/80 text-white transition-colors shadow-[0_0_20px_rgba(217,70,239,0.4)]"
+            >
+              {t.PROFILE.SAVE}
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Cloud Auth Modal */}
       < AuthModal

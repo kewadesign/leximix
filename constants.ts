@@ -957,7 +957,7 @@ export const generateSeasonRewards = (season: Season) => {
 
     // --- PREMIUM TRACK (Target: 100 rewards - EVERY LEVEL) ---
 
-    // 1. Avatars (Every 10 levels)
+    // 1. Avatars - Every 10 levels AND every 5 levels (20 total avatars)
     if (level % 10 === 0) {
       const avatarReward = season.avatars.find(a => a.level === level);
       premiumReward = {
@@ -970,19 +970,62 @@ export const generateSeasonRewards = (season: Season) => {
         rarity: 'legendary'
       };
     }
-    // 2. Cosmetics / Effects (Premium only, rarer)
-    else if (level % 5 === 0) {
-      const effects = ['glow', 'fire', 'ice', 'sparkle', 'neon'];
-      const effect = effects[Math.floor(Math.random() * effects.length)];
+    // Extra avatars at mid-points (5, 15, 25, 35, 45, 55, 65, 75, 85, 95)
+    else if (level % 10 === 5) {
+      const avatarIndex = Math.floor(level / 10) + 10; // Start from index 10
       premiumReward = {
-        type: 'effect',
-        name: `${effect.charAt(0).toUpperCase() + effect.slice(1)} Effect`,
-        desc: 'Visual Avatar Effect',
-        value: `effect_${effect}`,
-        icon: 'magic_wand'
+        type: 'avatar',
+        name: `Agent #${level}`,
+        desc: 'Exclusive Agent Avatar',
+        value: `avatar_${level}`,
+        preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent${level}`,
+        icon: 'avatar_epic',
+        rarity: 'epic'
       };
     }
-    // 3. Special Items (Boosters, Mystery Boxes) (Randomly distributed)
+    // 2. Cosmetics / Effects (Premium only) - EVERY 3 LEVELS (levels 3,6,9,12,15...)
+    else if (level % 3 === 0) {
+      const allEffects = [
+        // Original 5
+        { id: 'glow', name: 'Glow', desc: 'Pulsing magical border' },
+        { id: 'fire', name: 'Fire', desc: 'Rotating fire gradient' },
+        { id: 'ice', name: 'Ice', desc: 'Shimmering icy border' },
+        { id: 'neon', name: 'Neon', desc: 'Flickering neon effect' },
+        { id: 'sparkle', name: 'Sparkle', desc: 'Gold sparkle border' },
+        // Elemental
+        { id: 'flame_burst', name: 'Flame Burst', desc: 'Animated flames' },
+        { id: 'frost_aura', name: 'Frost Aura', desc: 'Icy particles' },
+        { id: 'lightning_arc', name: 'Lightning', desc: 'Electric sparks' },
+        { id: 'water_ripple', name: 'Water Ripple', desc: 'Flowing water' },
+        // Cosmic
+        { id: 'galaxy_swirl', name: 'Galaxy Swirl', desc: 'Rotating galaxy' },
+        { id: 'star_field', name: 'Star Field', desc: 'Twinkling stars' },
+        { id: 'nebula_glow', name: 'Nebula', desc: 'Colorful nebula' },
+        { id: 'void_edge', name: 'Void Edge', desc: 'Dark matter' },
+        // Special
+        { id: 'rainbow_pulse', name: 'Rainbow', desc: 'Shifting rainbow' },
+        { id: 'gold_luxury', name: 'Gold Luxury', desc: 'Ornate gold' },
+        { id: 'diamond_shine', name: 'Diamond', desc: 'Crystal shine' },
+        { id: 'shadow_flame', name: 'Shadow Flame', desc: 'Dark fire' },
+        { id: 'aurora_wave', name: 'Aurora', desc: 'Northern lights' },
+        { id: 'pixel_glitch', name: 'Pixel Glitch', desc: 'Retro pixels' },
+        { id: 'holo_shimmer', name: 'Holographic', desc: 'Holo shine' },
+      ];
+
+      // Distribute effects predictably: cycle through all effects
+      const effectIndex = Math.floor((level / 3) - 1) % allEffects.length;
+      const effect = allEffects[effectIndex];
+
+      premiumReward = {
+        type: 'effect',
+        name: `${effect.name} Frame`,
+        desc: effect.desc,
+        value: `effect_${effect.id}`,
+        icon: 'magic_wand',
+        rarity: effectIndex < 5 ? 'rare' : effectIndex < 13 ? 'epic' : 'legendary'
+      };
+    }
+    // 3. XP Boosters - Every 4 levels (not divisible by 3 or 5)
     else if (level % 4 === 0) {
       premiumReward = {
         type: 'booster',
@@ -993,34 +1036,14 @@ export const generateSeasonRewards = (season: Season) => {
         rarity: 'rare'
       };
     }
-    else if (level % 3 === 0) {
-      premiumReward = {
-        type: 'mystery',
-        name: 'Mystery Box',
-        desc: 'Contains random loot',
-        value: 'box_common',
-        icon: 'mystery_box', // Placeholder name for asset
-        rarity: 'rare'
-      };
-    }
-    // 4. Filler (Coins, Stickers)
+    // 4. Filler (Coins) - All remaining levels
     else {
-      if (Math.random() > 0.5) {
-        premiumReward = {
-          type: 'coins',
-          amount: 250 * (Math.floor(level / 20) + 1), // Scales with level
-          name: 'Premium Coins',
-          icon: 'coin_pile_huge'
-        };
-      } else {
-        premiumReward = {
-          type: 'sticker',
-          name: `Sticker #${level}`,
-          desc: 'Collectible Sticker',
-          value: `sticker_${level}`,
-          icon: 'sticker_pack'
-        };
-      }
+      premiumReward = {
+        type: 'coins',
+        amount: 250 * (Math.floor(level / 20) + 1), // Scales with level
+        name: 'Premium Coins',
+        icon: 'coin_pile_huge'
+      };
     }
 
     return { level, free: freeReward, premium: premiumReward };
