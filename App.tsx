@@ -2147,24 +2147,19 @@ export default function App() {
                   <span className="text-red-500 font-bold">✗</span>
                   <span>Season Pass Level & XP</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span><strong className="text-yellow-400">Gekaufte Premium-Pässe</strong></span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span><strong className="text-yellow-400">Gekaufte Coin-Pakete</strong></span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold">✗</span>
-                  <span>Alle freigespielten Avatare</span>
-                </li>
               </ul>
 
               <div className="bg-red-950/50 border border-red-500/30 rounded-lg p-3 mt-4">
-                <p className="text-red-400 font-bold text-xs">
-                  ⚠️ Diese Aktion kann NICHT rückgängig gemacht werden!
+                <p className="text-red-400 font-bold text-xs mb-2">
+                  ⚠️ Zur Bestätigung bitte "DELETE" eingeben:
                 </p>
+                <input 
+                  type="text" 
+                  value={deleteInput}
+                  onChange={(e) => setDeleteInput(e.target.value)}
+                  placeholder="DELETE"
+                  className="w-full bg-black/50 border border-red-500/50 rounded p-2 text-white font-bold text-center focus:outline-none focus:border-red-500"
+                />
               </div>
             </div>
           </div>
@@ -2172,14 +2167,15 @@ export default function App() {
           <div className="w-full space-y-3">
             <button
               onClick={confirmDelete}
-              className="w-full py-4 rounded-xl font-black text-sm uppercase bg-red-600 hover:bg-red-700 text-white transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-red-500/50"
+              disabled={deleteInput !== 'DELETE'}
+              className="w-full py-4 rounded-xl font-black text-sm uppercase bg-red-600 hover:bg-red-700 text-white transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-red-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Skull size={18} />
               JA, ALLES LÖSCHEN
             </button>
 
             <button
-              onClick={() => setShowDeleteConfirm(false)}
+              onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }}
               className="w-full py-4 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
             >
               Abbrechen
