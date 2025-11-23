@@ -1284,7 +1284,7 @@ export default function App() {
       const { ref, get } = await import('firebase/database');
       const normalizedNew = normalizeUsername(editUsername);
 
-      const userRef = ref(database, `users / ${normalizedNew} `);
+      const userRef = ref(database, `users/${normalizedNew}`);
       const snapshot = await get(userRef);
 
       if (snapshot.exists() && normalizedNew !== normalizeUsername(cloudUsername || '')) {
@@ -1411,8 +1411,8 @@ export default function App() {
       disabled={locked}
       onClick={() => handleModeSelect(mode)}
       className={`
-        relative p - 6 md: p - 8 rounded - 3xl text - left overflow - hidden transition - all duration - 300 hover: scale - [1.03] active: scale - 95
-        ${color} h - 36 md: h - 48 flex flex - col justify - between shadow - xl group animate - scale -in
+        relative p-6 md:p-8 rounded-3xl text-left overflow-hidden transition-all duration-300 hover:scale-[1.03] active:scale-95
+        ${color} h-36 md:h-48 flex flex-col justify-between shadow-xl group animate-scale-in
     ${locked ? 'opacity-60 grayscale cursor-not-allowed' : ''}
   `}
       style={{ animationDelay: `${delay} ms` }}
@@ -1583,7 +1583,7 @@ export default function App() {
       {/* Header Section */}
       <div className="flex items-center justify-between w-full px-4 py-4 mb-6 relative z-10">
         <button className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity text-left" onClick={openProfile}>
-          <div className={`w - 14 h - 14 rounded - full border - 2 border - white / 20 overflow - hidden relative shadow - lg ${getAvatarEffect(user.activeFrame)} `}>
+          <div className={`w-14 h-14 rounded-full border-2 border-white/20 overflow-hidden relative shadow-lg ${getAvatarEffect(user.activeFrame)} `}>
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full bg-gray-800" />
           </div >
           <div className="flex flex-col">

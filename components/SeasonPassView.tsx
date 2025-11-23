@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem } from 'lucide-react';
 import { UserState, SeasonReward } from '../types';
-import { SEASON_REWARDS } from '../constants';
+import { SEASON_REWARDS, getCurrentSeason } from '../constants';
 import { audio } from '../utils/audio';
 
 interface Props {
@@ -34,6 +34,9 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
         return "ring-2 ring-gray-500";
     };
 
+    const currentSeason = getCurrentSeason();
+    const formatDate = (timestamp: number) => new Date(timestamp).toLocaleDateString('de-DE');
+
     return (
         <div className="h-full flex flex-col bg-[#0b1120] relative overflow-hidden animate-fade-in">
             {/* Dynamic Background */}
@@ -62,7 +65,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                     <div className="flex items-center gap-2 text-[10px] text-gray-500 mt-1">
                         <span>Gesamt XP: {user.xp}</span>
                         <span>•</span>
-                        <span>01.01.2025 - 31.03.2025</span>
+                        <span>{formatDate(currentSeason.startDate)} - {formatDate(currentSeason.endDate)}</span>
                     </div>
                 </div>
                 <div className="w-10"></div>
