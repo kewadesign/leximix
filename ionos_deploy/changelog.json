@@ -1,0 +1,29 @@
+[
+  {
+    "version": "2.3.1",
+    "date": "24.11.2025",
+    "changes": [
+      "🔒 Sicherheitsupdate: Update-Mechanismus verbessert",
+      "📱 Performance Optimierungen für Android"
+    ]
+  },
+  {
+    "version": "2.3.0",
+    "date": "24.11.2025",
+    "changes": [
+      "🔥 Update-System: Wir stellen sicher, dass du immer die beste Version spielst!",
+      "🎨 UI Verbesserungen: Optimiertes Design für Mobile",
+      "🐞 Bugfixes: Stabilere Verbindung und Performance",
+      "⚡️ Neue Firebase Regeln für faire Spiele"
+    ]
+  },
+  {
+    "version": "2.2.0",
+    "date": "10.11.2025",
+    "changes": [
+      "🚀 Season 2: Neon Uprising ist da!",
+      "🏆 Neuer Challenge Mode",
+      "🛍️ Shop Überarbeitung"
+    ]
+  }
+]

@@ -9,9 +9,10 @@ export const APP_VERSION = '2.3.1';
 
 interface Props {
   isOnline: boolean;
+  t: any;
 }
 
-export const VersionManager: React.FC<Props> = ({ isOnline }) => {
+export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
   const [serverVersion, setServerVersion] = useState('');
   const [minVersion, setMinVersion] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
@@ -106,7 +107,9 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
         // Direct download link for APK (external browser)
         window.open(downloadUrl, '_system');
     } else {
-        if (downloadUrl.startsWith('http')) {
+        if (downloadUrl.endsWith('.apk')) {
+             window.location.href = downloadUrl;
+        } else if (downloadUrl.startsWith('http')) {
              window.location.href = downloadUrl;
         } else {
              // For web updates (reload)
@@ -125,20 +128,20 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
           </div>
           
           <div>
-            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-wider">Update Erforderlich</h2>
+            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-wider">{t.UPDATES.REQUIRED_TITLE}</h2>
             <p className="text-gray-300 leading-relaxed">
-              Deine Version von LexiMix ist veraltet. Du musst aktualisieren, um weiterzuspielen.
+              {t.UPDATES.REQUIRED_DESC}
             </p>
           </div>
 
           <div className="flex items-center justify-center gap-4 text-xs text-gray-400 bg-black/40 p-4 rounded-xl border border-white/5">
             <div className="flex flex-col items-center">
-              <span className="text-gray-500 uppercase text-[10px] tracking-widest">Installiert</span>
+              <span className="text-gray-500 uppercase text-[10px] tracking-widest">{t.UPDATES.INSTALLED}</span>
               <span className="font-mono text-red-400 text-lg">v{APP_VERSION}</span>
             </div>
             <ArrowLeft size={20} className="rotate-180 text-orange-500" />
             <div className="flex flex-col items-center">
-              <span className="text-gray-500 uppercase text-[10px] tracking-widest">Benötigt</span>
+              <span className="text-gray-500 uppercase text-[10px] tracking-widest">{t.UPDATES.REQUIRED}</span>
               <span className="font-mono text-green-400 font-bold text-lg">v{minVersion}</span>
             </div>
           </div>
@@ -149,7 +152,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
               className="w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
             >
               <Download size={20} />
-              Jetzt Aktualisieren
+              {t.UPDATES.UPDATE_NOW}
             </button>
 
             <button
@@ -159,11 +162,11 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
               }}
               className="text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors"
             >
-              Was ist neu?
+              {t.UPDATES.WHATS_NEW}
             </button>
           </div>
           
-          <p className="text-[10px] text-gray-600 uppercase tracking-widest">Sicherheits-Update</p>
+          <p className="text-[10px] text-gray-600 uppercase tracking-widest">{t.UPDATES.SECURITY}</p>
         </div>
         
         {/* Show Changelog on top if requested */}
@@ -175,7 +178,8 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
                         setShowChangelog(false);
                         setViewingChangelogFromForce(false);
                     }} 
-                    entries={changelogData} 
+                    entries={changelogData}
+                    t={t}
                 />
             </div>
         )}
@@ -189,7 +193,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
       <Modal 
         isOpen={showOptionalUpdate} 
         onClose={() => setShowOptionalUpdate(false)} 
-        title="Update Verfügbar"
+        title={t.UPDATES.AVAILABLE_TITLE}
       >
         <div className="text-center space-y-6">
           <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-pulse">
@@ -197,11 +201,11 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-xl font-black text-white">Neue Version v{serverVersion}</h3>
+            <h3 className="text-xl font-black text-white">{t.UPDATES.NEW_VERSION}{serverVersion}</h3>
             <p className="text-sm text-gray-300 leading-relaxed">
               {isCapacitor
-                ? 'Eine neue APK-Version ist verfügbar. Lade sie herunter für die neuesten Features!'
-                : 'LexiMix wurde aktualisiert. Lade die App neu.'}
+                ? t.UPDATES.AVAILABLE_DESC_APP
+                : t.UPDATES.AVAILABLE_DESC_WEB}
             </p>
           </div>
 
@@ -210,7 +214,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
              className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg flex items-center justify-center gap-2"
           >
              <Download size={20} />
-             {isCapacitor ? 'Herunterladen' : 'Neu laden'}
+             {isCapacitor ? t.UPDATES.DOWNLOAD : t.UPDATES.RELOAD}
           </button>
         </div>
       </Modal>
@@ -219,7 +223,8 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
       <ChangelogModal 
         isOpen={showChangelog} 
         onClose={() => setShowChangelog(false)} 
-        entries={changelogData} 
+        entries={changelogData}
+        t={t}
       />
     </>
   );

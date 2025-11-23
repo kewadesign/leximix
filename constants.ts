@@ -225,6 +225,23 @@ export const TRANSLATIONS = {
       EQUIPPED: "EQUIPPED",
       INSUFFICIENT: "NOT ENOUGH COINS",
       SUCCESS: "PURCHASED"
+    },
+    UPDATES: {
+      REQUIRED_TITLE: "UPDATE REQUIRED",
+      REQUIRED_DESC: "Your version of LexiMix is outdated. You must update to continue playing.",
+      INSTALLED: "INSTALLED",
+      REQUIRED: "REQUIRED",
+      UPDATE_NOW: "UPDATE NOW",
+      WHATS_NEW: "What's new?",
+      SECURITY: "SECURITY UPDATE",
+      AVAILABLE_TITLE: "UPDATE AVAILABLE",
+      NEW_VERSION: "New Version v",
+      AVAILABLE_DESC_APP: "A new APK version is available. Download it for the latest features!",
+      AVAILABLE_DESC_WEB: "LexiMix has been updated. Reload the app.",
+      DOWNLOAD: "DOWNLOAD",
+      RELOAD: "RELOAD",
+      COOL: "AWESOME!",
+      NOTES: "UPDATE NOTES"
     }
   },
   [Language.DE]: {
@@ -332,6 +349,23 @@ export const TRANSLATIONS = {
       EQUIPPED: "AUSGERÜSTET",
       INSUFFICIENT: "NICHT GENUG MÜNZEN",
       SUCCESS: "GEKAUFT"
+    },
+    UPDATES: {
+      REQUIRED_TITLE: "Update Erforderlich",
+      REQUIRED_DESC: "Deine Version von LexiMix ist veraltet. Du musst aktualisieren, um weiterzuspielen.",
+      INSTALLED: "INSTALLIERT",
+      REQUIRED: "BENÖTIGT",
+      UPDATE_NOW: "JETZT AKTUALISIEREN",
+      WHATS_NEW: "Was ist neu?",
+      SECURITY: "SICHERHEITS-UPDATE",
+      AVAILABLE_TITLE: "Update Verfügbar",
+      NEW_VERSION: "Neue Version v",
+      AVAILABLE_DESC_APP: "Eine neue APK-Version ist verfügbar. Lade sie herunter für die neuesten Features!",
+      AVAILABLE_DESC_WEB: "LexiMix wurde aktualisiert. Lade die App neu.",
+      DOWNLOAD: "HERUNTERLADEN",
+      RELOAD: "NEU LADEN",
+      COOL: "COOLE SACHE!",
+      NOTES: "UPDATE NOTES"
     }
   }
 };

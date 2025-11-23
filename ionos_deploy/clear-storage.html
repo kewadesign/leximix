@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clear Storage</title>
+</head>
+<body>
+  <h1>Clearing Storage...</h1>
+  <script>
+    localStorage.removeItem('leximix_user');
+    localStorage.removeItem('leximix_cloud_user');
+    console.log('Cleared localStorage');
+    document.body.innerHTML += '<p>Storage cleared! You can close this tab.</p>';
+  </script>
+</body>
+</html>

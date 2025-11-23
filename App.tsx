@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 // KW1998 - Core Application Logic
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
-import { VersionManager } from './components/VersionManager';
+import { VersionManager, APP_VERSION } from './components/VersionManager';
 import { SeasonPass } from './components/SeasonPass';
 import { SeasonPassView } from './components/SeasonPassView';
 import { PayPalButton } from './components/PayPalButton';
@@ -2086,7 +2086,7 @@ export default function App() {
       {/* Fade Transition Removed */}
       
       {/* Version Manager - Handles Updates & Changelog */}
-      <VersionManager isOnline={isOnline} />
+      <VersionManager isOnline={isOnline} t={t} />
 
       {/* Offline Blocking Overlay */}
       {!isOnline && (
@@ -2920,6 +2920,13 @@ export default function App() {
           </a>
         </div>
       )}
+
+      {/* Version Display (Bottom Left) */}
+      <div className="fixed bottom-4 left-4 z-[50] pointer-events-none">
+        <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest font-mono">
+          v{APP_VERSION}
+        </div>
+      </div>
 
     </div>
   );
