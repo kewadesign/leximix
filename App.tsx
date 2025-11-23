@@ -8,8 +8,12 @@ import { PayPalButton } from './components/PayPalButton';
 import { AuthModal } from './components/AuthModal';
 import { PremiumStatus } from './components/PremiumStatus';
 import { ShopView } from './components/ShopView';
+import { SudokuGrid } from './components/SudokuGrid';
+import { SudokuControls } from './components/SudokuControls';
+import { MusicPlayer } from './components/MusicPlayer';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
+import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
 
 import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus } from 'lucide-react';
@@ -108,53 +112,6 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
     </div>
   );
 };
-
-const SudokuBoard = ({ puzzle, original, onCellClick, selectedCell }: any) => {
-  return (
-    <div className="w-full max-w-[360px] md:max-w-[550px] mx-auto aspect-square p-2 relative animate-scale-in transition-all duration-500">
-      {/* Outer Glow & Border */}
-      <div className="absolute inset-0 bg-lexi-fuchsia/20 rounded-2xl blur-2xl animate-pulse-slow"></div>
-      <div className="absolute inset-0 border-4 border-lexi-purple rounded-2xl bg-lexi-surface shadow-2xl"></div>
-
-      {/* The Grid */}
-      <div className="relative w-full h-full grid grid-cols-9 border-4 border-gray-800 bg-gray-900 rounded-xl overflow-hidden">
-        {puzzle.map((row: string[], r: number) =>
-          row.map((cell: string | null, c: number) => {
-            const isFixed = original[r][c] !== null;
-            const isSelected = selectedCell?.r === r && selectedCell?.c === c;
-
-            // Determine borders for 3x3 subgrids
-            let borderClasses = "border border-gray-800/50";
-            // Thick vertical borders
-            if ((c + 1) % 3 === 0 && c !== 8) borderClasses += " border-r-4 border-r-lexi-fuchsia/50";
-            // Thick horizontal borders
-            if ((r + 1) % 3 === 0 && r !== 8) borderClasses += " border-b-4 border-b-lexi-fuchsia/50";
-
-            return (
-              <div
-                key={`${r}-${c}`}
-                onClick={() => onCellClick(r, c)}
-                className={`
-                  ${borderClasses}
-                  flex items-center justify-center
-                  text-lg sm:text-2xl md:text-4xl font-mono font-bold cursor-pointer select-none
-                  transition-all duration-100
-                  ${isSelected ? 'bg-lexi-fuchsia text-white z-10 scale-110 shadow-[0_0_20px_rgba(217,70,239,0.8)] rounded-md' : ''}
-                  ${!isSelected && isFixed ? 'text-lexi-text-muted bg-lexi-bg' : ''}
-                  ${!isSelected && !isFixed ? 'text-lexi-cyan bg-lexi-surface-highlight hover:bg-lexi-surface' : ''}
-                  ${!isSelected && !isFixed && cell ? 'text-cyan-300' : ''}
-                `}
-              >
-                {cell || ''}
-              </div>
-            );
-          })
-        )}
-      </div>
-    </div>
-  );
-};
-
 
 // --- Main App Component ---
 
@@ -1094,7 +1051,7 @@ export default function App() {
         }
 
         // Mark level as completed
-        const levelKey = `${mode}_${tier}_${levelId} `;
+        const levelKey = `${mode}_${tier}_${levelId}`;
         console.log('[handleWin] Marking level complete:', levelKey);
         const newCompleted = { ...prev.completedLevels, [levelKey]: true };
 
@@ -1913,6 +1870,10 @@ export default function App() {
     else if (gameState.isMath) infoText = "Solve the math expression.";
     else infoText = `${gameState.targetWord.length} ${t.GAME.INFO_BAR}`;
 
+    const validationStatus = (isSudoku && gameState.data?.sudokuGrid) 
+      ? validateSudoku(gameState.currentGrid, gameState.data.sudokuGrid) 
+      : undefined;
+
     return (
       <div className="flex flex-col h-full max-h-screen relative z-10">
         {/* Header - Completely Redesigned for Space and Boldness */}
@@ -1950,16 +1911,33 @@ export default function App() {
         <div className="flex-1 w-full relative flex flex-col justify-center py-8 overflow-hidden">
           <div className="w-full max-w-3xl mx-auto px-4 animate-float-slow">
             {isSudoku ? (
-              <div className="transform scale-95 md:scale-100 transition-transform">
-                <SudokuBoard
-                  puzzle={gameState.currentGrid}
+              <div className="flex flex-col items-center gap-4 transform scale-95 md:scale-100 transition-transform">
+                <SudokuGrid
+                  board={gameState.currentGrid}
                   original={gameState.data.sudokuPuzzle}
                   selectedCell={gameState.selectedCell}
-                  onCellClick={(r: number, c: number) => {
+                  validation={validationStatus}
+                  onCellSelect={(r: number, c: number) => {
                     setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }));
-                    // Ensure keyboard opens on mobile
+                    // Focus input to ensure mobile keyboard opens
                     if (hiddenInputRef.current) {
-                      hiddenInputRef.current.focus();
+                        hiddenInputRef.current.focus();
+                    }
+                  }}
+                />
+                <SudokuControls
+                  onInput={(char) => handleSudokuInput(char)}
+                  onDelete={() => {
+                    const currentGameState = gameStateRef.current;
+                    if (currentGameState?.selectedCell) {
+                      const { r, c } = currentGameState.selectedCell;
+                      // Only delete if not fixed
+                      if (currentGameState.data.sudokuPuzzle[r][c] === null) {
+                        const newGrid = [...currentGameState.currentGrid];
+                        newGrid[r][c] = null;
+                        setGameState((prev: any) => ({ ...prev, currentGrid: newGrid }));
+                        audio.playClick();
+                      }
                     }
                   }}
                 />
@@ -1996,7 +1974,7 @@ export default function App() {
         <input
           ref={hiddenInputRef}
           type="text"
-          className="opacity-0 absolute top-0 left-0 h-full w-full z-0 cursor-default"
+          className={`opacity-0 absolute top-0 left-0 z-0 ${isSudoku ? 'w-px h-px pointer-events-none' : 'h-full w-full cursor-default'}`}
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="characters"
@@ -2798,3 +2776,4 @@ export default function App() {
   );
 }
 // (c) KW 1998
+ 1998
