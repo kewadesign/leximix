@@ -14,7 +14,8 @@ interface Props {
 export const VersionManager: React.FC<Props> = ({ isOnline }) => {
   const [serverVersion, setServerVersion] = useState('');
   const [minVersion, setMinVersion] = useState('');
-  
+  const [downloadUrl, setDownloadUrl] = useState('');
+
   const [showForceUpdate, setShowForceUpdate] = useState(false);
   const [showOptionalUpdate, setShowOptionalUpdate] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
@@ -38,9 +39,13 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
         
         const latest = isCapacitor ? (data.latest_apk_version || data.latest_version) : data.latest_version;
         const minimum = data.min_version || '0.0.0';
+        
+        // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
+        const url = data.download_url || (isCapacitor ? 'https://leximix-aecac.web.app/app-release.apk' : '/app-release.apk');
 
         setServerVersion(latest);
         setMinVersion(minimum);
+        setDownloadUrl(url);
 
         checkVersion(latest, minimum);
       }
@@ -89,7 +94,6 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
     // We show changelog if the last seen version < current version
     const lastSeen = localStorage.getItem('last_seen_version');
     if (!lastSeen || compare(current, lastSeen) > 0) {
-       // Only show changelog if we are not showing update modals
        if (compare(current, latest) >= 0) {
            setShowChangelog(true);
            localStorage.setItem('last_seen_version', current);
@@ -99,10 +103,15 @@ export const VersionManager: React.FC<Props> = ({ isOnline }) => {
 
   const handleDownload = () => {
     if (isCapacitor) {
-        // Direct download link for APK
-        window.open('https://leximix-aecac.web.app/app-release.apk', '_system');
+        // Direct download link for APK (external browser)
+        window.open(downloadUrl, '_system');
     } else {
-        window.location.reload();
+        if (downloadUrl.startsWith('http')) {
+             window.location.href = downloadUrl;
+        } else {
+             // For web updates (reload)
+             window.location.reload();
+        }
     }
   };
 
