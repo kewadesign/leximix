@@ -183,11 +183,9 @@ export default function App() {
     try {
       const saved = localStorage.getItem('leximix_user_v2');
 
-      // Initial Unlock State: Only Level 1 of each Tier 1 is unlocked
+      // Initial Unlock State: Start with NO levels completed
+      // Level 1 is always unlocked by default in the render logic
       const initialLevelsUnlocked: Record<string, boolean> = {};
-      Object.values(GameMode).forEach(mode => {
-        initialLevelsUnlocked[`${mode}_${Tier.BEGINNER}_1`] = true;
-      });
 
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -227,7 +225,7 @@ export default function App() {
         coins: 0, // Start with 0 coins
         xp: 0, // Start with 0 XP
         level: 1, // Start at Level 1
-        completedLevels: initialLevelsUnlocked, // Only level 1 unlocked
+        completedLevels: initialLevelsUnlocked, // Start with NO levels completed
         theme: 'dark',
         inventory: [],
         ownedAvatars: [AVATARS[0]],
@@ -245,9 +243,6 @@ export default function App() {
 
     // Fallback default state
     const fallbackLevelsUnlocked: Record<string, boolean> = {};
-    Object.values(GameMode).forEach(mode => {
-      fallbackLevelsUnlocked[`${mode}_${Tier.BEGINNER}_1`] = true;
-    });
 
     return {
       name: 'Player',
@@ -853,6 +848,7 @@ export default function App() {
         name: normalizedUser // Enforce name consistency
       }));
       console.log('[Cloud] Loaded save from cloud');
+      setView('HOME');
     } else {
       // New user - set defaults but require onboarding
       const initialLevelsUnlocked: Record<string, boolean> = {};
@@ -875,14 +871,14 @@ export default function App() {
         language: Language.DE, // Default, will be chosen in onboarding
         theme: user.theme || 'dark'
       }));
+      
+      // Pre-fill onboarding name with username
+      setTempUser(prev => ({ ...prev, name: normalizedUser }));
+      
       console.log('[Cloud] New user - redirecting to onboarding');
       setView('ONBOARDING');
       setOnboardingStep(0); // Start at Language
-      return; // Exit early so we don't go to HOME
     }
-
-    // Existing user - go to HOME
-    setView('HOME');
   };
 
   const handleCloudLogout = () => {
@@ -895,6 +891,11 @@ export default function App() {
     setLastCloudSync(null);
 
     // Reset to default state
+    const initialLevelsUnlocked: Record<string, boolean> = {};
+    Object.values(GameMode).forEach(mode => {
+      initialLevelsUnlocked[`${mode}_${Tier.BEGINNER}_1`] = true;
+    });
+
     setUser({
       name: 'Player',
       age: 0,
@@ -904,7 +905,7 @@ export default function App() {
       level: 1,
       coins: 0,
       isPremium: false,
-      completedLevels: {},
+      completedLevels: initialLevelsUnlocked,
       playedWords: [],
       language: Language.DE,
       theme: 'dark'
