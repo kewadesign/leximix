@@ -1552,7 +1552,7 @@ export default function App() {
           <div className="flex flex-col">
             <span className="text-xs font-bold text-lexi-text-muted uppercase tracking-wider">{t.HOME.PLAYER}</span>
             <span className={`text-xl font-black ${user.isPremium ? 'text-yellow-400 drop-shadow-md' : 'text-lexi-text'}`}>
-              {user.name}
+              {cloudUsername || user.name}
             </span>
           </div>
         </button >
