@@ -371,6 +371,8 @@ export default function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [serverVersion, setServerVersion] = useState('');
+  const [apkVersion, setApkVersion] = useState('');
+  const [showNewBadge, setShowNewBadge] = useState(false);
 
   // Online/Offline monitoring
   useEffect(() => {
@@ -409,6 +411,20 @@ export default function App() {
 
         const data = await response.json();
         const currentVersion = '2.1.0'; // From package.json
+
+        // Set APK version for display
+        if (data.apk) {
+          setApkVersion(data.apk.version);
+
+          // Check if this version is new
+          const lastSeenVersion = localStorage.getItem('lastSeenApkVersion');
+          if (lastSeenVersion && lastSeenVersion !== data.apk.version) {
+            setShowNewBadge(true);
+          } else if (!lastSeenVersion) {
+            // First time, mark as seen
+            localStorage.setItem('lastSeenApkVersion', data.apk.version);
+          }
+        }
 
         // Check if running in Capacitor (Android)
         const isCapacitor = (window as any).Capacitor !== undefined;
@@ -2996,13 +3012,37 @@ export default function App() {
       </Modal>
 
       {/* Cloud Auth Modal */}
-      < AuthModal
+      <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={handleCloudLogin}
       />
 
-    </div >
+      {/* APK Download Footer (only show on web, not in Capacitor) */}
+      {(window as any).Capacitor === undefined && apkVersion && (
+        <div className="fixed bottom-4 right-4 z-[9998]">
+          <a
+            href="/app-debug.apk"
+            download
+            onClick={() => {
+              // Mark version as seen when clicked
+              localStorage.setItem('lastSeenApkVersion', apkVersion);
+              setShowNewBadge(false);
+            }}
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 text-white px-4 py-2 rounded-full shadow-lg transition-all text-xs font-bold uppercase"
+          >
+            <Database size={14} />
+            <span>Android APK v{apkVersion}</span>
+            {showNewBadge && (
+              <span className="bg-green-500 text-black px-2 py-0.5 rounded-full text-[10px] font-black animate-pulse">
+                NEU
+              </span>
+            )}
+          </a>
+        </div>
+      )}
+
+    </div>
   );
 }
 // (c) KW 1998
