@@ -1,65 +1,35 @@
-# Rewards Template
+# Season Pass Rewards Template
 
-Diese Datei dient als Vorlage, um neue Belohnungen für den Season Pass zu erstellen.
-Die Belohnungen werden in der Datei `constants.ts` definiert, spezifisch in der `generateSeasonRewards` Funktion oder im `SEASON_REWARDS` Array.
+Use this file to define new rewards for the Season Pass.
 
-## Struktur einer Belohnung
+## Instructions
+1.  Copy the block below for each new reward.
+2.  Fill in the details.
+3.  I will use this information to update `constants.ts` and `SEASON_REWARDS`.
 
-Eine Belohnung besteht aus zwei Teilen: `free` (kostenlos für alle) und `premium` (nur für Premium-Nutzer).
+## Reward Block
 
-```typescript
-{
-  level: 1, // Das Level, auf dem die Belohnung freigeschaltet wird
-  free: {
-    type: 'coins', // Art der Belohnung: 'coins', 'sticker', 'avatar', 'cosmetic', 'mystery', 'booster'
-    amount: 100, // Menge (optional, z.B. bei Coins)
-    name: 'Münzen', // Name der Belohnung
-    icon: 'coin_pile' // Icon Name (intern verwendet)
-  },
-  premium: {
-    type: 'avatar',
-    value: 'avatar_id', // ID des Avatars oder Skins
-    name: 'Super Avatar',
-    preview: 'https://api.dicebear.com/...' // Vorschau-URL für Bilder
-  }
-}
+```markdown
+### Level [NUMBER]
+**Type**: [Coins | Avatar | Frame | Sticker | Booster | Mystery]
+**Value/ID**: [Amount for coins, ID for others e.g., 'avatar_robot_1']
+**Tier**: [Free | Premium]
+**Description**: [Short description of what this is]
+**Insertion Point**: `SEASON_REWARDS` array in `constants.ts`
 ```
 
-## Wo einfügen?
+## Example
 
-Öffne `constants.ts` und suche nach `generateSeasonRewards`. Dort kannst du die Logik anpassen oder feste Belohnungen definieren.
+### Level 5
+**Type**: Coins
+**Value/ID**: 500
+**Tier**: Free
+**Description**: Small coin pack for beginners.
+**Insertion Point**: `SEASON_REWARDS` array in `constants.ts`
 
-## Kopiervorlage
-
-Hier kannst du deine Belohnungen eintragen. Kopiere diesen Block und füge ihn in `constants.ts` ein oder ersetze die Generierungslogik.
-
-```typescript
-// Beispiel für Level 1-100
-const MY_CUSTOM_REWARDS = [
-  {
-    level: 1,
-    free: { type: 'coins', amount: 500, name: 'Starter Bonus' },
-    premium: { type: 'avatar', value: 'neon_hero_1', name: 'Neon Hero', preview: '...' }
-  },
-  {
-    level: 2,
-    free: { type: 'coins', amount: 100, name: 'Münzen' },
-    premium: { type: 'sticker', value: 'sticker_cool', name: 'Cool Sticker' }
-  },
-  // ... weitere Level hier einfügen
-];
-```
-
-## Belohnungstypen
-
-- **coins**: Währung im Spiel. Benötigt `amount`.
-- **avatar**: Neuer Charakter. Benötigt `value` (ID) und `preview` (Bild-URL).
-- **sticker**: Sammelsticker. Benötigt `value` (ID).
-- **cosmetic**: Rahmen oder Effekte. Benötigt `value` (ID).
-- **booster**: Hilfen im Spiel (z.B. Hinweis-Booster).
-- **mystery**: Zufällige Belohnung (Mystery Box).
-
-## Hinweise
-
-- Achte darauf, dass `value` IDs eindeutig sind, damit Items korrekt gespeichert werden.
-- Bilder sollten quadratisch sein und idealerweise als SVG oder PNG vorliegen.
+### Level 10
+**Type**: Avatar
+**Value/ID**: avatar_cyber_punk
+**Tier**: Premium
+**Description**: Exclusive Cyberpunk Avatar.
+**Insertion Point**: `SEASON_REWARDS` array in `constants.ts`

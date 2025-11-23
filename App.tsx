@@ -8,11 +8,12 @@ import { PayPalButton } from './components/PayPalButton';
 import { SphereBuddy3D } from './components/SphereBuddy3D';
 import { AuthModal } from './components/AuthModal';
 import { PremiumStatus } from './components/PremiumStatus';
+import { ShopView } from './components/ShopView';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
 import { audio } from './utils/audio';
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus } from 'lucide-react';
 
 // --- Sub Components for Game Logic ---
 
@@ -169,7 +170,7 @@ export default function App() {
     if (newView === view) return;
     setView(newView);
   };
-  
+
   const handleNavigate = (target: ViewType) => {
     if (target === view) return;
     setView(target);
@@ -181,11 +182,25 @@ export default function App() {
 
   const [user, setUser] = useState<UserState>(() => {
     try {
-      const saved = localStorage.getItem('leximix_user');
+      const saved = localStorage.getItem('leximix_user_v2');
+
+      // UNLOCK ALL LEVELS FOR TESTING (As requested)
+      const allLevelsUnlocked: Record<string, boolean> = {};
+      Object.values(GameMode).forEach(mode => {
+        Object.values(Tier).forEach(tier => {
+          if (typeof tier === 'number') {
+            for (let i = 1; i <= 50; i++) {
+              allLevelsUnlocked[`${mode}_${tier}_${i}`] = true;
+            }
+          }
+        });
+      });
+
       if (saved) {
         const parsed = JSON.parse(saved);
         return {
           ...parsed,
+          completedLevels: { ...parsed.completedLevels, ...allLevelsUnlocked },
           theme: parsed.theme || 'dark',
           claimedSeasonRewards: parsed.claimedSeasonRewards || [],
           ownedFrames: parsed.ownedFrames || [],
@@ -193,6 +208,21 @@ export default function App() {
           ownedAvatars: parsed.ownedAvatars || [AVATARS[0]]
         };
       }
+
+      return {
+        name: 'Player',
+        age: 0,
+        language: Language.DE,
+        avatarId: 'Felix',
+        coins: 1000,
+        xp: 0,
+        level: 1,
+        completedLevels: allLevelsUnlocked,
+        theme: 'dark',
+        inventory: [],
+        ownedAvatars: ['Felix'],
+        isPremium: false
+      };
     } catch (error) {
       console.error('[LexiMix] localStorage error:', error);
       // Continue to default state
@@ -461,9 +491,9 @@ export default function App() {
     if (effectId.includes('ice')) return "shadow-[0_0_30px_rgba(6,182,212,0.8)] ring-4 ring-cyan-400/50 animate-pulse";
     if (effectId.includes('sparkle')) return "shadow-[0_0_30px_rgba(234,179,8,0.8)] ring-4 ring-yellow-300/50 animate-bounce-slow";
     if (effectId.includes('glow')) return "shadow-[0_0_40px_rgba(255,255,255,0.5)] animate-pulse-slow";
-    
+
     // Fallback for legacy frames
-    if (effectId.includes('frame_')) return "shadow-[0_0_20px_rgba(34,211,238,0.5)] ring-2 ring-cyan-400"; 
+    if (effectId.includes('frame_')) return "shadow-[0_0_20px_rgba(34,211,238,0.5)] ring-2 ring-cyan-400";
     return "";
   };
 
@@ -502,6 +532,14 @@ export default function App() {
       if (currentGameState?.status !== 'playing') return;
 
       const key = e.key.toUpperCase();
+
+      // Prevent double input: If typing in the hidden input, ignore keys that are handled by its onChange/onKeyDown
+      if (document.activeElement === hiddenInputRef.current) {
+        if (/^[A-Z0-9]$/.test(key) || key === 'BACKSPACE' || key === 'ENTER') {
+          return;
+        }
+      }
+
       const isSudoku = gameConfig.mode === GameMode.SUDOKU;
 
       // Sudoku Input
@@ -1040,16 +1078,33 @@ export default function App() {
       return;
     }
 
-    // Word Game Hint (Reveal next char in current row)
+    // Word Game Hint (Reveal next missing or incorrect char)
     if (gameState.status === 'playing') {
       const target = gameState.targetWord;
-      const currentLen = gameState.currentGuess.length;
+      let currentGuess = gameState.currentGuess;
 
-      if (currentLen < target.length) {
-        const nextChar = target[currentLen];
+      // Find first index where guess is missing or incorrect
+      let revealIndex = -1;
+      for (let i = 0; i < target.length; i++) {
+        if (!currentGuess[i] || currentGuess[i] !== target[i]) {
+          revealIndex = i;
+          break;
+        }
+      }
+
+      if (revealIndex !== -1) {
+        // Construct new guess with correct char at revealIndex
+        // We need to preserve existing correct chars if possible, but simplest is to just append if we are at the end,
+        // or replace if we are in the middle.
+        // Actually, the game input is usually sequential. If `currentGuess` is "AP", and we want to reveal index 2 (P), we make it "APP".
+        // If `currentGuess` is "AB" (wrong), and we want to reveal index 1 (P), we make it "AP".
+
+        const nextChar = target[revealIndex];
+        const newGuess = currentGuess.slice(0, revealIndex) + nextChar;
+
         setGameState((prev: any) => ({
           ...prev,
-          currentGuess: prev.currentGuess + nextChar,
+          currentGuess: newGuess,
           hintsUsed: (prev.hintsUsed || 0) + 1
         }));
       }
@@ -1426,166 +1481,6 @@ export default function App() {
     setShowPremiumInfo(false);
   };
 
-  const renderShop = () => {
-    const [currentBanner, setCurrentBanner] = useState(0);
-    const BANNERS = [
-      { title: "SEASON 2 IS LIVE", subtitle: "Unlock Cyberpunk Skins", color: "from-lexi-fuchsia to-blue-600", icon: <Zap size={64} className="text-white animate-pulse" /> },
-      { title: "NEW AVATARS", subtitle: "Check out the terminal", color: "from-green-500 to-teal-600", icon: <User size={64} className="text-white animate-bounce-slow" /> },
-      { title: "COIN SALE", subtitle: "Get rich quick", color: "from-yellow-400 to-orange-500", icon: <Coins size={64} className="text-white animate-spin-reverse" /> }
-    ];
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrentBanner(prev => (prev + 1) % BANNERS.length);
-      }, 5000);
-      return () => clearInterval(interval);
-    }, []);
-
-    // Safe access to banner with fallback
-    const activeBanner = BANNERS[currentBanner] || BANNERS[0];
-
-    return (
-      <div className="h-full flex flex-col animate-fade-in glass-panel max-w-4xl mx-auto w-full rounded-none md:rounded-3xl overflow-hidden">
-        {/* Shop Header */}
-        <div className="p-4 glass-panel border-b border-lexi-border flex items-center justify-between z-20 sticky top-0 rounded-none">
-          <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full glass-button">
-            <ArrowLeft size={20} className="text-lexi-text" />
-          </button>
-          <div className="flex items-center gap-2">
-            <ShoppingBag size={24} className="text-lexi-cyan" />
-            <h2 className="text-xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-blue-500 uppercase tracking-widest">{t.SHOP.TITLE}</h2>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
-              className="hidden md:flex items-center gap-1 bg-gray-800/50 px-3 py-1 rounded-full border border-white/10 hover:bg-white/10 transition-colors text-[10px] font-bold uppercase tracking-wider text-lexi-text hover:text-lexi-cyan"
-            >
-              <Sparkles size={12} /> Gutschein
-            </button>
-            <div className="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-white/10">
-              <Gem size={14} className="text-blue-400" />
-              <span className="text-sm font-bold text-lexi-text">{Math.max(0, user.coins)}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide">
-          {/* Featured Rotating Banner */}
-          <div className={`w-full h-40 rounded-3xl relative overflow-hidden shadow-2xl animate-scale-in transition-all duration-500 bg-gradient-to-r ${activeBanner.color}`}>
-             <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:250%_250%] animate-shimmer"></div>
-             <div className="absolute inset-0 flex items-center justify-between px-8">
-                <div className="z-10">
-                   <h3 className="text-3xl font-black italic text-white drop-shadow-lg mb-1 animate-slide-down">{activeBanner.title}</h3>
-                   <p className="text-white/80 font-bold tracking-widest uppercase text-xs">{activeBanner.subtitle}</p>
-                </div>
-                <div className="opacity-80 transform scale-110 transition-transform duration-1000">
-                   {activeBanner.icon}
-                </div>
-             </div>
-             {/* Dots Indicator */}
-             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                {BANNERS.map((_, i) => (
-                  <div key={i} className={`w-2 h-2 rounded-full transition-all ${i === currentBanner ? 'bg-white scale-125' : 'bg-white/40'}`}></div>
-                ))}
-             </div>
-          </div>
-
-          {/* Mobile Redeem Button */}
-          <div className="md:hidden w-full mb-4">
-            <button
-              onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
-              className="w-full py-3 rounded-xl bg-gray-800/50 border border-white/10 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-lexi-text hover:text-lexi-cyan hover:bg-white/5 transition-all"
-            >
-              <Sparkles size={14} /> Gutschein einlösen
-            </button>
-          </div>
-
-          {/* Avatar Section */}
-          <div>
-            <h3 className="text-sm font-bold text-lexi-text-muted uppercase tracking-widest mb-4 flex items-center gap-2"><User size={16} /> {t.SHOP.AVATAR_SECTION}</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {SHOP_ITEMS.filter(i => i.type === 'avatar').map((item, idx) => {
-                const isOwned = (user.ownedAvatars || []).includes(item.value as string);
-                const isEquipped = user.avatarId === item.value;
-
-                return (
-                  <div
-                    key={item.id}
-                    className={`glass-panel p-4 rounded-2xl flex flex-col items-center relative overflow-hidden group hover:border-lexi-fuchsia/50 transition-all animate-scale-in ${isEquipped ? 'border-lexi-fuchsia bg-lexi-fuchsia/10' : ''}`}
-                    style={{ animationDelay: `${idx * 50}ms` }}
-                  >
-                    <div className="w-20 h-20 bg-gray-800 rounded-full mb-3 overflow-hidden border-2 border-white/5 group-hover:scale-105 transition-transform">
-                      <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${item.value}`} alt={item.name} />
-                    </div>
-                    <span className="text-sm font-bold text-lexi-text mb-1 text-center leading-tight">{item.name}</span>
-
-                    <div className="mt-auto w-full">
-                      {isOwned ? (
-                        <button
-                          disabled={isEquipped}
-                          onClick={() => setUser({ ...user, avatarId: item.value as string })}
-                          className={`w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider ${isEquipped ? 'bg-lexi-fuchsia text-white cursor-default' : 'glass-button'}`}
-                        >
-                          {isEquipped ? t.SHOP.EQUIPPED : t.SHOP.EQUIP}
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleBuyItem(item)}
-                          className="w-full py-2 rounded-lg bg-white text-black text-[10px] font-bold uppercase tracking-wider hover:bg-gray-200 flex items-center justify-center gap-1"
-                        >
-                          <Gem size={10} className="text-blue-500" /> {item.cost}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Currency Section */}
-          <div>
-            <h3 className="text-sm font-bold text-lexi-text-muted uppercase tracking-widest mb-4 flex items-center gap-2"><CreditCard size={16} /> {t.SHOP.CURRENCY_SECTION}</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {SHOP_ITEMS.filter(i => i.type === 'currency').map((item, idx) => (
-                <div
-                  key={item.id}
-                  className="bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 p-4 rounded-2xl flex flex-col items-center relative overflow-hidden group hover:border-blue-500/50 transition-all animate-scale-in"
-                  style={{ animationDelay: `${idx * 100}ms` }}
-                >
-                  <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="bg-blue-900/30 p-3 rounded-full mb-2 group-hover:scale-110 transition-transform duration-500">
-                    <Coins size={24} className="text-blue-300" />
-                  </div>
-                  <span className="text-lg font-black text-white mb-0 leading-none">{item.currencyAmount}</span>
-                  <span className="text-[10px] text-blue-300 font-bold uppercase mb-3">{t.GAME.COINS_GAINED}</span>
-
-                  <div className="w-full mt-auto">
-                    {item.isRealMoney ? (
-                      <button
-                        onClick={() => handleBuyItem(item)}
-                        className="px-2 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-black rounded-xl text-xs hover:scale-105 transition-transform shadow-[0_0_10px_rgba(234,179,8,0.3)] w-full uppercase flex flex-col items-center gap-0.5"
-                      >
-                        <span className="text-sm leading-none">{item.cost}</span>
-                        <span className="text-[8px] font-bold opacity-80 leading-none">KAUFEN</span>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleBuyItem(item)}
-                        className="px-4 py-2 bg-white text-black font-bold rounded-full text-sm hover:bg-blue-50 transition-colors shadow-lg w-full"
-                      >
-                        {item.cost}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const toggleTheme = () => {
     const newTheme = user.theme === 'dark' ? 'light' : 'dark';
@@ -1594,36 +1489,32 @@ export default function App() {
   };
 
   const renderHome = () => (
-    <div className="flex flex-col h-full p-6 w-full max-w-4xl mx-auto overflow-y-auto pb-10 scrollbar-hide animate-fade-in">
+    <div className="flex flex-col h-full p-6 w-full max-w-4xl mx-auto overflow-y-auto pb-10 scrollbar-hide">
       {/* Header Section */}
       <div className="flex items-center justify-between w-full px-4 py-4 mb-6 relative z-10">
         <button className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity text-left" onClick={openProfile}>
-          <div className={`relative rounded-full p-1 transition-all duration-500 ${getAvatarEffect(user.activeFrame)}`}>
-            <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-14 h-14 rounded-full" />
+          <div className={`w-14 h-14 rounded-full border-2 border-white/20 overflow-hidden relative shadow-lg ${getAvatarEffect(user.activeFrame)}`}>
+            <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full bg-gray-800" />
           </div>
-          <div>
-            <div className={`font-bold text-2xl leading-none tracking-tight flex items-center gap-2 ${user.isPremium ? 'text-yellow-400 drop-shadow-sm' : ''}`}>
-              {user.name} {user.isPremium && <Crown className="w-4 h-4 text-yellow-500" fill="currentColor" />}
-            </div>
-
-            <div className="mt-2">
-              <div className="text-[10px] text-lexi-text-muted font-bold tracking-widest uppercase flex flex-col items-start mb-1 gap-1">
-                <span>SEASON LEVEL {user.level}</span>
-                <span className="text-lexi-fuchsia">{user.xp % 100}/100 XP</span>
-              </div>
-              <div className="h-1.5 w-32 bg-lexi-surface-highlight rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-lexi-fuchsia to-purple-500" style={{ width: `${user.xp % 100}%` }}></div>
-              </div>
-            </div>
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-lexi-text-muted uppercase tracking-wider">{t.HOME.PLAYER}</span>
+            <span className={`text-xl font-black ${user.isPremium ? 'text-yellow-400 drop-shadow-md' : 'text-lexi-text'}`}>
+              {user.name}
+            </span>
           </div>
         </button>
-        <div className="flex flex-col items-end gap-2">
-          <button onClick={() => setView('SHOP')} className="flex items-center gap-1 glass-button px-4 py-2 rounded-full text-lexi-text">
-            <Gem size={16} className="text-blue-400" />
-            <span className="font-bold text-sm">{user.coins}</span>
+
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="glass-button p-3 rounded-full hover:bg-white/10 transition-colors">
+            {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-indigo-400" />}
           </button>
-          <button onClick={toggleTheme} className="glass-button p-2 rounded-full">
-            {user.theme === 'dark' ? <Sun size={16} className="text-lexi-text" /> : <Moon size={16} className="text-lexi-text" />}
+          <button onClick={() => setView('SHOP')} className="glass-button px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors group">
+            <div className="relative">
+              <Coins className="text-yellow-400 group-hover:rotate-12 transition-transform" size={20} />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+            </div>
+            <span className="font-black text-lg text-yellow-400 drop-shadow-md">{user.coins}</span>
+            <Plus size={14} className="bg-yellow-400 text-black rounded-full p-0.5" />
           </button>
         </div>
       </div>
@@ -1689,23 +1580,6 @@ export default function App() {
       </div>
 
       <div className="mb-8 w-full">
-        {/* Sphere Buddy Teaser / Status */}
-        {user.buddy && (
-          <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 p-4 rounded-2xl border border-white/10 flex items-center justify-between" onClick={() => setView('SPHERE')}>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/50">
-                <span className="text-2xl">🟣</span>
-              </div>
-              <div>
-                <div className="font-bold text-white">{user.buddy.name}</div>
-                <div className="text-xs text-cyan-400">Lvl {user.buddy.level} • {user.buddy.mood > 50 ? 'Happy' : 'Needs Love'}</div>
-              </div>
-            </div>
-            <button className="px-4 py-2 bg-white/10 rounded-xl text-xs font-bold hover:bg-white/20 transition-colors">
-              VISIT
-            </button>
-          </div>
-        )}
       </div>
 
       <div className="mb-8 w-full">
@@ -1937,18 +1811,18 @@ export default function App() {
         {/* Header - Completely Redesigned for Space and Boldness */}
         <div className="relative z-20 pt-6 pb-4 px-6 animate-slide-down flex flex-col items-center gap-2">
           <div className="w-full flex items-center justify-between mb-4">
-             <button onClick={() => handleNavigate('LEVELS')} className="w-12 h-12 flex items-center justify-center glass-button rounded-full hover:bg-white/10 transition-colors active:scale-95">
-               <ArrowLeft size={24} className="text-lexi-text" />
-             </button>
-             
-             {/* Timer (Speedrun / Challenge) */}
-             {showTimer && (
-                <div className={`text-2xl font-black font-mono flex items-center gap-2 px-4 py-2 rounded-xl glass-panel ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-lexi-cyan'}`}>
-                  <Clock size={20} /> {gameState.timeLeft}s
-                </div>
-             )}
-             
-             <div className="w-12"></div> {/* Spacer for balance */}
+            <button onClick={() => handleNavigate('LEVELS')} className="w-12 h-12 flex items-center justify-center glass-button rounded-full hover:bg-white/10 transition-colors active:scale-95">
+              <ArrowLeft size={24} className="text-lexi-text" />
+            </button>
+
+            {/* Timer (Speedrun / Challenge) */}
+            {showTimer && (
+              <div className={`text-2xl font-black font-mono flex items-center gap-2 px-4 py-2 rounded-xl glass-panel ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-lexi-cyan'}`}>
+                <Clock size={20} /> {gameState.timeLeft}s
+              </div>
+            )}
+
+            <div className="w-12"></div> {/* Spacer for balance */}
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] animate-scale-in leading-none text-center mb-2">
@@ -1956,11 +1830,11 @@ export default function App() {
           </h1>
 
           <div className="bg-white/5 backdrop-blur-md border border-white/10 px-6 py-3 rounded-2xl shadow-xl animate-fade-in">
-             <p className="text-lg md:text-xl font-bold text-lexi-text-muted text-center">
-               "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
-             </p>
+            <p className="text-lg md:text-xl font-bold text-lexi-text-muted text-center">
+              "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
+            </p>
           </div>
-          
+
           {/* Target Word (Debug/Info) - Hidden or Subtle */}
           {/* <span className="text-xs text-red-500/50">[{gameState.targetWord}]</span> */}
         </div>
@@ -1990,19 +1864,19 @@ export default function App() {
 
         {/* Hint Button - Prominent, Animated, Lower */}
         <div className="absolute bottom-8 right-6 z-30">
-           <button 
-             onClick={triggerHint} 
-             className="group relative w-20 h-20 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-[0_10px_30px_rgba(251,191,36,0.4)] transition-all hover:scale-110 active:scale-95 animate-bounce-slow"
-           >
-             <div className="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-20"></div>
-             <HelpCircle size={40} className="text-white drop-shadow-md group-hover:rotate-12 transition-transform" />
-             {/* Badge for Cost */}
-             {hintCostMultiplier > 0 && (
-               <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md border-2 border-white">
-                 -{hintCostMultiplier * 10}
-               </div>
-             )}
-           </button>
+          <button
+            onClick={triggerHint}
+            className="group relative w-20 h-20 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-[0_10px_30px_rgba(251,191,36,0.4)] transition-all hover:scale-110 active:scale-95 animate-bounce-slow"
+          >
+            <div className="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-20"></div>
+            <HelpCircle size={40} className="text-white drop-shadow-md group-hover:rotate-12 transition-transform" />
+            {/* Badge for Cost */}
+            {hintCostMultiplier > 0 && (
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md border-2 border-white">
+                -{hintCostMultiplier * 10}
+              </div>
+            )}
+          </button>
         </div>
 
         {/* Controls - Native Keyboard Input */}
@@ -2078,13 +1952,13 @@ export default function App() {
       {view === 'GAME' && renderGame()}
       {view === 'TUTORIAL' && renderTutorial()}
       {view === 'SPHERE' && (
-        <div className="h-full flex flex-col p-4 animate-fade-in">
-           <SphereBuddy3D 
-             buddy={user.buddy || { name: 'Sphere', level: 1, xp: 0, hunger: 80, energy: 80, mood: 80, skin: 'default', lastInteraction: Date.now() }}
-             onUpdate={(newBuddy) => setUser(prev => ({ ...prev, buddy: newBuddy }))}
-             onPlay={() => { handleNavigate('GAME'); setGameConfig({ mode: GameMode.CLASSIC, tier: Tier.BEGINNER, levelId: 1 }); }}
-             onBack={() => handleNavigate('HOME')}
-           />
+        <div className="h-full flex flex-col p-4">
+          <SphereBuddy3D
+            buddy={user.buddy || { name: 'Sphere', level: 1, xp: 0, hunger: 80, energy: 80, mood: 80, skin: 'default', lastInteraction: Date.now() }}
+            onUpdate={(newBuddy) => setUser(prev => ({ ...prev, buddy: newBuddy }))}
+            onPlay={() => { handleNavigate('GAME'); setGameConfig({ mode: GameMode.CLASSIC, tier: Tier.BEGINNER, levelId: 1 }); }}
+            onBack={() => handleNavigate('HOME')}
+          />
         </div>
       )}
       {/* Navigation Icons */}
@@ -2116,7 +1990,17 @@ export default function App() {
         </div>
       )}
 
-      {view === 'SHOP' && renderShop()}
+      {view === 'SHOP' && (
+        <ShopView
+          user={user}
+          setUser={setUser}
+          setView={setView}
+          t={t}
+          setShowRedeemModal={setShowRedeemModal}
+          setRedeemStep={setRedeemStep}
+          handleBuyItem={handleBuyItem}
+        />
+      )}
 
       {/* Ad/Hint Modal */}
       <Modal isOpen={showAd} title={t.GAME.HINT_MODAL_TITLE}>

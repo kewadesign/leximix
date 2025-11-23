@@ -37,7 +37,6 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
     return (
         <div className="h-full flex flex-col bg-[#0b1120] relative overflow-hidden animate-fade-in">
             {/* Dynamic Background */}
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 via-slate-900 to-cyan-900/30 pointer-events-none"></div>
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/10 via-transparent to-transparent pointer-events-none"></div>
 
@@ -104,14 +103,14 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                             >
                                 {/* Level Node (Center) */}
                                 <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-4 z-10 flex items-center justify-center text-xs font-bold transition-all duration-500
-                                    ${isUnlocked ? 'bg-white border-cyan-500 text-cyan-600 shadow-[0_0_15px_rgba(6,182,212,0.6)] scale-110' : 'bg-gray-800 border-gray-600 text-gray-500'}
+                                    ${isUnlocked ? 'bg-white border-cyan-500 text-cyan-600 shadow-[0_0_15px_rgba(6,182,212,0.6)] scale-110' : 'bg-gray-800 border-gray-600 text-gray-400'}
                                     ${isNext ? 'animate-pulse ring-4 ring-white/20' : ''}
                                 `}>
                                     {lvl}
                                 </div>
 
                                 {/* PREMIUM REWARD (TOP) */}
-                                <div className={`absolute bottom-[55%] flex flex-col items-center justify-end h-32 w-full transition-all duration-300 ${isUnlocked ? 'opacity-100' : 'opacity-60 grayscale'}`}>
+                                <div className={`absolute bottom-[55%] flex flex-col items-center justify-end h-32 w-full transition-all duration-300 ${isUnlocked ? 'opacity-100' : 'opacity-80 grayscale-[0.5]'}`}>
                                     {premiumReward ? (
                                         <div className={`relative w-28 h-32 bg-gradient-to-b from-indigo-900 to-slate-900 rounded-2xl border-2 border-indigo-500/30 p-3 flex flex-col items-center justify-between shadow-xl hover:scale-110 transition-transform hover:z-20 group-hover:shadow-indigo-500/40 ${isClaimed ? 'ring-2 ring-yellow-400 bg-yellow-900/20 grayscale' : 'hover:shadow-indigo-500/20'}`}>
                                             <div className="absolute -top-3 bg-indigo-600 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-indigo-400 shadow-lg z-10">Premium</div>
@@ -120,9 +119,18 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                                             <div className="flex-1 flex items-center justify-center relative overflow-hidden">
                                                 {/* Shine Effect */}
                                                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
-                                                
+
                                                 {premiumReward.type === 'avatar' ? (
-                                                    <img src={premiumReward.preview} alt="Avatar" className="w-12 h-12 rounded-full border-2 border-white/20 shadow-md z-10" />
+                                                    <img
+                                                        src={premiumReward.preview}
+                                                        alt="Avatar"
+                                                        className="w-12 h-12 rounded-full border-2 border-white/20 shadow-md z-10 bg-gray-800"
+                                                        onError={(e) => {
+                                                            e.currentTarget.style.display = 'none';
+                                                            e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center');
+                                                            e.currentTarget.parentElement!.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+                                                        }}
+                                                    />
                                                 ) : premiumReward.type === 'effect' ? (
                                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getEffectStyle(premiumReward.value as string)} z-10`}>
                                                         <Sparkles size={20} className="text-white drop-shadow-lg" />
@@ -157,7 +165,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                                 </div>
 
                                 {/* FREE REWARD (BOTTOM) */}
-                                <div className={`absolute top-[55%] flex flex-col items-center justify-start h-32 w-full transition-all duration-300 ${isUnlocked ? 'opacity-100' : 'opacity-60 grayscale'}`}>
+                                <div className={`absolute top-[55%] flex flex-col items-center justify-start h-32 w-full transition-all duration-300 ${isUnlocked ? 'opacity-100' : 'opacity-80 grayscale-[0.5]'}`}>
                                     {freeReward ? (
                                         <div className={`relative w-24 h-28 bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl border border-white/10 p-2 flex flex-col items-center justify-between shadow-lg hover:scale-105 transition-transform hover:z-20 group-hover:shadow-white/20 ${isClaimed ? 'opacity-50 grayscale' : 'hover:shadow-white/10'}`}>
                                             <div className="absolute -top-2 bg-slate-600 text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-slate-500 shadow-md z-10">Free</div>
