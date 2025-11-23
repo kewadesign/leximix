@@ -16,7 +16,7 @@ import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from '
 import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database } from 'lucide-react';
 
 // --- Sub Components for Game Logic ---
 
@@ -368,6 +368,33 @@ export default function App() {
   const [showPremiumRequiredModal, setShowPremiumRequiredModal] = useState(false);
   const [showCorrectWordModal, setShowCorrectWordModal] = useState(false);
   const [correctWord, setCorrectWord] = useState('');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Online/Offline monitoring
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log('[Network] Connection restored');
+      setIsOnline(true);
+    };
+    const handleOffline = () => {
+      console.log('[Network] Connection lost');
+      setIsOnline(false);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Check periodically (every 10 seconds)
+    const interval = setInterval(() => {
+      setIsOnline(navigator.onLine);
+    }, 10000);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     if (view !== 'ONBOARDING') {
@@ -2056,6 +2083,39 @@ export default function App() {
       <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
 
       {/* Fade Transition Removed */}
+
+      {/* Offline Blocking Overlay */}
+      {!isOnline && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="glass-panel p-8 rounded-3xl max-w-md mx-4 text-center space-y-6">
+            <div className="w-20 h-20 mx-auto bg-red-500/20 rounded-full flex items-center justify-center border-2 border-red-500 animate-pulse">
+              <WifiOff size={40} className="text-red-500" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-white mb-2 uppercase">Keine Verbindung</h2>
+              <p className="text-gray-300 text-sm leading-relaxed">
+                LexiMix benötigt eine aktive Internetverbindung, um deine Fortschritte mit Firebase zu synchronisieren. Bitte stelle eine Verbindung her und versuche es erneut.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 text-xs text-gray-400">
+              <div className="flex items-center gap-2 justify-center">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span>Offline-Modus nicht verfügbar</span>
+              </div>
+              <div className="flex items-center gap-2 justify-center">
+                <Database size={12} />
+                <span>Firebase-Synchronisation erforderlich</span>
+              </div>
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 text-white font-black uppercase rounded-xl transition-all"
+            >
+              Neu laden
+            </button>
+          </div>
+        </div>
+      )}
 
       {view === 'ONBOARDING' && renderOnboarding()}
       {view === 'HOME' && renderHome()}
