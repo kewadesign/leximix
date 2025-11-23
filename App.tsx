@@ -3018,29 +3018,39 @@ export default function App() {
         onSuccess={handleCloudLogin}
       />
 
-      {/* APK Download Footer (only show on web, not in Capacitor) */}
-      {(window as any).Capacitor === undefined && apkVersion && (
-        <div className="fixed bottom-4 right-4 z-[9998]">
-          <a
-            href="/app-debug.apk"
-            download
-            onClick={() => {
-              // Mark version as seen when clicked
-              localStorage.setItem('lastSeenApkVersion', apkVersion);
-              setShowNewBadge(false);
-            }}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 text-white px-4 py-2 rounded-full shadow-lg transition-all text-xs font-bold uppercase"
-          >
-            <Database size={14} />
-            <span>Android APK v{apkVersion}</span>
-            {showNewBadge && (
-              <span className="bg-green-500 text-black px-2 py-0.5 rounded-full text-[10px] font-black animate-pulse">
-                NEU
-              </span>
-            )}
-          </a>
-        </div>
-      )}
+      {/* APK Download Footer */}
+      {(() => {
+        const isCapacitor = (window as any).Capacitor !== undefined;
+        const currentVersion = '2.1.0';
+
+        // Show if:
+        // - In browser (always show)
+        // - OR in app AND server version is newer
+        const shouldShow = !isCapacitor || (isCapacitor && apkVersion && apkVersion !== currentVersion);
+
+        return shouldShow && apkVersion && (
+          <div className="fixed bottom-4 right-4 z-[9998]">
+            <a
+              href="/app-debug.apk"
+              download
+              onClick={() => {
+                // Mark version as seen when clicked
+                localStorage.setItem('lastSeenApkVersion', apkVersion);
+                setShowNewBadge(false);
+              }}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 text-white px-4 py-2 rounded-full shadow-lg transition-all text-xs font-bold uppercase"
+            >
+              <Database size={14} />
+              <span>Android APK v{apkVersion}</span>
+              {showNewBadge && (
+                <span className="bg-green-500 text-black px-2 py-0.5 rounded-full text-[10px] font-black animate-pulse">
+                  NEU
+                </span>
+              )}
+            </a>
+          </div>
+        );
+      })()}
 
     </div>
   );
