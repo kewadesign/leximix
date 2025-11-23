@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 // KW1998 - Core Application Logic
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
+import { VersionManager } from './components/VersionManager';
 import { SeasonPass } from './components/SeasonPass';
 import { SeasonPassView } from './components/SeasonPassView';
 import { PayPalButton } from './components/PayPalButton';
@@ -369,11 +370,6 @@ export default function App() {
   const [showCorrectWordModal, setShowCorrectWordModal] = useState(false);
   const [correctWord, setCorrectWord] = useState('');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [serverVersion, setServerVersion] = useState('');
-  const [apkVersion, setApkVersion] = useState('');
-  const [showNewBadge, setShowNewBadge] = useState(false);
-  const [forceUpdate, setForceUpdate] = useState(false);
 
   // Online/Offline monitoring
   useEffect(() => {
@@ -400,65 +396,6 @@ export default function App() {
       clearInterval(interval);
     };
   }, []);
-
-  // Auto-update version checking (Web + APK)
-  useEffect(() => {
-    const checkForUpdates = async () => {
-      if (!isOnline) return;
-
-      try {
-        const response = await fetch('/version.json?t=' + Date.now()); // Cache bust
-        if (!response.ok) return;
-
-        const data = await response.json();
-        const currentVersion = '2.2.0'; // From package.json
-
-        // Set APK version for display
-        if (data.apk) {
-          setApkVersion(data.apk.version);
-
-          // Check if this version is new
-          const lastSeenVersion = localStorage.getItem('lastSeenApkVersion');
-          if (lastSeenVersion && lastSeenVersion !== data.apk.version) {
-            setShowNewBadge(true);
-          } else if (!lastSeenVersion) {
-            // First time, mark as seen
-            localStorage.setItem('lastSeenApkVersion', data.apk.version);
-          }
-        }
-
-        // Check if running in Capacitor (Android)
-        const isCapacitor = (window as any).Capacitor !== undefined;
-
-        if (isCapacitor && data.apk) {
-          // Check APK version for Android
-          if (data.apk.version !== currentVersion) {
-            console.log(`[Update] New APK available: ${data.apk.version} (current: ${currentVersion})`);
-            setServerVersion(data.apk.version);
-            setUpdateAvailable(true);
-
-            // Force update if in app and version mismatch
-            setForceUpdate(true);
-          }
-        } else if (data.version && data.version !== currentVersion) {
-          // Check web version for browser
-          console.log(`[Update] New version available: ${data.version} (current: ${currentVersion})`);
-          setServerVersion(data.version);
-          setUpdateAvailable(true);
-        }
-      } catch (error) {
-        console.error('[Update] Failed to check for updates:', error);
-      }
-    };
-
-    // Check immediately on mount
-    checkForUpdates();
-
-    // Check every 30 seconds
-    const interval = setInterval(checkForUpdates, 30000);
-
-    return () => clearInterval(interval);
-  }, [isOnline]);
 
   useEffect(() => {
     if (view !== 'ONBOARDING') {
@@ -1676,7 +1613,7 @@ export default function App() {
           </div>
         </button >
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
           <button
             onClick={() => {
               const newLang = user.language === Language.DE ? Language.EN : Language.DE;
@@ -1688,16 +1625,16 @@ export default function App() {
             {user.language === Language.DE ? 'DE' : 'EN'}
           </button>
 
-          <button onClick={toggleTheme} className="glass-button p-3 rounded-full hover:bg-white/10 transition-colors">
-            {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-indigo-400" />}
+          <button onClick={toggleTheme} className="glass-button w-10 h-10 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center">
+            {user.theme === 'dark' ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-indigo-400" />}
           </button>
-          <button onClick={() => setView('SHOP')} className="glass-button px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors group">
+          <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors group">
             <div className="relative">
-              <Coins className="text-yellow-400 group-hover:rotate-12 transition-transform" size={20} />
+              <Coins className="text-yellow-400 group-hover:rotate-12 transition-transform" size={18} />
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
             </div>
-            <span className="font-black text-lg text-yellow-400 drop-shadow-md">{user.coins}</span>
-            <Plus size={14} className="bg-yellow-400 text-black rounded-full p-0.5" />
+            <span className="font-black text-base text-yellow-400 drop-shadow-md">{user.coins}</span>
+            <Plus size={12} className="bg-yellow-400 text-black rounded-full p-0.5" />
           </button>
         </div>
       </div >
@@ -2147,6 +2084,9 @@ export default function App() {
       <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
 
       {/* Fade Transition Removed */}
+      
+      {/* Version Manager - Handles Updates & Changelog */}
+      <VersionManager isOnline={isOnline} />
 
       {/* Offline Blocking Overlay */}
       {!isOnline && (
@@ -2177,51 +2117,6 @@ export default function App() {
             >
               Neu laden
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Force Update Blocking Overlay (App Only) */}
-      {forceUpdate && (window as any).Capacitor !== undefined && (
-        <div className="fixed inset-0 z-[99998] flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="glass-panel p-8 rounded-3xl max-w-md mx-4 text-center space-y-6">
-            <div className="w-20 h-20 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center border-2 border-orange-500 animate-pulse">
-              <AlertTriangle size={40} className="text-orange-500" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-black text-white mb-2 uppercase">Update Erforderlich</h2>
-              <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                Du verwendest eine veraltete Version von LexiMix. Bitte aktualisiere die App, um weiter spielen zu können.
-              </p>
-              <div className="flex items-center justify-center gap-4 text-xs text-gray-400 bg-black/30 p-3 rounded-lg">
-                <div className="flex flex-col items-center">
-                  <span className="text-gray-500">Installiert</span>
-                  <span className="font-mono text-red-400">v2.1.0</span>
-                </div>
-                <ArrowLeft size={16} className="rotate-180 text-orange-500" />
-                <div className="flex flex-col items-center">
-                  <span className="text-gray-500">Erforderlich</span>
-                  <span className="font-mono text-green-400 font-bold">v{apkVersion}</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 text-xs text-gray-400">
-              <div className="flex items-center gap-2 justify-center">
-                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                <span>Spielen nicht möglich mit alter Version</span>
-              </div>
-              <div className="flex items-center gap-2 justify-center">
-                <Sparkles size={12} />
-                <span>Neue Features & Verbesserungen verfügbar</span>
-              </div>
-            </div>
-            <a
-              href="/app-debug.apk"
-              download
-              className="block w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 hover:brightness-110 text-white font-black uppercase rounded-xl transition-all shadow-lg"
-            >
-              Jetzt APK herunterladen
-            </a>
           </div>
         </div>
       )}
@@ -2731,62 +2626,6 @@ export default function App() {
         </div>
       </Modal>
 
-      {/* Update Available Modal */}
-      <Modal isOpen={updateAvailable} onClose={() => setUpdateAvailable(false)} title="Update Verfügbar">
-        <div className="text-center space-y-6">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-pulse">
-            <Sparkles size={40} className="text-white" />
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-xl font-black text-white">Neue Version verfügbar!</h3>
-            <p className="text-sm text-gray-300 leading-relaxed">
-              {(window as any).Capacitor !== undefined
-                ? 'Eine neue APK-Version ist verfügbar. Lade sie herunter und installiere sie, um die neuesten Features zu erhalten.'
-                : 'LexiMix wurde aktualisiert. Lade die App neu, um die neueste Version zu verwenden.'}
-            </p>
-            <div className="flex items-center justify-center gap-4 text-xs text-gray-400 mt-4">
-              <div className="flex flex-col items-center">
-                <span className="text-gray-500">Aktuell</span>
-                <span className="font-mono text-white">2.1.0</span>
-              </div>
-              <ArrowLeft size={16} className="rotate-180 text-green-500" />
-              <div className="flex flex-col items-center">
-                <span className="text-gray-500">Neu</span>
-                <span className="font-mono text-green-400 font-bold">{serverVersion}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <Button
-              onClick={() => {
-                const isCapacitor = (window as any).Capacitor !== undefined;
-                if (isCapacitor) {
-                  // Download APK
-                  window.location.href = 'http://leximix.de/app-debug.apk';
-                } else {
-                  // Reload web app
-                  window.location.reload();
-                }
-              }}
-              fullWidth
-              className="bg-gradient-to-r from-green-600 to-blue-600 text-white font-black border-none hover:brightness-110"
-            >
-              {(window as any).Capacitor !== undefined ? 'APK herunterladen' : 'Jetzt aktualisieren'}
-            </Button>
-            <Button
-              onClick={() => setUpdateAvailable(false)}
-              fullWidth
-              variant="ghost"
-              className="text-gray-400 hover:text-white"
-            >
-              Später erinnern
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
       {/* Premium Required Modal */}
       < Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title="Premium Erforderlich" >
         <div className="text-center space-y-6">
@@ -3066,40 +2905,6 @@ export default function App() {
         onClose={() => setShowAuthModal(false)}
         onSuccess={handleCloudLogin}
       />
-
-      {/* APK Download Footer */}
-      {(() => {
-        const isCapacitor = (window as any).Capacitor !== undefined;
-        const currentVersion = '2.1.0';
-
-        // Show if:
-        // - In browser (always show)
-        // - OR in app AND server version is newer
-        const shouldShow = !isCapacitor || (isCapacitor && apkVersion && apkVersion !== currentVersion);
-
-        return shouldShow && apkVersion && (
-          <div className="fixed bottom-4 right-4 z-[9998]">
-            <a
-              href="/app-debug.apk"
-              download
-              onClick={() => {
-                // Mark version as seen when clicked
-                localStorage.setItem('lastSeenApkVersion', apkVersion);
-                setShowNewBadge(false);
-              }}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 text-white px-4 py-2 rounded-full shadow-lg transition-all text-xs font-bold uppercase"
-            >
-              <Database size={14} />
-              <span>Android APK v{apkVersion}</span>
-              {showNewBadge && (
-                <span className="bg-green-500 text-black px-2 py-0.5 rounded-full text-[10px] font-black animate-pulse">
-                  NEU
-                </span>
-              )}
-            </a>
-          </div>
-        );
-      })()}
 
     </div>
   );

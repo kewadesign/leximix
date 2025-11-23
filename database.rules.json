@@ -1,0 +1,21 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "system": {
+      ".read": true,
+      ".write": false
+    },
+    "vouchers": {
+      ".read": true,
+      ".write": false,
+      "$voucherId": {
+        "usedBy": {
+           "$uid": {
+             ".write": "!data.exists()"
+           }
+        }
+      }
+    }
+  }
+}

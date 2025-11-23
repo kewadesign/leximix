@@ -37,12 +37,12 @@ export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium
 
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <Crown className={`${isPremium ? 'text-yellow-300' : 'text-gray-400'} drop-shadow-md`} size={24} fill={isPremium ? "currentColor" : "none"} />
-              <h3 className="text-white font-black italic text-2xl md:text-3xl tracking-tighter drop-shadow-xl uppercase">
+              <Crown className={`${isPremium ? 'text-yellow-300' : 'text-gray-400'} drop-shadow-md`} size={20} fill={isPremium ? "currentColor" : "none"} />
+              <h3 className="text-white font-black italic text-lg sm:text-2xl md:text-3xl tracking-tighter drop-shadow-xl uppercase whitespace-nowrap">
                 SEASON 2
               </h3>
             </div>
-            <p className="text-white/80 text-xs md:text-sm font-bold uppercase tracking-wider">
+            <p className="text-white/80 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider">
               {isPremium ? 'Premium Aktiv' : 'Kostenlos'}
             </p>
           </div>
