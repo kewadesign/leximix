@@ -10,10 +10,12 @@ interface Props {
 }
 
 export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
-    const [mode, setMode] = useState<'login' | 'register'>('login');
+    const [mode, setMode] = useState<'login' | 'register' | 'lang_select' | 'age_verify'>('login');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [age, setAge] = useState<number>(0);
+    const [language, setLanguage] = useState<'DE' | 'EN'>('DE');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -38,6 +40,20 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+
+        if (mode === 'lang_select') {
+            setMode('age_verify');
+            return;
+        }
+
+        if (mode === 'age_verify') {
+            if (age < 12) {
+                setError('Du musst mindestens 12 Jahre alt sein.');
+                return;
+            }
+            setMode('register');
+            return;
+        }
 
         // Validation
         if (!username || !password) {
@@ -116,12 +132,16 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     };
 
     const switchMode = () => {
-        setMode(mode === 'login' ? 'register' : 'login');
+        if (mode === 'login') {
+            setMode('lang_select'); // Start registration flow
+        } else {
+            setMode('login');
+        }
         resetForm();
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? 'ANMELDEN' : 'REGISTRIEREN'}>
+        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? 'ANMELDEN' : mode === 'lang_select' ? 'SPRACHE' : mode === 'age_verify' ? 'ALTER' : 'REGISTRIEREN'}>
             <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                     <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-3 flex items-center gap-2">
@@ -130,39 +150,93 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                     </div>
                 )}
 
-                {/* Username */}
-                <div>
-                    <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Benutzername</label>
-                    <div className="relative">
-                        <User size={18} className="absolute left-3 top-3 text-gray-500" />
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
-                            className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                            placeholder="Dein Benutzername"
-                            disabled={loading}
-                            maxLength={30}
-                        />
+                {mode === 'lang_select' && (
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            type="button"
+                            onClick={() => setLanguage('DE')}
+                            className={`p-6 rounded-2xl border-2 transition-all ${language === 'DE' ? 'border-lexi-fuchsia bg-lexi-fuchsia/20' : 'border-white/10 bg-gray-900'}`}
+                        >
+                            <span className="text-4xl block mb-2">🇩🇪</span>
+                            <span className="font-bold text-white">Deutsch</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setLanguage('EN')}
+                            className={`p-6 rounded-2xl border-2 transition-all ${language === 'EN' ? 'border-lexi-cyan bg-lexi-cyan/20' : 'border-white/10 bg-gray-900'}`}
+                        >
+                            <span className="text-4xl block mb-2">🇺🇸</span>
+                            <span className="font-bold text-white">English</span>
+                        </button>
+                        <button
+                            type="submit"
+                            className="col-span-2 w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all"
+                        >
+                            Weiter
+                        </button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30 Zeichen</p>
-                </div>
+                )}
 
-                {/* Password */}
-                <div>
-                    <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Passwort</label>
-                    <div className="relative">
-                        <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
+                {mode === 'age_verify' && (
+                    <div>
+                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Dein Alter</label>
                         <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                            placeholder="Dein Passwort"
-                            disabled={loading}
+                            type="number"
+                            value={age || ''}
+                            onChange={(e) => setAge(parseInt(e.target.value))}
+                            className="w-full px-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white text-center font-bold text-xl focus:outline-none focus:border-lexi-fuchsia transition-colors"
+                            placeholder="Alter eingeben"
+                            autoFocus
                         />
+                        <p className="text-xs text-gray-500 mt-2 text-center">Mindestalter: 12 Jahre</p>
+                        <button
+                            type="submit"
+                            disabled={!age}
+                            className="w-full mt-4 py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50"
+                        >
+                            Weiter
+                        </button>
                     </div>
-                </div>
+                )}
+
+                {(mode === 'login' || mode === 'register') && (
+                    <>
+                        {/* Username */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Benutzername</label>
+                            <div className="relative">
+                                <User size={18} className="absolute left-3 top-3 text-gray-500" />
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
+                                    placeholder="Dein Benutzername"
+                                    disabled={loading}
+                                    maxLength={30}
+                                    autoFocus={mode === 'register'} 
+                                />
+                            </div>
+                            {mode === 'register' && <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30 Zeichen</p>}
+                        </div>
+
+                        {/* Password */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Passwort</label>
+                            <div className="relative">
+                                <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
+                                    placeholder="Dein Passwort"
+                                    disabled={loading}
+                                />
+                            </div>
+                        </div>
+                    </>
+                )}
 
                 {/* Confirm Password (only for register) */}
                 {mode === 'register' && (
@@ -197,17 +271,27 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                                 disabled={loading}
                             />
                         </div>
+                        
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                        >
+                            {loading ? 'Lädt...' : 'Registrieren'}
+                        </button>
                     </>
                 )}
 
-                {/* Submit Button */}
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                >
-                    {loading ? 'Lädt...' : mode === 'login' ? 'Anmelden' : 'Registrieren'}
-                </button>
+                {/* Login Button */}
+                {mode === 'login' && (
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                    >
+                        {loading ? 'Lädt...' : 'Anmelden'}
+                    </button>
+                )}
 
                 {/* Mode Switch */}
                 <button

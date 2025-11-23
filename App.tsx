@@ -183,54 +183,72 @@ export default function App() {
     try {
       const saved = localStorage.getItem('leximix_user_v2');
 
-      // UNLOCK ALL LEVELS FOR TESTING (As requested)
-      const allLevelsUnlocked: Record<string, boolean> = {};
+      // Initial Unlock State: Only Level 1 of each Tier 1 is unlocked
+      const initialLevelsUnlocked: Record<string, boolean> = {};
       Object.values(GameMode).forEach(mode => {
-        Object.values(Tier).forEach(tier => {
-          if (typeof tier === 'number') {
-            for (let i = 1; i <= 50; i++) {
-              allLevelsUnlocked[`${mode}_${tier}_${i}`] = true;
-            }
-          }
-        });
+        initialLevelsUnlocked[`${mode}_${Tier.BEGINNER}_1`] = true;
       });
 
       if (saved) {
         const parsed = JSON.parse(saved);
+        
+        // Sanitize Debug State: If user has exactly 100,000 XP (debug value), reset to 0
+        // unless they have played a significant number of levels (unlikely to hit exactly 100k)
+        let sanitizedXp = parsed.xp;
+        let sanitizedLevel = parsed.level;
+        
+        if (sanitizedXp === 100000 && (!parsed.playedWords || parsed.playedWords.length < 50)) {
+             console.log("Resetting debug XP/Level state");
+             sanitizedXp = 0;
+             sanitizedLevel = 1;
+        }
+
         return {
           ...parsed,
-          completedLevels: { ...parsed.completedLevels, ...allLevelsUnlocked },
+          xp: sanitizedXp,
+          level: sanitizedLevel,
+          // Ensure default unlock structure exists if migrating
+          completedLevels: { ...initialLevelsUnlocked, ...parsed.completedLevels },
           theme: parsed.theme || 'dark',
           claimedSeasonRewards: parsed.claimedSeasonRewards || [],
           ownedFrames: parsed.ownedFrames || [],
           hintBooster: parsed.hintBooster || 0,
           ownedAvatars: parsed.ownedAvatars || [AVATARS[0]],
-          // UNLOCK SEASON PASS FOR TESTING
-          xp: 100000, // Level 100+
-          isPremium: true
+          isPremium: parsed.isPremium || false
         };
       }
 
+      // Default state for NEW USERS
       return {
         name: 'Player',
         age: 0,
         language: Language.DE,
-        avatarId: 'Felix',
-        coins: 1000,
-        xp: 100000, // Level 100+
-        level: 100,
-        completedLevels: allLevelsUnlocked,
+        avatarId: AVATARS[0],
+        coins: 0, // Start with 0 coins
+        xp: 0, // Start with 0 XP
+        level: 1, // Start at Level 1
+        completedLevels: initialLevelsUnlocked, // Only level 1 unlocked
         theme: 'dark',
         inventory: [],
-        ownedAvatars: ['Felix'],
-        isPremium: true
+        ownedAvatars: [AVATARS[0]],
+        isPremium: false, // No premium
+        playedWords: [],
+        activeFrame: undefined,
+        ownedFrames: [],
+        hintBooster: 0,
+        claimedSeasonRewards: []
       };
     } catch (error) {
       console.error('[LexiMix] localStorage error:', error);
       // Continue to default state
     }
 
-    // Default state
+    // Fallback default state
+    const fallbackLevelsUnlocked: Record<string, boolean> = {};
+    Object.values(GameMode).forEach(mode => {
+      fallbackLevelsUnlocked[`${mode}_${Tier.BEGINNER}_1`] = true;
+    });
+
     return {
       name: 'Player',
       age: 0,
@@ -240,7 +258,7 @@ export default function App() {
       level: 1,
       coins: 0,
       isPremium: false,
-      completedLevels: {},
+      completedLevels: fallbackLevelsUnlocked,
       language: Language.DE,
       theme: 'dark',
       activeFrame: undefined,
@@ -836,26 +854,34 @@ export default function App() {
       }));
       console.log('[Cloud] Loaded save from cloud');
     } else {
-      // New user - set defaults
+      // New user - set defaults but require onboarding
+      const initialLevelsUnlocked: Record<string, boolean> = {};
+      Object.values(GameMode).forEach(mode => {
+        initialLevelsUnlocked[`${mode}_${Tier.BEGINNER}_1`] = true;
+      });
+
       setUser(prev => ({
         ...prev,
-        name: normalizedUser,      // Use username as profile name
-        age: 18,             // Default age
+        name: normalizedUser, // Use username as initial display name
+        age: 0, // Reset age to force entry
         avatarId: AVATARS[0],
         ownedAvatars: [AVATARS[0]],
         xp: 0,
         level: 1,
         coins: 0,
         isPremium: false,
-        completedLevels: {},
+        completedLevels: initialLevelsUnlocked,
         playedWords: [],
-        language: Language.DE,
+        language: Language.DE, // Default, will be chosen in onboarding
         theme: user.theme || 'dark'
       }));
-      console.log('[Cloud] New user - set defaults');
+      console.log('[Cloud] New user - redirecting to onboarding');
+      setView('ONBOARDING');
+      setOnboardingStep(0); // Start at Language
+      return; // Exit early so we don't go to HOME
     }
 
-    // Always go to HOME (no onboarding)
+    // Existing user - go to HOME
     setView('HOME');
   };
 
@@ -1928,7 +1954,13 @@ export default function App() {
                   puzzle={gameState.currentGrid}
                   original={gameState.data.sudokuPuzzle}
                   selectedCell={gameState.selectedCell}
-                  onCellClick={(r: number, c: number) => setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }))}
+                  onCellClick={(r: number, c: number) => {
+                    setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }));
+                    // Ensure keyboard opens on mobile
+                    if (hiddenInputRef.current) {
+                      hiddenInputRef.current.focus();
+                    }
+                  }}
                 />
               </div>
             ) : (
