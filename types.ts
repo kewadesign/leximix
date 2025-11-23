@@ -5,7 +5,8 @@ export enum GameMode {
   CHAIN = 'CHAIN',
   CATEGORY = 'CATEGORY',
   SUDOKU = 'SUDOKU',
-  CHALLENGE = 'CHALLENGE'
+  CHALLENGE = 'CHALLENGE',
+  RIDDLE = 'RIDDLE'
 }
 
 export enum Tier {

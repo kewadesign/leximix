@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.4.0',
+        date: '2025-11-24',
+        changes: {
+            added: [
+                'Neuer Spielmodus: Rätsel (Riddle Mode)',
+                'Premium-Dauer Anzeige im Hauptmenü',
+                'Season-Dauer Anzeige im Hauptmenü'
+            ],
+            fixed: [
+                'Optimierungen im Hauptmenü'
+            ]
+        }
+    },
+    {
         version: '2.3.0',
         date: '2025-11-23',
         changes: {

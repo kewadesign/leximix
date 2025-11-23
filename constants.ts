@@ -147,6 +147,7 @@ export const TRANSLATIONS = {
       CATEGORY: { title: "TOPICS", desc: "Context based" },
       SUDOKU: { title: "LETTER SUDOKU", desc: "Logic (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Challenges" },
+      RIDDLE: { title: "RIDDLES", desc: "Word Puzzles" },
       LOCKED: { title: "LOCKED", desc: "Coming Soon" }
     },
     SEASON: {
@@ -271,6 +272,7 @@ export const TRANSLATIONS = {
       CATEGORY: { title: "THEMEN", desc: "Kontext-Rätsel" },
       SUDOKU: { title: "Buchstaben Sudoku", desc: "Logik (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Herausforderungen" },
+      RIDDLE: { title: "RÄTSEL", desc: "Worträtsel" },
       LOCKED: { title: "BALD", desc: "Demnächst" }
     },
     SEASON: {
@@ -395,6 +397,7 @@ export const TRANSLATIONS = {
       CATEGORY: { title: "TEMAS", desc: "Basado en contexto" },
       SUDOKU: { title: "SUDOKU DE LETRAS", desc: "Lógica (A-I)" },
       CHALLENGE: { title: "DESAFÍO", desc: "Retos Premium" },
+      RIDDLE: { title: "ACERTIJOS", desc: "Rompecabezas" },
       LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
     },
     SEASON: {
@@ -1221,6 +1224,11 @@ export const TUTORIALS: Record<GameMode, Record<Language, TutorialContent>> = {
     [Language.EN]: { title: "Challenge", text: "Solve math problems and words. Premium only. Costs coins." },
     [Language.DE]: { title: "Herausforderung", text: "Löse Matheaufgaben und Wörter. Nur Premium. Kostet Münzen." },
     [Language.ES]: { title: "Desafío", text: "Resuelve problemas matemáticos y palabras. Solo Premium. Cuesta monedas." }
+  },
+  [GameMode.RIDDLE]: {
+    [Language.EN]: { title: "Riddles", text: "Solve the riddle to find the answer. Think outside the box!" },
+    [Language.DE]: { title: "Rätsel", text: "Löse das Rätsel um die Antwort zu finden. Denk um die Ecke!" },
+    [Language.ES]: { title: "Acertijos", text: "Resuelve el acertijo para encontrar la respuesta. ¡Piensa diferente!" }
   }
 };
 

@@ -13,7 +13,7 @@ import { SudokuGrid } from './components/SudokuGrid';
 import { SudokuControls } from './components/SudokuControls';
 import { MusicPlayer } from './components/MusicPlayer';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS } from './constants';
-import { getLevelContent, checkGuess, generateSudoku, generateChallenge } from './utils/gameLogic';
+import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
 
@@ -797,32 +797,40 @@ export default function App() {
 
     // Go directly to game, skip tutorial
     setView('GAME');
+    setTutorialMode(null);
   };
 
-  // Load Level Content and Initialize Game State for non-Sudoku/Challenge modes
+  // ...
+
   useEffect(() => {
     if (view === 'GAME' && gameConfig && gameConfig.mode !== GameMode.SUDOKU && gameConfig.mode !== GameMode.CHALLENGE) {
-      const content = getLevelContent(
-        gameConfig.mode,
-        gameConfig.tier,
-        gameConfig.levelId,
-        user.language,
-        user.playedWords || [] // Pass played words history
-      );
-      // setLevelData(content); // Removed undefined call
+      const isSudoku = gameConfig?.mode === GameMode.SUDOKU;
+      const isChallenge = gameConfig?.mode === GameMode.CHALLENGE;
+      const isRiddle = gameConfig?.mode === GameMode.RIDDLE;
 
-      // Reset Game State
+      let content;
+      if (isChallenge) {
+        content = generateChallenge(user.language, gameConfig.tier, gameConfig.levelId);
+      } else if (isSudoku) {
+        content = generateSudoku(gameConfig.tier);
+      } else if (isRiddle) {
+        content = generateRiddle(user.language, gameConfig.tier, gameConfig.levelId);
+      } else {
+        content = getLevelContent(gameConfig.mode, gameConfig.tier, gameConfig.levelId, user.language, user.playedWords);
+      }
+
       setGameState({
         guesses: [],
         currentGuess: '',
         status: 'playing',
         targetWord: content.target,
-        hintTitle: content.hintTitle,
-        hintDesc: content.hintDesc,
+        hintTitle: content.hintTitle || (isChallenge ? t.MODES.CHALLENGE.title : (isRiddle ? t.MODES.RIDDLE.title : t.GAME.HINT_TITLE)),
+        hintDesc: content.hintDesc || (isChallenge ? content.question : (isRiddle ? content.question : t.GAME.UNLOCK_HINT)),
+        data: content, // Store full content for Sudoku/Challenge validation
         timeLeft: content.timeLimit,
         startTime: Date.now(),
         hintsUsed: 0,
-        isMath: false,
+        isMath: content.type === 'math',
         isHintUnlocked: false,
         awaitingConfirmation: false,
         confirmedWord: null
@@ -1613,7 +1621,7 @@ export default function App() {
   };
 
   const getLanguageName = (lang: Language) => {
-    switch(lang) {
+    switch (lang) {
       case Language.DE: return "DEUTSCH";
       case Language.EN: return "ENGLISH";
       case Language.ES: return "ESPAÑOL";
@@ -1731,12 +1739,42 @@ export default function App() {
           onBuyPremium={() => setView('SEASON')}
           lang={user.language}
         />
+
+        {/* Season & Premium Info */}
+        <div className="flex gap-2 mt-2 px-2">
+          {/* Season Timer */}
+          <div className="flex-1 bg-gray-900/40 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center">
+            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Season Ende</span>
+            <div className="flex items-center gap-2 text-lexi-cyan font-mono font-bold">
+              <Clock size={14} />
+              <span>
+                {Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24))} Tage
+              </span>
+            </div>
+          </div>
+
+          {/* Premium Timer */}
+          {user.isPremium && (
+            <div className="flex-1 bg-gray-900/40 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center">
+              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Premium</span>
+              <div className="flex items-center gap-2 text-lexi-gold font-mono font-bold">
+                <Crown size={14} />
+                <span>
+                  {user.premiumActivatedAt
+                    ? Math.max(0, Math.ceil(((user.premiumActivatedAt + (30 * 24 * 60 * 60 * 1000)) - Date.now()) / (1000 * 60 * 60 * 24))) + " Tage"
+                    : "Aktiv"
+                  }
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
 
 
       {/* Grid */}
-      <div id="gamemodes" className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
+      <div id="gamemodes" className="grid grid-cols-2 gap-4 mb-8">
         <GameCard
           mode={GameMode.CLASSIC}
           title={t.MODES.CLASSIC.title}
@@ -1751,35 +1789,6 @@ export default function App() {
           desc={t.MODES.SPEEDRUN.desc}
           color="bg-lexi-card-orange"
           icon={Zap}
-          delay={50}
-        />
-
-
-
-        <GameCard
-          mode={GameMode.CHAIN}
-          title={t.MODES.CHAIN.title}
-          desc={t.MODES.CHAIN.desc}
-          color="bg-lexi-card-blue"
-          icon={LinkIcon}
-          delay={100}
-        />
-        <GameCard
-          mode={GameMode.CATEGORY}
-          title={t.MODES.CATEGORY.title}
-          desc={t.MODES.CATEGORY.desc}
-          color="bg-lexi-card-red"
-          icon={BookOpen}
-          delay={150}
-        />
-
-        <GameCard
-          mode={GameMode.SUDOKU}
-          title={t.MODES.SUDOKU.title}
-          desc={t.MODES.SUDOKU.desc}
-          color="bg-lexi-card-purple"
-          icon={Grid3X3}
-          delay={200}
         />
         <GameCard
           mode={GameMode.CHALLENGE}
@@ -1788,6 +1797,14 @@ export default function App() {
           color="bg-lexi-card-dark border border-yellow-500/30"
           icon={Brain}
           delay={250}
+        />
+        <GameCard
+          mode={GameMode.RIDDLE}
+          title={t.MODES.RIDDLE.title}
+          desc={t.MODES.RIDDLE.desc}
+          color="bg-lexi-card-pink border border-pink-500/30"
+          icon={HelpCircle}
+          delay={350}
         />
       </div>
 
@@ -1939,12 +1956,14 @@ export default function App() {
     const isSudoku = gameConfig?.mode === GameMode.SUDOKU;
     const isSpeedrun = gameConfig?.mode === GameMode.SPEEDRUN;
     const isChallenge = gameConfig?.mode === GameMode.CHALLENGE;
+    const isRiddle = gameConfig?.mode === GameMode.RIDDLE;
     const showTimer = gameState.timeLeft !== undefined;
 
     // Determine Help Text based on Mode for "Info Bar"
     let infoText = "Good Luck!";
     if (isSudoku) infoText = "Fill grid (A-I). No repeats.";
     else if (gameState.isMath) infoText = "Solve the math expression.";
+    else if (isRiddle) infoText = "Solve the riddle.";
     else infoText = `${gameState.targetWord.length} ${t.GAME.INFO_BAR}`;
 
     const validationStatus = (isSudoku && gameState.data?.sudokuGrid)
@@ -1971,7 +1990,7 @@ export default function App() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] animate-scale-in leading-none text-center mb-2">
-            {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : t.GAME.CLASSIC_TITLE)}
+            {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : (isRiddle ? t.MODES.RIDDLE.title : t.GAME.CLASSIC_TITLE))}
           </h1>
 
           <div className="bg-white/5 backdrop-blur-md border border-white/10 px-6 py-3 rounded-2xl shadow-xl animate-fade-in">
@@ -2105,7 +2124,7 @@ export default function App() {
       <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
 
       {/* Fade Transition Removed */}
-      
+
       {/* Version Manager - Handles Updates & Changelog */}
       <VersionManager isOnline={isOnline} t={t} />
 

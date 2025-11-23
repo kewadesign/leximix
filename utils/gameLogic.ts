@@ -24,9 +24,9 @@ export const getLevelContent = (mode: GameMode, tier: Tier, levelId: number, lan
   if (mode === GameMode.CHAIN) {
     let pairs = lang === Language.DE ? CHAIN_PAIRS_DE : CHAIN_PAIRS_EN;
     if (lang === Language.ES) pairs = CHAIN_PAIRS_ES;
-    
+
     const pair = pairs[Math.floor(pseudoRandom(0) % pairs.length)];
-    
+
     let hintTitle = "CHAIN LINK";
     if (lang === Language.DE) hintTitle = "WORTKETTE";
     if (lang === Language.ES) hintTitle = "CADENA";
@@ -51,7 +51,7 @@ export const getLevelContent = (mode: GameMode, tier: Tier, levelId: number, lan
     const cat = catKeys[Math.floor(pseudoRandom(0) % catKeys.length)];
     const words = cats[cat];
     const word = words[Math.floor(pseudoRandom(1) % words.length)];
-    
+
     let hintTitle = "TOPIC";
     if (lang === Language.DE) hintTitle = "THEMA";
     if (lang === Language.ES) hintTitle = "TEMA";
@@ -88,12 +88,12 @@ export const getLevelContent = (mode: GameMode, tier: Tier, levelId: number, lan
 
   let hintTitle = "CLASSIC";
   if (mode === GameMode.SPEEDRUN) hintTitle = "SPEEDRUN";
-  
+
   if (lang === Language.DE) {
-      hintTitle = mode === GameMode.SPEEDRUN ? "ZEITRENNEN" : "KLASSISCH";
+    hintTitle = mode === GameMode.SPEEDRUN ? "ZEITRENNEN" : "KLASSISCH";
   }
   if (lang === Language.ES) {
-      hintTitle = mode === GameMode.SPEEDRUN ? "CONTRARRELOJ" : "CLÁSICO";
+    hintTitle = mode === GameMode.SPEEDRUN ? "CONTRARRELOJ" : "CLÁSICO";
   }
 
   return {
@@ -317,5 +317,44 @@ export const generateChallenge = (lang: Language, tier: Tier, levelId: number) =
     target: a,
     question: q,
     timeLimit
+  };
+};
+
+// --- Riddle Logic ---
+
+import { BUDDY_RIDDLES } from '../components/BuddyRiddles';
+
+export const generateRiddle = (lang: Language, tier: Tier, levelId: number) => {
+  // Use BUDDY_RIDDLES as the source
+  // Filter by difficulty based on Tier if desired, or just random/sequential
+  // For now, let's map Tiers to difficulties roughly
+
+  let difficulty = 'easy';
+  if (tier === Tier.SKILLED || tier === Tier.EXPERT) difficulty = 'medium';
+  if (tier === Tier.MASTER) difficulty = 'hard';
+
+  // Filter riddles by difficulty (optional, or just use all)
+  // Let's use all for now to have more content, or filter if we have enough
+  // const availableRiddles = BUDDY_RIDDLES.filter(r => r.difficulty === difficulty);
+  const availableRiddles = BUDDY_RIDDLES;
+
+  if (availableRiddles.length === 0) {
+    return {
+      target: "EMPTY",
+      question: "No riddles available.",
+      timeLimit: undefined
+    };
+  }
+
+  // Deterministic selection based on levelId
+  const index = (levelId - 1) % availableRiddles.length;
+  const riddle = availableRiddles[index];
+
+  return {
+    target: riddle.answer.toUpperCase(), // Ensure uppercase for game logic
+    question: riddle.question,
+    hintTitle: "RÄTSEL", // Or localized title
+    hintDesc: riddle.question,
+    timeLimit: undefined
   };
 };
