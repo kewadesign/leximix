@@ -1,9 +1,9 @@
 {
-    "version": "2.1.0",
+    "version": "2.2.0",
     "buildDate": "2025-11-23",
     "apk": {
-        "version": "2.1.0",
+        "version": "2.2.0",
         "url": "http://leximix.de/app-debug.apk",
-        "buildNumber": 1
+        "buildNumber": 2
     }
 }

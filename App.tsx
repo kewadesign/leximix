@@ -373,6 +373,7 @@ export default function App() {
   const [serverVersion, setServerVersion] = useState('');
   const [apkVersion, setApkVersion] = useState('');
   const [showNewBadge, setShowNewBadge] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(false);
 
   // Online/Offline monitoring
   useEffect(() => {
@@ -410,7 +411,7 @@ export default function App() {
         if (!response.ok) return;
 
         const data = await response.json();
-        const currentVersion = '2.1.0'; // From package.json
+        const currentVersion = '2.2.0'; // From package.json
 
         // Set APK version for display
         if (data.apk) {
@@ -435,6 +436,9 @@ export default function App() {
             console.log(`[Update] New APK available: ${data.apk.version} (current: ${currentVersion})`);
             setServerVersion(data.apk.version);
             setUpdateAvailable(true);
+
+            // Force update if in app and version mismatch
+            setForceUpdate(true);
           }
         } else if (data.version && data.version !== currentVersion) {
           // Check web version for browser
@@ -2173,6 +2177,51 @@ export default function App() {
             >
               Neu laden
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Force Update Blocking Overlay (App Only) */}
+      {forceUpdate && (window as any).Capacitor !== undefined && (
+        <div className="fixed inset-0 z-[99998] flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="glass-panel p-8 rounded-3xl max-w-md mx-4 text-center space-y-6">
+            <div className="w-20 h-20 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center border-2 border-orange-500 animate-pulse">
+              <AlertTriangle size={40} className="text-orange-500" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-white mb-2 uppercase">Update Erforderlich</h2>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                Du verwendest eine veraltete Version von LexiMix. Bitte aktualisiere die App, um weiter spielen zu können.
+              </p>
+              <div className="flex items-center justify-center gap-4 text-xs text-gray-400 bg-black/30 p-3 rounded-lg">
+                <div className="flex flex-col items-center">
+                  <span className="text-gray-500">Installiert</span>
+                  <span className="font-mono text-red-400">v2.1.0</span>
+                </div>
+                <ArrowLeft size={16} className="rotate-180 text-orange-500" />
+                <div className="flex flex-col items-center">
+                  <span className="text-gray-500">Erforderlich</span>
+                  <span className="font-mono text-green-400 font-bold">v{apkVersion}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 text-xs text-gray-400">
+              <div className="flex items-center gap-2 justify-center">
+                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                <span>Spielen nicht möglich mit alter Version</span>
+              </div>
+              <div className="flex items-center gap-2 justify-center">
+                <Sparkles size={12} />
+                <span>Neue Features & Verbesserungen verfügbar</span>
+              </div>
+            </div>
+            <a
+              href="/app-debug.apk"
+              download
+              className="block w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 hover:brightness-110 text-white font-black uppercase rounded-xl transition-all shadow-lg"
+            >
+              Jetzt APK herunterladen
+            </a>
           </div>
         </div>
       )}
