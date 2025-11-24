@@ -147,8 +147,10 @@ export const registerUser = async (email: string, password: string, username: st
         // Map Firebase Auth errors to German messages
         let errorMessage = 'Registrierung fehlgeschlagen.';
         if (error.code === 'auth/email-already-in-use') errorMessage = 'E-Mail wird bereits verwendet.';
-        if (error.code === 'auth/invalid-email') errorMessage = 'Ungültige E-Mail-Adresse.';
-        if (error.code === 'auth/weak-password') errorMessage = 'Passwort ist zu schwach.';
+        else if (error.code === 'auth/invalid-email') errorMessage = 'Ungültige E-Mail-Adresse.';
+        else if (error.code === 'auth/weak-password') errorMessage = 'Passwort ist zu schwach.';
+        else if (error.code) errorMessage = `Fehler: ${error.code}`;
+        else if (error.message) errorMessage = `Fehler: ${error.message}`;
         
         return { success: false, error: errorMessage };
     }
