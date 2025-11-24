@@ -250,9 +250,23 @@ export default function App() {
     const fetchSeasonSettings = async () => {
       try {
         // 1. Setup Real-time Listener for Active Season ID from Firebase
-        const { getDatabase, ref, onValue } = await import('firebase/database');
-        const db = getDatabase();
-        const seasonRef = ref(db, 'system/active_season_id');
+        // Import the initialized database instance to avoid initialization errors
+        let db;
+        let seasonRef;
+        
+        try {
+          const { database } = await import('./utils/firebase');
+          const { ref } = await import('firebase/database');
+          db = database;
+          seasonRef = ref(db, 'system/active_season_id');
+        } catch (initError) {
+          console.warn('[Season] Failed to import initialized database, falling back to getDatabase:', initError);
+          const { getDatabase, ref } = await import('firebase/database');
+          db = getDatabase();
+          seasonRef = ref(db, 'system/active_season_id');
+        }
+        
+        const { onValue } = await import('firebase/database');
 
         // 2. Fetch Season Data from Ionos (static config)
         let response;
@@ -274,7 +288,8 @@ export default function App() {
           const firebaseActiveId = snapshot.exists() ? snapshot.val() : null;
           
           // Priority: Firebase ID > JSON activeSeasonId > Date-based fallback
-          const activeId = firebaseActiveId || settings.activeSeasonId;
+          // Use currentSeasonId which is the correct key from the JSON
+          const activeId = firebaseActiveId || settings.currentSeasonId || settings.activeSeasonId;
           const activeSeasonData = settings.seasons.find((s: any) => s.id === activeId);
           
           if (activeSeasonData) {
