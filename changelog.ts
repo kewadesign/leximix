@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.8',
+        date: '2025-11-24',
+        changes: {
+            changed: [
+                'Update-Hinweis Text angepasst ("NICE!")',
+                'Optimierungen am Authentifizierungsprozess'
+            ]
+        }
+    },
+    {
         version: '2.6.7',
         date: '2025-11-24',
         changes: {

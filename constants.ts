@@ -4,7 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '2.6.7';
+export const APP_VERSION = '2.6.8';
 
 // ============================================================================
 // SEASON SYSTEM
@@ -430,7 +430,7 @@ export const TRANSLATIONS = {
       AVAILABLE_DESC_WEB: "LexiMix wurde aktualisiert. Lade die App neu.",
       DOWNLOAD: "HERUNTERLADEN",
       RELOAD: "NEU LADEN",
-      COOL: "COOLE SACHE!",
+      COOL: "NICE!",
       NOTES: "UPDATE NOTES"
     }
   },
