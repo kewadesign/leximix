@@ -11,7 +11,9 @@
       "  • Update firebase template with maintenance fields",
       "👷 Build & Deploy",
       "  • Update APK to v2.6.2 (Debug build renamed to release)",
-      "  • Update ionos_deploy with latest web build (v2.6.2)"
+      "  • Update ionos_deploy with latest web build (v2.6.2)",
+      "📝 Documentation",
+      "  • Auto-generate changelog from git history"
     ]
   },
   {
