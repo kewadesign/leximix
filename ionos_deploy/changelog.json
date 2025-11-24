@@ -1,9 +1,31 @@
 [
   {
+    "version": "2.6.2",
+    "date": "24.11.2025",
+    "changes": [
+      "🌙 Dark Mode funktioniert jetzt in allen Ansichten",
+      "🎁 Gutschein-Modal vollständig übersetzt (DE/EN/ES)"
+    ]
+  },
+  {
+    "version": "2.6.1",
+    "date": "24.11.2025",
+    "changes": [
+      "👤 Benutzername wird nun korrekt im Header angezeigt",
+      "🌍 Premium-Modal Texte vollständig übersetzt (DE/EN/ES)"
+    ]
+  },
+  {
     "version": "2.6.0",
     "date": "24.11.2025",
     "changes": [
-      "fix: Restore Dark Mode button and verify Game Modes"
+      "🎮 Neuer Spielmodus: Rätsel (Riddle Mode)",
+      "🇪🇸 Spanische Sprache (Español) hinzugefügt",
+      "🌙 Dark Mode Button im Header wiederhergestellt",
+      "🎨 Layout-Optimierungen im Hauptmenü",
+      "🎨 Season Pass Design wiederhergestellt (Orange)",
+      "🔓 Sudoku Modus jetzt für alle verfügbar",
+      "⭐ Challenge Modus erfordert Premium"
     ]
   },
   {
