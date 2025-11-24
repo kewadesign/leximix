@@ -251,6 +251,13 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
             <Download size={20} />
             {isCapacitor ? t.UPDATES.DOWNLOAD : t.UPDATES.RELOAD}
           </button>
+
+          <button
+            onClick={() => setShowChangelog(true)}
+            className="w-full text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors pt-2"
+          >
+            {t.UPDATES.WHATS_NEW}
+          </button>
         </div>
       </Modal>
 
