@@ -11,9 +11,9 @@
       ".write": false,
       "$voucherId": {
         "usedBy": {
-           "$uid": {
-             ".write": "!data.exists()"
-           }
+          "$username": {
+            ".write": "!data.exists()"
+          }
         }
       }
     }

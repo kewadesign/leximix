@@ -15,10 +15,16 @@ export const CHANGELOG: ChangelogEntry[] = [
         version: '2.6.6',
         date: '2025-11-24',
         changes: {
+            added: [
+                'Neues Login-System mit E-Mail Verifizierung',
+                'Passwort-Sicherheit verbessert',
+                'Automatische Cloud-Synchronisierung beim Start'
+            ],
             fixed: [
                 'Firebase Cloud-Speicherung optimiert (Debouncing & besseres Sync)',
                 'Header-Buttons im Light Mode jetzt mit schwarzer Schrift auf weißem Hintergrund',
-                'Rate Limiting für Cloud-Saves verbessert'
+                'Rate Limiting für Cloud-Saves verbessert',
+                'Fehlerhafte Speicherung von Userdaten korrigiert'
             ]
         }
     },

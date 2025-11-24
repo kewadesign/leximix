@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateProfile, User, signOut } from "firebase/auth";
 // KW1998 - Firebase Integration
 // WICHTIG: runTransaction wurde hier hinzugefügt
 import { getDatabase, ref, set, get, child, runTransaction, onValue } from 'firebase/database';
@@ -20,8 +21,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+export const auth = getAuth(app);
 
-// Simple hash function (NOT secure for production)
+// Simple hash function (NOT secure for production) - KEEPING FOR LEGACY DB ONLY
 const simpleHash = (str: string): string => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -68,29 +70,28 @@ const DEFAULT_USER_STATE: UserState = {
 };
 
 // ============================================================================
-// AUTH FUNCTIONS (Unverändert)
+// AUTH FUNCTIONS (UPDATED: Firebase Auth + DB)
 // ============================================================================
 
-export const registerUser = async (username: string, password: string, initialData?: Partial<UserState>): Promise<{ success: boolean; error?: string }> => {
-    if (!checkRateLimit()) {
-        return { success: false, error: 'Bitte warte einen Moment...' };
-    }
-
+/**
+ * Creates the user data in Realtime Database.
+ * Internal helper used after Firebase Auth registration.
+ */
+const createDatabaseUser = async (username: string, initialData?: Partial<UserState>): Promise<boolean> => {
     const normalizedUsername = normalizeUsername(username);
-
     try {
         const userRef = ref(database, `users/${normalizedUsername}`);
         const snapshot = await get(userRef);
 
         if (snapshot.exists()) {
-            return { success: false, error: 'Benutzername bereits vergeben' };
+            // User DB entry already exists - might be claiming a legacy username or re-registering
+            // For now, we assume unique usernames are enforced before calling this
+            return false;
         }
 
-        const hashedPassword = simpleHash(password);
-
         // Create user with full default state
+        // Note: We no longer store the password in DB for new users
         await set(userRef, {
-            password: hashedPassword,
             createdAt: Date.now(),
             saves: {
                 current: {
@@ -101,22 +102,14 @@ export const registerUser = async (username: string, password: string, initialDa
                 }
             }
         });
-
-        return { success: true };
-    } catch (error: any) {
-        console.error('[Firebase] Register error:', error);
-        // Log specific details to help debugging
-        if (error.code) console.error('Error code:', error.code);
-        if (error.message) console.error('Error message:', error.message);
-
-        if (error.message && error.message.includes('permission_denied')) {
-            return { success: false, error: 'Benutzername bereits vergeben (oder Zugriff verweigert)' };
-        }
-        return { success: false, error: 'Registrierung fehlgeschlagen. Prüfe die Konsole.' };
+        return true;
+    } catch (error) {
+        console.error('[Firebase] Create DB User error:', error);
+        throw error;
     }
 };
 
-export const loginUser = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+export const registerUser = async (email: string, password: string, username: string, initialData?: Partial<UserState>): Promise<{ success: boolean; error?: string; user?: User }> => {
     if (!checkRateLimit()) {
         return { success: false, error: 'Bitte warte einen Moment...' };
     }
@@ -124,39 +117,82 @@ export const loginUser = async (username: string, password: string): Promise<{ s
     const normalizedUsername = normalizeUsername(username);
 
     try {
-        // Check App Version
-        const versionRef = ref(database, 'system/min_version');
-        const versionSnapshot = await get(versionRef);
-
-        if (versionSnapshot.exists()) {
-            const minVersion = versionSnapshot.val();
-            // const currentVersion = "2.1.0"; // OLD
-            const currentVersion = APP_VERSION;
-            if (currentVersion < minVersion) {
-                return { success: false, error: `Update erforderlich! (Benötigt: v${minVersion})` };
-            }
-        }
-
+        // 1. Check if username is taken in DB (to maintain unique usernames)
         const userRef = ref(database, `users/${normalizedUsername}`);
         const snapshot = await get(userRef);
-
-        if (!snapshot.exists()) {
-            return { success: false, error: 'Benutzer nicht gefunden' };
+        if (snapshot.exists()) {
+            return { success: false, error: 'Benutzername bereits vergeben' };
         }
 
-        const userData = snapshot.val();
-        const hashedPassword = simpleHash(password);
+        // 2. Create Auth User
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-        if (userData.password !== hashedPassword) {
-            return { success: false, error: 'Falsches Passwort' };
-        }
+        // 3. Send Verification Email
+        await sendEmailVerification(user);
+        console.log("Registrierung erfolgreich. Bestätigungs-E-Mail gesendet.");
 
-        return { success: true };
-    } catch (error) {
-        console.error('[Firebase] Login error:', error);
-        return { success: false, error: 'Login fehlgeschlagen' };
+        // 4. Update Profile with Username
+        await updateProfile(user, {
+            displayName: username
+        });
+
+        // 5. Create DB Entry
+        await createDatabaseUser(username, initialData);
+
+        return { success: true, user };
+
+    } catch (error: any) {
+        console.error('[Firebase] Register error:', error);
+        // Map Firebase Auth errors to German messages
+        let errorMessage = 'Registrierung fehlgeschlagen.';
+        if (error.code === 'auth/email-already-in-use') errorMessage = 'E-Mail wird bereits verwendet.';
+        if (error.code === 'auth/invalid-email') errorMessage = 'Ungültige E-Mail-Adresse.';
+        if (error.code === 'auth/weak-password') errorMessage = 'Passwort ist zu schwach.';
+        
+        return { success: false, error: errorMessage };
     }
 };
+
+export const loginUser = async (email: string, password: string): Promise<{ success: boolean; error?: string; username?: string; emailVerified?: boolean }> => {
+    if (!checkRateLimit()) {
+        return { success: false, error: 'Bitte warte einen Moment...' };
+    }
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // WICHTIG: Prüfen, ob E-Mail verifiziert ist
+        if (!user.emailVerified) {
+            console.warn("Bitte bestätige zuerst deine E-Mail-Adresse!");
+             // Optional: Logout handled by caller or just return status
+             return { success: false, error: 'Bitte bestätige zuerst deine E-Mail-Adresse!', emailVerified: false };
+        }
+
+        console.log("Login erfolgreich und E-Mail ist verifiziert!");
+        
+        // Get username from profile or DB?
+        // Profile displayName is set during registration
+        let username = user.displayName || '';
+
+        // Fallback: If displayName is missing (legacy?), try to find by some other means?
+        // For now, assume displayName is present for new auth users.
+        
+        return { success: true, username: username, emailVerified: true };
+
+    } catch (error: any) {
+        console.error('[Firebase] Login error:', error);
+        let errorMessage = 'Login fehlgeschlagen';
+        if (error.code === 'auth/user-not-found') errorMessage = 'Benutzer nicht gefunden.';
+        if (error.code === 'auth/wrong-password') errorMessage = 'Falsches Passwort.';
+        if (error.code === 'auth/invalid-email') errorMessage = 'Ungültige E-Mail-Adresse.';
+        if (error.code === 'auth/invalid-credential') errorMessage = 'Ungültige Zugangsdaten.';
+        
+        return { success: false, error: errorMessage };
+    }
+};
+
 
 // ============================================================================
 // SAVE / LOAD FUNCTIONS (Unverändert)

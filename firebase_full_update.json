@@ -1,11 +1,12 @@
 {
   "system": {
-    "latest_version": "2.6.2",
-    "latest_apk_version": "2.6.2",
-    "min_version": "2.5.0",
+    "active_season_id": 2,
     "download_url": "http://leximix.de/app-release.apk",
+    "latest_apk_version": "2.6.6",
+    "latest_version": "2.6.6",
     "maintenance_active": false,
-    "maintenance_message": "Wir führen Wartungsarbeiten durch."
+    "maintenance_message": "Serverwartung, Update wird benötigt",
+    "min_version": "2.6.6"
   },
   "users": {
     "kevinkevin2": {

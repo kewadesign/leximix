@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './UI';
 import { registerUser, loginUser } from '../utils/firebase';
-import { User, Lock, AlertCircle, Calculator } from 'lucide-react';
+import { User, Lock, AlertCircle, Calculator, Mail, CheckCircle } from 'lucide-react';
 import { TRANSLATIONS } from '../translations';
 import { Language } from '../types';
 
@@ -15,12 +15,14 @@ interface Props {
 
 export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, onLanguageChange }) => {
     const [mode, setMode] = useState<'login' | 'register' | 'age_verify' | 'language_select' | 'select_auth_type'>('select_auth_type');
+    const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [age, setAge] = useState<number>(0);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showVerificationSent, setShowVerificationSent] = useState(false);
 
     const t = TRANSLATIONS[lang].auth;
 
@@ -56,32 +58,43 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
         }
 
         // Validation
-        if (!username || !password) {
+        if (!email || !password) {
             setError('Bitte fülle alle Felder aus');
             return;
         }
-
-        if (username.length < 3) {
-            setError('Benutzername zu kurz (mindestens 3 Zeichen)');
+        
+        if (mode === 'register' && !username) {
+            setError('Bitte wähle einen Benutzernamen');
             return;
         }
 
-        if (username.length > 30) {
-            setError('Benutzername zu lang (maximal 30 Zeichen)');
-            return;
-        }
-
-        if (!/^[a-zA-Z0-9]+$/.test(username)) {
-            setError('Nur Buchstaben und Zahlen erlaubt (a-z, 0-9)');
-            return;
-        }
-
-        if (password.length < 6) {
-            setError('Passwort muss mindestens 6 Zeichen lang sein');
-            return;
+        // Basic Email validation
+        if (!/\S+@\S+\.\S+/.test(email)) {
+             setError('Bitte gib eine gültige E-Mail-Adresse ein');
+             return;
         }
 
         if (mode === 'register') {
+            if (username.length < 3) {
+                setError('Benutzername zu kurz (mindestens 3 Zeichen)');
+                return;
+            }
+    
+            if (username.length > 30) {
+                setError('Benutzername zu lang (maximal 30 Zeichen)');
+                return;
+            }
+    
+            if (!/^[a-zA-Z0-9]+$/.test(username)) {
+                setError('Nur Buchstaben und Zahlen erlaubt (a-z, 0-9)');
+                return;
+            }
+
+            if (password.length < 6) {
+                setError('Passwort muss mindestens 6 Zeichen lang sein');
+                return;
+            }
+
             if (password !== confirmPassword) {
                 setError('Passwörter stimmen nicht überein');
                 return;
@@ -100,17 +113,16 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
         try {
             if (mode === 'register') {
-                const result = await registerUser(username, password, { language: lang, age });
+                const result = await registerUser(email, password, username, { language: lang, age });
                 if (result.success) {
-                    onSuccess(username);
-                    onClose();
+                    setShowVerificationSent(true);
                 } else {
                     setError(result.error || 'Registrierung fehlgeschlagen');
                 }
             } else {
-                const result = await loginUser(username, password);
-                if (result.success) {
-                    onSuccess(username);
+                const result = await loginUser(email, password);
+                if (result.success && result.username) {
+                    onSuccess(result.username);
                     onClose();
                 } else {
                     setError(result.error || 'Login fehlgeschlagen');
@@ -124,21 +136,41 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     };
 
     const resetForm = () => {
+        setEmail('');
         setUsername('');
         setPassword('');
         setConfirmPassword('');
         setCaptchaInput('');
         setError('');
+        setShowVerificationSent(false);
     };
 
-    const switchMode = () => {
-        if (mode === 'login') {
-            setMode('language_select'); // Start registration flow at language selection
-        } else {
-            setMode('login');
-        }
-        resetForm();
-    };
+    // If verification sent, show special view
+    if (showVerificationSent) {
+        return (
+             <Modal isOpen={isOpen} onClose={onClose} title="E-Mail bestätigen">
+                <div className="flex flex-col items-center justify-center p-6 space-y-6 text-center">
+                    <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center">
+                        <Mail size={40} className="text-green-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white">Fast geschafft!</h3>
+                    <p className="text-gray-300">
+                        Wir haben dir eine Bestätigungs-E-Mail an <span className="text-lexi-fuchsia font-bold">{email}</span> gesendet.
+                        Bitte klicke auf den Link in der E-Mail, um deinen Account zu aktivieren.
+                    </p>
+                    <button
+                        onClick={() => {
+                            setMode('login');
+                            setShowVerificationSent(false);
+                        }}
+                        className="w-full py-4 bg-gray-800 border border-white/10 rounded-xl text-white font-bold hover:bg-gray-700 transition-all"
+                    >
+                        Zum Login
+                    </button>
+                </div>
+             </Modal>
+        );
+    }
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? t.login : mode === 'age_verify' ? 'ALTER' : mode === 'language_select' ? 'LANGUAGE' : mode === 'register' ? t.register : 'WELCOME'}>
@@ -230,24 +262,42 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
                 {(mode === 'login' || mode === 'register') && (
                     <>
-                        {/* Username */}
-                        <div>
-                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.username}</label>
+                        {/* Email */}
+                         <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">E-MAIL</label>
                             <div className="relative">
-                                <User size={18} className="absolute left-3 top-3 text-gray-500" />
+                                <Mail size={18} className="absolute left-3 top-3 text-gray-500" />
                                 <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                    placeholder={t.username}
+                                    placeholder="deine@email.com"
                                     disabled={loading}
-                                    maxLength={30}
-                                    autoFocus={mode === 'register'}
+                                    autoFocus
                                 />
                             </div>
-                            {mode === 'register' && <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30</p>}
                         </div>
+
+                        {/* Username - ONLY FOR REGISTER */}
+                        {mode === 'register' && (
+                            <div>
+                                <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.username}</label>
+                                <div className="relative">
+                                    <User size={18} className="absolute left-3 top-3 text-gray-500" />
+                                    <input
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                                        className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
+                                        placeholder={t.username}
+                                        disabled={loading}
+                                        maxLength={30}
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30</p>
+                            </div>
+                        )}
 
                         {/* Password */}
                         <div>
@@ -339,3 +389,4 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
         </Modal>
     );
 };
+

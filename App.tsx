@@ -182,7 +182,7 @@ export default function App() {
 
   const [user, setUser] = useState<UserState>(() => {
     try {
-      const saved = localStorage.getItem('leximix_user_v2');
+      const saved = localStorage.getItem('leximix_user'); // FIXED: Was leximix_user_v2
 
       // Initial Unlock State: Start with NO levels completed
       // Level 1 is always unlocked by default in the render logic
@@ -408,6 +408,25 @@ export default function App() {
         }
       } else {
         setView('HOME'); // Go straight to home
+        
+        // Background Sync on Startup: Ensure we have the latest cloud data
+        // This fixes issues where local data might be stale or missing
+        import('./utils/firebase').then(async ({ loadFromCloud, normalizeUsername }) => {
+            const normalizedUser = normalizeUsername(cloudUser);
+            try {
+                const cloudData = await loadFromCloud(normalizedUser);
+                if (cloudData) {
+                    setUser(prev => ({
+                        ...prev,
+                        ...cloudData,
+                        name: normalizedUser // Ensure username consistency
+                    }));
+                    console.log('[Cloud] Startup sync successful');
+                }
+            } catch (err) {
+                console.error('[Cloud] Startup sync failed:', err);
+            }
+        });
       }
     } catch (error) {
       console.error('[LexiMix] Init error:', error);
