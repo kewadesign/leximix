@@ -3,8 +3,15 @@
     "version": "2.6.2",
     "date": "24.11.2025",
     "changes": [
-      "🌙 Dark Mode funktioniert jetzt in allen Ansichten",
-      "🎁 Gutschein-Modal vollständig übersetzt (DE/EN/ES)"
+      "✨ Features",
+      "  • Add Maintenance Mode & Fix Changelog Button UI",
+      "🐞 Bugfixes",
+      "  • Web users see 'Please wait' instead of force download",
+      "🔧 Maintenance",
+      "  • Update firebase template with maintenance fields",
+      "👷 Build & Deploy",
+      "  • Update APK to v2.6.2 (Debug build renamed to release)",
+      "  • Update ionos_deploy with latest web build (v2.6.2)"
     ]
   },
   {
