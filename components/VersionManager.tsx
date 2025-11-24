@@ -3,6 +3,7 @@ import { getDatabase, ref, get, onValue } from 'firebase/database';
 import { Modal } from './UI';
 import { AlertTriangle, ArrowLeft, Sparkles, Download } from 'lucide-react';
 import { ChangelogModal, ChangelogEntry } from './ChangelogModal';
+import { MaintenanceScreen } from './MaintenanceScreen';
 import { APP_VERSION } from '../constants';
 
 interface Props {
@@ -19,6 +20,10 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
   const [showOptionalUpdate, setShowOptionalUpdate] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
   const [viewingChangelogFromForce, setViewingChangelogFromForce] = useState(false);
+  
+  // Maintenance State
+  const [isMaintenance, setIsMaintenance] = useState(false);
+  const [maintenanceMessage, setMaintenanceMessage] = useState('');
 
   const [changelogData, setChangelogData] = useState<ChangelogEntry[]>([]);
 
@@ -41,6 +46,14 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
 
         // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
         const url = data.download_url || (isCapacitor ? 'http://leximix.de/app-release.apk' : '/app-release.apk');
+
+        // Check Maintenance Mode
+        if (data.maintenance_active) {
+          setIsMaintenance(true);
+          setMaintenanceMessage(data.maintenance_message || '');
+        } else {
+          setIsMaintenance(false);
+        }
 
         setServerVersion(latest);
         setMinVersion(minimum);
@@ -115,6 +128,11 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
       }
     }
   };
+
+  // Maintenance Mode (Blocking)
+  if (isMaintenance) {
+    return <MaintenanceScreen message={maintenanceMessage} />;
+  }
 
   // Force Update Modal (Blocking)
   if (showForceUpdate) {
