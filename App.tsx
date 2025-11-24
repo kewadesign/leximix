@@ -404,7 +404,6 @@ export default function App() {
           setView('LANGUAGE_SELECT');
         } else {
           setView('AUTH'); // Show login screen
-          setShowAuthModal(true);
         }
       } else {
         setView('HOME'); // Go straight to home
@@ -431,7 +430,6 @@ export default function App() {
     } catch (error) {
       console.error('[LexiMix] Init error:', error);
       setView('AUTH');
-      setShowAuthModal(true);
     }
   }, []);
 
@@ -2465,12 +2463,16 @@ export default function App() {
             </div>
 
             <div className="glass-panel p-8 rounded-3xl">
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg"
-              >
-                Anmelden / Registrieren
-              </button>
+              <AuthModal
+                isOpen={true}
+                onClose={() => {}}
+                onSuccess={(username) => {
+                  handleCloudLogin(username);
+                }}
+                lang={user.language}
+                onLanguageChange={(lang) => setUser(prev => ({ ...prev, language: lang }))}
+                embedded={true}
+              />
             </div>
           </div>
         </div>

@@ -8,29 +8,6 @@
     "maintenance_message": "Serverwartung, Update wird benötigt",
     "min_version": "2.6.6"
   },
-  "users": {
-    "kevinkevin2": {
-      "createdAt": 1763979994483,
-      "password": "nzmsw0",
-      "saves": {
-        "current": {
-          "age": 0,
-          "avatarId": "Felix",
-          "coins": 0,
-          "isPremium": false,
-          "language": "DE",
-          "lastSaved": 1763979994484,
-          "level": 1,
-          "name": "kevinkevin2",
-          "ownedAvatars": [
-            "Felix"
-          ],
-          "theme": "dark",
-          "xp": 0
-        }
-      }
-    }
-  },
   "vouchers": {
     "04JLYB": {
       "coins": 1000,
@@ -95,7 +72,10 @@
     "LEXIMIX-04JL-YB5F-WONX": {
       "coins": 0,
       "description": "Premium Upgrade",
-      "isPremium": true
+      "isPremium": true,
+      "usedBy": {
+        "kevinkevin": 1763983656408
+      }
     },
     "LEXIMIX-0AC5-5QCR-Z86A": {
       "coins": 0,
