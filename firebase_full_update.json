@@ -1,16 +1,16 @@
 {
   "system": {
-    "latest_apk_version": "2.5.2",
-    "latest_version": "2.5.2",
-    "min_version": "2.5.2",
+    "latest_version": "2.6.2",
+    "latest_apk_version": "2.6.2",
+    "min_version": "2.5.0",
     "download_url": "http://leximix.de/app-release.apk",
     "maintenance_active": false,
-    "maintenance_message": "Wir führen Wartungsarbeiten durch. LexiMix ist bald zurück!"
+    "maintenance_message": "Wir führen Wartungsarbeiten durch."
   },
   "users": {
-    "kevin": {
-      "createdAt": 1763922771569,
-      "password": "-cgp46i",
+    "kevinkevin2": {
+      "createdAt": 1763979994483,
+      "password": "nzmsw0",
       "saves": {
         "current": {
           "age": 0,
@@ -18,51 +18,9 @@
           "coins": 0,
           "isPremium": false,
           "language": "DE",
-          "lastSaved": 1763922771569,
+          "lastSaved": 1763979994484,
           "level": 1,
-          "name": "Kevin",
-          "ownedAvatars": [
-            "Felix"
-          ],
-          "theme": "dark",
-          "xp": 0
-        }
-      }
-    },
-    "kewa": {
-      "createdAt": 1763924889070,
-      "password": "-cgp46i",
-      "saves": {
-        "current": {
-          "age": 0,
-          "avatarId": "Felix",
-          "coins": 0,
-          "isPremium": false,
-          "language": "DE",
-          "lastSaved": 1763924889073,
-          "level": 1,
-          "name": "Kewa",
-          "ownedAvatars": [
-            "Felix"
-          ],
-          "theme": "dark",
-          "xp": 0
-        }
-      }
-    },
-    "neunziger": {
-      "createdAt": 1763919646600,
-      "password": "-pf0l61",
-      "saves": {
-        "current": {
-          "age": 0,
-          "avatarId": "Felix",
-          "coins": 0,
-          "isPremium": false,
-          "language": "DE",
-          "lastSaved": 1763919646600,
-          "level": 1,
-          "name": "neunziger",
+          "name": "kevinkevin2",
           "ownedAvatars": [
             "Felix"
           ],
