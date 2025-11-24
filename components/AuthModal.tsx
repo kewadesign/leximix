@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './UI';
-import { registerUser, loginUser } from '../utils/firebase';
+import { registerUser, loginUser, resetPassword } from '../utils/firebase';
 import { User, Lock, AlertCircle, Calculator, Mail, CheckCircle } from 'lucide-react';
 import { TRANSLATIONS } from '../translations';
 import { Language } from '../types';
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, onLanguageChange, embedded = false }) => {
-    const [mode, setMode] = useState<'login' | 'register' | 'age_verify' | 'language_select' | 'select_auth_type'>('select_auth_type');
+    const [mode, setMode] = useState<'login' | 'register' | 'age_verify' | 'language_select' | 'select_auth_type' | 'password_reset'>('select_auth_type');
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -24,6 +24,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showVerificationSent, setShowVerificationSent] = useState(false);
+    const [showPasswordResetSent, setShowPasswordResetSent] = useState(false);
 
     const t = TRANSLATIONS[lang].auth;
 
@@ -49,6 +50,10 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
         e.preventDefault();
         setError('');
 
+        if (mode === 'password_reset') {
+            return handlePasswordReset(e);
+        }
+
         if (mode === 'age_verify') {
             if (age < 12 || age > 120) {
                 setError('Das Alter muss zwischen 12 und 120 Jahren liegen.');
@@ -63,7 +68,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
             setError('Bitte fülle alle Felder aus');
             return;
         }
-        
+
         if (mode === 'register' && !username) {
             setError('Bitte wähle einen Benutzernamen');
             return;
@@ -71,8 +76,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
         // Basic Email validation
         if (!/\S+@\S+\.\S+/.test(email)) {
-             setError('Bitte gib eine gültige E-Mail-Adresse ein');
-             return;
+            setError('Bitte gib eine gültige E-Mail-Adresse ein');
+            return;
         }
 
         if (mode === 'register') {
@@ -80,12 +85,12 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                 setError('Benutzername zu kurz (mindestens 3 Zeichen)');
                 return;
             }
-    
+
             if (username.length > 30) {
                 setError('Benutzername zu lang (maximal 30 Zeichen)');
                 return;
             }
-    
+
             if (!/^[a-zA-Z0-9]+$/.test(username)) {
                 setError('Nur Buchstaben und Zahlen erlaubt (a-z, 0-9)');
                 return;
@@ -136,6 +141,35 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
         }
     };
 
+    const handlePasswordReset = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+
+        if (!email) {
+            setError('Bitte gib deine E-Mail-Adresse ein');
+            return;
+        }
+
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            setError('Bitte gib eine gültige E-Mail-Adresse ein');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const result = await resetPassword(email);
+            if (result.success) {
+                setShowPasswordResetSent(true);
+            } else {
+                setError(result.error || 'Fehler beim Senden der E-Mail');
+            }
+        } catch (err) {
+            setError('Ein Fehler ist aufgetreten');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const resetForm = () => {
         setEmail('');
         setUsername('');
@@ -172,6 +206,34 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
         if (embedded) return content;
         return <Modal isOpen={isOpen} onClose={onClose} title="E-Mail bestätigen">{content}</Modal>;
+    }
+
+    // If password reset sent, show special view
+    if (showPasswordResetSent) {
+        const content = (
+            <div className="flex flex-col items-center justify-center p-6 space-y-6 text-center">
+                <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center">
+                    <CheckCircle size={40} className="text-blue-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">{t.resetEmailSent}</h3>
+                <p className="text-gray-300">
+                    {t.checkEmail}
+                </p>
+                <button
+                    onClick={() => {
+                        setMode('login');
+                        setShowPasswordResetSent(false);
+                        resetForm();
+                    }}
+                    className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-bold hover:brightness-110 transition-all rounded-xl"
+                >
+                    {t.backToLogin}
+                </button>
+            </div>
+        );
+
+        if (embedded) return content;
+        return <Modal isOpen={isOpen} onClose={onClose} title={t.resetPassword}>{content}</Modal>;
     }
 
     const formContent = (
@@ -261,10 +323,10 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                 </div>
             )}
 
-            {(mode === 'login' || mode === 'register') && (
+            {(mode === 'login' || mode === 'register' || mode === 'password_reset') && (
                 <>
                     {/* Email */}
-                     <div>
+                    <div>
                         <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">E-MAIL</label>
                         <div className="relative">
                             <Mail size={18} className="absolute left-3 top-3 text-gray-500" />
@@ -301,20 +363,22 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                     )}
 
                     {/* Password */}
-                    <div>
-                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.password}</label>
-                        <div className="relative">
-                            <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                placeholder={t.password}
-                                disabled={loading}
-                            />
+                    {(mode === 'login' || mode === 'register') && (
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.password}</label>
+                            <div className="relative">
+                                <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
+                                    placeholder={t.password}
+                                    disabled={loading}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </>
             )}
 
@@ -364,12 +428,36 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
             {/* Login Button */}
             {mode === 'login' && (
+                <>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                    >
+                        {loading ? t.loading : t.login}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setMode('password_reset');
+                            resetForm();
+                        }}
+                        className="w-full text-sm text-gray-400 hover:text-lexi-fuchsia transition-colors text-center"
+                    >
+                        {t.forgotPassword}
+                    </button>
+                </>
+            )}
+
+            {/* Password Reset Form */}
+            {mode === 'password_reset' && (
                 <button
-                    type="submit"
+                    type="button"
+                    onClick={handlePasswordReset}
                     disabled={loading}
                     className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                 >
-                    {loading ? t.loading : t.login}
+                    {loading ? t.loading : t.sendResetEmail}
                 </button>
             )}
 

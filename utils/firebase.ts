@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateProfile, User, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateProfile, User, signOut, updateEmail, updatePassword, sendPasswordResetEmail, EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "firebase/auth";
 // KW1998 - Firebase Integration
 // WICHTIG: runTransaction wurde hier hinzugefügt
 import { getDatabase, ref, set, get, child, runTransaction, onValue } from 'firebase/database';
@@ -151,7 +151,7 @@ export const registerUser = async (email: string, password: string, username: st
         else if (error.code === 'auth/weak-password') errorMessage = 'Passwort ist zu schwach.';
         else if (error.code) errorMessage = `Fehler: ${error.code}`;
         else if (error.message) errorMessage = `Fehler: ${error.message}`;
-        
+
         return { success: false, error: errorMessage };
     }
 };
@@ -168,19 +168,19 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
         // WICHTIG: Prüfen, ob E-Mail verifiziert ist
         if (!user.emailVerified) {
             console.warn("Bitte bestätige zuerst deine E-Mail-Adresse!");
-             // Optional: Logout handled by caller or just return status
-             return { success: false, error: 'Bitte bestätige zuerst deine E-Mail-Adresse!', emailVerified: false };
+            // Optional: Logout handled by caller or just return status
+            return { success: false, error: 'Bitte bestätige zuerst deine E-Mail-Adresse!', emailVerified: false };
         }
 
         console.log("Login erfolgreich und E-Mail ist verifiziert!");
-        
+
         // Get username from profile or DB?
         // Profile displayName is set during registration
         let username = user.displayName || '';
 
         // Fallback: If displayName is missing (legacy?), try to find by some other means?
         // For now, assume displayName is present for new auth users.
-        
+
         return { success: true, username: username, emailVerified: true };
 
     } catch (error: any) {
@@ -190,7 +190,7 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
         if (error.code === 'auth/wrong-password') errorMessage = 'Falsches Passwort.';
         if (error.code === 'auth/invalid-email') errorMessage = 'Ungültige E-Mail-Adresse.';
         if (error.code === 'auth/invalid-credential') errorMessage = 'Ungültige Zugangsdaten.';
-        
+
         return { success: false, error: errorMessage };
     }
 };
@@ -276,6 +276,173 @@ export const deleteUserAccount = async (username: string): Promise<boolean> => {
     } catch (error) {
         console.error('[Firebase] Delete error:', error);
         return false;
+    }
+};
+
+// ============================================================================
+// ENHANCED AUTHENTICATION FUNCTIONS
+// ============================================================================
+
+/**
+ * Re-authenticate user with current password
+ * Required before sensitive operations like email/password changes
+ */
+export const reauthenticateUser = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            return { success: false, error: 'Nicht angemeldet' };
+        }
+
+        const credential = EmailAuthProvider.credential(email, password);
+        await reauthenticateWithCredential(user, credential);
+
+        console.log('[Firebase] Re-authentication successful');
+        return { success: true };
+    } catch (error: any) {
+        console.error('[Firebase] Re-authentication error:', error);
+        let errorMessage = 'Re-Authentifizierung fehlgeschlagen';
+        if (error.code === 'auth/wrong-password') errorMessage = 'Falsches Passwort';
+        if (error.code === 'auth/invalid-credential') errorMessage = 'Ungültige Zugangsdaten';
+        if (error.code === 'auth/too-many-requests') errorMessage = 'Zu viele Versuche. Bitte später erneut versuchen.';
+
+        return { success: false, error: errorMessage };
+    }
+};
+
+/**
+ * Change user's email address
+ * Requires recent re-authentication
+ */
+export const changeUserEmail = async (newEmail: string, currentPassword: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+        const user = auth.currentUser;
+        if (!user || !user.email) {
+            return { success: false, error: 'Nicht angemeldet' };
+        }
+
+        // Re-authenticate first
+        const reauth = await reauthenticateUser(user.email, currentPassword);
+        if (!reauth.success) {
+            return reauth;
+        }
+
+        // Update email
+        await updateEmail(user, newEmail);
+
+        // Send verification email to new address
+        await sendEmailVerification(user);
+
+        console.log('[Firebase] Email updated successfully');
+        return { success: true };
+    } catch (error: any) {
+        console.error('[Firebase] Change email error:', error);
+        let errorMessage = 'E-Mail-Änderung fehlgeschlagen';
+        if (error.code === 'auth/email-already-in-use') errorMessage = 'E-Mail wird bereits verwendet';
+        if (error.code === 'auth/invalid-email') errorMessage = 'Ungültige E-Mail-Adresse';
+        if (error.code === 'auth/requires-recent-login') errorMessage = 'Bitte melde dich erneut an';
+
+        return { success: false, error: errorMessage };
+    }
+};
+
+/**
+ * Change user's password
+ * Requires recent re-authentication
+ */
+export const changeUserPassword = async (currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+        const user = auth.currentUser;
+        if (!user || !user.email) {
+            return { success: false, error: 'Nicht angemeldet' };
+        }
+
+        // Re-authenticate first
+        const reauth = await reauthenticateUser(user.email, currentPassword);
+        if (!reauth.success) {
+            return reauth;
+        }
+
+        // Validate new password
+        if (newPassword.length < 6) {
+            return { success: false, error: 'Neues Passwort muss mindestens 6 Zeichen lang sein' };
+        }
+
+        // Update password
+        await updatePassword(user, newPassword);
+
+        console.log('[Firebase] Password updated successfully');
+        return { success: true };
+    } catch (error: any) {
+        console.error('[Firebase] Change password error:', error);
+        let errorMessage = 'Passwort-Änderung fehlgeschlagen';
+        if (error.code === 'auth/weak-password') errorMessage = 'Passwort ist zu schwach';
+        if (error.code === 'auth/requires-recent-login') errorMessage = 'Bitte melde dich erneut an';
+
+        return { success: false, error: errorMessage };
+    }
+};
+
+/**
+ * Send password reset email
+ * Can be called without authentication
+ */
+export const resetPassword = async (email: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+        await sendPasswordResetEmail(auth, email);
+
+        console.log('[Firebase] Password reset email sent');
+        return { success: true };
+    } catch (error: any) {
+        console.error('[Firebase] Password reset error:', error);
+        let errorMessage = 'Fehler beim Senden der E-Mail';
+        if (error.code === 'auth/user-not-found') errorMessage = 'Benutzer nicht gefunden';
+        if (error.code === 'auth/invalid-email') errorMessage = 'Ungültige E-Mail-Adresse';
+        if (error.code === 'auth/too-many-requests') errorMessage = 'Zu viele Versuche. Bitte später erneut versuchen.';
+
+        return { success: false, error: errorMessage };
+    }
+};
+
+/**
+ * Delete user account completely
+ * Deletes from both Firebase Auth AND Realtime Database
+ */
+export const deleteUserAccountComplete = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    const normalizedUsername = normalizeUsername(username);
+
+    try {
+        const user = auth.currentUser;
+        if (!user || !user.email) {
+            return { success: false, error: 'Nicht angemeldet' };
+        }
+
+        // Re-authenticate first for security
+        const reauth = await reauthenticateUser(user.email, password);
+        if (!reauth.success) {
+            return reauth;
+        }
+
+        // 1. Delete from Realtime Database
+        const userRef = ref(database, `users/${normalizedUsername}`);
+        await set(userRef, null);
+        console.log('[Firebase] User data deleted from database');
+
+        // 2. Delete from Firebase Auth
+        await deleteUser(user);
+        console.log('[Firebase] User account deleted from authentication');
+
+        // 3. Sign out (clean up local session)
+        await signOut(auth);
+
+        return { success: true };
+    } catch (error: any) {
+        console.error('[Firebase] Account deletion error:', error);
+        let errorMessage = 'Fehler beim Löschen des Accounts';
+        if (error.code === 'auth/requires-recent-login') errorMessage = 'Bitte melde dich erneut an';
+        if (error.code === 'auth/wrong-password') errorMessage = 'Falsches Passwort';
+
+        return { success: false, error: errorMessage };
     }
 };
 

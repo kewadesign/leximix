@@ -407,24 +407,24 @@ export default function App() {
         }
       } else {
         setView('HOME'); // Go straight to home
-        
+
         // Background Sync on Startup: Ensure we have the latest cloud data
         // This fixes issues where local data might be stale or missing
         import('./utils/firebase').then(async ({ loadFromCloud, normalizeUsername }) => {
-            const normalizedUser = normalizeUsername(cloudUser);
-            try {
-                const cloudData = await loadFromCloud(normalizedUser);
-                if (cloudData) {
-                    setUser(prev => ({
-                        ...prev,
-                        ...cloudData,
-                        name: normalizedUser // Ensure username consistency
-                    }));
-                    console.log('[Cloud] Startup sync successful');
-                }
-            } catch (err) {
-                console.error('[Cloud] Startup sync failed:', err);
+          const normalizedUser = normalizeUsername(cloudUser);
+          try {
+            const cloudData = await loadFromCloud(normalizedUser);
+            if (cloudData) {
+              setUser(prev => ({
+                ...prev,
+                ...cloudData,
+                name: normalizedUser // Ensure username consistency
+              }));
+              console.log('[Cloud] Startup sync successful');
             }
+          } catch (err) {
+            console.error('[Cloud] Startup sync failed:', err);
+          }
         });
       }
     } catch (error) {
@@ -437,7 +437,7 @@ export default function App() {
   // Sync user state to cloud on changes (with debouncing)
   useEffect(() => {
     if (!cloudUsername) return;
-    
+
     // Debounce: Wait 3 seconds before syncing to avoid too many requests
     const syncTimer = setTimeout(async () => {
       try {
@@ -1836,20 +1836,27 @@ export default function App() {
   const renderHome = () => (
     <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-20">
       <div className="flex justify-between items-center p-6 animate-slide-down">
-        <div className="flex items-center gap-3" onClick={openProfile}>
+        <div className="flex items-center gap-3 flex-1" onClick={openProfile}>
           <div className={`w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-gray-800 cursor-pointer ${getAvatarEffect(user.activeFrame)}`}>
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
           </div>
-          <div>
-            <h2 className={`font-black text-lg leading-none ${user.isPremium ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 animate-shimmer' : 'text-white'}`}>
+          <div className="flex-1">
+            <h2 className={`font-black text-lg leading-none mb-1.5 ${user.isPremium ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 animate-shimmer' : 'text-white'}`}>
               {cloudUsername || user.name}
             </h2>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 text-xs font-bold text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded-full border border-yellow-400/30">
-                <Coins size={10} className="fill-yellow-400" /> {user.coins}
+            {/* Season Level Progress Bar */}
+            <div className="w-full max-w-[200px]">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold text-cyan-300/80 uppercase tracking-wider">Season Lvl {user.level}</span>
+                <span className="text-[10px] font-mono text-cyan-300/60">{user.xp % 100}/100 XP</span>
               </div>
-              <div className="flex items-center gap-1 text-xs font-bold text-lexi-fuchsia bg-lexi-fuchsia/10 px-2 py-0.5 rounded-full border border-lexi-fuchsia/30">
-                <Trophy size={10} /> Lvl {user.level}
+              <div className="h-2 bg-black/40 rounded-full overflow-hidden border border-cyan-500/30 relative">
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 transition-all duration-500 relative overflow-hidden"
+                  style={{ width: `${(user.xp % 100)}%` }}
+                >
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] animate-shimmer"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -2465,7 +2472,7 @@ export default function App() {
             <div className="glass-panel p-8 rounded-3xl">
               <AuthModal
                 isOpen={true}
-                onClose={() => {}}
+                onClose={() => { }}
                 onSuccess={(username) => {
                   handleCloudLogin(username);
                 }}

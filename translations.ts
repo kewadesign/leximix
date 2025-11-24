@@ -105,7 +105,13 @@ export const TRANSLATIONS = {
             loginNow: "Login now",
             loading: "Loading...",
             captcha: "Security Question",
-            result: "Result"
+            result: "Result",
+            forgotPassword: "Forgot Password?",
+            resetPassword: "Reset Password",
+            sendResetEmail: "Send Reset Email",
+            resetEmailSent: "Password reset email sent!",
+            checkEmail: "Please check your email to reset your password.",
+            backToLogin: "Back to Login"
         },
 
         // Profile
@@ -233,7 +239,13 @@ export const TRANSLATIONS = {
             loginNow: "Jetzt anmelden",
             loading: "Lädt...",
             captcha: "Sicherheitsfrage",
-            result: "Ergebnis"
+            result: "Ergebnis",
+            forgotPassword: "Passwort vergessen?",
+            resetPassword: "Passwort zurücksetzen",
+            sendResetEmail: "E-Mail senden",
+            resetEmailSent: "Passwort-Reset E-Mail gesendet!",
+            checkEmail: "Bitte überprüfe deine E-Mails um dein Passwort zurückzusetzen.",
+            backToLogin: "Zurück zum Login"
         },
 
         // Profile
@@ -361,7 +373,13 @@ export const TRANSLATIONS = {
             loginNow: "Inicia sesión ahora",
             loading: "Cargando...",
             captcha: "Pregunta de Seguridad",
-            result: "Resultado"
+            result: "Resultado",
+            forgotPassword: "¿Olvidaste tu contraseña?",
+            resetPassword: "Restablecer Contraseña",
+            sendResetEmail: "Enviar Email",
+            resetEmailSent: "¡Email de restablecimiento enviado!",
+            checkEmail: "Por favor revisa tu correo electrónico para restablecer tu contraseña.",
+            backToLogin: "Volver al Login"
         },
 
         // Profile
