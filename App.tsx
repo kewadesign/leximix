@@ -1707,6 +1707,10 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button onClick={toggleTheme} className="w-10 h-10 glass-button rounded-full flex items-center justify-center">
+            {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-blue-400" />}
+          </button>
+
           <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors group">
             <div className="relative">
               <Coins className="text-yellow-400 group-hover:rotate-12 transition-transform" size={18} />
