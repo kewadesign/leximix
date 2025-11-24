@@ -19,7 +19,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
   const [showOptionalUpdate, setShowOptionalUpdate] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
   const [viewingChangelogFromForce, setViewingChangelogFromForce] = useState(false);
-  
+
   const [changelogData, setChangelogData] = useState<ChangelogEntry[]>([]);
 
   const isCapacitor = (window as any).Capacitor !== undefined;
@@ -35,10 +35,10 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
     const unsubscribe = onValue(systemRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        
+
         const latest = isCapacitor ? (data.latest_apk_version || data.latest_version) : data.latest_version;
         const minimum = data.min_version || '0.0.0';
-        
+
         // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
         const url = data.download_url || (isCapacitor ? 'http://leximix.de/app-release.apk' : '/app-release.apk');
 
@@ -81,7 +81,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
       setShowOptionalUpdate(false); // Force takes precedence
       return;
     } else {
-        setShowForceUpdate(false);
+      setShowForceUpdate(false);
     }
 
     // 2. Check Optional Update
@@ -93,26 +93,26 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
     // We show changelog if the last seen version < current version
     const lastSeen = localStorage.getItem('last_seen_version');
     if (!lastSeen || compare(current, lastSeen) > 0) {
-       if (compare(current, latest) >= 0) {
-           setShowChangelog(true);
-           localStorage.setItem('last_seen_version', current);
-       }
+      if (compare(current, latest) >= 0) {
+        setShowChangelog(true);
+        localStorage.setItem('last_seen_version', current);
+      }
     }
   };
 
   const handleDownload = () => {
     if (isCapacitor) {
-        // Direct download link for APK (external browser)
-        window.open(downloadUrl, '_system');
+      // Direct download link for APK (external browser)
+      window.open(downloadUrl, '_system');
     } else {
-        if (downloadUrl.endsWith('.apk')) {
-             window.location.href = downloadUrl;
-        } else if (downloadUrl.startsWith('http')) {
-             window.location.href = downloadUrl;
-        } else {
-             // For web updates (reload)
-             window.location.reload();
-        }
+      if (downloadUrl.endsWith('.apk')) {
+        window.location.href = downloadUrl;
+      } else if (downloadUrl.startsWith('http')) {
+        window.location.href = downloadUrl;
+      } else {
+        // For web updates (reload)
+        window.location.reload();
+      }
     }
   };
 
@@ -124,7 +124,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
           <div className="w-24 h-24 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center border-2 border-orange-500 animate-pulse-slow">
             <AlertTriangle size={48} className="text-orange-500" />
           </div>
-          
+
           <div>
             <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-wider">{t.UPDATES.REQUIRED_TITLE}</h2>
             <p className="text-gray-300 leading-relaxed">
@@ -155,31 +155,35 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
 
             <button
               onClick={() => {
-                  setViewingChangelogFromForce(true);
-                  setShowChangelog(true);
+                setViewingChangelogFromForce(true);
+                setShowChangelog(true);
               }}
               className="text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors"
             >
               {t.UPDATES.WHATS_NEW}
             </button>
           </div>
-          
+
           <p className="text-[10px] text-gray-600 uppercase tracking-widest">{t.UPDATES.SECURITY}</p>
         </div>
-        
+
         {/* Show Changelog on top if requested */}
         {showChangelog && viewingChangelogFromForce && (
-            <div className="absolute inset-0 z-[100000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
-                <ChangelogModal 
-                    isOpen={true} 
-                    onClose={() => {
-                        setShowChangelog(false);
-                        setViewingChangelogFromForce(false);
-                    }} 
-                    entries={changelogData}
-                    t={t}
-                />
-            </div>
+          <div className="absolute inset-0 z-[100000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+            <ChangelogModal
+              isOpen={true}
+              onClose={() => {
+                setShowChangelog(false);
+                setViewingChangelogFromForce(false);
+              }}
+              entries={changelogData}
+              t={t}
+              downloadUrl={downloadUrl}
+              currentVersion={APP_VERSION}
+              latestVersion={serverVersion}
+              onDownload={handleDownload}
+            />
+          </div>
         )}
       </div>
     );
@@ -188,9 +192,9 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
   return (
     <>
       {/* Optional Update Modal */}
-      <Modal 
-        isOpen={showOptionalUpdate} 
-        onClose={() => setShowOptionalUpdate(false)} 
+      <Modal
+        isOpen={showOptionalUpdate}
+        onClose={() => setShowOptionalUpdate(false)}
         title={t.UPDATES.AVAILABLE_TITLE}
       >
         <div className="text-center space-y-6">
@@ -208,21 +212,25 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
           </div>
 
           <button
-             onClick={handleDownload}
-             className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg flex items-center justify-center gap-2"
+            onClick={handleDownload}
+            className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg flex items-center justify-center gap-2"
           >
-             <Download size={20} />
-             {isCapacitor ? t.UPDATES.DOWNLOAD : t.UPDATES.RELOAD}
+            <Download size={20} />
+            {isCapacitor ? t.UPDATES.DOWNLOAD : t.UPDATES.RELOAD}
           </button>
         </div>
       </Modal>
 
       {/* Changelog Modal */}
-      <ChangelogModal 
-        isOpen={showChangelog} 
-        onClose={() => setShowChangelog(false)} 
+      <ChangelogModal
+        isOpen={showChangelog}
+        onClose={() => setShowChangelog(false)}
         entries={changelogData}
         t={t}
+        downloadUrl={downloadUrl}
+        currentVersion={APP_VERSION}
+        latestVersion={serverVersion}
+        onDownload={handleDownload}
       />
     </>
   );

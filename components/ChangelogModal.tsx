@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from './UI';
-import { Sparkles, Check, Zap } from 'lucide-react';
+import { Sparkles, Check, Zap, Download } from 'lucide-react';
 
 export interface ChangelogEntry {
     version: string;
@@ -13,10 +13,25 @@ interface Props {
     onClose: () => void;
     entries: ChangelogEntry[];
     t: any;
+    downloadUrl?: string;
+    currentVersion?: string;
+    latestVersion?: string;
+    onDownload?: () => void;
 }
 
-export const ChangelogModal: React.FC<Props> = ({ isOpen, onClose, entries, t }) => {
+export const ChangelogModal: React.FC<Props> = ({
+    isOpen,
+    onClose,
+    entries,
+    t,
+    downloadUrl,
+    currentVersion,
+    latestVersion,
+    onDownload
+}) => {
     const latest = entries[0];
+    const isCapacitor = (window as any).Capacitor !== undefined;
+    const needsUpdate = currentVersion && latestVersion && currentVersion !== latestVersion;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={t.UPDATES.WHATS_NEW}>
@@ -49,6 +64,16 @@ export const ChangelogModal: React.FC<Props> = ({ isOpen, onClose, entries, t })
                         </div>
                     ))}
                 </div>
+
+                {/* Show Download Button if update is available and on Capacitor */}
+                {needsUpdate && isCapacitor && downloadUrl && onDownload && (
+                    <button
+                        onClick={onDownload}
+                        className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2 mb-3">
+                        <Download size={20} />
+                        {t.UPDATES.DOWNLOAD} v{latestVersion}
+                    </button>
+                )}
 
                 <button
                     onClick={onClose}
