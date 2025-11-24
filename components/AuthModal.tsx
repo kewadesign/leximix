@@ -2,22 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './UI';
 import { registerUser, loginUser } from '../utils/firebase';
 import { User, Lock, AlertCircle, Calculator } from 'lucide-react';
+import { TRANSLATIONS } from '../translations';
+import { Language } from '../types';
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: (username: string) => void;
+    lang: Language;
 }
 
-export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
-    const [mode, setMode] = useState<'login' | 'register' | 'lang_select' | 'age_verify'>('login');
+export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang }) => {
+    const [mode, setMode] = useState<'login' | 'register' | 'age_verify'>('login');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [age, setAge] = useState<number>(0);
-    const [language, setLanguage] = useState<'DE' | 'EN' | 'ES'>('DE');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const t = TRANSLATIONS[lang].auth;
 
     // CAPTCHA State
     const [captcha, setCaptcha] = useState({ num1: 0, num2: 0 });
@@ -41,14 +45,9 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         e.preventDefault();
         setError('');
 
-        if (mode === 'lang_select') {
-            setMode('age_verify');
-            return;
-        }
-
         if (mode === 'age_verify') {
             if (age < 12) {
-                setError('Du musst mindestens 12 Jahre alt sein.');
+                setError('Du musst mindestens 12 Jahre alt sein.'); // Keep hardcoded or add to translations if needed
                 return;
             }
             setMode('register');
@@ -133,7 +132,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     const switchMode = () => {
         if (mode === 'login') {
-            setMode('lang_select'); // Start registration flow
+            setMode('age_verify'); // Start registration flow directly at age verify
         } else {
             setMode('login');
         }
@@ -141,7 +140,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? 'ANMELDEN' : mode === 'lang_select' ? 'SPRACHE' : mode === 'age_verify' ? 'ALTER' : 'REGISTRIEREN'}>
+        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? t.login : mode === 'age_verify' ? 'ALTER' : t.register}>
             <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                     <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-3 flex items-center gap-2">
@@ -150,59 +149,24 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                     </div>
                 )}
 
-                {mode === 'lang_select' && (
-                    <div className="grid grid-cols-3 gap-4">
-                        <button
-                            type="button"
-                            onClick={() => setLanguage('DE')}
-                            className={`p-4 rounded-2xl border-2 transition-all ${language === 'DE' ? 'border-lexi-fuchsia bg-lexi-fuchsia/20' : 'border-white/10 bg-gray-900'}`}
-                        >
-                            <span className="text-3xl block mb-2">🇩🇪</span>
-                            <span className="font-bold text-white text-sm">Deutsch</span>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setLanguage('EN')}
-                            className={`p-4 rounded-2xl border-2 transition-all ${language === 'EN' ? 'border-lexi-cyan bg-lexi-cyan/20' : 'border-white/10 bg-gray-900'}`}
-                        >
-                            <span className="text-3xl block mb-2">🇺🇸</span>
-                            <span className="font-bold text-white text-sm">English</span>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setLanguage('ES')}
-                            className={`p-4 rounded-2xl border-2 transition-all ${language === 'ES' ? 'border-yellow-500 bg-yellow-500/20' : 'border-white/10 bg-gray-900'}`}
-                        >
-                            <span className="text-3xl block mb-2">🇪🇸</span>
-                            <span className="font-bold text-white text-sm">Español</span>
-                        </button>
-                        <button
-                            type="submit"
-                            className="col-span-3 w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all"
-                        >
-                            Weiter
-                        </button>
-                    </div>
-                )}
-
                 {mode === 'age_verify' && (
                     <div>
-                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Dein Alter</label>
+                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.age}</label>
                         <input
                             type="number"
                             value={age || ''}
                             onChange={(e) => setAge(parseInt(e.target.value))}
                             className="w-full px-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white text-center font-bold text-xl focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                            placeholder="Alter eingeben"
+                            placeholder={t.age}
                             autoFocus
                         />
-                        <p className="text-xs text-gray-500 mt-2 text-center">Mindestalter: 12 Jahre</p>
+                        <p className="text-xs text-gray-500 mt-2 text-center">{t.minAge}</p>
                         <button
                             type="submit"
                             disabled={!age}
                             className="w-full mt-4 py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50"
                         >
-                            Weiter
+                            {TRANSLATIONS[lang].ONBOARDING.CONTINUE}
                         </button>
                     </div>
                 )}
@@ -211,7 +175,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                     <>
                         {/* Username */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Benutzername</label>
+                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.username}</label>
                             <div className="relative">
                                 <User size={18} className="absolute left-3 top-3 text-gray-500" />
                                 <input
@@ -219,18 +183,18 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
                                     className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                    placeholder="Dein Benutzername"
+                                    placeholder={t.username}
                                     disabled={loading}
                                     maxLength={30}
                                     autoFocus={mode === 'register'}
                                 />
                             </div>
-                            {mode === 'register' && <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30 Zeichen</p>}
+                            {mode === 'register' && <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30</p>}
                         </div>
 
                         {/* Password */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Passwort</label>
+                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.password}</label>
                             <div className="relative">
                                 <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
                                 <input
@@ -238,7 +202,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                    placeholder="Dein Passwort"
+                                    placeholder={t.password}
                                     disabled={loading}
                                 />
                             </div>
@@ -250,7 +214,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                 {mode === 'register' && (
                     <>
                         <div>
-                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">Passwort bestätigen</label>
+                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.confirmPassword}</label>
                             <div className="relative">
                                 <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
                                 <input
@@ -258,7 +222,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                    placeholder="Passwort wiederholen"
+                                    placeholder={t.confirmPassword}
                                     disabled={loading}
                                 />
                             </div>
@@ -268,14 +232,14 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                         <div className="bg-white/5 p-4 rounded-xl border border-white/10">
                             <label className="block text-sm font-bold text-lexi-fuchsia mb-2 uppercase flex items-center gap-2">
                                 <Calculator size={16} />
-                                Sicherheitsfrage: {captcha.num1} + {captcha.num2} = ?
+                                {t.captcha}: {captcha.num1} + {captcha.num2} = ?
                             </label>
                             <input
                                 type="number"
                                 value={captchaInput}
                                 onChange={(e) => setCaptchaInput(e.target.value)}
                                 className="w-full px-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors text-center font-bold text-lg"
-                                placeholder="Ergebnis"
+                                placeholder={t.result}
                                 disabled={loading}
                             />
                         </div>
@@ -285,7 +249,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                             disabled={loading}
                             className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                         >
-                            {loading ? 'Lädt...' : 'Registrieren'}
+                            {loading ? t.loading : t.register}
                         </button>
                     </>
                 )}
@@ -297,7 +261,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                         disabled={loading}
                         className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                     >
-                        {loading ? 'Lädt...' : 'Anmelden'}
+                        {loading ? t.loading : t.login}
                     </button>
                 )}
 
@@ -308,9 +272,9 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                     className="w-full text-sm text-gray-400 hover:text-white transition-colors"
                 >
                     {mode === 'login' ? (
-                        <>Noch kein Account? <span className="text-lexi-fuchsia font-bold">Jetzt registrieren</span></>
+                        <>{t.noAccount} <span className="text-lexi-fuchsia font-bold">{t.registerNow}</span></>
                     ) : (
-                        <>Schon einen Account? <span className="text-lexi-fuchsia font-bold">Jetzt anmelden</span></>
+                        <>{t.hasAccount} <span className="text-lexi-fuchsia font-bold">{t.loginNow}</span></>
                     )}
                 </button>
             </form>

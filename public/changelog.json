@@ -1,5 +1,12 @@
 [
   {
+    "version": "2.6.0",
+    "date": "24.11.2025",
+    "changes": [
+      "fix: Restore Dark Mode button and verify Game Modes"
+    ]
+  },
+  {
     "version": "2.5.2",
     "date": "24.11.2025",
     "changes": [

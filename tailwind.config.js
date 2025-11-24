@@ -28,6 +28,8 @@ export default {
                 'lexi-card-blue': '#1e40af',
                 'lexi-card-red': '#be123c',
                 'lexi-card-purple': '#6b21a8',
+                'lexi-card-yellow': '#ca8a04',
+                'lexi-card-pink': '#db2777',
                 'lexi-card-dark': '#111827',
             },
         },

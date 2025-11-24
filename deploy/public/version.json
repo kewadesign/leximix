@@ -1,9 +1,10 @@
 {
-    "version": "2.3.1",
-    "buildDate": "2025-11-24",
+    "version": "2.6.0",
+    "minVersion": "2.1.0",
+    "maintenance": false,
     "apk": {
-        "version": "2.3.1",
-        "url": "https://leximix.web.app/app-release.apk",
-        "buildNumber": 4
+        "version": "2.6.0",
+        "url": "https://leximix.vercel.app/leximix.apk",
+        "buildNumber": 8
     }
 }

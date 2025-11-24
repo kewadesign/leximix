@@ -144,7 +144,13 @@ export const TRANSLATIONS = {
       SEASON_LEVEL: "Season Level",
       TAGLINE: "THE DAILY WORD TRAINING",
       LANG_BTN: "DEUTSCH",
-      PLAY: "PLAY"
+      PLAY: "PLAY",
+      COINS: "Coins",
+      PREMIUM_REQUIRED_TITLE: "Premium Required",
+      PREMIUM_REQUIRED_LOCKED: "Challenge Mode Locked",
+      PREMIUM_REQUIRED_DESC: "This mode is exclusive to premium members. Get the Season Pass to unlock daily challenges and exclusive rewards!",
+      PREMIUM_REQUIRED_GO: "Go to Season Pass",
+      PREMIUM_REQUIRED_LATER: "Maybe later"
     },
     MODES: {
       CLASSIC: { title: "CLASSIC", desc: "The Standard" },
@@ -220,7 +226,23 @@ export const TRANSLATIONS = {
       AGE: "AGE",
       AVATAR: "SELECT AVATAR",
       DELETE_PROFILE: "DELETE PROFILE",
-      AVATAR_HINT: "Click avatar to cycle through your owned collection"
+      AVATAR_HINT: "Click avatar to cycle through your owned collection",
+      USERNAME: "USERNAME",
+      CURRENT: "CURRENT",
+      NEW_USER_PLACEHOLDER: "New Username",
+      COST: "COST",
+      CHANGE: "CHANGE",
+      AVATAR_PREVIEW: "AVATAR PREVIEW",
+      CHOOSE_AVATAR: "CHOOSE AVATAR",
+      LOCKED: "LOCKED",
+      AGE_MSG: "Age cannot be changed later.",
+      STATS: "STATS",
+      DELETE_ACCOUNT: "DELETE ACCOUNT",
+      DELETE_WARNING: "WARNING!",
+      CONFIRM_MSG: "Type 'delete' to confirm:",
+      CONFIRM_PLACEHOLDER: "delete",
+      CANCEL: "CANCEL",
+      CONFIRM_DELETE: "PERMANENTLY DELETE"
     },
     SHOP: {
       TITLE: "BLACK MARKET",
@@ -269,7 +291,13 @@ export const TRANSLATIONS = {
       SEASON_LEVEL: "Saison Stufe",
       TAGLINE: "DAS TÄGLICHE WORTTRAINING",
       LANG_BTN: "ENGLISH",
-      PLAY: "SPIELEN"
+      PLAY: "SPIELEN",
+      COINS: "Münzen",
+      PREMIUM_REQUIRED_TITLE: "Premium Erforderlich",
+      PREMIUM_REQUIRED_LOCKED: "Challenge Mode Gesperrt",
+      PREMIUM_REQUIRED_DESC: "Dieser Modus ist exklusiv für Premium-Mitglieder. Hole dir den Season Pass, um tägliche Herausforderungen und exklusive Belohnungen freizuschalten!",
+      PREMIUM_REQUIRED_GO: "Zum Season Pass",
+      PREMIUM_REQUIRED_LATER: "Vielleicht später"
     },
     MODES: {
       CLASSIC: { title: "KLASSISCH", desc: "Der Standard" },
@@ -345,7 +373,23 @@ export const TRANSLATIONS = {
       AGE: "ALTER",
       AVATAR: "AVATAR WÄHLEN",
       DELETE_PROFILE: "PROFIL LÖSCHEN",
-      AVATAR_HINT: "Klicke auf den Avatar um durch deine Sammlung zu wechseln"
+      AVATAR_HINT: "Klicke auf den Avatar um durch deine Sammlung zu wechseln",
+      USERNAME: "BENUTZERNAME",
+      CURRENT: "AKTUELL",
+      NEW_USER_PLACEHOLDER: "Neuer Benutzername",
+      COST: "KOSTEN",
+      CHANGE: "ÄNDERN",
+      AVATAR_PREVIEW: "AVATAR VORSCHAU",
+      CHOOSE_AVATAR: "AVATAR WÄHLEN",
+      LOCKED: "FIXIERT",
+      AGE_MSG: "Das Alter kann nachträglich nicht geändert werden.",
+      STATS: "STATISTIKEN",
+      DELETE_ACCOUNT: "ACCOUNT LÖSCHEN",
+      DELETE_WARNING: "WARNUNG!",
+      CONFIRM_MSG: "Tippe 'delete' um zu bestätigen:",
+      CONFIRM_PLACEHOLDER: "delete",
+      CANCEL: "ABBRECHEN",
+      CONFIRM_DELETE: "ENDGÜLTIG LÖSCHEN"
     },
     SHOP: {
       TITLE: "Marktplatz",
@@ -394,7 +438,13 @@ export const TRANSLATIONS = {
       SEASON_LEVEL: "Nivel de Temporada",
       TAGLINE: "EL ENTRENAMIENTO DIARIO",
       LANG_BTN: "ESPAÑOL",
-      PLAY: "JUGAR"
+      PLAY: "JUGAR",
+      COINS: "Monedas",
+      PREMIUM_REQUIRED_TITLE: "Premium Requerido",
+      PREMIUM_REQUIRED_LOCKED: "Modo Desafío Bloqueado",
+      PREMIUM_REQUIRED_DESC: "Este modo es exclusivo para miembros premium. ¡Obtén el Pase de Temporada para desbloquear desafíos diarios y recompensas exclusivas!",
+      PREMIUM_REQUIRED_GO: "Ir al Pase de Temporada",
+      PREMIUM_REQUIRED_LATER: "Quizás más tarde"
     },
     MODES: {
       CLASSIC: { title: "CLÁSICO", desc: "El Estándar" },
@@ -470,7 +520,23 @@ export const TRANSLATIONS = {
       AGE: "EDAD",
       AVATAR: "SELECCIONAR AVATAR",
       DELETE_PROFILE: "BORRAR PERFIL",
-      AVATAR_HINT: "Haz clic en el avatar para ver tu colección"
+      AVATAR_HINT: "Haz clic en el avatar para ver tu colección",
+      USERNAME: "NOMBRE DE USUARIO",
+      CURRENT: "ACTUAL",
+      NEW_USER_PLACEHOLDER: "Nuevo nombre de usuario",
+      COST: "COSTE",
+      CHANGE: "CAMBIAR",
+      AVATAR_PREVIEW: "VISTA PREVIA",
+      CHOOSE_AVATAR: "ELEGIR AVATAR",
+      LOCKED: "BLOQUEADO",
+      AGE_MSG: "La edad no se puede cambiar después.",
+      STATS: "ESTADÍSTICAS",
+      DELETE_ACCOUNT: "BORRAR CUENTA",
+      DELETE_WARNING: "¡ADVERTENCIA!",
+      CONFIRM_MSG: "Escribe 'delete' para confirmar:",
+      CONFIRM_PLACEHOLDER: "delete",
+      CANCEL: "CANCELAR",
+      CONFIRM_DELETE: "BORRAR PERMANENTEMENTE"
     },
     SHOP: {
       TITLE: "MERCADO NEGRO",

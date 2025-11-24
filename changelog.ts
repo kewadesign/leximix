@@ -12,6 +12,26 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.0',
+        date: '2025-11-24',
+        changes: {
+            added: [
+                'Neuer Spielmodus: Rätsel (Riddle Mode)',
+                'Spanische Sprache (Español) hinzugefügt',
+                'Dark Mode Button im Header wiederhergestellt'
+            ],
+            fixed: [
+                'Layout-Optimierungen im Hauptmenü',
+                'Season Pass Design wiederhergestellt (Orange)',
+                'Sudoku Modus jetzt für alle verfügbar'
+            ],
+            changed: [
+                'Challenge Modus erfordert Premium',
+                'Verbesserte Darstellung der Spielkarten'
+            ]
+        }
+    },
+    {
         version: '2.4.0',
         date: '2025-11-24',
         changes: {

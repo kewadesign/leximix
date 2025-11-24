@@ -1,5 +1,31 @@
 [
   {
+    "version": "2.6.0",
+    "date": "24.11.2025",
+    "changes": [
+      "fix: Restore Dark Mode button and verify Game Modes"
+    ]
+  },
+  {
+    "version": "2.5.2",
+    "date": "24.11.2025",
+    "changes": [
+      "🐞 Hotfix: Scrolling auf dem Home-Screen gefixt",
+      "🌍 Neuer Start-Screen: Sprachauswahl für neue Spieler",
+      "💎 Verbessertes UI: Season Pass Fortschritt jetzt prominenter"
+    ]
+  },
+  {
+    "version": "2.5.0",
+    "date": "24.11.2025",
+    "changes": [
+      "🧩 Neuer Spielmodus: RÄTSEL (Riddles) - Löse knifflige Worträtsel!",
+      "⏳ Season & Premium Status: Jetzt direkt auf dem Home-Screen sichtbar",
+      "🇪🇸 Voller Spanisch-Support für alle Spielmodi",
+      "✨ UI Verbesserungen & Bugfixes"
+    ]
+  },
+  {
     "version": "2.3.2",
     "date": "24.11.2025",
     "changes": [

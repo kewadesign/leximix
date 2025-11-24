@@ -23,6 +23,8 @@ export const TRANSLATIONS = {
         categoryDesc: "Context based guessing.",
         sudoku: "Letter Sudoku",
         sudokuDesc: "Logic with A-I.",
+        riddle: "Riddles",
+        riddleDesc: "Solve the mystery.",
         comingsoon: "Coming Soon",
         comingsoonDesc: "Stay Tuned.",
 
@@ -76,15 +78,57 @@ export const TRANSLATIONS = {
         adMessage: "(Ad Space Placeholder)",
         adWait: "Watching Ad...",
 
-        // Welcome
-        selectLanguage: "Select Language",
-        verification: "Verification",
-        howOld: "Enter Age",
-        continue: "Continue",
-        identity: "Identity",
-        enterCodename: "Player Name",
-        initialize: "START PUZZLING",
-        ageError: "Restricted Access: 12+ Only."
+        // Onboarding
+        ONBOARDING: {
+            WELCOME: "WELCOME AGENT",
+            NAME_TITLE: "IDENTITY",
+            NAME_PLACEHOLDER: "Codename",
+            ERR_NAME: "Invalid Name",
+            CONTINUE: "CONTINUE",
+            AGE_TITLE: "VERIFICATION",
+            AGE_PLACEHOLDER: "Your Age",
+            START: "START PUZZLING"
+        },
+
+        // Auth
+        auth: {
+            login: "LOGIN",
+            register: "REGISTER",
+            username: "Username",
+            password: "Password",
+            confirmPassword: "Confirm Password",
+            age: "Your Age",
+            minAge: "Minimum age: 12 years",
+            noAccount: "No account yet?",
+            hasAccount: "Already have an account?",
+            registerNow: "Register now",
+            loginNow: "Login now",
+            loading: "Loading...",
+            captcha: "Security Question",
+            result: "Result"
+        },
+
+        // Profile
+        PROFILE: {
+            TITLE: "AGENT PROFILE",
+            USERNAME: "USERNAME",
+            CURRENT: "Current",
+            NEW_USER_PLACEHOLDER: "New Username",
+            COST: "Cost",
+            CHANGE: "CHANGE",
+            AVATAR_PREVIEW: "AVATAR PREVIEW",
+            CHOOSE_AVATAR: "CHOOSE AVATAR",
+            AGE: "AGE",
+            LOCKED: "LOCKED",
+            AGE_MSG: "Age cannot be changed later.",
+            STATS: "STATISTICS",
+            DELETE_ACCOUNT: "DELETE ACCOUNT",
+            DELETE_WARNING: "This action cannot be undone!",
+            CANCEL: "CANCEL",
+            CONFIRM_DELETE: "PERMANENTLY DELETE",
+            CONFIRM_MSG: "Please type 'delete' to confirm.",
+            CONFIRM_PLACEHOLDER: "Type 'delete'"
+        }
     },
     DE: {
         // Home
@@ -107,6 +151,8 @@ export const TRANSLATIONS = {
         categoryDesc: "Kontextbasiertes Raten.",
         sudoku: "Buchstaben-Sudoku",
         sudokuDesc: "Logikrätsel mit A-I.",
+        riddle: "Rätsel",
+        riddleDesc: "Löse das Geheimnis.",
         comingsoon: "Erscheint Später",
         comingsoonDesc: "Bald verfügbar.",
 
@@ -160,14 +206,184 @@ export const TRANSLATIONS = {
         adMessage: "(Hier wäre Werbung)",
         adWait: "Werbung läuft...",
 
-        // Welcome
-        selectLanguage: "Sprache wählen",
-        verification: "Verifizierung",
-        howOld: "Dein Alter",
-        continue: "Weiter",
-        identity: "Identität",
-        enterCodename: "Spielername",
-        initialize: "RÄTSEL STARTEN",
-        ageError: "Zugriff verweigert: Nur 12+."
+        // Onboarding
+        ONBOARDING: {
+            WELCOME: "WILLKOMMEN AGENT",
+            NAME_TITLE: "IDENTITÄT",
+            NAME_PLACEHOLDER: "Codename",
+            ERR_NAME: "Ungültiger Name",
+            CONTINUE: "WEITER",
+            AGE_TITLE: "VERIFIZIERUNG",
+            AGE_PLACEHOLDER: "Dein Alter",
+            START: "RÄTSEL STARTEN"
+        },
+
+        // Auth
+        auth: {
+            login: "ANMELDEN",
+            register: "REGISTRIEREN",
+            username: "Benutzername",
+            password: "Passwort",
+            confirmPassword: "Passwort bestätigen",
+            age: "Dein Alter",
+            minAge: "Mindestalter: 12 Jahre",
+            noAccount: "Noch kein Account?",
+            hasAccount: "Schon einen Account?",
+            registerNow: "Jetzt registrieren",
+            loginNow: "Jetzt anmelden",
+            loading: "Lädt...",
+            captcha: "Sicherheitsfrage",
+            result: "Ergebnis"
+        },
+
+        // Profile
+        PROFILE: {
+            TITLE: "AGENTEN PROFIL",
+            USERNAME: "BENUTZERNAME",
+            CURRENT: "Aktuell",
+            NEW_USER_PLACEHOLDER: "Neuer Benutzername",
+            COST: "Kosten",
+            CHANGE: "ÄNDERN",
+            AVATAR_PREVIEW: "AVATAR VORSCHAU",
+            CHOOSE_AVATAR: "AVATAR WÄHLEN",
+            AGE: "ALTER",
+            LOCKED: "FIXIERT",
+            AGE_MSG: "Das Alter kann nachträglich nicht geändert werden.",
+            STATS: "STATISTIKEN",
+            DELETE_ACCOUNT: "ACCOUNT LÖSCHEN",
+            DELETE_WARNING: "Diese Aktion kann nicht rückgängig gemacht werden!",
+            CANCEL: "ABBRECHEN",
+            CONFIRM_DELETE: "ENDGÜLTIG LÖSCHEN",
+            CONFIRM_MSG: "Bitte tippe 'delete' um zu bestätigen.",
+            CONFIRM_PLACEHOLDER: "Tippe 'delete'"
+        }
+    },
+    ES: {
+        // Home
+        seasonRank: "NIVEL DE TEMPORADA",
+        mastersOfVocab: "Entrenamiento Diario",
+        seasonPass: "Temporada I: Génesis",
+        seasonDesc: "Recompensas Exclusivas",
+        play: "JUGAR",
+        settings: "AJUSTES",
+        changeLang: "Cambiar Idioma",
+
+        // Modes
+        classic: "Clásico",
+        classicDesc: "El Desafío Diario.",
+        speedrun: "Contrarreloj",
+        speedrunDesc: "Corre contra el reloj.",
+        chain: "Reacción en Cadena",
+        chainDesc: "Conecta las palabras.",
+        category: "Maestro del Tema",
+        categoryDesc: "Adivinanza por contexto.",
+        sudoku: "Sudoku de Letras",
+        sudokuDesc: "Lógica con IA.",
+        riddle: "Acertijos",
+        riddleDesc: "Resuelve el misterio.",
+        comingsoon: "Próximamente",
+        comingsoonDesc: "Mantente al tanto.",
+
+        // Levels
+        levels: "CAMPAÑA",
+        level: "NIVEL",
+        locked: "Bloqueado",
+        tiers: {
+            Beginner: "Principiante",
+            Learner: "Aprendiz",
+            Skilled: "Habilidoso",
+            Expert: "Experte",
+            Master: "Maestro"
+        },
+
+        // Game
+        hint: "Pista",
+        hintUsed: "Pista Usada",
+        noHints: "¡No quedan pistas!",
+        prevLink: "Enlace Anterior",
+
+        // Results
+        victory: "VICTORIA",
+        defeat: "MISIÓN FALLIDA",
+        theWordWas: "La palabra era",
+        nextLevel: "SIGUIENTE NIVEL",
+        tryAgain: "REINTENTAR",
+        exitToMenu: "MENÚ",
+        magnificent: "¡MAGNÍFICO!",
+        xpEarned: "XP GANADA",
+        gameOver: "JUEGO TERMINADO",
+        targetIdentified: "OBJETIVO IDENTIFICADO",
+
+        // Marktplatz
+        marktplatz: "Mercado",
+        gutschein: "Cupón",
+        redeemGutschein: "Canjear Cupón",
+
+        // Season Pass
+        close: "CERRAR",
+        premiumAccess: "ACCESO PREMIUM",
+        legendsPass: "PASE DE LEYENDAS",
+        unlockPremium: "DESBLOQUEAR PREMIUM",
+        getExclusive: "Obtén Cosméticos Exclusivos",
+        freeTier: "Gratis",
+        premium: "Premium",
+        buy: "Comprar Pase",
+        lvl: "Nvl",
+
+        // Ad Overlay
+        adMessage: "(Espacio Publicitario)",
+        adWait: "Viendo Anuncio...",
+
+        // Onboarding
+        ONBOARDING: {
+            WELCOME: "BIENVENIDO AGENTE",
+            NAME_TITLE: "IDENTIDAD",
+            NAME_PLACEHOLDER: "Nombre en clave",
+            ERR_NAME: "Nombre inválido",
+            CONTINUE: "CONTINUAR",
+            AGE_TITLE: "VERIFICACIÓN",
+            AGE_PLACEHOLDER: "Tu Edad",
+            START: "INICIAR MISIÓN"
+        },
+
+        // Auth
+        auth: {
+            login: "INICIAR SESIÓN",
+            register: "REGISTRARSE",
+            username: "Usuario",
+            password: "Contraseña",
+            confirmPassword: "Confirmar Contraseña",
+            age: "Tu Edad",
+            minAge: "Edad mínima: 12 años",
+            noAccount: "¿No tienes cuenta?",
+            hasAccount: "¿Ya tienes cuenta?",
+            registerNow: "Regístrate ahora",
+            loginNow: "Inicia sesión ahora",
+            loading: "Cargando...",
+            captcha: "Pregunta de Seguridad",
+            result: "Resultado"
+        },
+
+        // Profile
+        PROFILE: {
+            TITLE: "PERFIL DE AGENTE",
+            USERNAME: "USUARIO",
+            CURRENT: "Actual",
+            NEW_USER_PLACEHOLDER: "Nuevo Usuario",
+            COST: "Costo",
+            CHANGE: "CAMBIAR",
+            AVATAR_PREVIEW: "VISTA PREVIA",
+            CHOOSE_AVATAR: "ELEGIR AVATAR",
+            AGE: "EDAD",
+            LOCKED: "FIJO",
+            AGE_MSG: "La edad no se puede cambiar.",
+            STATS: "ESTADÍSTICAS",
+            DELETE_ACCOUNT: "BORRAR CUENTA",
+            DELETE_WARNING: "¡Esta acción es irreversible!",
+            CANCEL: "CANCELAR",
+            CONFIRM_DELETE: "BORRAR PERMANENTEMENTE",
+            CONFIRM_MSG: "Escribe 'delete' para confirmar.",
+            CONFIRM_PLACEHOLDER: "Escribe 'delete'"
+        }
     }
 };

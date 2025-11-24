@@ -809,16 +809,10 @@ export default function App() {
 
   useEffect(() => {
     if (view === 'GAME' && gameConfig && gameConfig.mode !== GameMode.SUDOKU && gameConfig.mode !== GameMode.CHALLENGE) {
-      const isSudoku = gameConfig?.mode === GameMode.SUDOKU;
-      const isChallenge = gameConfig?.mode === GameMode.CHALLENGE;
       const isRiddle = gameConfig?.mode === GameMode.RIDDLE;
 
       let content;
-      if (isChallenge) {
-        content = generateChallenge(user.language, gameConfig.tier, gameConfig.levelId);
-      } else if (isSudoku) {
-        content = generateSudoku(gameConfig.tier);
-      } else if (isRiddle) {
+      if (isRiddle) {
         content = generateRiddle(user.language, gameConfig.tier, gameConfig.levelId);
       } else {
         content = getLevelContent(gameConfig.mode, gameConfig.tier, gameConfig.levelId, user.language, user.playedWords);
@@ -829,8 +823,8 @@ export default function App() {
         currentGuess: '',
         status: 'playing',
         targetWord: content.target,
-        hintTitle: content.hintTitle || (isChallenge ? t.MODES.CHALLENGE.title : (isRiddle ? t.MODES.RIDDLE.title : t.GAME.HINT_TITLE)),
-        hintDesc: content.hintDesc || (isChallenge ? content.question : (isRiddle ? content.question : t.GAME.UNLOCK_HINT)),
+        hintTitle: content.hintTitle || (isRiddle ? t.MODES.RIDDLE.title : t.GAME.HINT_TITLE),
+        hintDesc: content.hintDesc || (isRiddle ? content.question : t.GAME.UNLOCK_HINT),
         data: content, // Store full content for Sudoku/Challenge validation
         timeLeft: content.timeLimit,
         startTime: Date.now(),
@@ -1438,22 +1432,23 @@ export default function App() {
 
   // --- Render Helpers ---
 
-  const GameCard = ({ mode, title, desc, color, icon: Icon, locked = false, delay = 0 }: any) => (
+  const GameCard = ({ mode, title, desc, color, icon: Icon, locked = false, comingSoon = false, delay = 0 }: any) => (
     <button
-      disabled={locked}
+      disabled={comingSoon}
       onClick={() => handleModeSelect(mode)}
       className={`
-        relative p-6 md:p-8 rounded-3xl text-left overflow-hidden transition-all duration-300 hover:scale-[1.03] active:scale-95
-        ${color} h-36 md:h-48 flex flex-col justify-between shadow-xl group animate-scale-in
-    ${locked ? 'opacity-60 grayscale cursor-not-allowed' : ''}
-  `}
+      relative p-6 md:p-8 rounded-3xl text-left overflow-hidden transition-all duration-300 hover:scale-[1.03] active:scale-95
+      ${color} h-36 md:h-48 flex flex-col justify-between shadow-xl group animate-scale-in
+  ${locked || comingSoon ? 'opacity-80 grayscale-[0.5]' : ''}
+  ${comingSoon ? 'cursor-not-allowed opacity-60 grayscale' : ''}
+`}
       style={{ animationDelay: `${delay} ms` }}
     >
       <div className="absolute right-[-10px] top-[-10px] opacity-20 rotate-12 scale-125 group-hover:rotate-6 transition-transform duration-500">
         <Icon size={120} fill="currentColor" />
       </div>
 
-      {locked ? (
+      {comingSoon ? (
         <div className="flex-1 flex flex-col justify-center items-center z-10">
           <Lock size={32} className="mb-2 text-gray-400" />
           <span className="font-bold text-xl text-gray-300 italic leading-none">{t.MODES.LOCKED.title}</span>
@@ -1462,12 +1457,15 @@ export default function App() {
       ) : (
         <>
           <div className="relative z-10">
-            <h3 className="font-black italic text-sm sm:text-base md:text-lg uppercase tracking-tight leading-none mb-2 drop-shadow-sm text-white">{title}</h3>
+            <div className="flex justify-between items-start">
+              <h3 className="font-black italic text-sm sm:text-base md:text-lg uppercase tracking-tight leading-none mb-2 drop-shadow-sm text-white">{title}</h3>
+              {locked && <Lock size={16} className="text-white/80" />}
+            </div>
             <p className="text-[10px] sm:text-xs md:text-sm font-bold opacity-90 leading-tight max-w-full text-white/80 line-clamp-2">{desc}</p>
           </div>
           <div className="relative z-10 mt-1">
             <span className="bg-black/30 px-3 py-1 rounded text-[10px] md:text-xs font-bold uppercase tracking-wider border border-white/10 inline-flex items-center gap-1 text-white group-hover:bg-white group-hover:text-black transition-colors">
-              <Play size={10} fill="currentColor" /> {t.HOME.PLAY}
+              {locked ? <Lock size={10} /> : <Play size={10} fill="currentColor" />} {locked ? 'PREMIUM' : t.HOME.PLAY}
             </span>
           </div>
         </>
@@ -1693,7 +1691,7 @@ export default function App() {
           </div>
           <div>
             <h2 className={`font-black text-lg leading-none ${user.isPremium ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 animate-shimmer' : 'text-white'}`}>
-              {user.name}
+              {cloudUsername || user.name}
             </h2>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 text-xs font-bold text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded-full border border-yellow-400/30">
@@ -1830,7 +1828,7 @@ export default function App() {
 
       {/* Grid */}
       {/* Grid */}
-      <div id="gamemodes" className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <div id="gamemodes" className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 px-4">
         <GameCard
           mode={GameMode.CLASSIC}
           title={t.MODES.CLASSIC.title}
@@ -1866,7 +1864,6 @@ export default function App() {
           desc={t.MODES.SUDOKU.desc}
           color="bg-lexi-card-purple"
           icon={Grid3X3}
-          locked={!user.isPremium}
         />
         <GameCard
           mode={GameMode.CHALLENGE}
@@ -2747,16 +2744,16 @@ export default function App() {
       </Modal>
 
       {/* Premium Required Modal */}
-      < Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title="Premium Erforderlich" >
+      < Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title={t.HOME.PREMIUM_REQUIRED_TITLE} >
         <div className="text-center space-y-6">
           <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center border-2 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]">
             <Lock size={32} className="text-yellow-500" />
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-xl font-black text-white">Challenge Mode Gesperrt</h3>
+            <h3 className="text-xl font-black text-white">{t.HOME.PREMIUM_REQUIRED_LOCKED}</h3>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Dieser Modus ist exklusiv für Premium-Mitglieder. Hole dir den Season Pass, um tägliche Herausforderungen und exklusive Belohnungen freizuschalten!
+              {t.HOME.PREMIUM_REQUIRED_DESC}
             </p>
           </div>
 
@@ -2766,14 +2763,14 @@ export default function App() {
               fullWidth
               className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black font-black border-none hover:brightness-110"
             >
-              Zum Season Pass
+              {t.HOME.PREMIUM_REQUIRED_GO}
             </Button>
             <Button
               onClick={() => setShowPremiumRequiredModal(false)}
               fullWidth
               className="bg-transparent border border-white/10 text-gray-400 hover:text-white hover:bg-white/5"
             >
-              Vielleicht später
+              {t.HOME.PREMIUM_REQUIRED_LATER}
             </Button>
           </div>
         </div>
@@ -2817,7 +2814,9 @@ export default function App() {
             </button>
           </div>
         </div>
-      </Modal >
+        {/* Cloud Login Handler */}
+        {/* This function was missing and caused a crash. It handles the post-login logic. */}
+      </Modal>
 
       {/* Profile Modal */}
       <Modal isOpen={showProfile} onClose={() => setShowProfile(false)} title={t.PROFILE.TITLE}>
@@ -2825,9 +2824,9 @@ export default function App() {
           {/* Username Section */}
           {cloudUsername && (
             <>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Benutzername</h3>
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.USERNAME}</h3>
               <div className="bg-gray-900 p-4 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-400 mb-2">Aktuell: <span className="text-white font-bold">{cloudUsername}</span></p>
+                <p className="text-xs text-gray-400 mb-2">{t.PROFILE.CURRENT}: <span className="text-white font-bold">{cloudUsername}</span></p>
                 <input
                   type="text"
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white mb-2"
@@ -2835,15 +2834,15 @@ export default function App() {
                   onChange={(e) => {
                     setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
                   }}
-                  placeholder="Neuer Benutzername"
+                  placeholder={t.PROFILE.NEW_USER_PLACEHOLDER}
                 />
                 {usernameError && <p className="text-red-400 text-xs font-bold">{usernameError}</p>}
-                <p className="text-xs text-yellow-400 mt-2">Kosten: 2500 Münzen</p>
+                <p className="text-xs text-yellow-400 mt-2">{t.PROFILE.COST}: 2500 {t.HOME.COINS || "Coins"}</p>
                 <button
                   onClick={handleUsernameChange}
                   className="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase rounded-lg mt-2 transition-colors"
                 >
-                  Ändern
+                  {t.PROFILE.CHANGE}
                 </button>
               </div>
             </>
@@ -2851,7 +2850,7 @@ export default function App() {
 
           {/* Avatar Preview */}
           <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Vorschau</h3>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.AVATAR_PREVIEW}</h3>
             <div className="flex justify-center mb-4">
               <div className={`w-24 h-24 rounded-full border-4 border-white/20 overflow-hidden ${getAvatarEffect(editFrame)}`}>
                 <img
@@ -2865,7 +2864,7 @@ export default function App() {
 
           {/* Avatar Selection */}
           <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Avatar Wählen</h3>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.CHOOSE_AVATAR}</h3>
             <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
               {(user.ownedAvatars || [AVATARS[0]]).map(avatar => (
                 <button
@@ -2882,34 +2881,26 @@ export default function App() {
           {/* Age Input (LOCKED) */}
           <div className="border-t border-white/10 pt-4 mt-4">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-              Alter <Lock size={12} className="text-red-400" />
+              {t.PROFILE.AGE} <Lock size={12} className="text-red-400" />
             </h3>
             <div className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-gray-400 font-bold cursor-not-allowed flex items-center justify-between">
               <span>{editAge}</span>
-              <span className="text-xs text-red-500 uppercase">Fixiert</span>
+              <span className="text-xs text-red-500 uppercase">{t.PROFILE.LOCKED}</span>
             </div>
-            <p className="text-[10px] text-gray-600 mt-1">Das Alter kann nachträglich nicht geändert werden.</p>
+            <p className="text-[10px] text-gray-600 mt-1">{t.PROFILE.AGE_MSG}</p>
           </div>
 
           {/* Stats Display */}
           <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Statistiken</h3>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.STATS}</h3>
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-500">Level</p>
-                <p className="text-xl font-black text-white">{user.level}</p>
+              <div className="bg-gray-800 p-3 rounded-lg border border-white/5">
+                <p className="text-[10px] text-gray-400 uppercase">Level</p>
+                <p className="text-xl font-bold text-white">{user.level}</p>
               </div>
-              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-500">Gesamt XP</p>
-                <p className="text-xl font-black text-white">{user.xp}</p>
-              </div>
-              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-500">Münzen</p>
-                <p className="text-xl font-black text-yellow-400">{user.coins}</p>
-              </div>
-              <div className="bg-gray-900 p-3 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-500">Gelöste Rätsel</p>
-                <p className="text-xl font-black text-cyan-400">{user.completedLevels?.length || 0}</p>
+              <div className="bg-gray-800 p-3 rounded-lg border border-white/5">
+                <p className="text-[10px] text-gray-400 uppercase">XP</p>
+                <p className="text-xl font-bold text-lexi-fuchsia">{user.xp}</p>
               </div>
             </div>
           </div>
@@ -2939,65 +2930,69 @@ export default function App() {
             </div>
           </div>
 
-          {/* Delete Profile Button */}
-          <div className="border-t border-white/10 pt-4 mt-4">
+          {/* Delete Account */}
+          <div className="border-t border-red-900/30 pt-4 mt-8">
+            <h3 className="text-xs font-bold text-red-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <AlertTriangle size={12} /> {t.PROFILE.DELETE_ACCOUNT}
+            </h3>
+            <p className="text-[10px] text-red-400 mb-3 font-bold">
+              {t.PROFILE.DELETE_WARNING}
+            </p>
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="w-full py-3 bg-red-900/20 hover:bg-red-900/40 text-red-500 font-bold uppercase rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 bg-red-900/20 border border-red-900/50 hover:bg-red-900/40 text-red-500 font-bold uppercase rounded-lg transition-colors text-xs"
             >
-              <Skull size={16} /> Profil Löschen
+              {t.PROFILE.DELETE_ACCOUNT}
             </button>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-2 mt-6 pt-4 border-t border-white/10">
             <button
               onClick={() => setShowProfile(false)}
-              className="flex-1 py-4 rounded-xl font-bold text-sm uppercase bg-gray-800 hover:bg-gray-700 text-white transition-colors"
+              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
             >
-              Abbrechen
+              {t.PROFILE.CANCEL}
             </button>
             <button
               onClick={saveProfile}
-              className="flex-1 py-4 rounded-xl font-black text-sm uppercase bg-lexi-fuchsia hover:bg-lexi-fuchsia/80 text-white transition-colors shadow-[0_0_20px_rgba(217,70,239,0.4)]"
+              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white hover:brightness-110 transition-all shadow-lg shadow-purple-900/20"
             >
-              {t.PROFILE.SAVE}
+              Speichern
             </button>
           </div>
         </div>
       </Modal>
 
-      {/* Delete Profile Confirmation Modal */}
-      <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title="Profil Löschen">
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title={t.PROFILE.DELETE_ACCOUNT}>
         <div className="p-6 space-y-4">
-          <div className="flex items-start gap-3 bg-red-900/20 p-4 rounded-xl border border-red-500/30">
-            <AlertTriangle size={24} className="text-red-500 flex-shrink-0 mt-1" />
+          <div className="bg-red-900/20 border border-red-500/30 p-4 rounded-xl flex items-start gap-3">
+            <AlertTriangle className="text-red-500 shrink-0 mt-1" size={24} />
             <div>
-              <h3 className="text-lg font-bold text-red-500 mb-2">Warnung!</h3>
-              <p className="text-sm text-gray-300">
-                Diese Aktion kann NICHT rückgängig gemacht werden. Alle deine Fortschritte, Käufe und Erfolge werden permanent gelöscht.
+              <h3 className="font-bold text-red-400 mb-1">{t.PROFILE.DELETE_WARNING}</h3>
+              <p className="text-xs text-red-300/80 leading-relaxed">
+                Alle deine Fortschritte, Käufe und Statistiken werden unwiderruflich gelöscht.
               </p>
             </div>
           </div>
 
-          <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">
-              Tippe "delete" um zu bestätigen:
-            </label>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-500 uppercase">{t.PROFILE.CONFIRM_MSG}</label>
             <input
               type="text"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white"
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
-              placeholder="delete"
+              placeholder={t.PROFILE.CONFIRM_PLACEHOLDER}
+              className="w-full bg-black border border-red-900/50 rounded-xl p-4 text-white font-mono text-center focus:border-red-500 focus:outline-none transition-colors"
             />
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-4">
             <button
               onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }}
               className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
             >
-              Abbrechen
+              {t.PROFILE.CANCEL}
             </button>
             <button
               onClick={() => {
@@ -3007,13 +3002,13 @@ export default function App() {
                   setShowDeleteConfirm(false);
                   setDeleteInput('');
                 } else {
-                  alert('Bitte tippe "delete" um zu bestätigen.');
+                  alert(t.PROFILE.CONFIRM_MSG);
                 }
               }}
               disabled={deleteInput.toLowerCase() !== 'delete'}
               className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <Skull size={16} /> Endgültig Löschen
+              <Skull size={16} /> {t.PROFILE.CONFIRM_DELETE}
             </button>
           </div>
         </div>
@@ -3023,14 +3018,18 @@ export default function App() {
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        onSuccess={handleCloudLogin}
+        onSuccess={(username) => {
+          handleCloudLogin(username);
+          setShowAuthModal(false);
+        }}
+        lang={user.language}
       />
 
       {/* Web Version: APK Download Button */}
       {(window as any).Capacitor === undefined && (
         <div className="fixed bottom-4 right-4 z-[50]">
           <a
-            href="https://leximix.de/app-release.apk"
+            href="http://leximix.de/app-release.apk"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-black/40 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white/50 hover:text-white px-4 py-2 rounded-full transition-all text-[10px] font-bold uppercase tracking-widest group"
