@@ -1,5 +1,12 @@
 [
   {
+    "version": "2.6.4",
+    "date": "24.11.2025",
+    "changes": [
+      "  • Fix Season Switching Logic"
+    ]
+  },
+  {
     "version": "2.6.3",
     "date": "24.11.2025",
     "changes": [

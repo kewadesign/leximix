@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.4',
+        date: '2025-11-24',
+        changes: {
+            fixed: [
+                'Season-Wechsel via Firebase funktioniert jetzt korrekt',
+                'Initialisierungsfehler behoben'
+            ]
+        }
+    },
+    {
         version: '2.6.3',
         date: '2025-11-24',
         changes: {
