@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.5',
+        date: '2025-11-24',
+        changes: {
+            fixed: [
+                'Werbungsflächen-GIF wird jetzt lokal eingebettet (keine externe URL mehr)',
+                'Verbesserte Offline-Funktionalität für Ad-Display'
+            ]
+        }
+    },
+    {
         version: '2.6.4',
         date: '2025-11-24',
         changes: {
