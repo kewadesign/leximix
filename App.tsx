@@ -437,7 +437,7 @@ export default function App() {
     }, 3000);
 
     return () => clearTimeout(syncTimer);
-  }, [cloudUsername, user.level, user.coins, user.xp, user.isPremium, user.completedLevels, user.language, user.theme]);
+  }, [cloudUsername, user.level, user.coins, user.xp, user.isPremium, JSON.stringify(user.completedLevels), user.language, user.theme, user.name, user.avatarId, user.activeFrame, JSON.stringify(user.ownedAvatars), JSON.stringify(user.claimedSeasonRewards), JSON.stringify(user.claimedPremiumRewards)]);
   useEffect(() => {
     if (!cloudUsername) return;
 
@@ -546,26 +546,16 @@ export default function App() {
     };
   }, []);
 
+  // Save to localStorage (but NOT to cloud - that's handled by the debounced sync above)
   useEffect(() => {
     if (view !== 'ONBOARDING') {
       try {
         localStorage.setItem('leximix_user', JSON.stringify(user));
-
-        // Auto-save to cloud if logged in
-        if (cloudUsername) {
-          import('./utils/firebase').then(({ saveToCloud }) => {
-            saveToCloud(cloudUsername, user).then((success) => {
-              if (success) {
-                setLastCloudSync(Date.now());
-              }
-            });
-          });
-        }
       } catch (error) {
         console.error('[LexiMix] localStorage save error:', error);
       }
     }
-  }, [user, view, cloudUsername]);
+  }, [user, view]);
 
   const handleClaimReward = (level: number, isPremiumClaim: boolean = false) => {
     const reward = dynamicRewards[level - 1];
