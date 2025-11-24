@@ -1,5 +1,13 @@
 [
   {
+    "version": "2.6.8",
+    "date": "24.11.2025",
+    "changes": [
+      "  • Deploy: Updated web files in ionos_deploy",
+      "  • v2.6.8 Update: NICE text change & optimization"
+    ]
+  },
+  {
     "version": "2.6.4",
     "date": "24.11.2025",
     "changes": [
