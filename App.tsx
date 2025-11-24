@@ -124,7 +124,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'LANGUAGE_SELECT';
 
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
@@ -261,10 +261,15 @@ export default function App() {
   useEffect(() => {
     try {
       const cloudUser = localStorage.getItem('leximix_cloud_user');
+      const hasLanguageSelected = localStorage.getItem('leximix_language_selected');
 
       // Must be logged in to use app
       if (!cloudUser) {
-        setView('AUTH'); // Show login screen
+        if (!hasLanguageSelected) {
+          setView('LANGUAGE_SELECT');
+        } else {
+          setView('AUTH'); // Show login screen
+        }
       } else {
         setView('HOME'); // Go straight to home
       }
@@ -1629,6 +1634,56 @@ export default function App() {
     }
   };
 
+  const renderLanguageSelect = () => (
+    <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
+      <div className="max-w-md w-full space-y-8 text-center">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-black text-white uppercase tracking-tighter drop-shadow-lg">
+            Select Language
+          </h1>
+          <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">
+            Wähle deine Sprache / Elige tu idioma
+          </p>
+        </div>
+
+        <div className="grid gap-4">
+          {[
+            { code: Language.EN, label: 'English', flag: '🇺🇸' },
+            { code: Language.DE, label: 'Deutsch', flag: '🇩🇪' },
+            { code: Language.ES, label: 'Español', flag: '🇪🇸' }
+          ].map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => {
+                setUser(prev => ({ ...prev, language: lang.code }));
+                localStorage.setItem('leximix_language_selected', 'true');
+                setView('AUTH');
+              }}
+              className="group relative overflow-hidden p-1 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl"></div>
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-xl p-6 flex items-center justify-between border border-white/10 group-hover:border-white/20">
+                <div className="flex items-center gap-4">
+                  <span className="text-4xl">{lang.flag}</span>
+                  <div className="text-left">
+                    <div className="text-xl font-black text-white uppercase tracking-wide">
+                      {lang.label}
+                    </div>
+                  </div>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <ArrowLeft className="rotate-180 text-white" size={16} />
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderHome = () => (
     <div className="h-full flex flex-col relative z-10">
       <div className="flex justify-between items-center p-6 animate-slide-down">
@@ -2158,6 +2213,7 @@ export default function App() {
       )}
 
       {view === 'ONBOARDING' && renderOnboarding()}
+      {view === 'LANGUAGE_SELECT' && renderLanguageSelect()}
       {view === 'HOME' && renderHome()}
       {view === 'SEASON' && (
         <SeasonPassView

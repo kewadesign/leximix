@@ -61,10 +61,10 @@ export const SEASON_2_AVATARS: SeasonAvatar[] = [
 export const SEASONS: Season[] = [
   {
     id: 1,
-    name: 'Agent Training',
+    name: 'Genesis',
     theme: 'space',
-    startDate: 0,
-    endDate: Date.parse('2025-02-28T23:59:59Z'),
+    startDate: Date.parse('2025-11-24T00:00:00Z'),
+    endDate: Date.parse('2025-12-31T00:00:00Z'),
     colors: {
       primary: '#d946ef',
       secondary: '#a855f7',
@@ -78,8 +78,8 @@ export const SEASONS: Season[] = [
     id: 2,
     name: 'Neon Uprising',
     theme: 'cyberpunk',
-    startDate: Date.parse('2025-03-01T00:00:00Z'),
-    endDate: Date.parse('2025-05-31T23:59:59Z'),
+    startDate: Date.parse('2026-01-01T00:00:00Z'),
+    endDate: Date.parse('2026-03-31T23:59:59Z'),
     colors: {
       primary: '#00ff9f',
       secondary: '#ff00ff',

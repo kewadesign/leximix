@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem } from 'lucide-react';
 import { UserState, SeasonReward } from '../types';
-import { SEASON_REWARDS, getCurrentSeason } from '../constants';
+import { SEASON_REWARDS, getCurrentSeason, TRANSLATIONS } from '../constants';
 import { audio } from '../utils/audio';
 
 interface Props {
@@ -36,6 +36,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
 
     const currentSeason = getCurrentSeason();
     const formatDate = (timestamp: number) => new Date(timestamp).toLocaleDateString('de-DE');
+    const t = TRANSLATIONS[user.language];
 
     return (
         <div className="h-full flex flex-col bg-slate-50 dark:bg-[#0b1120] relative overflow-hidden animate-fade-in transition-colors duration-500">
@@ -53,28 +54,31 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                 <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-white/10 hover:bg-gray-100 dark:hover:bg-white/20 transition-all shadow-sm border border-gray-200 dark:border-white/10 group">
                     <ArrowLeft size={20} className="text-gray-700 dark:text-white group-hover:-translate-x-1 transition-transform" />
                 </button>
-                <div className="flex flex-col items-center">
-                    <h2 className="text-2xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 uppercase tracking-tighter drop-shadow-sm">
-                        Season 2: Neon Uprising
+                <div className="flex flex-col items-center w-full max-w-md mx-4">
+                    <h2 className="text-xl md:text-2xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 uppercase tracking-tighter drop-shadow-sm mb-2">
+                        {t.SEASON.TITLE}
                     </h2>
-                    <div className="flex items-center gap-3 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                        <span className="flex items-center gap-1">
-                            {user.isPremium && <Crown size={14} className="text-yellow-400" fill="currentColor" />}
-                            Level {user.level}
-                        </span>
-                        <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-600" style={{ width: `${user.xp % 100}%` }}></div>
-                        </div>
-                        <span>{user.xp % 100}/100 XP</span>
+                    
+                    {/* Level Indicator */}
+                    <div className="flex items-center gap-2 text-sm font-black text-white uppercase tracking-widest mb-1">
+                        {user.isPremium && <Crown size={16} className="text-yellow-400" fill="currentColor" />}
+                        <span>Level {user.level}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] text-gray-500 mt-1">
-                        <span>Gesamt XP: {user.xp}</span>
-                        <span>•</span>
-                        <span>{formatDate(currentSeason.startDate)} - {formatDate(currentSeason.endDate)}</span>
-                        <span>•</span>
-                        <span className="text-orange-500 font-bold">
-                           {Math.max(0, Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage übrig
-                        </span>
+
+                    {/* XP Bar - Bigger & Better */}
+                    <div className="w-full h-4 bg-gray-900/50 border border-white/10 rounded-full overflow-hidden relative mb-1 shadow-inner">
+                        <div 
+                            className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-500 relative" 
+                            style={{ width: `${Math.min(100, Math.max(5, user.xp % 100))}%` }}
+                        >
+                            <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:10px_10px] animate-[shimmer_1s_linear_infinite]"></div>
+                        </div>
+                        {/* Text overlay on bar (optional, or keep below) */}
+                    </div>
+                    
+                    <div className="flex justify-between w-full text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1">
+                        <span>{user.xp % 100} / 100 XP</span>
+                        <span className="text-orange-400">{Math.max(0, Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage übrig</span>
                     </div>
                 </div>
                 <div className="w-10"></div>

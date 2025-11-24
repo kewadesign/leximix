@@ -1,5 +1,14 @@
 [
   {
+    "version": "2.5.1",
+    "date": "24.11.2025",
+    "changes": [
+      "🌍 Neuer Start-Screen: Sprachauswahl für neue Spieler",
+      "💎 Verbessertes UI: Season Pass Fortschritt jetzt prominenter",
+      "🐛 Bugfixes: Optimierungen für ein reibungsloses Spielerlebnis"
+    ]
+  },
+  {
     "version": "2.5.0",
     "date": "24.11.2025",
     "changes": [

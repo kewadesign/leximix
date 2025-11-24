@@ -39,7 +39,7 @@ export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium
             <div className="flex items-center gap-2">
               <Crown className={`${isPremium ? 'text-yellow-300' : 'text-gray-400'} drop-shadow-md`} size={20} fill={isPremium ? "currentColor" : "none"} />
               <h3 className="text-white font-black italic text-lg sm:text-2xl md:text-3xl tracking-tighter drop-shadow-xl uppercase whitespace-nowrap">
-                SEASON 2
+                {t.TITLE}
               </h3>
             </div>
             <p className="text-white/80 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider">
@@ -49,16 +49,21 @@ export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium
         </div>
 
         {/* Right Side: Level & Progress */}
-        <div className="flex flex-col items-end justify-center">
-          <div className="text-3xl md:text-4xl font-black text-white drop-shadow-lg">
+        <div className="flex flex-col items-end justify-center w-1/3">
+          <div className="text-3xl md:text-4xl font-black text-white drop-shadow-lg mb-1">
             <span className="text-sm md:text-lg opacity-60 mr-1">LVL</span>{level}
           </div>
-          {/* Mini Progress Bar */}
-          <div className="w-24 md:w-32 h-2 bg-black/40 rounded-full mt-2 overflow-hidden border border-white/10">
+          {/* Mini Progress Bar - Now Bigger */}
+          <div className="w-full h-4 bg-black/50 rounded-full overflow-hidden border border-white/20 shadow-inner relative">
             <div
-              className="h-full bg-gradient-to-r from-yellow-400 to-orange-500"
+              className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_0_10px_rgba(251,191,36,0.5)]"
               style={{ width: `${(xp % 100)}%` }}
-            ></div>
+            >
+               <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:10px_10px] animate-[shimmer_1s_linear_infinite]"></div>
+            </div>
+          </div>
+          <div className="text-[10px] font-bold text-white/70 mt-1 text-right w-full">
+            {xp % 100} / 100 XP
           </div>
         </div>
       </div>
