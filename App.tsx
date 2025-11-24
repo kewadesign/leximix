@@ -1685,7 +1685,7 @@ export default function App() {
   );
 
   const renderHome = () => (
-    <div className="h-full flex flex-col relative z-10">
+    <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-20">
       <div className="flex justify-between items-center p-6 animate-slide-down">
         <div className="flex items-center gap-3" onClick={openProfile}>
           <div className={`w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-gray-800 cursor-pointer ${getAvatarEffect(user.activeFrame)}`}>

@@ -1,11 +1,11 @@
 [
   {
-    "version": "2.5.1",
+    "version": "2.5.2",
     "date": "24.11.2025",
     "changes": [
+      "🐞 Hotfix: Scrolling auf dem Home-Screen gefixt",
       "🌍 Neuer Start-Screen: Sprachauswahl für neue Spieler",
-      "💎 Verbessertes UI: Season Pass Fortschritt jetzt prominenter",
-      "🐛 Bugfixes: Optimierungen für ein reibungsloses Spielerlebnis"
+      "💎 Verbessertes UI: Season Pass Fortschritt jetzt prominenter"
     ]
   },
   {

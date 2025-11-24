@@ -5,7 +5,7 @@ import { AlertTriangle, ArrowLeft, Sparkles, Download } from 'lucide-react';
 import { ChangelogModal, ChangelogEntry } from './ChangelogModal';
 
 // Current App Version
-export const APP_VERSION = '2.5.1';
+export const APP_VERSION = '2.5.2';
 
 interface Props {
   isOnline: boolean;
