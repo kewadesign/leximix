@@ -245,15 +245,16 @@ export default function App() {
 
   // Fetch Season Settings from Ionos & Firebase
   useEffect(() => {
+    let unsubscribeSeasonId: (() => void) | undefined;
+
     const fetchSeasonSettings = async () => {
       try {
-        // 1. Get Active Season ID from Firebase
-        const { getDatabase, ref, get } = await import('firebase/database');
+        // 1. Setup Real-time Listener for Active Season ID from Firebase
+        const { getDatabase, ref, onValue } = await import('firebase/database');
         const db = getDatabase();
-        const snapshot = await get(ref(db, 'system/active_season_id'));
-        const firebaseActiveId = snapshot.exists() ? snapshot.val() : null;
+        const seasonRef = ref(db, 'system/active_season_id');
 
-        // 2. Fetch Season Data from Ionos (or local public folder)
+        // 2. Fetch Season Data from Ionos (static config)
         let response;
         try {
           response = await fetch('http://leximix.de/season_settings.json');
@@ -268,37 +269,43 @@ export default function App() {
         const settings = await response.json();
         setSeasonConfig(settings);
 
-        // 3. Determine Active Season
-        // Priority: Firebase ID > JSON activeSeasonId > Date-based fallback
-        const activeId = firebaseActiveId || settings.activeSeasonId;
-        
-        const activeSeasonData = settings.seasons.find((s: any) => s.id === activeId);
-        
-        if (activeSeasonData) {
-           console.log(`[Season] Loaded Dynamic Season: ${activeSeasonData.name}`);
-           setCurrentSeason(activeSeasonData);
-           
-           // Update Rewards
-           if (activeSeasonData.rewards) {
-             setDynamicRewards(activeSeasonData.rewards);
-           }
+        // 3. Listen for ID changes
+        unsubscribeSeasonId = onValue(seasonRef, (snapshot) => {
+          const firebaseActiveId = snapshot.exists() ? snapshot.val() : null;
+          
+          // Priority: Firebase ID > JSON activeSeasonId > Date-based fallback
+          const activeId = firebaseActiveId || settings.activeSeasonId;
+          const activeSeasonData = settings.seasons.find((s: any) => s.id === activeId);
+          
+          if (activeSeasonData) {
+             console.log(`[Season] Loaded Dynamic Season: ${activeSeasonData.name} (ID: ${activeId})`);
+             setCurrentSeason(activeSeasonData);
+             
+             // Update Rewards
+             if (activeSeasonData.rewards) {
+               setDynamicRewards(activeSeasonData.rewards);
+             }
 
-           // Apply Colors
-           const root = document.documentElement;
-           root.style.setProperty('--season-primary', activeSeasonData.colors.primary);
-           root.style.setProperty('--season-secondary', activeSeasonData.colors.secondary);
-           root.style.setProperty('--season-accent', activeSeasonData.colors.accent);
-           root.style.setProperty('--season-bg-dark', activeSeasonData.colors.bgDark);
-           root.style.setProperty('--season-bg-card', activeSeasonData.colors.bgCard);
-        }
+             // Apply Colors
+             const root = document.documentElement;
+             root.style.setProperty('--season-primary', activeSeasonData.colors.primary);
+             root.style.setProperty('--season-secondary', activeSeasonData.colors.secondary);
+             root.style.setProperty('--season-accent', activeSeasonData.colors.accent);
+             root.style.setProperty('--season-bg-dark', activeSeasonData.colors.bgDark);
+             root.style.setProperty('--season-bg-card', activeSeasonData.colors.bgCard);
+          }
+        });
 
       } catch (error) {
         console.error('[Season] Failed to load dynamic settings, using defaults:', error);
-        // Defaults already set by initial state
       }
     };
 
     fetchSeasonSettings();
+
+    return () => {
+      if (unsubscribeSeasonId) unsubscribeSeasonId();
+    };
   }, []);
 
   // Apply Season Colors to CSS Variables (Initial / Fallback)
