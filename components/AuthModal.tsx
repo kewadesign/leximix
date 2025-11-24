@@ -10,10 +10,11 @@ interface Props {
     onClose: () => void;
     onSuccess: (username: string) => void;
     lang: Language;
+    onLanguageChange: (lang: Language) => void;
 }
 
-export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang }) => {
-    const [mode, setMode] = useState<'login' | 'register' | 'age_verify'>('login');
+export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, onLanguageChange }) => {
+    const [mode, setMode] = useState<'login' | 'register' | 'age_verify' | 'language_select'>('login');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -99,7 +100,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang })
 
         try {
             if (mode === 'register') {
-                const result = await registerUser(username, password);
+                const result = await registerUser(username, password, { language: lang, age });
                 if (result.success) {
                     onSuccess(username);
                     onClose();
@@ -132,7 +133,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang })
 
     const switchMode = () => {
         if (mode === 'login') {
-            setMode('age_verify'); // Start registration flow directly at age verify
+            setMode('language_select'); // Start registration flow at language selection
         } else {
             setMode('login');
         }
@@ -140,12 +141,41 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang })
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? t.login : mode === 'age_verify' ? 'ALTER' : t.register}>
+        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? t.login : mode === 'age_verify' ? 'ALTER' : mode === 'language_select' ? 'LANGUAGE' : t.register}>
             <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                     <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-3 flex items-center gap-2">
                         <AlertCircle size={18} className="text-red-400" />
                         <span className="text-sm text-red-300">{error}</span>
+                    </div>
+                )}
+
+                {mode === 'language_select' && (
+                    <div className="grid grid-cols-1 gap-3">
+                        <button
+                            type="button"
+                            onClick={() => { onLanguageChange(Language.DE); setMode('age_verify'); }}
+                            className="p-4 bg-gray-800 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-all group"
+                        >
+                            <span className="text-2xl">🇩🇪</span>
+                            <span className="font-bold text-white group-hover:text-lexi-fuchsia transition-colors">DEUTSCH</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { onLanguageChange(Language.EN); setMode('age_verify'); }}
+                            className="p-4 bg-gray-800 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-all group"
+                        >
+                            <span className="text-2xl">🇬🇧</span>
+                            <span className="font-bold text-white group-hover:text-lexi-fuchsia transition-colors">ENGLISH</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { onLanguageChange(Language.ES); setMode('age_verify'); }}
+                            className="p-4 bg-gray-800 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-all group"
+                        >
+                            <span className="text-2xl">🇪🇸</span>
+                            <span className="font-bold text-white group-hover:text-lexi-fuchsia transition-colors">ESPAÑOL</span>
+                        </button>
                     </div>
                 )}
 

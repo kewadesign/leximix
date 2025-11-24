@@ -70,7 +70,7 @@ const DEFAULT_USER_STATE: UserState = {
 // AUTH FUNCTIONS (Unverändert)
 // ============================================================================
 
-export const registerUser = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+export const registerUser = async (username: string, password: string, initialData?: Partial<UserState>): Promise<{ success: boolean; error?: string }> => {
     if (!checkRateLimit()) {
         return { success: false, error: 'Bitte warte einen Moment...' };
     }
@@ -94,6 +94,7 @@ export const registerUser = async (username: string, password: string): Promise<
             saves: { 
                 current: {
                     ...DEFAULT_USER_STATE,
+                    ...initialData, // Apply overrides (e.g. language, age)
                     name: username, // Use the entered username as the display name initially
                     lastSaved: Date.now()
                 }

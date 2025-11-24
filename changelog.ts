@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.3',
+        date: '2025-11-24',
+        changes: {
+            added: [
+                'Dynamic Season System (Live-Updates)',
+                'Wiederherstellung der Sprachauswahl bei Registrierung'
+            ],
+            fixed: [
+                'Season Pass Rendering Bug behoben',
+                'Verbesserte App-Initialisierung'
+            ]
+        }
+    },
+    {
         version: '2.6.2',
         date: '2025-11-24',
         changes: {

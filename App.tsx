@@ -239,10 +239,72 @@ export default function App() {
   const [lastCloudSync, setLastCloudSync] = useState<number | null>(null);
 
   // Season System
+  const [seasonConfig, setSeasonConfig] = useState<{ activeId: number, seasons: any[] } | null>(null);
   const [currentSeason, setCurrentSeason] = useState(() => getCurrentSeason());
+  const [dynamicRewards, setDynamicRewards] = useState(SEASON_REWARDS);
 
-  // Apply Season Colors to CSS Variables
+  // Fetch Season Settings from Ionos & Firebase
   useEffect(() => {
+    const fetchSeasonSettings = async () => {
+      try {
+        // 1. Get Active Season ID from Firebase
+        const { getDatabase, ref, get } = await import('firebase/database');
+        const db = getDatabase();
+        const snapshot = await get(ref(db, 'system/active_season_id'));
+        const firebaseActiveId = snapshot.exists() ? snapshot.val() : null;
+
+        // 2. Fetch Season Data from Ionos (or local public folder)
+        let response;
+        try {
+          response = await fetch('http://leximix.de/season_settings.json');
+          if (!response.ok) throw new Error('Network response was not ok');
+        } catch (e) {
+          console.warn('[Season] Remote fetch failed, trying local fallback');
+          response = await fetch('/season_settings.json');
+        }
+        
+        if (!response.ok) throw new Error('Failed to fetch season settings');
+        
+        const settings = await response.json();
+        setSeasonConfig(settings);
+
+        // 3. Determine Active Season
+        // Priority: Firebase ID > JSON activeSeasonId > Date-based fallback
+        const activeId = firebaseActiveId || settings.activeSeasonId;
+        
+        const activeSeasonData = settings.seasons.find((s: any) => s.id === activeId);
+        
+        if (activeSeasonData) {
+           console.log(`[Season] Loaded Dynamic Season: ${activeSeasonData.name}`);
+           setCurrentSeason(activeSeasonData);
+           
+           // Update Rewards
+           if (activeSeasonData.rewards) {
+             setDynamicRewards(activeSeasonData.rewards);
+           }
+
+           // Apply Colors
+           const root = document.documentElement;
+           root.style.setProperty('--season-primary', activeSeasonData.colors.primary);
+           root.style.setProperty('--season-secondary', activeSeasonData.colors.secondary);
+           root.style.setProperty('--season-accent', activeSeasonData.colors.accent);
+           root.style.setProperty('--season-bg-dark', activeSeasonData.colors.bgDark);
+           root.style.setProperty('--season-bg-card', activeSeasonData.colors.bgCard);
+        }
+
+      } catch (error) {
+        console.error('[Season] Failed to load dynamic settings, using defaults:', error);
+        // Defaults already set by initial state
+      }
+    };
+
+    fetchSeasonSettings();
+  }, []);
+
+  // Apply Season Colors to CSS Variables (Initial / Fallback)
+  useEffect(() => {
+    if (seasonConfig) return; // Skip if dynamic loaded
+
     const season = getCurrentSeason();
     setCurrentSeason(season);
 
@@ -255,7 +317,7 @@ export default function App() {
     root.style.setProperty('--season-bg-card', season.colors.bgCard);
 
     console.log(`[Season] Active: ${season.name} (ID: ${season.id})`);
-  }, []);
+  }, [seasonConfig]);
 
   // Check for saved user on mount to decide initial view
   useEffect(() => {
@@ -424,7 +486,7 @@ export default function App() {
   }, [user, view, cloudUsername]);
 
   const handleClaimReward = (level: number, isPremiumClaim: boolean = false) => {
-    const reward = SEASON_REWARDS[level - 1];
+    const reward = dynamicRewards[level - 1];
     if (!reward) return;
 
     // Check if already claimed based on type
@@ -2243,6 +2305,7 @@ export default function App() {
       {view === 'SEASON' && (
         <SeasonPassView
           user={user}
+          rewards={dynamicRewards}
           onClose={() => handleNavigate('HOME')}
           onClaim={handleClaimReward}
           onShowPremium={() => setShowPremiumInfo(true)}
@@ -3023,6 +3086,7 @@ export default function App() {
           setShowAuthModal(false);
         }}
         lang={user.language}
+        onLanguageChange={(lang) => setUser(prev => ({ ...prev, language: lang }))}
       />
 
       {/* Web Version: APK Download Button */}

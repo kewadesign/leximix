@@ -6,12 +6,13 @@ import { audio } from '../utils/audio';
 
 interface Props {
     user: UserState;
+    rewards: SeasonReward[];
     onClose: () => void;
     onClaim: (level: number, isPremium: boolean) => void;
     onShowPremium: () => void;
 }
 
-export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShowPremium }) => {
+export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClaim, onShowPremium }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to current level on mount
@@ -140,7 +141,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:20px_20px] animate-[shimmer_1s_linear_infinite]"></div>
                     </div>
 
-                    {SEASON_REWARDS.map((item) => {
+                    {rewards.map((item) => {
                         const lvl = item.level;
                         const isUnlocked = user.level >= lvl;
                         
