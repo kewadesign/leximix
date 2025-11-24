@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.1',
+        date: '2025-11-24',
+        changes: {
+            fixed: [
+                'Benutzername wird nun korrekt im Header angezeigt',
+                'Premium-Modal Texte vollständig übersetzt (DE/EN/ES)'
+            ]
+        }
+    },
+    {
         version: '2.6.0',
         date: '2025-11-24',
         changes: {
