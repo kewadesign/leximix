@@ -163,20 +163,35 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
           </div>
 
           <div className="space-y-3">
-            <button
-              onClick={handleDownload}
-              className="w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
-            >
-              <Download size={20} />
-              {t.UPDATES.UPDATE_NOW}
-            </button>
+            {isCapacitor ? (
+              <button
+                onClick={handleDownload}
+                className="w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                <Download size={20} />
+                {t.UPDATES.UPDATE_NOW}
+              </button>
+            ) : (
+              <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-200 text-sm space-y-3">
+                <p className="leading-relaxed">
+                  Die Website wird gerade aktualisiert. Bitte habe einen Moment Geduld.
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="w-full py-3 bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-500/50 text-yellow-200 rounded-lg text-xs uppercase font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <Download size={16} />
+                  Seite neu laden
+                </button>
+              </div>
+            )}
 
             <button
               onClick={() => {
                 setViewingChangelogFromForce(true);
                 setShowChangelog(true);
               }}
-              className="text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors"
+              className="w-full text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors pt-2"
             >
               {t.UPDATES.WHATS_NEW}
             </button>
