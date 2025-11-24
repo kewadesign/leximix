@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, onLanguageChange }) => {
-    const [mode, setMode] = useState<'login' | 'register' | 'age_verify' | 'language_select'>('login');
+    const [mode, setMode] = useState<'login' | 'register' | 'age_verify' | 'language_select' | 'select_auth_type'>('select_auth_type');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -47,8 +47,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
         setError('');
 
         if (mode === 'age_verify') {
-            if (age < 12) {
-                setError('Du musst mindestens 12 Jahre alt sein.'); // Keep hardcoded or add to translations if needed
+            if (age < 12 || age > 120) {
+                setError('Das Alter muss zwischen 12 und 120 Jahren liegen.');
                 return;
             }
             setMode('register');
@@ -141,12 +141,31 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? t.login : mode === 'age_verify' ? 'ALTER' : mode === 'language_select' ? 'LANGUAGE' : t.register}>
+        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? t.login : mode === 'age_verify' ? 'ALTER' : mode === 'language_select' ? 'LANGUAGE' : mode === 'register' ? t.register : 'WELCOME'}>
             <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                     <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-3 flex items-center gap-2">
                         <AlertCircle size={18} className="text-red-400" />
                         <span className="text-sm text-red-300">{error}</span>
+                    </div>
+                )}
+
+                {mode === 'select_auth_type' && (
+                    <div className="space-y-3">
+                        <button
+                            type="button"
+                            onClick={() => setMode('login')}
+                            className="w-full py-4 bg-gray-800 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-all group"
+                        >
+                            <span className="font-bold text-white text-lg group-hover:text-lexi-fuchsia transition-colors">{t.login}</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setMode('language_select')}
+                            className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg"
+                        >
+                            {t.register}
+                        </button>
                     </div>
                 )}
 
@@ -183,9 +202,17 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                     <div>
                         <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.age}</label>
                         <input
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             value={age || ''}
-                            onChange={(e) => setAge(parseInt(e.target.value))}
+                            onChange={(e) => {
+                                const val = e.target.value.replace(/[^0-9]/g, '');
+                                const num = parseInt(val);
+                                if (!val || num <= 120) {
+                                    setAge(val ? num : 0);
+                                }
+                            }}
                             className="w-full px-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white text-center font-bold text-xl focus:outline-none focus:border-lexi-fuchsia transition-colors"
                             placeholder={t.age}
                             autoFocus
@@ -295,18 +322,19 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                     </button>
                 )}
 
-                {/* Mode Switch */}
-                <button
-                    type="button"
-                    onClick={switchMode}
-                    className="w-full text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                    {mode === 'login' ? (
-                        <>{t.noAccount} <span className="text-lexi-fuchsia font-bold">{t.registerNow}</span></>
-                    ) : (
-                        <>{t.hasAccount} <span className="text-lexi-fuchsia font-bold">{t.loginNow}</span></>
-                    )}
-                </button>
+                {/* Back Button */}
+                {mode !== 'select_auth_type' && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setMode('select_auth_type');
+                            resetForm();
+                        }}
+                        className="w-full text-sm text-gray-400 hover:text-white transition-colors flex items-center justify-center gap-2"
+                    >
+                        <span>←</span> {lang === 'DE' ? 'Zurück' : lang === 'ES' ? 'Atrás' : 'Back'}
+                    </button>
+                )}
             </form>
         </Modal>
     );

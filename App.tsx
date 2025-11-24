@@ -16,6 +16,7 @@ import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
+import catDanceGif from './assets/cat-dance.gif';
 
 import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download } from 'lucide-react';
 
@@ -33,9 +34,9 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
     ['7', '8', '9'],
     ['0', '+', '-', '*', '/']
   ] : [
-    "QWERTYUIOP".split(''),
-    "ASDFGHJKL".split(''),
-    "ZXCVBNM".split('')
+    "QWERTYUIOPÜ".split(''),
+    "ASDFGHJKLÖÄ".split(''),
+    "ZXCVBNMß".split('')
   ];
 
   return (
@@ -126,6 +127,41 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // Define ViewType
 type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'LANGUAGE_SELECT';
 
+const FALLBACK_SEASON_CONFIG = {
+  "activeSeasonId": 1,
+  "currentSeasonId": 1,
+  "seasons": [
+    {
+      "id": 1,
+      "name": "Genesis",
+      "startDate": "2024-01-01",
+      "endDate": "2024-12-31",
+      "colors": {
+        "primary": "#8B5CF6",
+        "secondary": "#EC4899",
+        "accent": "#F59E0B",
+        "bgDark": "#1F2937",
+        "bgCard": "#374151"
+      },
+      "rewards": []
+    },
+    {
+      "id": 2,
+      "name": "Neon Uprising",
+      "startDate": "2025-01-01",
+      "endDate": "2025-03-31",
+      "colors": {
+        "primary": "#00f2ff",
+        "secondary": "#ff0099",
+        "accent": "#ccff00",
+        "bgDark": "#0a0a12",
+        "bgCard": "#161622"
+      },
+      "rewards": []
+    }
+  ]
+};
+
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
 
@@ -196,7 +232,7 @@ export default function App() {
         ownedAvatars: [AVATARS[0]],
         isPremium: false, // No premium
         playedWords: [],
-        activeFrame: undefined,
+        activeFrame: null,
         ownedFrames: [],
         hintBooster: 0,
         claimedSeasonRewards: []
@@ -221,7 +257,7 @@ export default function App() {
       completedLevels: fallbackLevelsUnlocked,
       language: Language.DE,
       theme: 'dark',
-      activeFrame: undefined,
+      activeFrame: null,
       ownedFrames: [],
       hintBooster: 0,
       claimedSeasonRewards: []
@@ -253,7 +289,7 @@ export default function App() {
         // Import the initialized database instance to avoid initialization errors
         let db;
         let seasonRef;
-        
+
         try {
           const { database } = await import('./utils/firebase');
           const { ref } = await import('firebase/database');
@@ -265,54 +301,69 @@ export default function App() {
           db = getDatabase();
           seasonRef = ref(db, 'system/active_season_id');
         }
-        
+
         const { onValue } = await import('firebase/database');
 
         // 2. Fetch Season Data from Ionos (static config)
+        let settings = null; // Declare settings here
         let response;
         try {
           response = await fetch('http://leximix.de/season_settings.json');
           if (!response.ok) throw new Error('Network response was not ok');
         } catch (e) {
           console.warn('[Season] Remote fetch failed, trying local fallback');
-          response = await fetch('/season_settings.json');
+          try {
+            response = await fetch('/season_settings.json');
+          } catch (e2) {
+            console.warn('[Season] Local fallback failed');
+          }
         }
-        
-        if (!response.ok) throw new Error('Failed to fetch season settings');
-        
-        const settings = await response.json();
-        setSeasonConfig(settings);
 
-        // 3. Listen for ID changes
+        if (response.ok) {
+          settings = await response.json(); // Assign to settings
+          setSeasonConfig(settings);
+        } else {
+          console.warn('[Season] Fetch failed, using hardcoded fallback');
+          settings = FALLBACK_SEASON_CONFIG;
+          setSeasonConfig(settings);
+        }
+
+        // 3. Listen for ID changes (Moved outside try/catch of fetch to ensure it runs)
         unsubscribeSeasonId = onValue(seasonRef, (snapshot) => {
           const firebaseActiveId = snapshot.exists() ? snapshot.val() : null;
-          
+
           // Priority: Firebase ID > JSON activeSeasonId > Date-based fallback
           // Use currentSeasonId which is the correct key from the JSON
-          const activeId = firebaseActiveId || settings.currentSeasonId || settings.activeSeasonId;
-          const activeSeasonData = settings.seasons.find((s: any) => s.id === activeId);
-          
-          if (activeSeasonData) {
-             console.log(`[Season] Loaded Dynamic Season: ${activeSeasonData.name} (ID: ${activeId})`);
-             setCurrentSeason(activeSeasonData);
-             
-             // Update Rewards
-             if (activeSeasonData.rewards) {
-               setDynamicRewards(activeSeasonData.rewards);
-             }
+          // Use local 'settings' variable if available, otherwise fallback to state (which might be null initially but we are inside the function where we try to fetch it)
+          // Actually, we should use the 'settings' object we just fetched/derived.
 
-             // Apply Colors
-             const root = document.documentElement;
-             root.style.setProperty('--season-primary', activeSeasonData.colors.primary);
-             root.style.setProperty('--season-secondary', activeSeasonData.colors.secondary);
-             root.style.setProperty('--season-accent', activeSeasonData.colors.accent);
-             root.style.setProperty('--season-bg-dark', activeSeasonData.colors.bgDark);
-             root.style.setProperty('--season-bg-card', activeSeasonData.colors.bgCard);
+          const currentSettings = settings || seasonConfig;
+          const activeId = firebaseActiveId || (currentSettings ? ((currentSettings as any).currentSeasonId || currentSettings.activeId) : null);
+
+          if (activeId && currentSettings) {
+            const activeSeasonData = currentSettings.seasons.find((s: any) => s.id === activeId);
+            if (activeSeasonData) {
+              console.log(`[Season] Loaded Dynamic Season: ${activeSeasonData.name} (ID: ${activeId})`);
+              setCurrentSeason(activeSeasonData);
+
+              // Update Rewards
+              if (activeSeasonData.rewards) {
+                setDynamicRewards(activeSeasonData.rewards);
+              }
+
+              // Apply Colors
+              const root = document.documentElement;
+              root.style.setProperty('--season-primary', activeSeasonData.colors.primary);
+              root.style.setProperty('--season-secondary', activeSeasonData.colors.secondary);
+              root.style.setProperty('--season-accent', activeSeasonData.colors.accent);
+              root.style.setProperty('--season-bg-dark', activeSeasonData.colors.bgDark);
+              root.style.setProperty('--season-bg-card', activeSeasonData.colors.bgCard);
+            }
           }
         });
 
       } catch (error) {
-        console.error('[Season] Failed to load dynamic settings, using defaults:', error);
+        console.error('[Season] Failed to load dynamic settings:', error);
       }
     };
 
@@ -321,7 +372,7 @@ export default function App() {
     return () => {
       if (unsubscribeSeasonId) unsubscribeSeasonId();
     };
-  }, []);
+  }, []); // Removed dependency on seasonConfig to prevent infinite loop
 
   // Apply Season Colors to CSS Variables (Initial / Fallback)
   useEffect(() => {
@@ -353,6 +404,7 @@ export default function App() {
           setView('LANGUAGE_SELECT');
         } else {
           setView('AUTH'); // Show login screen
+          setShowAuthModal(true);
         }
       } else {
         setView('HOME'); // Go straight to home
@@ -360,6 +412,7 @@ export default function App() {
     } catch (error) {
       console.error('[LexiMix] Init error:', error);
       setView('AUTH');
+      setShowAuthModal(true);
     }
   }, []);
 
@@ -707,7 +760,7 @@ export default function App() {
         handleWordDelete();
       } else if (key === 'ENTER') {
         handleWordEnter();
-      } else if (/^[A-Z]$/.test(key)) {
+      } else if (/^[A-ZÄÖÜß]$/.test(key)) {
         handleWordKey(key);
       }
     };
@@ -1793,9 +1846,9 @@ export default function App() {
             {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-blue-400" />}
           </button>
 
-          <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors group">
+          <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/10 transition-colors group">
             <div className="relative">
-              <Coins className="text-yellow-400 group-hover:rotate-12 transition-transform" size={18} />
+              <Gem className="text-blue-400 group-hover:rotate-12 transition-transform" size={18} />
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
             </div>
             <span className="font-black text-base text-yellow-400 drop-shadow-md">{user.coins}</span>
@@ -2422,18 +2475,22 @@ export default function App() {
       {/* Ad/Hint Modal */}
       <Modal isOpen={showAd} title={t.GAME.HINT_MODAL_TITLE}>
         <div className="flex flex-col items-center justify-center py-6 space-y-6">
-          <div className="w-full h-32 bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-2xl flex items-center justify-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
-            <span className="text-center text-xs text-gray-500 uppercase font-bold tracking-widest whitespace-pre-line">
-              {t.GAME.AD_SIM}
-            </span>
+          <div className="w-full h-48 bg-black rounded-2xl flex items-center justify-center relative overflow-hidden group border-2 border-gray-700">
+            <img
+              src={catDanceGif}
+              alt="Ad Simulation"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded text-[10px] text-white/70 font-mono">
+              AD
+            </div>
           </div>
           <div className="text-4xl font-mono text-lexi-fuchsia font-bold drop-shadow-[0_0_10px_rgba(217,70,239,0.5)]">
-            {adTimer > 0 ? `00:0${adTimer}` : t.GAME.REWARD}
+            {adTimer > 0 ? `00:${adTimer.toString().padStart(2, '0')}` : t.GAME.REWARD}
           </div>
           {hintCostMultiplier > 0 && (
             <div className="text-xs text-red-400 font-bold uppercase tracking-wider">
-              {t.GAME.HINT_COST_PREFIX}{hintCostMultiplier * 10}{t.GAME.HINT_COST_SUFFIX}
+              +{hintCostMultiplier * 10}s Wartezeit
             </div>
           )}
           <Button
@@ -2577,7 +2634,7 @@ export default function App() {
       </Modal>
 
       {/* Game Over Modal */}
-      <Modal isOpen={gameState?.status === 'lost'} onClose={() => setView('LEVELS')} title="MISSION FAILED">
+      <Modal isOpen={gameState?.status === 'lost'} onClose={() => { setView('LEVELS'); setGameState(null); }} title="MISSION FAILED">
         <div className="text-center py-6">
           <div className="inline-block p-6 rounded-full bg-red-500/10 border border-red-500/20 mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)] relative">
             <Skull className="text-red-500 drop-shadow-lg relative z-10 animate-pulse" size={64} />
@@ -2593,7 +2650,7 @@ export default function App() {
           </div>
 
           <div className="flex gap-3">
-            <Button className="flex-1" variant="secondary" onClick={() => setView('LEVELS')}>MENU</Button>
+            <Button className="flex-1" variant="secondary" onClick={() => { setView('LEVELS'); setGameState(null); }}>MENU</Button>
             <Button
               className="flex-1 bg-red-600 hover:bg-red-500 border-red-500 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
               onClick={() => {
@@ -2804,11 +2861,11 @@ export default function App() {
                 value={voucherCode}
                 onChange={(e) => setVoucherCode(e.target.value)}
                 placeholder="Code eingeben..."
-                className="flex-1 bg-black/30 border border-white/10 rounded-lg px-2 sm:px-3 py-2 text-sm sm:text-base text-white focus:border-yellow-400 outline-none transition-colors font-mono uppercase"
+                className="flex-1 bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 rounded-lg px-2 sm:px-3 py-2 text-sm sm:text-base text-black dark:text-white focus:border-yellow-400 outline-none transition-colors font-mono uppercase"
               />
               <button
                 onClick={handleVoucherRedeem}
-                className="bg-white/10 hover:bg-white/20 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-colors"
+                className="bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-black dark:text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-colors"
               >
                 Einlösen
               </button>

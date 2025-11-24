@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PayPalButton } from './PayPalButton';
 import { SHOP_ITEMS } from '../constants';
 import { audio } from '../utils/audio';
@@ -30,12 +30,13 @@ export const ShopView: React.FC<ShopViewProps> = ({
         { title: "COIN SALE", subtitle: "Get rich quick", color: "from-yellow-400 to-orange-500", icon: <Coins size={64} className="text-white animate-spin-reverse" /> }
     ];
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentBanner(prev => (prev + 1) % BANNERS.length);
-        }, 5000);
-        return () => clearInterval(interval);
-    }, []);
+    const handleNext = () => {
+        setCurrentBanner(prev => (prev + 1) % BANNERS.length);
+    };
+
+    const handlePrev = () => {
+        setCurrentBanner(prev => (prev - 1 + BANNERS.length) % BANNERS.length);
+    };
 
     // Safe access to banner with fallback
     const activeBanner = BANNERS[currentBanner] || BANNERS[0];
@@ -54,11 +55,11 @@ export const ShopView: React.FC<ShopViewProps> = ({
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
-                        className="hidden md:flex items-center gap-1 bg-gray-800/50 px-3 py-1 rounded-full border border-white/10 hover:bg-white/10 transition-colors text-[10px] font-bold uppercase tracking-wider text-lexi-text hover:text-lexi-cyan"
+                        className="hidden md:flex items-center gap-1 bg-white/50 dark:bg-gray-800/50 px-3 py-1 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-[10px] font-bold uppercase tracking-wider text-lexi-text hover:text-lexi-cyan"
                     >
                         <Sparkles size={12} /> Gutschein
                     </button>
-                    <div className="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-white/10">
+                    <div className="flex items-center gap-1 bg-white/50 dark:bg-black/50 px-3 py-1 rounded-full border border-black/10 dark:border-white/10">
                         <Gem size={14} className="text-blue-400" />
                         <span className="text-sm font-bold text-lexi-text">{Math.max(0, user.coins)}</span>
                     </div>
@@ -78,6 +79,20 @@ export const ShopView: React.FC<ShopViewProps> = ({
                             {activeBanner.icon}
                         </div>
                     </div>
+
+                    {/* Navigation Arrows */}
+                    <button
+                        onClick={handlePrev}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center backdrop-blur-sm transition-colors z-20"
+                    >
+                        <ChevronLeft size={20} className="text-white" />
+                    </button>
+                    <button
+                        onClick={handleNext}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center backdrop-blur-sm transition-colors z-20"
+                    >
+                        <ChevronRight size={20} className="text-white" />
+                    </button>
                     {/* Dots Indicator */}
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                         {BANNERS.map((_, i) => (
@@ -90,7 +105,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                 <div className="md:hidden w-full mb-4">
                     <button
                         onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
-                        className="w-full py-3 rounded-xl bg-gray-800/50 border border-white/10 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-lexi-text hover:text-lexi-cyan hover:bg-white/5 transition-all"
+                        className="w-full py-3 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-black/10 dark:border-white/10 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-lexi-text hover:text-lexi-cyan hover:bg-black/5 dark:hover:bg-white/5 transition-all"
                     >
                         <Sparkles size={14} /> Gutschein einlösen
                     </button>
@@ -146,15 +161,15 @@ export const ShopView: React.FC<ShopViewProps> = ({
                         {SHOP_ITEMS.filter(i => i.type === 'currency').map((item, idx) => (
                             <div
                                 key={item.id}
-                                className="bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 p-4 rounded-2xl flex flex-col items-center relative overflow-hidden group hover:border-blue-500/50 transition-all animate-scale-in"
+                                className="bg-gradient-to-br from-gray-100 to-white dark:from-gray-800 dark:to-gray-900 border border-black/10 dark:border-white/10 p-4 rounded-2xl flex flex-col items-center relative overflow-hidden group hover:border-blue-500/50 transition-all animate-scale-in"
                                 style={{ animationDelay: `${idx * 100}ms` }}
                             >
                                 <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <div className="bg-blue-900/30 p-3 rounded-full mb-2 group-hover:scale-110 transition-transform duration-500">
-                                    <Coins size={24} className="text-blue-300" />
+                                <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full mb-2 group-hover:scale-110 transition-transform duration-500">
+                                    <Coins size={24} className="text-blue-600 dark:text-blue-300" />
                                 </div>
-                                <span className="text-lg font-black text-white mb-0 leading-none">{item.currencyAmount}</span>
-                                <span className="text-[10px] text-blue-300 font-bold uppercase mb-3">{t.GAME.COINS_GAINED}</span>
+                                <span className="text-lg font-black text-black dark:text-white mb-0 leading-none">{item.currencyAmount}</span>
+                                <span className="text-[10px] text-blue-600 dark:text-blue-300 font-bold uppercase mb-3">{t.GAME.COINS_GAINED}</span>
 
                                 <div className="w-full mt-auto">
                                     {item.isRealMoney ? (

@@ -63,7 +63,8 @@ const DEFAULT_USER_STATE: UserState = {
     completedLevels: {},
     playedWords: [],
     language: Language.DE,
-    theme: 'dark'
+    theme: 'dark',
+    activeFrame: null // Ensure this is not undefined for Firebase
 };
 
 // ============================================================================
@@ -86,12 +87,12 @@ export const registerUser = async (username: string, password: string, initialDa
         }
 
         const hashedPassword = simpleHash(password);
-        
+
         // Create user with full default state
         await set(userRef, {
             password: hashedPassword,
             createdAt: Date.now(),
-            saves: { 
+            saves: {
                 current: {
                     ...DEFAULT_USER_STATE,
                     ...initialData, // Apply overrides (e.g. language, age)
@@ -161,6 +162,25 @@ export const loginUser = async (username: string, password: string): Promise<{ s
 // SAVE / LOAD FUNCTIONS (Unverändert)
 // ============================================================================
 
+// Helper to remove undefined values for Firebase
+const sanitizeForFirebase = (obj: any): any => {
+    if (obj === undefined) return null;
+    if (obj === null || typeof obj !== 'object') return obj;
+
+    if (Array.isArray(obj)) {
+        return obj.map(sanitizeForFirebase);
+    }
+
+    const newObj: any = {};
+    Object.keys(obj).forEach(key => {
+        const value = sanitizeForFirebase(obj[key]);
+        if (value !== undefined) {
+            newObj[key] = value;
+        }
+    });
+    return newObj;
+};
+
 export const saveToCloud = async (username: string, userState: any): Promise<boolean> => {
     if (!checkRateLimit()) {
         console.warn('[Firebase] Rate limit hit for save');
@@ -171,8 +191,10 @@ export const saveToCloud = async (username: string, userState: any): Promise<boo
 
     try {
         const saveRef = ref(database, `users/${normalizedUsername}/saves/current`);
+        const sanitizedState = sanitizeForFirebase(userState);
+
         await set(saveRef, {
-            ...userState,
+            ...sanitizedState,
             lastSaved: Date.now()
         });
         console.log('[Firebase] Saved to cloud successfully');
@@ -300,18 +322,18 @@ export const redeemVoucher = async (
             // UPDATE 1: Root level (for quick checks)
             const premiumRef = ref(database, `users/${normalizedUsername}/isPremium`);
             const activatedAtRef = ref(database, `users/${normalizedUsername}/premiumActivatedAt`);
-            
+
             // UPDATE 2: Deep within saves/current (where the app actually reads/writes state)
             const savePremiumRef = ref(database, `users/${normalizedUsername}/saves/current/isPremium`);
             const saveActivatedAtRef = ref(database, `users/${normalizedUsername}/saves/current/premiumActivatedAt`);
 
             const now = Date.now();
-            
+
             await set(premiumRef, true);
             await set(activatedAtRef, now);
             await set(savePremiumRef, true);
             await set(saveActivatedAtRef, now);
-            
+
             console.log(`[Firebase] Premium aktiviert für ${normalizedUsername}`);
         }
 
