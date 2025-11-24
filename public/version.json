@@ -1,9 +1,9 @@
 {
-    "version": "2.4.0",
+    "version": "2.5.0",
     "buildDate": "2025-11-24",
     "apk": {
-        "version": "2.4.0",
+        "version": "2.5.0",
         "url": "http://leximix.de/app-release.apk",
-        "buildNumber": 5
+        "buildNumber": 6
     }
 }

@@ -71,6 +71,10 @@ export const SeasonPassView: React.FC<Props> = ({ user, onClose, onClaim, onShow
                         <span>Gesamt XP: {user.xp}</span>
                         <span>•</span>
                         <span>{formatDate(currentSeason.startDate)} - {formatDate(currentSeason.endDate)}</span>
+                        <span>•</span>
+                        <span className="text-orange-500 font-bold">
+                           {Math.max(0, Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage übrig
+                        </span>
                     </div>
                 </div>
                 <div className="w-10"></div>

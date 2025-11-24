@@ -1747,27 +1747,23 @@ export default function App() {
             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Season Ende</span>
             <div className="flex items-center gap-2 text-lexi-cyan font-mono font-bold">
               <Clock size={14} />
-              <span>
-                {Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24))} Tage
-              </span>
+              {Math.max(0, Math.ceil((getCurrentSeason().endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage
             </div>
           </div>
 
-          {/* Premium Timer */}
-          {user.isPremium && (
-            <div className="flex-1 bg-gray-900/40 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center">
-              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Premium</span>
-              <div className="flex items-center gap-2 text-lexi-gold font-mono font-bold">
-                <Crown size={14} />
-                <span>
-                  {user.premiumActivatedAt
-                    ? Math.max(0, Math.ceil(((user.premiumActivatedAt + (30 * 24 * 60 * 60 * 1000)) - Date.now()) / (1000 * 60 * 60 * 24))) + " Tage"
-                    : "Aktiv"
-                  }
-                </span>
-              </div>
-            </div>
-          )}
+          {/* Premium Status */}
+          <div className="flex-1 bg-gray-900/40 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center">
+             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Premium Status</span>
+             {user.isPremium ? (
+                 <div className="scale-90 origin-center">
+                    <PremiumStatus isPremium={user.isPremium} premiumActivatedAt={user.premiumActivatedAt} />
+                 </div>
+             ) : (
+               <div className="text-gray-500 text-xs font-bold flex items-center gap-1">
+                 <Lock size={12} /> Inaktiv
+               </div>
+             )}
+          </div>
         </div>
       </div>
 
