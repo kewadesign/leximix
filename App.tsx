@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 // KW1998 - Core Application Logic
 import { GameMode, Tier, UserState, Language, GameConfig, ShopItem } from './types';
 import { Button, Modal } from './components/UI';
-import { VersionManager, APP_VERSION } from './components/VersionManager';
+import { VersionManager } from './components/VersionManager';
 import { SeasonPass } from './components/SeasonPass';
 import { SeasonPassView } from './components/SeasonPassView';
 import { PayPalButton } from './components/PayPalButton';
@@ -12,7 +12,7 @@ import { ShopView } from './components/ShopView';
 import { SudokuGrid } from './components/SudokuGrid';
 import { SudokuControls } from './components/SudokuControls';
 import { MusicPlayer } from './components/MusicPlayer';
-import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS } from './constants';
+import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
@@ -1663,7 +1663,7 @@ export default function App() {
             >
               <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl"></div>
               <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              
+
               <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-xl p-6 flex items-center justify-between border border-white/10 group-hover:border-white/20">
                 <div className="flex items-center gap-4">
                   <span className="text-4xl">{lang.flag}</span>
@@ -1808,16 +1808,16 @@ export default function App() {
 
           {/* Premium Status */}
           <div className="flex-1 bg-gray-900/40 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center">
-             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Premium Status</span>
-             {user.isPremium ? (
-                 <div className="scale-90 origin-center">
-                    <PremiumStatus isPremium={user.isPremium} premiumActivatedAt={user.premiumActivatedAt} />
-                 </div>
-             ) : (
-               <div className="text-gray-500 text-xs font-bold flex items-center gap-1">
-                 <Lock size={12} /> Inaktiv
-               </div>
-             )}
+            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Premium Status</span>
+            {user.isPremium ? (
+              <div className="scale-90 origin-center">
+                <PremiumStatus isPremium={user.isPremium} premiumActivatedAt={user.premiumActivatedAt} />
+              </div>
+            ) : (
+              <div className="text-gray-500 text-xs font-bold flex items-center gap-1">
+                <Lock size={12} /> Inaktiv
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1825,7 +1825,8 @@ export default function App() {
 
 
       {/* Grid */}
-      <div id="gamemodes" className="grid grid-cols-2 gap-4 mb-8">
+      {/* Grid */}
+      <div id="gamemodes" className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <GameCard
           mode={GameMode.CLASSIC}
           title={t.MODES.CLASSIC.title}
@@ -1842,12 +1843,35 @@ export default function App() {
           icon={Zap}
         />
         <GameCard
+          mode={GameMode.CHAIN}
+          title={t.MODES.CHAIN.title}
+          desc={t.MODES.CHAIN.desc}
+          color="bg-lexi-card-blue"
+          icon={LinkIcon}
+        />
+        <GameCard
+          mode={GameMode.CATEGORY}
+          title={t.MODES.CATEGORY.title}
+          desc={t.MODES.CATEGORY.desc}
+          color="bg-lexi-card-yellow"
+          icon={BookOpen}
+        />
+        <GameCard
+          mode={GameMode.SUDOKU}
+          title={t.MODES.SUDOKU.title}
+          desc={t.MODES.SUDOKU.desc}
+          color="bg-lexi-card-purple"
+          icon={Grid3X3}
+          locked={!user.isPremium}
+        />
+        <GameCard
           mode={GameMode.CHALLENGE}
           title={t.MODES.CHALLENGE.title}
           desc={t.MODES.CHALLENGE.desc}
           color="bg-lexi-card-dark border border-yellow-500/30"
           icon={Brain}
           delay={250}
+          locked={!user.isPremium}
         />
         <GameCard
           mode={GameMode.RIDDLE}

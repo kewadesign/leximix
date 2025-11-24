@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 // WICHTIG: runTransaction wurde hier hinzugefügt
 import { getDatabase, ref, set, get, child, runTransaction, onValue } from 'firebase/database';
 import { UserState, Language } from '../types';
-import { AVATARS } from '../constants';
+import { AVATARS, APP_VERSION } from '../constants';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -128,7 +128,8 @@ export const loginUser = async (username: string, password: string): Promise<{ s
 
         if (versionSnapshot.exists()) {
             const minVersion = versionSnapshot.val();
-            const currentVersion = "2.1.0";
+            // const currentVersion = "2.1.0"; // OLD
+            const currentVersion = APP_VERSION;
             if (currentVersion < minVersion) {
                 return { success: false, error: `Update erforderlich! (Benötigt: v${minVersion})` };
             }

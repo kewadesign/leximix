@@ -15,7 +15,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [age, setAge] = useState<number>(0);
-    const [language, setLanguage] = useState<'DE' | 'EN'>('DE');
+    const [language, setLanguage] = useState<'DE' | 'EN' | 'ES'>('DE');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -151,26 +151,34 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                 )}
 
                 {mode === 'lang_select' && (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                         <button
                             type="button"
                             onClick={() => setLanguage('DE')}
-                            className={`p-6 rounded-2xl border-2 transition-all ${language === 'DE' ? 'border-lexi-fuchsia bg-lexi-fuchsia/20' : 'border-white/10 bg-gray-900'}`}
+                            className={`p-4 rounded-2xl border-2 transition-all ${language === 'DE' ? 'border-lexi-fuchsia bg-lexi-fuchsia/20' : 'border-white/10 bg-gray-900'}`}
                         >
-                            <span className="text-4xl block mb-2">🇩🇪</span>
-                            <span className="font-bold text-white">Deutsch</span>
+                            <span className="text-3xl block mb-2">🇩🇪</span>
+                            <span className="font-bold text-white text-sm">Deutsch</span>
                         </button>
                         <button
                             type="button"
                             onClick={() => setLanguage('EN')}
-                            className={`p-6 rounded-2xl border-2 transition-all ${language === 'EN' ? 'border-lexi-cyan bg-lexi-cyan/20' : 'border-white/10 bg-gray-900'}`}
+                            className={`p-4 rounded-2xl border-2 transition-all ${language === 'EN' ? 'border-lexi-cyan bg-lexi-cyan/20' : 'border-white/10 bg-gray-900'}`}
                         >
-                            <span className="text-4xl block mb-2">🇺🇸</span>
-                            <span className="font-bold text-white">English</span>
+                            <span className="text-3xl block mb-2">🇺🇸</span>
+                            <span className="font-bold text-white text-sm">English</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setLanguage('ES')}
+                            className={`p-4 rounded-2xl border-2 transition-all ${language === 'ES' ? 'border-yellow-500 bg-yellow-500/20' : 'border-white/10 bg-gray-900'}`}
+                        >
+                            <span className="text-3xl block mb-2">🇪🇸</span>
+                            <span className="font-bold text-white text-sm">Español</span>
                         </button>
                         <button
                             type="submit"
-                            className="col-span-2 w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all"
+                            className="col-span-3 w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all"
                         >
                             Weiter
                         </button>
@@ -214,7 +222,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                                     placeholder="Dein Benutzername"
                                     disabled={loading}
                                     maxLength={30}
-                                    autoFocus={mode === 'register'} 
+                                    autoFocus={mode === 'register'}
                                 />
                             </div>
                             {mode === 'register' && <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30 Zeichen</p>}
@@ -271,7 +279,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                                 disabled={loading}
                             />
                         </div>
-                        
+
                         <button
                             type="submit"
                             disabled={loading}

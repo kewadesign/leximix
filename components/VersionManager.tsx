@@ -3,9 +3,7 @@ import { getDatabase, ref, get, onValue } from 'firebase/database';
 import { Modal } from './UI';
 import { AlertTriangle, ArrowLeft, Sparkles, Download } from 'lucide-react';
 import { ChangelogModal, ChangelogEntry } from './ChangelogModal';
-
-// Current App Version
-export const APP_VERSION = '2.5.2';
+import { APP_VERSION } from '../constants';
 
 interface Props {
   isOnline: boolean;
