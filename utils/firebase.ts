@@ -34,7 +34,7 @@ const simpleHash = (str: string): string => {
 
 // Rate Limiting
 let lastRequestTime = 0;
-const REQUEST_COOLDOWN = 2000; // 2 seconds
+const REQUEST_COOLDOWN = 1000; // 1 second (reduced for better sync)
 
 const checkRateLimit = (): boolean => {
     const now = Date.now();
@@ -197,7 +197,12 @@ export const saveToCloud = async (username: string, userState: any): Promise<boo
             ...sanitizedState,
             lastSaved: Date.now()
         });
-        console.log('[Firebase] Saved to cloud successfully');
+        console.log('[Firebase] Saved to cloud successfully', {
+            level: userState.level,
+            coins: userState.coins,
+            xp: userState.xp,
+            completedLevels: Object.keys(userState.completedLevels || {}).length
+        });
         return true;
     } catch (error) {
         console.error('[Firebase] Save error:', error);

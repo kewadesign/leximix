@@ -4,7 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '2.6.5';
+export const APP_VERSION = '2.6.6';
 
 // ============================================================================
 // SEASON SYSTEM

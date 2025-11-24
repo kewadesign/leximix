@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.6',
+        date: '2025-11-24',
+        changes: {
+            fixed: [
+                'Firebase Cloud-Speicherung optimiert (Debouncing & besseres Sync)',
+                'Header-Buttons im Light Mode jetzt mit schwarzer Schrift auf weißem Hintergrund',
+                'Rate Limiting für Cloud-Saves verbessert'
+            ]
+        }
+    },
+    {
         version: '2.6.5',
         date: '2025-11-24',
         changes: {

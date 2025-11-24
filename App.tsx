@@ -417,20 +417,27 @@ export default function App() {
   }, []);
 
   // Anti-Cheat: Verify premium status with server every 60 seconds
-  // Sync user state to cloud on changes
+  // Sync user state to cloud on changes (with debouncing)
   useEffect(() => {
     if (!cloudUsername) return;
-    const sync = async () => {
+    
+    // Debounce: Wait 3 seconds before syncing to avoid too many requests
+    const syncTimer = setTimeout(async () => {
       try {
         const { saveToCloud } = await import('./utils/firebase');
-        await saveToCloud(cloudUsername, user);
-        console.log('[Sync] User data synced to cloud');
+        const success = await saveToCloud(cloudUsername, user);
+        if (success) {
+          console.log('[Sync] User data synced to cloud');
+        } else {
+          console.warn('[Sync] Save failed (rate limit or error)');
+        }
       } catch (e) {
         console.error('[Sync] Failed to sync:', e);
       }
-    };
-    sync();
-  }, [cloudUsername, user]);
+    }, 3000);
+
+    return () => clearTimeout(syncTimer);
+  }, [cloudUsername, user.level, user.coins, user.xp, user.isPremium, user.completedLevels, user.language, user.theme]);
   useEffect(() => {
     if (!cloudUsername) return;
 
@@ -1842,22 +1849,22 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button onClick={toggleTheme} className="w-10 h-10 glass-button rounded-full flex items-center justify-center">
-            {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-blue-400" />}
+          <button onClick={toggleTheme} className="w-10 h-10 glass-button rounded-full flex items-center justify-center bg-white dark:bg-lexi-surface-highlight">
+            {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-gray-800" />}
           </button>
 
-          <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/10 transition-colors group">
+          <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/10 transition-colors group bg-white dark:bg-lexi-surface-highlight">
             <div className="relative">
-              <Gem className="text-blue-400 group-hover:rotate-12 transition-transform" size={18} />
+              <Gem className="text-blue-400 dark:text-blue-400 group-hover:rotate-12 transition-transform" size={18} />
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
             </div>
-            <span className="font-black text-base text-yellow-400 drop-shadow-md">{user.coins}</span>
-            <Plus size={12} className="bg-yellow-400 text-black rounded-full p-0.5" />
+            <span className="font-black text-base text-gray-800 dark:text-yellow-400 drop-shadow-md">{user.coins}</span>
+            <Plus size={12} className="bg-gray-800 dark:bg-yellow-400 text-white dark:text-black rounded-full p-0.5" />
           </button>
 
-          <button onClick={toggleLanguage} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors">
-            <Globe size={18} className="text-lexi-cyan" />
-            <span className="font-bold text-xs text-lexi-cyan uppercase">{getLanguageName(user.language)}</span>
+          <button onClick={toggleLanguage} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/10 transition-colors bg-white dark:bg-lexi-surface-highlight">
+            <Globe size={18} className="text-gray-800 dark:text-lexi-cyan" />
+            <span className="font-bold text-xs text-gray-800 dark:text-lexi-cyan uppercase">{getLanguageName(user.language)}</span>
           </button>
         </div>
       </div>
