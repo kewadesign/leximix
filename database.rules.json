@@ -7,8 +7,7 @@
                 ".write": false,
                 "usedBy": {
                     "$username": {
-                        ".write": "!data.exists()",
-                        ".validate": "newData.isNumber()"
+                        ".write": "!data.exists()"
                     }
                 }
             }
@@ -16,18 +15,7 @@
         "users": {
             "$username": {
                 ".read": true,
-                ".write": true,
-                ".validate": "$username.matches(/^[a-zA-Z0-9]+$/) && $username.length >= 3 && $username.length <= 30",
-                "password": { ".write": "!data.exists()" },
-                "email": { ".write": true },
-                "createdAt": { ".write": true },
-                "coins": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-                "xp": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-                "level": { ".validate": "newData.isNumber() && newData.val() >= 1" },
-                "isPremium": { ".validate": "newData.isBoolean()" },
-                "premiumActivatedAt": { ".validate": "newData.isNumber()" },
-                "saves": { ".write": true },
-                "voucherRewards": { ".write": true }
+                ".write": true
             }
         }
     }
