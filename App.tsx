@@ -2574,7 +2574,7 @@ export default function App() {
           setVoucherError('');
           setVoucherSuccess('');
         }}
-        title="🎁 Gutschein Einlösen"
+        title={t.HOME.VOUCHER_TITLE}
       >
         <div className="text-center py-6 space-y-6">
           <div className="inline-block p-6 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
@@ -2582,8 +2582,8 @@ export default function App() {
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-lg font-bold text-gray-300">Gutscheincode eingeben</h3>
-            <p className="text-xs text-gray-500">Gib deinen Gutscheincode ein um Münzen zu erhalten</p>
+            <h3 className="text-lg font-bold text-gray-300">{t.HOME.VOUCHER_HEADING}</h3>
+            <p className="text-xs text-gray-500">{t.HOME.VOUCHER_DESC}</p>
           </div>
 
           <div className="w-full">
@@ -2595,7 +2595,7 @@ export default function App() {
                 setVoucherError('');
                 setVoucherSuccess('');
               }}
-              placeholder="GUTSCHEIN123"
+              placeholder={t.HOME.VOUCHER_PLACEHOLDER}
               className={`w-full bg-gray-900 border-2 ${voucherError
                 ? 'border-red-500 animate-shake'
                 : voucherSuccess
@@ -2634,14 +2634,14 @@ export default function App() {
                 setVoucherSuccess('');
               }}
             >
-              Abbrechen
+              {t.HOME.VOUCHER_CANCEL}
             </Button>
             <Button
               className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:brightness-110"
               onClick={handleVoucherRedeem}
               disabled={!voucherCode.trim() || !!voucherSuccess}
             >
-              {voucherSuccess ? '✓ Eingelöst' : 'Einlösen'}
+              {voucherSuccess ? t.HOME.VOUCHER_REDEEMED : t.HOME.VOUCHER_REDEEM}
             </Button>
           </div>
         </div>

@@ -9,17 +9,17 @@ interface Props {
   isPremium: boolean;
   onBuyPremium: () => void;
   lang: Language;
+  theme?: 'dark' | 'light';
 }
 
-export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium, lang }) => {
+export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium, lang, theme = 'dark' }) => {
   const t = TRANSLATIONS[lang].SEASON;
 
   return (
     <div
       onClick={onBuyPremium}
-      className="w-full h-32 md:h-40 rounded-[2rem] p-6 cursor-pointer relative overflow-hidden group hover:scale-[1.02] transition-all duration-500 shadow-2xl animate-slide-up mt-8"
+      className="w-full h-32 md:h-40 rounded-[2rem] p-6 cursor-pointer relative overflow-hidden group hover:scale-[1.02] transition-all duration-500 shadow-2xl animate-slide-up mt-8 bg-gradient-to-br from-amber-700 to-orange-900 dark:from-amber-800 dark:to-orange-950"
       style={{
-        background: 'linear-gradient(135deg, #b45309 0%, #78350f 100%)',
         animationDelay: '0.3s'
       }}
     >

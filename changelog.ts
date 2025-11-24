@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.2',
+        date: '2025-11-24',
+        changes: {
+            fixed: [
+                'Dark Mode funktioniert jetzt in allen Ansichten (Tailwind Config korrigiert)',
+                'Gutschein-Modal vollständig übersetzt (DE/EN/ES)'
+            ]
+        }
+    },
+    {
         version: '2.6.1',
         date: '2025-11-24',
         changes: {

@@ -150,7 +150,14 @@ export const TRANSLATIONS = {
       PREMIUM_REQUIRED_LOCKED: "Challenge Mode Locked",
       PREMIUM_REQUIRED_DESC: "This mode is exclusive to premium members. Get the Season Pass to unlock daily challenges and exclusive rewards!",
       PREMIUM_REQUIRED_GO: "Go to Season Pass",
-      PREMIUM_REQUIRED_LATER: "Maybe later"
+      PREMIUM_REQUIRED_LATER: "Maybe later",
+      VOUCHER_TITLE: "🎁 Redeem Voucher",
+      VOUCHER_HEADING: "Enter Voucher Code",
+      VOUCHER_DESC: "Enter your voucher code to receive coins",
+      VOUCHER_PLACEHOLDER: "VOUCHER123",
+      VOUCHER_CANCEL: "Cancel",
+      VOUCHER_REDEEM: "Redeem",
+      VOUCHER_REDEEMED: "✓ Redeemed"
     },
     MODES: {
       CLASSIC: { title: "CLASSIC", desc: "The Standard" },
@@ -297,7 +304,14 @@ export const TRANSLATIONS = {
       PREMIUM_REQUIRED_LOCKED: "Challenge Mode Gesperrt",
       PREMIUM_REQUIRED_DESC: "Dieser Modus ist exklusiv für Premium-Mitglieder. Hole dir den Season Pass, um tägliche Herausforderungen und exklusive Belohnungen freizuschalten!",
       PREMIUM_REQUIRED_GO: "Zum Season Pass",
-      PREMIUM_REQUIRED_LATER: "Vielleicht später"
+      PREMIUM_REQUIRED_LATER: "Vielleicht später",
+      VOUCHER_TITLE: "🎁 Gutschein Einlösen",
+      VOUCHER_HEADING: "Gutscheincode eingeben",
+      VOUCHER_DESC: "Gib deinen Gutscheincode ein um Münzen zu erhalten",
+      VOUCHER_PLACEHOLDER: "GUTSCHEIN123",
+      VOUCHER_CANCEL: "Abbrechen",
+      VOUCHER_REDEEM: "Einlösen",
+      VOUCHER_REDEEMED: "✓ Eingelöst"
     },
     MODES: {
       CLASSIC: { title: "KLASSISCH", desc: "Der Standard" },
@@ -444,7 +458,14 @@ export const TRANSLATIONS = {
       PREMIUM_REQUIRED_LOCKED: "Modo Desafío Bloqueado",
       PREMIUM_REQUIRED_DESC: "Este modo es exclusivo para miembros premium. ¡Obtén el Pase de Temporada para desbloquear desafíos diarios y recompensas exclusivas!",
       PREMIUM_REQUIRED_GO: "Ir al Pase de Temporada",
-      PREMIUM_REQUIRED_LATER: "Quizás más tarde"
+      PREMIUM_REQUIRED_LATER: "Quizás más tarde",
+      VOUCHER_TITLE: "🎁 Canjear Cupón",
+      VOUCHER_HEADING: "Ingresar Código de Cupón",
+      VOUCHER_DESC: "Ingresa tu código de cupón para recibir monedas",
+      VOUCHER_PLACEHOLDER: "CUPON123",
+      VOUCHER_CANCEL: "Cancelar",
+      VOUCHER_REDEEM: "Canjear",
+      VOUCHER_REDEEMED: "✓ Canjeado"
     },
     MODES: {
       CLASSIC: { title: "CLÁSICO", desc: "El Estándar" },
