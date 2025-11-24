@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '2.6.9',
+        date: '2025-11-24',
+        changes: {
+            fixed: [
+                'Firebase E-Mail/Passwort Authentifizierung aktiviert',
+                'Registrierung funktioniert jetzt einwandfrei'
+            ]
+        }
+    },
+    {
         version: '2.6.8',
         date: '2025-11-24',
         changes: {
