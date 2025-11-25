@@ -20,7 +20,9 @@ import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
 import catDanceGif from './assets/cat-dance.gif';
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download } from 'lucide-react';
+
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X } from 'lucide-react';
+
 
 // --- Sub Components for Game Logic ---
 
@@ -550,6 +552,10 @@ export default function App() {
   const [correctWord, setCorrectWord] = useState('');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
+  // Mau Mau Modal Flow
+  const [showMauMauIntro, setShowMauMauIntro] = useState(false);
+  const [showMauMauModeSelect, setShowMauMauModeSelect] = useState(false);
+
   // Online/Offline monitoring
   useEffect(() => {
     const handleOnline = () => {
@@ -856,9 +862,9 @@ export default function App() {
       return;
     }
 
-    // Letter Mau Mau goes directly to game (no level selection)
+    // Letter Mau Mau goes to intro modal first
     if (mode === GameMode.LETTER_MAU_MAU) {
-      setView('MAU_MAU');
+      setShowMauMauIntro(true);
       return;
     }
 
@@ -1106,9 +1112,16 @@ export default function App() {
   };
 
   const startGameFromTutorial = () => {
-    if (gameConfig?.mode === GameMode.LETTER_MAU_MAU) {
-      setView('MAU_MAU');
-    } else if (gameConfig?.mode === GameMode.SKAT_MAU_MAU) {
+    const mode = gameConfig?.mode;
+
+    // Mau Mau - Show intro modal first
+    if (mode === GameMode.LETTER_MAU_MAU) {
+      setShowMauMauIntro(true);
+      return;
+    }
+
+    // Skat Mau Mau - Legacy direct start
+    if (mode === GameMode.SKAT_MAU_MAU) {
       setView('SKAT_MAU_MAU');
     } else {
       setView('GAME');
@@ -2075,7 +2088,7 @@ export default function App() {
         />
         <GameCard
           mode={GameMode.LETTER_MAU_MAU}
-          title="Letter Mau Mau"
+          title="Mau Mau"
           desc="Karten Spiel"
           color="bg-gradient-to-br from-purple-600/30 to-pink-600/30 border border-purple-500/50"
           icon={Sparkles}
@@ -2554,6 +2567,106 @@ export default function App() {
           </button>
         </div>
       </Modal>
+
+      {/* Mau Mau Intro Modal */}
+      <Modal isOpen={showMauMauIntro} onClose={() => setShowMauMauIntro(false)} title="Mau Mau">
+        <div className="p-6 text-center space-y-6">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+            <span className="text-5xl">🎴</span>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-black text-white mb-2 uppercase italic">Das klassische Kartenspiel!</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Spiele deine Karten geschickt aus und werde alle los, bevor es dein Gegner schafft!
+            </p>
+          </div>
+
+          <div className="bg-gray-900/50 p-4 rounded-xl border border-white/10 text-left space-y-2">
+            <div className="flex items-start gap-3">
+              <span className="text-purple-400 font-bold text-lg">♠️</span>
+              <span className="text-xs text-gray-300">Spiele Karten mit gleicher Farbe oder gleichem Wert</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-pink-400 font-bold text-lg">7️⃣</span>
+              <span className="text-xs text-gray-300">Sieben: Gegner muss 2 Karten ziehen</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-cyan-400 font-bold text-lg">8️⃣</span>
+              <span className="text-xs text-gray-300">Acht: Aussetzen - du spielst nochmal</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-yellow-400 font-bold text-lg">🃏</span>
+              <span className="text-xs text-gray-300">Bube: Wünsche dir eine Farbe</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              setShowMauMauIntro(false);
+              setShowMauMauModeSelect(true);
+            }}
+            className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:brightness-110 text-white font-black uppercase tracking-widest rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+          >
+            <Play size={20} fill="currentColor" /> Weiter
+          </button>
+        </div>
+      </Modal>
+
+      {/* Mau Mau Mode Selection Modal */}
+      <Modal isOpen={showMauMauModeSelect} onClose={() => setShowMauMauModeSelect(false)} title="Spielmodus wählen">
+        <div className="p-6 space-y-4">
+          <p className="text-center text-gray-300 text-sm mb-6">
+            Wähle deinen bevorzugten Spielmodus:
+          </p>
+
+          {/* Singleplayer Button */}
+          <button
+            onClick={() => {
+              setShowMauMauModeSelect(false);
+              setView('MAU_MAU');
+            }}
+            className="w-full p-6 bg-gradient-to-br from-purple-600/30 to-pink-600/30 border-2 border-purple-500/50 hover:border-purple-400 rounded-2xl transition-all hover:scale-105 active:scale-95 group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
+                <User size={32} className="text-purple-400" />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="text-xl font-black text-white mb-1">Singleplayer</h4>
+                <p className="text-sm text-gray-400">Spiele gegen die KI</p>
+              </div>
+            </div>
+          </button>
+
+          {/* Multiplayer Button (Coming Soon) */}
+          <button
+            disabled
+            className="w-full p-6 bg-gradient-to-br from-gray-600/20 to-gray-700/20 border-2 border-gray-600/30 rounded-2xl opacity-60 cursor-not-allowed relative overflow-hidden"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-gray-500/20 rounded-full flex items-center justify-center">
+                <Users size={32} className="text-gray-500" />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="text-xl font-black text-gray-400 mb-1">Multiplayer</h4>
+                <p className="text-sm text-gray-500">Spiele gegen Freunde</p>
+              </div>
+            </div>
+            <div className="absolute top-2 right-2 bg-yellow-500/20 border border-yellow-500/50 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold text-yellow-400">Bald verfügbar</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setShowMauMauModeSelect(false)}
+            className="w-full py-3 bg-gray-700 hover:bg-gray-600 rounded-xl text-white font-bold transition-colors"
+          >
+            Zurück
+          </button>
+        </div>
+      </Modal>
+
 
       {/* Auth Screen (First screen) */}
       {view === 'AUTH' && (
