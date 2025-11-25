@@ -63,6 +63,7 @@ export interface UserState {
   stickers?: string[]; // Collected stickers
   theme: 'light' | 'dark';
   friendCode?: string; // Unique friend code for multiplayer
+  friends?: { code: string; username: string }[]; // List of added friends
 }
 
 export interface GameConfig {

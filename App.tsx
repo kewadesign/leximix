@@ -1026,7 +1026,7 @@ export default function App() {
 
   // Cloud Save Handlers
   const handleCloudLogin = async (username: string) => {
-    const { normalizeUsername, loadFromCloud } = await import('./utils/firebase');
+    const { normalizeUsername, loadFromCloud, generateFriendCode } = await import('./utils/firebase');
     const normalizedUser = normalizeUsername(username);
 
     setCloudUsername(normalizedUser);
@@ -1042,6 +1042,15 @@ export default function App() {
         ...cloudData,
         name: normalizedUser // Enforce name consistency
       }));
+
+      // Ensure friend code exists
+      if (!cloudData.friendCode) {
+        const code = await generateFriendCode(normalizedUser);
+        if (code) {
+          setUser(prev => ({ ...prev, friendCode: code }));
+        }
+      }
+
       console.log('[Cloud] Loaded save from cloud');
       setView('HOME');
     } else {
@@ -1050,6 +1059,9 @@ export default function App() {
       Object.values(GameMode).forEach(mode => {
         initialLevelsUnlocked[`${mode}_${Tier.BEGINNER}_1`] = true;
       });
+
+      // Generate friend code for new user
+      const friendCode = await generateFriendCode(normalizedUser);
 
       setUser(prev => ({
         ...prev,
@@ -1064,7 +1076,9 @@ export default function App() {
         completedLevels: initialLevelsUnlocked,
         playedWords: [],
         language: Language.DE, // Default, will be chosen in onboarding
-        theme: user.theme || 'dark'
+        theme: user.theme || 'dark',
+        friendCode: friendCode || undefined,
+        friends: []
       }));
 
       // Pre-fill onboarding name with username
@@ -2093,14 +2107,6 @@ export default function App() {
           color="bg-gradient-to-br from-purple-600/30 to-pink-600/30 border border-purple-500/50"
           icon={Sparkles}
           delay={400}
-        />
-        <GameCard
-          mode={GameMode.SKAT_MAU_MAU}
-          title="Skat Mau Mau"
-          desc="Classic Cards"
-          color="bg-gradient-to-br from-green-600/30 to-emerald-600/30 border border-green-500/50"
-          icon={Sparkles}
-          delay={450}
         />
       </div>
 
