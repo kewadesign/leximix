@@ -49,20 +49,34 @@ export async function getUsernameByFriendCode(friendCode: string): Promise<strin
 }
 
 /**
- * Add a friend to user's friend list in Firebase
+ * Add a friend to user's friend list in Firebase (BIDIRECTIONAL)
+ * Both users get each other added as friends
  */
 export async function addFriendToFirebase(
     currentUsername: string,
+    currentUserFriendCode: string,
     friendCode: string,
     friendUsername: string
 ): Promise<boolean> {
     try {
-        const friendsRef = ref(database, `users/${currentUsername}/friends/${friendCode}`);
-        await set(friendsRef, {
+        const timestamp = Date.now();
+        
+        // 1. Add friend to current user's list
+        const myFriendsRef = ref(database, `users/${currentUsername}/friends/${friendCode}`);
+        await set(myFriendsRef, {
             code: friendCode,
             username: friendUsername,
-            addedAt: Date.now()
+            addedAt: timestamp
         });
+        
+        // 2. Add current user to friend's list (BIDIRECTIONAL)
+        const theirFriendsRef = ref(database, `users/${friendUsername}/friends/${currentUserFriendCode}`);
+        await set(theirFriendsRef, {
+            code: currentUserFriendCode,
+            username: currentUsername,
+            addedAt: timestamp
+        });
+        
         return true;
     } catch (error) {
         console.error('Error adding friend:', error);
@@ -71,15 +85,24 @@ export async function addFriendToFirebase(
 }
 
 /**
- * Remove a friend from user's friend list
+ * Remove a friend from user's friend list (BIDIRECTIONAL)
+ * Removes from both users' friend lists
  */
 export async function removeFriendFromFirebase(
     currentUsername: string,
-    friendCode: string
+    currentUserFriendCode: string,
+    friendCode: string,
+    friendUsername: string
 ): Promise<boolean> {
     try {
-        const friendRef = ref(database, `users/${currentUsername}/friends/${friendCode}`);
-        await set(friendRef, null);
+        // 1. Remove friend from current user's list
+        const myFriendRef = ref(database, `users/${currentUsername}/friends/${friendCode}`);
+        await set(myFriendRef, null);
+        
+        // 2. Remove current user from friend's list (BIDIRECTIONAL)
+        const theirFriendRef = ref(database, `users/${friendUsername}/friends/${currentUserFriendCode}`);
+        await set(theirFriendRef, null);
+        
         return true;
     } catch (error) {
         console.error('Error removing friend:', error);

@@ -15,6 +15,7 @@ import { MusicPlayer } from './components/MusicPlayer';
 import { LetterMauMauGame } from './components/LetterMauMauGame';
 import SkatMauMauGame from './components/SkatMauMauGame';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
+import { FriendsManager } from './components/FriendsManager';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
@@ -434,9 +435,13 @@ export default function App() {
               }));
               console.log('[Cloud] Startup sync successful');
             } else {
-              // If no cloud data but logged in (rare), try to generate code anyway
-              const code = await generateFriendCode(normalizedUser);
-              setUser(prev => ({ ...prev, friendCode: code || undefined }));
+              // If no cloud data but logged in (rare), generate friend code for new user
+              // Note: generateFriendCode already saves to Firebase
+              const friendCode = await generateFriendCode(normalizedUser);
+
+              setUser(prev => ({
+                ...prev, friendCode: friendCode || undefined
+              }));
             }
           } catch (err) {
             console.error('[Cloud] Startup sync failed:', err);
@@ -557,8 +562,175 @@ export default function App() {
   const [showMauMauIntro, setShowMauMauIntro] = useState(false);
   const [showMauMauModeSelect, setShowMauMauModeSelect] = useState(false);
   const [showMultiplayerLobby, setShowMultiplayerLobby] = useState(false);
+  const [showFriendsManager, setShowFriendsManager] = useState(false);
   const [multiplayerGameId, setMultiplayerGameId] = useState<string | null>(null);
   const [multiplayerOpponent, setMultiplayerOpponent] = useState<string | null>(null);
+  const [globalGameInvite, setGlobalGameInvite] = useState<{ from: string; gameId: string } | null>(null);
+  const [pendingSentInvite, setPendingSentInvite] = useState<{ to: string; gameId: string } | null>(null);
+
+  // Global listener for sent invite acceptance (host side)
+  useEffect(() => {
+    if (!cloudUsername || !pendingSentInvite) {
+        console.log('[App] Listener skipped - cloudUsername:', cloudUsername, 'pendingInvite:', pendingSentInvite);
+        return;
+    }
+
+    console.log('[App] Setting up listener for game:', pendingSentInvite.gameId);
+    let unsubscribe: (() => void) | undefined;
+
+    const setupListener = async () => {
+      const { ref, onValue, off } = await import('firebase/database');
+      const { database } = await import('./utils/firebase');
+
+      const gameRef = ref(database, `games/${pendingSentInvite.gameId}`);
+
+      const listener = onValue(gameRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const gameData = snapshot.val();
+          console.log('[App] Game update received:', gameData.status, gameData.players);
+          
+          // Game is playing and we're the host - guest accepted!
+          if (gameData.status === 'playing' && gameData.players?.host === cloudUsername) {
+            console.log('[App] Game accepted by guest, starting game for host');
+            setMultiplayerOpponent(pendingSentInvite.to);
+            setMultiplayerGameId(pendingSentInvite.gameId);
+            setPendingSentInvite(null);
+            setShowMultiplayerLobby(false);
+            setView('MAU_MAU');
+          }
+        } else {
+            console.log('[App] Game snapshot does not exist yet');
+        }
+      });
+
+      unsubscribe = () => off(gameRef);
+    };
+
+    setupListener();
+
+    return () => {
+      console.log('[App] Cleaning up listener');
+      if (unsubscribe) unsubscribe();
+    };
+  }, [cloudUsername, pendingSentInvite]);
+
+  // Global listener for game invitations (shows popup anywhere in app)
+  useEffect(() => {
+    if (!cloudUsername) return;
+
+    let unsubscribe: (() => void) | undefined;
+
+    const setupListener = async () => {
+      const { ref, onValue, off } = await import('firebase/database');
+      const { database } = await import('./utils/firebase');
+
+      const invitesRef = ref(database, `gameInvites/${cloudUsername}`);
+
+      unsubscribe = onValue(invitesRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const invitesData = snapshot.val();
+          const invites = Object.values(invitesData) as any[];
+          const pendingInvite = invites.find((inv: any) => inv.status === 'pending');
+          
+          if (pendingInvite && !showMultiplayerLobby) {
+            // Show global popup only if not already in lobby
+            setGlobalGameInvite({ from: pendingInvite.from, gameId: pendingInvite.gameId });
+          }
+        }
+      });
+    };
+
+    setupListener();
+
+    return () => {
+      if (unsubscribe) {
+        import('firebase/database').then(({ ref, off }) => {
+          import('./utils/firebase').then(({ database }) => {
+            off(ref(database, `gameInvites/${cloudUsername}`));
+          });
+        });
+      }
+    };
+  }, [cloudUsername, showMultiplayerLobby]);
+
+  const handleAcceptGlobalInvite = async () => {
+    if (!globalGameInvite || !cloudUsername) {
+        console.error('[App] Cannot accept invite - missing data', { globalGameInvite, cloudUsername });
+        return;
+    }
+
+    console.log('[App] Accepting invite...', globalGameInvite);
+
+    try {
+      const { ref, set } = await import('firebase/database');
+      const { database } = await import('./utils/firebase');
+      const { initializeMultiplayerGame } = await import('./utils/multiplayerGame');
+      const { generateDeck, shuffleDeck, drawCards } = await import('./utils/maumau');
+
+      // Update invite status
+      console.log('[App] Updating invite status to accepted...');
+      await set(ref(database, `gameInvites/${cloudUsername}/${globalGameInvite.gameId}/status`), 'accepted');
+
+      // Generate and shuffle deck
+      console.log('[App] Generating deck...');
+      let deck = generateDeck();
+      deck = shuffleDeck(deck);
+
+      // Deal cards (5 each)
+      const hostHandResult = drawCards(deck, 5);
+      const hostHand = hostHandResult.drawn;
+      deck = hostHandResult.remaining;
+
+      const guestHandResult = drawCards(deck, 5);
+      const guestHand = guestHandResult.drawn;
+      deck = guestHandResult.remaining;
+
+      // Draw first card for discard pile
+      const firstCardResult = drawCards(deck, 1);
+      const discardPile = firstCardResult.drawn;
+      deck = firstCardResult.remaining;
+
+      // Initialize full game state with cards
+      console.log('[App] Initializing multiplayer game state...');
+      const initSuccess = await initializeMultiplayerGame(
+        globalGameInvite.gameId,
+        globalGameInvite.from,  // host
+        cloudUsername,          // guest
+        deck,
+        discardPile,
+        hostHand,
+        guestHand
+      );
+      
+      if (!initSuccess) {
+          throw new Error('Failed to initialize multiplayer game');
+      }
+      
+      console.log('[App] Game initialized successfully! Switching view...');
+
+      // Start game
+      setMultiplayerOpponent(globalGameInvite.from);
+      setMultiplayerGameId(globalGameInvite.gameId);
+      setGlobalGameInvite(null);
+      setView('MAU_MAU');
+    } catch (error) {
+      console.error('[Global Invite] Accept error:', error);
+    }
+  };
+
+  const handleDeclineGlobalInvite = async () => {
+    if (!globalGameInvite || !cloudUsername) return;
+
+    try {
+      const { ref, set } = await import('firebase/database');
+      const { database } = await import('./utils/firebase');
+
+      await set(ref(database, `gameInvites/${cloudUsername}/${globalGameInvite.gameId}/status`), 'declined');
+      setGlobalGameInvite(null);
+    } catch (error) {
+      console.error('[Global Invite] Decline error:', error);
+    }
+  };
 
   // Online/Offline monitoring
   useEffect(() => {
@@ -596,6 +768,37 @@ export default function App() {
       }
     }
   }, [user, view]);
+
+  // SELF-CORRECTING: Ensure Friend Code Exists
+  useEffect(() => {
+    const ensureFriendCode = async () => {
+      // Only run if we have a valid user (not default Player) and NO friend code
+      if (user.name && user.name !== 'Player' && !user.friendCode) {
+        console.log('[Fix] Missing friend code detected for:', user.name);
+
+        try {
+          const { generateFriendCode, saveFriendCodeToFirebase } = await import('./utils/multiplayer');
+          const newCode = generateFriendCode();
+
+          await saveFriendCodeToFirebase(user.name, newCode);
+
+          // Update local state immediately
+          setUser(prev => ({ ...prev, friendCode: newCode }));
+
+          console.log('[Fix] Generated and saved new friend code:', newCode);
+        } catch (err: any) {
+          const errorCode = err?.code || 'unknown';
+          const errorMessage = err?.message || String(err);
+          console.error(`[Fix] Failed to generate friend code. Code: ${errorCode}, Message: ${errorMessage}`);
+          if (errorCode === 'PERMISSION_DENIED') {
+            console.error('[Fix] Firebase rules are blocking write to friendCodes. Update database.rules.json');
+          }
+        }
+      }
+    };
+
+    ensureFriendCode();
+  }, [user.name, user.friendCode]);
 
   const handleClaimReward = (level: number, isPremiumClaim: boolean = false) => {
     const reward = dynamicRewards[level - 1];
@@ -1030,7 +1233,8 @@ export default function App() {
 
   // Cloud Save Handlers
   const handleCloudLogin = async (username: string) => {
-    const { normalizeUsername, loadFromCloud, generateFriendCode } = await import('./utils/firebase');
+    const { normalizeUsername, loadFromCloud } = await import('./utils/firebase');
+    const { getFriendsFromFirebase, generateFriendCode, saveFriendCodeToFirebase } = await import('./utils/multiplayer');
     const normalizedUser = normalizeUsername(username);
 
     setCloudUsername(normalizedUser);
@@ -1041,19 +1245,29 @@ export default function App() {
 
     if (cloudData) {
       // Load existing data
+      const friends = await getFriendsFromFirebase(normalizedUser);
+
+      // Check for Friend Code (and generate if missing)
+      let currentFriendCode = cloudData.friendCode;
+      if (!currentFriendCode) {
+        console.log("Generating missing friend code for:", normalizedUser);
+        currentFriendCode = generateFriendCode();
+        // Save to global lookup
+        await saveFriendCodeToFirebase(normalizedUser, currentFriendCode);
+        // Save to user profile (update local cloudData object for immediate use)
+        cloudData.friendCode = currentFriendCode;
+        // We should ideally update the cloud profile here too, but the next auto-sync will catch it
+        // Or we can force a save:
+        // await saveToCloud(normalizedUser, { ...cloudData, friendCode: currentFriendCode });
+      }
+
       setUser(prev => ({
         ...prev,
         ...cloudData,
-        name: normalizedUser // Enforce name consistency
+        name: normalizedUser, // Enforce name consistency
+        friends: friends || [],
+        friendCode: currentFriendCode // Ensure it's set in state
       }));
-
-      // Ensure friend code exists
-      if (!cloudData.friendCode) {
-        const code = await generateFriendCode(normalizedUser);
-        if (code) {
-          setUser(prev => ({ ...prev, friendCode: code }));
-        }
-      }
 
       console.log('[Cloud] Loaded save from cloud');
       setView('HOME');
@@ -1065,7 +1279,8 @@ export default function App() {
       });
 
       // Generate friend code for new user
-      const friendCode = await generateFriendCode(normalizedUser);
+      const friendCode = generateFriendCode();
+      await saveFriendCodeToFirebase(normalizedUser, friendCode);
 
       setUser(prev => ({
         ...prev,
@@ -1081,7 +1296,7 @@ export default function App() {
         playedWords: [],
         language: Language.DE, // Default, will be chosen in onboarding
         theme: user.theme || 'dark',
-        friendCode: friendCode || undefined,
+        friendCode: friendCode,
         friends: []
       }));
 
@@ -1997,9 +2212,9 @@ export default function App() {
       < div className="flex flex-col items-center justify-center mb-6 animate-fade-in" >
         <div className="mb-4 relative">
           <img
-            src={user.theme !== 'dark' ? "/logo.png?invert" : "/logo.png"}
+            src={user.theme === 'dark' ? "/LexiMix_Logo_Bright.png" : "/LexiMix_Logo_Dark.png"}
             alt="LexiMix"
-            className={`h-32 md:h-40 w-auto drop-shadow-xl ${user.theme !== 'dark' ? 'invert' : ''}`}
+            className="h-32 md:h-40 w-auto drop-shadow-xl"
           />
         </div>
         <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
@@ -2305,12 +2520,23 @@ export default function App() {
               <ArrowLeft size={24} className="text-lexi-text" />
             </button>
 
-            {/* Timer (Speedrun / Challenge) */}
-            {showTimer && (
-              <div className={`text-2xl font-black font-mono flex items-center gap-2 px-4 py-2 rounded-xl glass-panel ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-lexi-cyan'}`}>
-                <Clock size={20} /> {gameState.timeLeft}s
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              {/* Friends Button */}
+              <button
+                onClick={() => setShowFriendsManager(true)}
+                className="w-12 h-12 flex items-center justify-center glass-button rounded-full hover:bg-white/10 transition-colors active:scale-95 relative"
+              >
+                <Users size={24} className="text-lexi-text" />
+                {/* Optional: Add notification dot here if needed */}
+              </button>
+
+              {/* Timer (Speedrun / Challenge) */}
+              {showTimer && (
+                <div className={`text-2xl font-black font-mono flex items-center gap-2 px-4 py-2 rounded-xl glass-panel ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-lexi-cyan'}`}>
+                  <Clock size={20} /> {gameState.timeLeft}s
+                </div>
+              )}
+            </div>
 
             <div className="w-12"></div> {/* Spacer for balance */}
           </div>
@@ -2504,8 +2730,15 @@ export default function App() {
       {view === 'TUTORIAL' && renderTutorial()}
       {view === 'MAU_MAU' && (
         <SkatMauMauGame
-          onBack={() => setView('HOME')}
+          onBack={() => {
+            setView('HOME');
+            setMultiplayerGameId(null);
+            setMultiplayerOpponent(null);
+          }}
           friendCode={user.friendCode}
+          gameId={multiplayerGameId}
+          opponentUsername={multiplayerOpponent}
+          currentUsername={cloudUsername || user.name}
           onGameEnd={(coins, xp) => {
             setUser(prev => ({
               ...prev,
@@ -2513,6 +2746,8 @@ export default function App() {
               xp: prev.xp + xp,
               level: Math.floor((prev.xp + xp) / 100) + 1
             }));
+            setMultiplayerGameId(null);
+            setMultiplayerOpponent(null);
             setView('HOME');
             audio.playWin();
           }}
@@ -2689,9 +2924,66 @@ export default function App() {
           setShowMultiplayerLobby(false);
           setView('MAU_MAU');
         }}
+        onInviteSent={(to, gameId) => {
+          setPendingSentInvite({ to, gameId });
+        }}
       />
 
+      {/* Friends Manager */}
+      <FriendsManager
+        isOpen={showFriendsManager}
+        onClose={() => setShowFriendsManager(false)}
+        currentUsername={cloudUsername || user.name}
+        friendCode={user.friendCode || ''}
+        friends={user.friends || []}
+        onFriendsUpdate={(newFriends) => {
+          setUser(prev => ({ ...prev, friends: newFriends }));
+        }}
+      />
 
+      {/* Global Game Invite Popup */}
+      {globalGameInvite && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-yellow-500/50 rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-scale-in">
+            <div className="text-center space-y-4">
+              {/* Animated Icon */}
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center animate-pulse shadow-lg shadow-yellow-500/30">
+                <Users size={40} className="text-white" />
+              </div>
+              
+              {/* Title */}
+              <h3 className="text-xl font-black text-white">Spieleinladung!</h3>
+              
+              {/* From */}
+              <div className="bg-black/30 rounded-xl p-4">
+                <p className="text-gray-400 text-sm">Einladung von</p>
+                <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                  {globalGameInvite.from}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">möchte Letter Mau-Mau spielen</p>
+              </div>
+              
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDeclineGlobalInvite}
+                  className="flex-1 py-3 px-4 bg-red-600/20 border-2 border-red-500/50 hover:bg-red-600/40 rounded-xl text-red-400 font-bold transition-all active:scale-95"
+                >
+                  <X size={20} className="inline mr-2" />
+                  Ablehnen
+                </button>
+                <button
+                  onClick={handleAcceptGlobalInvite}
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:brightness-110 rounded-xl text-white font-bold transition-all active:scale-95 shadow-lg shadow-green-500/30"
+                >
+                  <Check size={20} className="inline mr-2" />
+                  Annehmen
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Auth Screen (First screen) */}
       {view === 'AUTH' && (
@@ -2699,7 +2991,7 @@ export default function App() {
           <div className="max-w-md w-full space-y-6">
             <div className="text-center space-y-4">
               <img
-                src="/logo.png"
+                src={user.theme === 'dark' ? "/LexiMix_Logo_Bright.png" : "/LexiMix_Logo_Dark.png"}
                 alt="LexiMix Logo"
                 className="w-32 h-32 mx-auto"
               />
@@ -3265,6 +3557,16 @@ export default function App() {
                 </div>
                 <p className="text-[10px] text-gray-600 mt-1">Tippen zum Kopieren</p>
               </div>
+
+              <button
+                onClick={() => {
+                  setShowProfile(false);
+                  setShowFriendsManager(true);
+                }}
+                className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:brightness-110 text-white font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2"
+              >
+                <Users size={16} /> Freunde verwalten
+              </button>
             </>
           )}
 

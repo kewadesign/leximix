@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Trophy, Coins, Star, Info, Users, Copy, Check } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Trophy, Coins, Star, Info, Users, Copy, Check, Clock } from 'lucide-react';
 import {
   generateDeck,
   drawCards,
@@ -16,159 +16,107 @@ import {
 import { getCardAssetPath } from '../utils/skatAssets';
 import { Modal, Button } from './UI';
 import { FriendsModal } from './FriendsModal';
+import {
+  subscribeToGameState,
+  playCardMultiplayer,
+  drawCardsMultiplayer,
+  cleanupGame,
+  MultiplayerGameState
+} from '../utils/multiplayerGame';
 
 interface SkatMauMauGameProps {
   onBack: () => void;
   onGameEnd: (coins: number, xp: number) => void;
-  friendCode?: string; // Pass friendCode from parent
+  friendCode?: string;
+  gameId?: string | null;
+  opponentUsername?: string | null;
+  currentUsername?: string;
 }
 
 type GameStatus = 'playing' | 'won' | 'lost';
 
-export default function SkatMauMauGame({ onBack, onGameEnd, friendCode }: SkatMauMauGameProps) {
+export default function SkatMauMauGame({
+  onBack,
+  onGameEnd,
+  friendCode,
+  gameId,
+  opponentUsername,
+  currentUsername
+}: SkatMauMauGameProps) {
   const [deck, setDeck] = useState<Card[]>([]);
   const [discardPile, setDiscardPile] = useState<Card[]>([]);
   const [playerHand, setPlayerHand] = useState<Card[]>([]);
-  const [aiHand, setAiHand] = useState<Card[]>([]);
+  const [aiHand, setAiHand] = useState<Card[]>([]); // Used as opponent hand in MP
   const [currentTurn, setCurrentTurn] = useState<'player' | 'ai'>('player');
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
   const [wishedSuit, setWishedSuit] = useState<CardSuit | null>(null);
   const [drawCount, setDrawCount] = useState(0);
   const [showWishModal, setShowWishModal] = useState(false);
   const [pendingCard, setPendingCard] = useState<Card | null>(null);
+  const [isMultiplayerLoading, setIsMultiplayerLoading] = useState(false);
 
-  // New Modals
+  const isMultiplayer = !!gameId;
+
+  // Multiplayer Subscription
+  useEffect(() => {
+    if (!gameId || !currentUsername) return;
+
+    setIsMultiplayerLoading(true);
+
+    const unsubscribe = subscribeToGameState(gameId, (state) => {
+      if (!state) return;
+
+      // Map Firebase state to local state
+      setDeck(state.deck || []);
+      setDiscardPile(state.discardPile || []);
+      
+      // Ensure wishedSuit is a number if present
+      const parsedWish = state.wishedSuit !== null && state.wishedSuit !== undefined 
+          ? Number(state.wishedSuit) 
+          : null;
+      setWishedSuit(parsedWish as CardSuit);
+      
+      setDrawCount(state.drawCount || 0);
+
+      // Hands
+      setPlayerHand(state.hands[currentUsername] || []);
+      const opponentName = state.players.host === currentUsername ? state.players.guest : state.players.host;
+      setAiHand(state.hands[opponentName] || []); // Use aiHand state for opponent
+
+      // Turn
+      setCurrentTurn(state.currentTurn === currentUsername ? 'player' : 'ai');
+
+      // Status
+      if (state.status === 'finished') {
+        if (state.winner === currentUsername) {
+          setGameStatus('won');
+        } else {
+          setGameStatus('lost');
+        }
+      }
+      setIsMultiplayerLoading(false);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [gameId, currentUsername]);
+
   const [showChangelog, setShowChangelog] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
 
-  // Initialize Game
-  const startNewGame = useCallback(() => {
-    const newDeck = generateDeck();
-    const { drawn: pHand, remaining: d1 } = drawCards(newDeck, 5);
-    const { drawn: aHand, remaining: d2 } = drawCards(d1, 5);
-    const { drawn: startCards, remaining: finalDeck } = drawCards(d2, 1);
+  // Helper functions defined first to avoid hoisting issues
+  const getCurrentTopCard = useCallback(() => discardPile[discardPile.length - 1], [discardPile]);
 
-    setPlayerHand(pHand);
-    setAiHand(aHand);
-    setDiscardPile(startCards);
-    setDeck(finalDeck);
-    setCurrentTurn('player');
-    setGameStatus('playing');
-    setWishedSuit(null);
-    setDrawCount(0);
-    setShowWishModal(false);
-    setPendingCard(null);
-
-    const firstCard = startCards[0];
-    if (firstCard.rank === CardRank.SEVEN) {
-      setDrawCount(2);
-    }
+  const addToDiscard = useCallback((card: Card) => {
+    setDiscardPile(prev => [...prev, card]);
   }, []);
 
-  useEffect(() => {
-    startNewGame();
-  }, [startNewGame]);
+  const changeTurn = useCallback(() => {
+    setCurrentTurn(prev => prev === 'player' ? 'ai' : 'player');
+  }, []);
 
-  // AI Turn Logic
-  useEffect(() => {
-    if (currentTurn === 'ai' && gameStatus === 'playing') {
-      const timer = setTimeout(() => {
-        playAiTurn();
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [currentTurn, gameStatus, aiHand, playerHand, deck, discardPile, wishedSuit, drawCount]);
-
-  const getCurrentTopCard = () => discardPile[discardPile.length - 1];
-
-  const handleDrawCard = (player: 'player' | 'ai') => {
-    if (deck.length === 0) {
-      if (discardPile.length <= 1) return;
-      const topCard = discardPile[discardPile.length - 1];
-      const rest = discardPile.slice(0, discardPile.length - 1);
-      const newDeck = shuffleDeck(rest);
-      setDeck(newDeck);
-      setDiscardPile([topCard]);
-
-      const count = drawCount > 0 ? drawCount : 1;
-      const { drawn, remaining } = drawCards(newDeck, count);
-
-      if (player === 'player') {
-        setPlayerHand([...playerHand, ...drawn]);
-      } else {
-        setAiHand([...aiHand, ...drawn]);
-      }
-      setDeck(remaining);
-    } else {
-      const count = drawCount > 0 ? drawCount : 1;
-      const actualCount = Math.min(count, deck.length);
-      const { drawn, remaining } = drawCards(deck, actualCount);
-
-      if (player === 'player') {
-        setPlayerHand([...playerHand, ...drawn]);
-      } else {
-        setAiHand([...aiHand, ...drawn]);
-      }
-      setDeck(remaining);
-    }
-
-    setDrawCount(0);
-    changeTurn();
-  };
-
-  const playAiTurn = () => {
-    const topCard = getCurrentTopCard();
-    const validCards = aiHand.filter(card => canPlayCard(card, topCard, wishedSuit || undefined));
-
-    if (validCards.length > 0) {
-      const actionCard = validCards.find(c => c.isAction);
-      const cardToPlay = actionCard || validCards[0];
-
-      const newHand = aiHand.filter(c => c.id !== cardToPlay.id);
-      setAiHand(newHand);
-      addToDiscard(cardToPlay);
-
-      handleCardEffect(cardToPlay, 'ai');
-
-      if (newHand.length === 0) {
-        setGameStatus('lost');
-      }
-    } else {
-      handleDrawCard('ai');
-    }
-  };
-
-  const handlePlayerCardClick = (card: Card) => {
-    if (currentTurn !== 'player' || gameStatus !== 'playing') return;
-
-    const topCard = getCurrentTopCard();
-    if (canPlayCard(card, topCard, wishedSuit || undefined)) {
-      if (card.rank === CardRank.JACK) {
-        setPendingCard(card);
-        setShowWishModal(true);
-        return;
-      }
-      playCard(card);
-    }
-  };
-
-  const playCard = (card: Card, suitWish?: CardSuit) => {
-    const newHand = playerHand.filter(c => c.id !== card.id);
-    setPlayerHand(newHand);
-    addToDiscard(card);
-
-    handleCardEffect(card, 'player', suitWish);
-
-    if (newHand.length === 0) {
-      setGameStatus('won');
-    }
-  };
-
-  const addToDiscard = (card: Card) => {
-    setDiscardPile(prev => [...prev, card]);
-  };
-
-  const handleCardEffect = (card: Card, player: 'player' | 'ai', suitWish?: CardSuit) => {
+  const handleCardEffect = useCallback((card: Card, player: 'player' | 'ai', suitWish?: CardSuit) => {
     let nextDrawCount = 0;
     let nextWishedSuit = null;
 
@@ -189,12 +137,157 @@ export default function SkatMauMauGame({ onBack, onGameEnd, friendCode }: SkatMa
     if (card.rank === CardRank.EIGHT) {
       setCurrentTurn(player);
     } else {
-      setCurrentTurn(player === 'player' ? 'ai' : 'player');
+      changeTurn();
     }
-  };
+  }, [drawCount, changeTurn]);
 
-  const changeTurn = () => {
-    setCurrentTurn(prev => prev === 'player' ? 'ai' : 'player');
+  const playCard = useCallback((card: Card, suitWish?: CardSuit) => {
+    console.log('[SkatGame] playCard called', { card, suitWish, isMultiplayer, gameId, currentUsername });
+    if (isMultiplayer) {
+      if (gameId && currentUsername) {
+        const newHand = playerHand.filter(c => c.id !== card.id);
+        // No need to cast to string anymore, pass number directly
+        playCardMultiplayer(gameId, currentUsername, card, newHand, suitWish);
+      } else {
+          console.error('[SkatGame] Missing multiplayer data:', { gameId, currentUsername });
+      }
+      return;
+    }
+
+    setPlayerHand(prev => prev.filter(c => c.id !== card.id));
+    addToDiscard(card);
+
+    handleCardEffect(card, 'player', suitWish);
+
+    if (playerHand.filter(c => c.id !== card.id).length === 0) {
+      setGameStatus('won');
+    }
+  }, [playerHand, addToDiscard, handleCardEffect, isMultiplayer, gameId, currentUsername]);
+
+  const handleDrawCard = useCallback((player: 'player' | 'ai') => {
+    if (isMultiplayer) {
+      if (player === 'player' && gameId && currentUsername) {
+        drawCardsMultiplayer(gameId, currentUsername, drawCount > 0 ? drawCount : 1);
+      }
+      return;
+    }
+
+    if (deck.length === 0) {
+      if (discardPile.length <= 1) return;
+      const topCard = discardPile[discardPile.length - 1];
+      const rest = discardPile.slice(0, discardPile.length - 1);
+      const newDeck = shuffleDeck(rest);
+      setDeck(newDeck);
+      setDiscardPile([topCard]);
+
+      const count = drawCount > 0 ? drawCount : 1;
+      const { drawn, remaining } = drawCards(newDeck, count);
+
+      if (player === 'player') {
+        setPlayerHand(prev => [...prev, ...drawn]);
+      } else {
+        setAiHand(prev => [...prev, ...drawn]);
+      }
+      setDeck(remaining);
+    } else {
+      const count = drawCount > 0 ? drawCount : 1;
+      const actualCount = Math.min(count, deck.length);
+      const { drawn, remaining } = drawCards(deck, actualCount);
+
+      if (player === 'player') {
+        setPlayerHand(prev => [...prev, ...drawn]);
+      } else {
+        setAiHand(prev => [...prev, ...drawn]);
+      }
+      setDeck(remaining);
+    }
+
+    setDrawCount(0);
+    changeTurn();
+  }, [deck, discardPile, drawCount, changeTurn, isMultiplayer, gameId, currentUsername]);
+
+  const playAiTurn = useCallback(() => {
+    if (isMultiplayer) return;
+
+    const topCard = getCurrentTopCard();
+    const validCards = aiHand.filter(card => canPlayCard(card, topCard, wishedSuit || undefined));
+
+    if (validCards.length > 0) {
+      const actionCard = validCards.find(c => c.isAction);
+      const cardToPlay = actionCard || validCards[0];
+
+      setAiHand(prev => prev.filter(c => c.id !== cardToPlay.id));
+      addToDiscard(cardToPlay);
+
+      handleCardEffect(cardToPlay, 'ai');
+
+      if (aiHand.filter(c => c.id !== cardToPlay.id).length === 0) {
+        setGameStatus('lost');
+      }
+    } else {
+      handleDrawCard('ai');
+    }
+  }, [aiHand, wishedSuit, getCurrentTopCard, handleDrawCard, addToDiscard, handleCardEffect, isMultiplayer]);
+
+  // Initialize Game
+  const startNewGame = useCallback(() => {
+    if (isMultiplayer) return; // Multiplayer game is initialized by lobby
+
+    const newDeck = generateDeck();
+    const { drawn: pHand, remaining: d1 } = drawCards(newDeck, 5);
+    const { drawn: aHand, remaining: d2 } = drawCards(d1, 5);
+    const { drawn: startCards, remaining: finalDeck } = drawCards(d2, 1);
+
+    setPlayerHand(pHand);
+    setAiHand(aHand);
+    setDiscardPile(startCards);
+    setDeck(finalDeck);
+    setCurrentTurn('player');
+    setGameStatus('playing');
+    setWishedSuit(null);
+    setDrawCount(0);
+    setShowWishModal(false);
+    setPendingCard(null);
+
+    const firstCard = startCards[0];
+    if (firstCard.rank === CardRank.SEVEN) {
+      setDrawCount(2);
+    }
+  }, [isMultiplayer]);
+
+  useEffect(() => {
+    startNewGame();
+  }, [startNewGame]);
+
+  // AI Turn Logic
+  useEffect(() => {
+    if (currentTurn === 'ai' && gameStatus === 'playing') {
+      const timer = setTimeout(() => {
+        playAiTurn();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentTurn, gameStatus, playAiTurn]);
+
+
+
+  const handlePlayerCardClick = (card: Card) => {
+    console.log('[SkatGame] Card clicked:', card, 'Turn:', currentTurn, 'Status:', gameStatus);
+    if (currentTurn !== 'player' || gameStatus !== 'playing') return;
+
+    const topCard = getCurrentTopCard();
+    console.log('[SkatGame] Validating against top card:', topCard, 'Wished:', wishedSuit);
+    
+    if (canPlayCard(card, topCard, wishedSuit || undefined)) {
+      if (card.rank === CardRank.JACK) {
+        setPendingCard(card);
+        setShowWishModal(true);
+        return;
+      }
+      playCard(card);
+    } else {
+        console.log('[SkatGame] Invalid move');
+    }
   };
 
   const handleWishSelection = (suit: CardSuit) => {
@@ -222,25 +315,35 @@ export default function SkatMauMauGame({ onBack, onGameEnd, friendCode }: SkatMa
       {/* Dynamic Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900/50 to-cyan-900/20 pointer-events-none"></div>
 
-      {/* Header / Top Bar */}
-      <div className="w-full flex justify-between items-center z-10 px-2 pt-2">
-        <button onClick={onBack} className="glass-button p-3 rounded-full hover:bg-white/10 text-lexi-text transition-colors active:scale-95">
-          <ArrowLeft size={20} />
+      {/* Header */}
+      <div className="w-full max-w-6xl flex justify-between items-center relative z-10">
+        <button
+          onClick={onBack}
+          className="p-3 bg-white/5 hover:bg-white/10 rounded-xl backdrop-blur-md border border-white/10 transition-all active:scale-95 group"
+        >
+          <ArrowLeft className="text-white group-hover:-translate-x-1 transition-transform" />
         </button>
 
-        <div className="flex items-center gap-3">
-          <button onClick={() => setShowChangelog(true)} className="glass-button p-2 rounded-full hover:bg-white/10 text-lexi-text transition-colors active:scale-95">
+        <div className="flex flex-col items-center">
+          <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            Mau Mau
+          </h2>
+          {isMultiplayer && (
+            <div className="flex items-center gap-2 mt-1 px-3 py-1 bg-green-500/20 rounded-full border border-green-500/30">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Multiplayer</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <button onClick={() => setShowChangelog(true)} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl backdrop-blur-md border border-white/10 transition-all active:scale-95 text-white/70 hover:text-white">
             <Info size={20} />
           </button>
-          <div className="glass-panel px-6 py-2 rounded-full text-white font-black tracking-widest border-white/10 shadow-lg">
-            MAU MAU
-          </div>
-          <button onClick={() => setShowFriends(true)} className="glass-button p-2 rounded-full hover:bg-white/10 text-lexi-text transition-colors active:scale-95">
+          <button onClick={() => setShowFriends(true)} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl backdrop-blur-md border border-white/10 transition-all active:scale-95 text-white/70 hover:text-white">
             <Users size={20} />
           </button>
         </div>
-
-        <div className="w-10"></div>
       </div>
 
       {/* AI Hand */}
@@ -354,8 +457,6 @@ export default function SkatMauMauGame({ onBack, onGameEnd, friendCode }: SkatMa
           })}
         </AnimatePresence>
       </div>
-
-      {/* Modals using Shared Components */}
 
       {/* Wish Selection Modal */}
       <Modal isOpen={showWishModal} title="Farbe Wünschen">

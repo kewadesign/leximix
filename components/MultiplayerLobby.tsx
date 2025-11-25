@@ -3,6 +3,8 @@ import { Modal, Button } from './UI';
 import { Users, Send, X, Check, UserPlus, Clock } from 'lucide-react';
 import { ref, set, get, onValue, off } from 'firebase/database';
 import { database } from '../utils/firebase';
+import { initializeMultiplayerGame } from '../utils/multiplayerGame';
+import { generateDeck, shuffleDeck, drawCards } from '../utils/maumau';
 
 interface MultiplayerLobbyProps {
     isOpen: boolean;
@@ -10,6 +12,7 @@ interface MultiplayerLobbyProps {
     currentUsername: string;
     friends: { code: string; username: string }[];
     onStartGame: (opponentUsername: string, gameId: string) => void;
+    onInviteSent?: (to: string, gameId: string) => void;
 }
 
 interface GameInvite {
@@ -25,7 +28,8 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
     onClose,
     currentUsername,
     friends,
-    onStartGame
+    onStartGame,
+    onInviteSent
 }) => {
     const [pendingInvites, setPendingInvites] = useState<GameInvite[]>([]);
     const [sentInvites, setSentInvites] = useState<Map<string, string>>(new Map());
@@ -52,6 +56,43 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
         };
     }, [isOpen, currentUsername]);
 
+    // Listen for game acceptance (for sent invites)
+    // When the guest accepts, they create a game - host needs to detect this
+    useEffect(() => {
+        if (!isOpen || !currentUsername || sentInvites.size === 0) return;
+
+        const listeners: (() => void)[] = [];
+
+        sentInvites.forEach((gameId, friendUsername) => {
+            const gameRef = ref(database, `games/${gameId}`);
+            
+            const unsubscribe = onValue(gameRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const gameData = snapshot.val();
+                    // Game exists and is playing - guest has accepted and initialized the game!
+                    if (gameData.status === 'playing' && gameData.players?.host === currentUsername) {
+                        console.log('[Multiplayer] Game accepted by guest, starting game for host');
+                        // Clear the sent invite
+                        setSentInvites(prev => {
+                            const newMap = new Map(prev);
+                            newMap.delete(friendUsername);
+                            return newMap;
+                        });
+                        // Start game for host
+                        onStartGame(friendUsername, gameId);
+                        onClose();
+                    }
+                }
+            });
+
+            listeners.push(() => off(gameRef));
+        });
+
+        return () => {
+            listeners.forEach(unsub => unsub());
+        };
+    }, [isOpen, currentUsername, sentInvites, onStartGame, onClose]);
+
     const sendInvite = async (friendUsername: string) => {
         if (sentInvites.has(friendUsername)) return;
 
@@ -71,6 +112,11 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
             await set(ref(database, `gameInvites/${friendUsername}/${gameId}`), invite);
 
             setSentInvites(prev => new Map(prev).set(friendUsername, gameId));
+
+            // Notify parent to set up global listener
+            if (onInviteSent) {
+                onInviteSent(friendUsername, gameId);
+            }
 
             // Auto-remove after 60 seconds if not accepted
             setTimeout(() => {
@@ -95,16 +141,34 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
             // Update invite status
             await set(ref(database, `gameInvites/${currentUsername}/${invite.gameId}/status`), 'accepted');
 
-            // Initialize game state in Firebase
-            await set(ref(database, `games/${invite.gameId}`), {
-                players: {
-                    host: invite.from,
-                    guest: currentUsername
-                },
-                status: 'ready',
-                createdAt: Date.now(),
-                currentTurn: invite.from // Host goes first
-            });
+            // Generate and shuffle deck
+            let deck = generateDeck();
+            deck = shuffleDeck(deck);
+
+            // Deal cards (5 each)
+            const hostHandResult = drawCards(deck, 5);
+            const hostHand = hostHandResult.drawn;
+            deck = hostHandResult.remaining;
+
+            const guestHandResult = drawCards(deck, 5);
+            const guestHand = guestHandResult.drawn;
+            deck = guestHandResult.remaining;
+
+            // Draw first card for discard pile
+            const firstCardResult = drawCards(deck, 1);
+            const discardPile = firstCardResult.drawn;
+            deck = firstCardResult.remaining;
+
+            // Initialize full game state with cards
+            await initializeMultiplayerGame(
+                invite.gameId,
+                invite.from,      // host
+                currentUsername,  // guest
+                deck,
+                discardPile,
+                hostHand,
+                guestHand
+            );
 
             // Remove from pending
             setPendingInvites(prev => prev.filter(inv => inv.gameId !== invite.gameId));

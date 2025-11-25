@@ -63,7 +63,7 @@ export const FriendsManager: React.FC<FriendsManagerProps> = ({
                 return;
             }
 
-            const added = await addFriendToFirebase(currentUsername, code, username);
+            const added = await addFriendToFirebase(currentUsername, friendCode, code, username);
 
             if (added) {
                 const newFriends = [...friends, { code, username }];
@@ -81,11 +81,11 @@ export const FriendsManager: React.FC<FriendsManagerProps> = ({
         setIsLoading(false);
     };
 
-    const handleRemoveFriend = async (code: string) => {
+    const handleRemoveFriend = async (code: string, username: string) => {
         setIsLoading(true);
 
         try {
-            const removed = await removeFriendFromFirebase(currentUsername, code);
+            const removed = await removeFriendFromFirebase(currentUsername, friendCode, code, username);
 
             if (removed) {
                 const newFriends = friends.filter(f => f.code !== code);
@@ -185,7 +185,7 @@ export const FriendsManager: React.FC<FriendsManagerProps> = ({
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => handleRemoveFriend(friend.code)}
+                                        onClick={() => handleRemoveFriend(friend.code, friend.username)}
                                         disabled={isLoading}
                                         className="p-2 hover:bg-red-500/20 rounded-lg text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
                                     >

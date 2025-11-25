@@ -1,7 +1,7 @@
 // Multiplayer game state synchronization utilities
 import { ref, set, onValue, off, get, update } from 'firebase/database';
-import { database } from './firebase';
-import type { Card } from './skatAssets';
+import { database, sanitizeForFirebase } from './firebase';
+import { type Card, CardRank } from './maumau';
 
 export interface MultiplayerGameState {
     gameId: string;
@@ -15,7 +15,7 @@ export interface MultiplayerGameState {
         [playerId: string]: Card[];
     };
     currentTurn: string; // username
-    wishedSuit: string | null;
+    wishedSuit: number | null;
     drawCount: number;
     status: 'waiting' | 'ready' | 'playing' | 'finished';
     winner?: string;
@@ -23,7 +23,7 @@ export interface MultiplayerGameState {
         player: string;
         action: 'play' | 'draw' | 'wish';
         card?: Card;
-        suit?: string;
+        suit?: number;
         timestamp: number;
     } | null;
     createdAt: number;
@@ -42,6 +42,7 @@ export async function initializeMultiplayerGame(
     hostHand: Card[],
     guestHand: Card[]
 ): Promise<boolean> {
+    console.log('[MultiplayerGame] Initializing game:', gameId);
     try {
         const gameState: MultiplayerGameState = {
             gameId,
@@ -64,10 +65,13 @@ export async function initializeMultiplayerGame(
             lastActivity: Date.now()
         };
 
-        await set(ref(database, `games/${gameId}`), gameState);
+        console.log('[MultiplayerGame] Writing game state to Firebase...', gameState);
+        const sanitizedState = sanitizeForFirebase(gameState);
+        await set(ref(database, `games/${gameId}`), sanitizedState);
+        console.log('[MultiplayerGame] Game state written successfully');
         return true;
     } catch (error) {
-        console.error('Error initializing multiplayer game:', error);
+        console.error('[MultiplayerGame] Error initializing multiplayer game:', error);
         return false;
     }
 }
@@ -99,7 +103,7 @@ export async function playCardMultiplayer(
     playerUsername: string,
     card: Card,
     newHand: Card[],
-    wishedSuit?: string
+    wishedSuit?: number
 ): Promise<boolean> {
     try {
         const gameRef = ref(database, `games/${gameId}`);
@@ -132,19 +136,30 @@ export async function playCardMultiplayer(
             lastActivity: Date.now()
         };
 
+        // Determine next player
+        const nextPlayer = currentState.currentTurn === currentState.players.host
+            ? currentState.players.guest
+            : currentState.players.host;
+
         // Handle special cards
-        if (card.rank === 'SEVEN') {
+        if (card.rank === CardRank.SEVEN) {
+            // 7: Next player must draw 2 (or stack)
             updates.drawCount = (currentState.drawCount || 0) + 2;
-        } else if (card.rank === 'JACK' && wishedSuit) {
-            updates.wishedSuit = wishedSuit;
-        } else if (card.rank === 'EIGHT') {
-            // Stay on same player (they play again)
+            updates.currentTurn = nextPlayer;
+            updates.wishedSuit = null;
+        } else if (card.rank === CardRank.JACK) {
+            // Jack: Wish a suit, turn switches
+            updates.wishedSuit = wishedSuit || null;
+            updates.currentTurn = nextPlayer;
+            updates.drawCount = 0;
+        } else if (card.rank === CardRank.EIGHT) {
+            // 8: Same player plays again
             updates.currentTurn = playerUsername;
+            updates.wishedSuit = null;
+            updates.drawCount = 0;
         } else {
-            // Switch turn
-            updates.currentTurn = currentState.currentTurn === currentState.players.host
-                ? currentState.players.guest
-                : currentState.players.host;
+            // Normal card: Switch turn, clear special states
+            updates.currentTurn = nextPlayer;
             updates.drawCount = 0;
             updates.wishedSuit = null;
         }
@@ -155,7 +170,8 @@ export async function playCardMultiplayer(
             updates.winner = playerUsername;
         }
 
-        await update(gameRef, updates);
+        const sanitizedUpdates = sanitizeForFirebase(updates);
+        await update(gameRef, sanitizedUpdates);
         return true;
     } catch (error) {
         console.error('Error playing card:', error);
@@ -207,7 +223,8 @@ export async function drawCardsMultiplayer(
             lastActivity: Date.now()
         };
 
-        await update(gameRef, updates);
+        const sanitizedUpdates = sanitizeForFirebase(updates);
+        await update(gameRef, sanitizedUpdates);
         return true;
     } catch (error) {
         console.error('Error drawing cards:', error);

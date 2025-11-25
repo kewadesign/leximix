@@ -1,6 +1,9 @@
 {
     "rules": {
-        "system": { ".read": true, ".write": false },
+        "system": {
+            ".read": true,
+            ".write": false
+        },
         "vouchers": {
             ".read": true,
             "$voucherCode": {
@@ -12,11 +15,24 @@
                 }
             }
         },
-        "users": {
-            "$username": {
-                ".read": true,
-                ".write": true
+        "$username": {
+            ".read": true,
+            ".write": true
+        },
+        "friendCodes": {
+            ".read": "auth != null",
+            "$code": {
+                ".write": "auth != null",
+                ".validate": "newData.hasChildren(['username', 'timestamp'])"
             }
+        },
+        "gameInvites": {
+            ".read": "auth != null",
+            ".write": "auth != null"
+        },
+        "games": {
+            ".read": "auth != null",
+            ".write": "auth != null"
         }
     }
 }

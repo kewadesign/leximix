@@ -67,6 +67,7 @@ const DEFAULT_USER_STATE: UserState = {
     language: Language.DE,
     theme: 'dark',
     activeFrame: null // Ensure this is not undefined for Firebase
+    // Note: friendCode is NOT included here - it's generated separately after registration
 };
 
 // ============================================================================
@@ -140,6 +141,9 @@ export const registerUser = async (email: string, password: string, username: st
         // 5. Create DB Entry
         await createDatabaseUser(username, initialData);
 
+        // 6. Generate Friend Code
+        await generateFriendCode(normalizedUsername);
+
         return { success: true, user };
 
     } catch (error: any) {
@@ -200,13 +204,13 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
 // SAVE / LOAD FUNCTIONS (Unverändert)
 // ============================================================================
 
-// Helper to remove undefined values for Firebase
-const sanitizeForFirebase = (obj: any): any => {
-    if (obj === undefined) return null;
-    if (obj === null || typeof obj !== 'object') return obj;
+// Helper to remove undefined/null values for Firebase
+export const sanitizeForFirebase = (obj: any): any => {
+    if (obj === undefined || obj === null) return undefined; // Mark for removal
+    if (typeof obj !== 'object') return obj;
 
     if (Array.isArray(obj)) {
-        return obj.map(sanitizeForFirebase);
+        return obj.map(item => sanitizeForFirebase(item)).filter(item => item !== undefined);
     }
 
     const newObj: any = {};
@@ -661,7 +665,7 @@ export const generateFriendCode = async (username: string): Promise<string | nul
         // 3. Save code
         await set(ref(database, `users/${normalizedUsername}/friendCode`), code);
         await set(ref(database, `friendCodes/${code}`), normalizedUsername);
-        
+
         // Also save to current save state for easy access
         await set(ref(database, `users/${normalizedUsername}/saves/current/friendCode`), code);
 

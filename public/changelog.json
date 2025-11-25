@@ -1,5 +1,18 @@
 [
   {
+    "version": "2.8.0",
+    "date": "25.11.2025",
+    "changes": [
+      "✨ Features",
+      "  • Global Game Invite Popup (App-wide)",
+      "  • New Logos (Bright/Dark Mode)",
+      "🐞 Bugfixes",
+      "  • Multiplayer Sync: Host now correctly joins game",
+      "  • Mau Mau: Fixed Card Validation & Wished Suit Logic",
+      "  • Multiplayer: Fixed Card Playing & Drawing"
+    ]
+  },
+  {
     "version": "2.7.0",
     "date": "25.11.2025",
     "changes": [
