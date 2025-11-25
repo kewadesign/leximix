@@ -14,6 +14,7 @@ import { SudokuControls } from './components/SudokuControls';
 import { MusicPlayer } from './components/MusicPlayer';
 import { LetterMauMauGame } from './components/LetterMauMauGame';
 import SkatMauMauGame from './components/SkatMauMauGame';
+import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
@@ -555,6 +556,9 @@ export default function App() {
   // Mau Mau Modal Flow
   const [showMauMauIntro, setShowMauMauIntro] = useState(false);
   const [showMauMauModeSelect, setShowMauMauModeSelect] = useState(false);
+  const [showMultiplayerLobby, setShowMultiplayerLobby] = useState(false);
+  const [multiplayerGameId, setMultiplayerGameId] = useState<string | null>(null);
+  const [multiplayerOpponent, setMultiplayerOpponent] = useState<string | null>(null);
 
   // Online/Offline monitoring
   useEffect(() => {
@@ -2645,22 +2649,22 @@ export default function App() {
             </div>
           </button>
 
-          {/* Multiplayer Button (Coming Soon) */}
+          {/* Multiplayer Button */}
           <button
-            disabled
-            className="w-full p-6 bg-gradient-to-br from-gray-600/20 to-gray-700/20 border-2 border-gray-600/30 rounded-2xl opacity-60 cursor-not-allowed relative overflow-hidden"
+            onClick={() => {
+              setShowMauMauModeSelect(false);
+              setShowMultiplayerLobby(true);
+            }}
+            className="w-full p-6 bg-gradient-to-br from-green-600/30 to-emerald-600/30 border-2 border-green-500/50 hover:border-green-400 rounded-2xl transition-all hover:scale-105 active:scale-95 group"
           >
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gray-500/20 rounded-full flex items-center justify-center">
-                <Users size={32} className="text-gray-500" />
+              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
+                <Users size={32} className="text-green-400" />
               </div>
               <div className="flex-1 text-left">
-                <h4 className="text-xl font-black text-gray-400 mb-1">Multiplayer</h4>
-                <p className="text-sm text-gray-500">Spiele gegen Freunde</p>
+                <h4 className="text-xl font-black text-white mb-1">Multiplayer</h4>
+                <p className="text-sm text-gray-400">Spiele gegen Freunde</p>
               </div>
-            </div>
-            <div className="absolute top-2 right-2 bg-yellow-500/20 border border-yellow-500/50 px-3 py-1 rounded-full">
-              <span className="text-xs font-bold text-yellow-400">Bald verfügbar</span>
             </div>
           </button>
 
@@ -2672,6 +2676,21 @@ export default function App() {
           </button>
         </div>
       </Modal>
+
+      {/* Multiplayer Lobby */}
+      <MultiplayerLobby
+        isOpen={showMultiplayerLobby}
+        onClose={() => setShowMultiplayerLobby(false)}
+        currentUsername={cloudUsername || user.name}
+        friends={user.friends || []}
+        onStartGame={(opponentUsername, gameId) => {
+          setMultiplayerOpponent(opponentUsername);
+          setMultiplayerGameId(gameId);
+          setShowMultiplayerLobby(false);
+          setView('MAU_MAU');
+        }}
+      />
+
 
 
       {/* Auth Screen (First screen) */}
