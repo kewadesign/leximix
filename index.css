@@ -4,29 +4,27 @@
 
 @layer base {
   :root {
-    /* Light Mode Defaults - Glassmorphic & High Contrast */
-    --color-bg: #e5e7eb;
+    /* Light Mode Defaults - Modern Clean Glass */
+    --color-bg: #f0f4f8; /* Very light blue-gray, cleaner than pure gray */
     /* Gray 200 base */
-    --color-surface: rgba(255, 255, 255, 0.7);
-    /* Glassy surface */
-    --color-surface-highlight: rgba(255, 255, 255, 0.9);
-    --color-text: #1e293b;
+    --color-surface: rgba(255, 255, 255, 0.85); /* Whiter glass */
+    --color-surface-highlight: #ffffff; /* Pure white highlight */
+    --color-text: #0f172a; /* Slate 900 - Sharp dark text */
     /* Slate 800 - High contrast dark */
-    --color-text-muted: #64748b;
-    /* Slate 500 */
-    --color-border: rgba(255, 255, 255, 0.6);
+    --color-text-muted: #475569; /* Slate 600 */
+    --color-border: rgba(148, 163, 184, 0.2); /* Subtle slate border */
     /* Subtle white border */
-    --color-accent: #d946ef;
+    --color-accent: #d946ef; /* Keep brand accent */
     /* lexi-fuchsia */
-    --color-glass-border: rgba(255, 255, 255, 0.5);
-    --color-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --color-glass-border: rgba(255, 255, 255, 0.8);
+    --color-glass-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.25); /* Softer shadow */
 
     /* Season Colors - Dynamic (will be set by JS) */
     --season-primary: #d946ef;
     --season-secondary: #a855f7;
     --season-accent: #3b82f6;
-    --season-bg-dark: #0f172a;
-    --season-bg-card: #1e293b;
+    --season-bg-dark: #ffffff; /* In light mode, season bg should be light */
+    --season-bg-card: #f1f5f9;
   }
 
   .dark {
@@ -216,9 +214,16 @@
     transition: all 0.3s ease;
   }
 
+  /* Light mode adjustment for neon button text visibility */
+  :root:not(.dark) .neon-button {
+    background: rgba(217, 70, 239, 0.05);
+    text-shadow: none;
+    font-weight: 800;
+  }
+
   .neon-button:hover {
     background: var(--season-primary);
-    color: #000;
+    color: #000; /* Always black text on hover (primary color bg) */
     box-shadow:
       0 0 20px var(--season-primary),
       0 0 40px var(--season-primary);

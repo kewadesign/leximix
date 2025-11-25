@@ -2120,16 +2120,16 @@ export default function App() {
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
           </div>
           <div className="flex-1">
-            <h2 className={`font-black text-lg leading-none mb-1.5 ${user.isPremium ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 animate-shimmer' : 'text-white'}`}>
+            <h2 className={`font-black text-lg leading-none mb-1.5 ${user.isPremium ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 animate-shimmer' : 'text-lexi-text'}`}>
               {cloudUsername || user.name}
             </h2>
             {/* Season Level Progress Bar */}
             <div className="w-full max-w-[200px]">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-bold text-cyan-300/80 uppercase tracking-wider">Season Lvl {user.level}</span>
-                <span className="text-[10px] font-mono text-cyan-300/60">{user.xp % 100}/100 XP</span>
+                <span className="text-[10px] font-bold text-cyan-600 dark:text-cyan-300/80 uppercase tracking-wider">Season Lvl {user.level}</span>
+                <span className="text-[10px] font-mono text-cyan-600/80 dark:text-cyan-300/60">{user.xp % 100}/100 XP</span>
               </div>
-              <div className="h-2 bg-black/40 rounded-full overflow-hidden border border-cyan-500/30 relative">
+              <div className="h-2 bg-gray-200 dark:bg-black/40 rounded-full overflow-hidden border border-cyan-500/30 relative">
                 <div
                   className="h-full bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 transition-all duration-500 relative overflow-hidden"
                   style={{ width: `${(user.xp % 100)}%` }}
@@ -2148,7 +2148,7 @@ export default function App() {
 
           <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/10 transition-colors group bg-white dark:bg-lexi-surface-highlight">
             <div className="relative">
-              <Gem className="text-blue-400 dark:text-blue-400 group-hover:rotate-12 transition-transform" size={18} />
+              <Gem className="text-blue-600 dark:text-blue-400 group-hover:rotate-12 transition-transform" size={18} />
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
             </div>
             <span className="font-black text-base text-gray-800 dark:text-yellow-400 drop-shadow-md">{user.coins}</span>
@@ -2164,7 +2164,7 @@ export default function App() {
 
       {/* Cloud Save Card - MOVED TO TOP! */}
       < div className="mb-6 w-full px-2" >
-        <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {cloudUsername ? (
               <>
@@ -2172,20 +2172,20 @@ export default function App() {
                   <User size={20} className="text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white">{cloudUsername}</p>
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-sm font-bold text-lexi-text">{cloudUsername}</p>
+                  <p className="text-[10px] text-lexi-text-muted">
                     {lastCloudSync ? `Sync: ${new Date(lastCloudSync).toLocaleTimeString('de-DE')}` : 'Cloud Sync aktiv'}
                   </p>
                 </div>
               </>
             ) : (
               <>
-                <div className="w-10 h-10 bg-gray-800 border border-white/10 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full flex items-center justify-center">
                   <User size={20} className="text-gray-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white">Cloud Save</p>
-                  <p className="text-[10px] text-gray-400">Nicht angemeldet</p>
+                  <p className="text-sm font-bold text-lexi-text">Cloud Save</p>
+                  <p className="text-[10px] text-lexi-text-muted">Nicht angemeldet</p>
                 </div>
               </>
             )}
@@ -2217,7 +2217,7 @@ export default function App() {
             className="h-32 md:h-40 w-auto drop-shadow-xl"
           />
         </div>
-        <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-purple-200/60 uppercase animate-pulse">
+        <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-lexi-accent uppercase animate-pulse">
           {t.HOME.TAGLINE}
         </div>
       </div >

@@ -19,8 +19,8 @@ export const Button: React.FC<ButtonProps> = React.memo(({ children, variant = '
 
   const variants = {
     primary: "bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white shadow-lg shadow-fuchsia-900/20 hover:brightness-110",
-    secondary: "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-sm",
-    ghost: "text-gray-400 hover:text-white hover:bg-white/5",
+    secondary: "bg-white/10 dark:bg-white/10 text-lexi-text dark:text-white border border-lexi-border dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/20 backdrop-blur-sm",
+    ghost: "text-lexi-text-muted dark:text-gray-400 hover:text-lexi-text dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5",
     danger: "bg-red-500 text-white shadow-lg hover:bg-red-600"
   };
 
