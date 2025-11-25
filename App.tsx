@@ -17,6 +17,7 @@ import SkatMauMauGame from './components/SkatMauMauGame';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { FriendsManager } from './components/FriendsManager';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
+import { auth } from './utils/firebase';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
@@ -571,8 +572,8 @@ export default function App() {
   // Global listener for sent invite acceptance (host side)
   useEffect(() => {
     if (!cloudUsername || !pendingSentInvite) {
-        console.log('[App] Listener skipped - cloudUsername:', cloudUsername, 'pendingInvite:', pendingSentInvite);
-        return;
+      console.log('[App] Listener skipped - cloudUsername:', cloudUsername, 'pendingInvite:', pendingSentInvite);
+      return;
     }
 
     console.log('[App] Setting up listener for game:', pendingSentInvite.gameId);
@@ -588,7 +589,7 @@ export default function App() {
         if (snapshot.exists()) {
           const gameData = snapshot.val();
           console.log('[App] Game update received:', gameData.status, gameData.players);
-          
+
           // Game is playing and we're the host - guest accepted!
           if (gameData.status === 'playing' && gameData.players?.host === cloudUsername) {
             console.log('[App] Game accepted by guest, starting game for host');
@@ -599,7 +600,7 @@ export default function App() {
             setView('MAU_MAU');
           }
         } else {
-            console.log('[App] Game snapshot does not exist yet');
+          console.log('[App] Game snapshot does not exist yet');
         }
       });
 
@@ -631,7 +632,7 @@ export default function App() {
           const invitesData = snapshot.val();
           const invites = Object.values(invitesData) as any[];
           const pendingInvite = invites.find((inv: any) => inv.status === 'pending');
-          
+
           if (pendingInvite && !showMultiplayerLobby) {
             // Show global popup only if not already in lobby
             setGlobalGameInvite({ from: pendingInvite.from, gameId: pendingInvite.gameId });
@@ -655,8 +656,8 @@ export default function App() {
 
   const handleAcceptGlobalInvite = async () => {
     if (!globalGameInvite || !cloudUsername) {
-        console.error('[App] Cannot accept invite - missing data', { globalGameInvite, cloudUsername });
-        return;
+      console.error('[App] Cannot accept invite - missing data', { globalGameInvite, cloudUsername });
+      return;
     }
 
     console.log('[App] Accepting invite...', globalGameInvite);
@@ -701,11 +702,11 @@ export default function App() {
         hostHand,
         guestHand
       );
-      
+
       if (!initSuccess) {
-          throw new Error('Failed to initialize multiplayer game');
+        throw new Error('Failed to initialize multiplayer game');
       }
-      
+
       console.log('[App] Game initialized successfully! Switching view...');
 
       // Start game
@@ -2217,7 +2218,7 @@ export default function App() {
             className="h-32 md:h-40 w-auto drop-shadow-xl"
           />
         </div>
-        <div className="mt-4 text-[10px] font-bold tracking-[0.5em] text-lexi-accent uppercase animate-pulse">
+        <div className={`mt-4 text-[10px] font-bold tracking-[0.5em] uppercase animate-pulse ${user.theme === 'dark' ? 'text-lexi-accent' : 'text-gray-800'}`}>
           {t.HOME.TAGLINE}
         </div>
       </div >
@@ -2237,23 +2238,29 @@ export default function App() {
         {/* Season & Premium Info */}
         <div className="flex gap-2 mt-2 px-2">
           {/* Season Timer */}
-          <div className="flex-1 bg-gray-900/40 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center">
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Season Ende</span>
-            <div className="flex items-center gap-2 text-lexi-cyan font-mono font-bold">
+          <div className={`flex-1 rounded-xl p-3 flex flex-col items-center justify-center border ${user.theme === 'dark'
+            ? 'bg-gray-900/40 border-white/10'
+            : 'bg-white/90 backdrop-blur-md border-white/20 shadow-sm bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]'
+            }`}>
+            <span className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${user.theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Season Ende</span>
+            <div className={`flex items-center gap-2 font-mono font-bold ${user.theme === 'dark' ? 'text-lexi-cyan' : 'text-cyan-700'}`}>
               <Clock size={14} />
               {Math.max(0, Math.ceil((getCurrentSeason().endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage
             </div>
           </div>
 
           {/* Premium Status */}
-          <div className="flex-1 bg-gray-900/40 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center">
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Premium Status</span>
+          <div className={`flex-1 rounded-xl p-3 flex flex-col items-center justify-center border ${user.theme === 'dark'
+            ? 'bg-gray-900/40 border-white/10'
+            : 'bg-white/90 backdrop-blur-md border-white/20 shadow-sm bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]'
+            }`}>
+            <span className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${user.theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Premium Status</span>
             {user.isPremium ? (
               <div className="scale-90 origin-center">
-                <PremiumStatus isPremium={user.isPremium} premiumActivatedAt={user.premiumActivatedAt} />
+                <PremiumStatus isPremium={user.isPremium} premiumActivatedAt={user.premiumActivatedAt} theme={user.theme as 'dark' | 'light'} />
               </div>
             ) : (
-              <div className="text-gray-500 text-xs font-bold flex items-center gap-1">
+              <div className={`text-xs font-bold flex items-center gap-1 ${user.theme === 'dark' ? 'text-gray-500' : 'text-gray-700'}`}>
                 <Lock size={12} /> Inaktiv
               </div>
             )}
@@ -2950,10 +2957,10 @@ export default function App() {
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center animate-pulse shadow-lg shadow-yellow-500/30">
                 <Users size={40} className="text-white" />
               </div>
-              
+
               {/* Title */}
               <h3 className="text-xl font-black text-white">Spieleinladung!</h3>
-              
+
               {/* From */}
               <div className="bg-black/30 rounded-xl p-4">
                 <p className="text-gray-400 text-sm">Einladung von</p>
@@ -2962,7 +2969,7 @@ export default function App() {
                 </p>
                 <p className="text-xs text-gray-500 mt-1">möchte Letter Mau-Mau spielen</p>
               </div>
-              
+
               {/* Buttons */}
               <div className="flex gap-3">
                 <button
@@ -3541,6 +3548,35 @@ export default function App() {
                   className="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase rounded-lg mt-2 transition-colors"
                 >
                   {t.PROFILE.CHANGE}
+                </button>
+              </div>
+
+              {/* Email & Password Reset Section */}
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ACCOUNT SICHERHEIT</h3>
+              <div className="bg-gray-900 p-4 rounded-xl border border-white/10 mb-4">
+                {auth.currentUser?.email && (
+                  <div className="mb-3">
+                    <p className="text-xs text-gray-400 mb-1">E-MAIL ADRESSE</p>
+                    <p className="text-sm font-bold text-white">{auth.currentUser.email}</p>
+                  </div>
+                )}
+
+                <button
+                  onClick={async () => {
+                    if (!auth.currentUser?.email) return;
+                    if (confirm(`Passwort-Reset E-Mail an ${auth.currentUser.email} senden?`)) {
+                      const { resetPassword } = await import('./utils/firebase');
+                      const result = await resetPassword(auth.currentUser.email);
+                      if (result.success) {
+                        alert('E-Mail zum Zurücksetzen des Passworts wurde gesendet!');
+                      } else {
+                        alert('Fehler: ' + result.error);
+                      }
+                    }
+                  }}
+                  className="w-full py-3 bg-gray-800 hover:bg-gray-700 border border-white/10 text-white font-bold uppercase rounded-lg transition-colors text-xs flex items-center justify-center gap-2"
+                >
+                  <Lock size={14} /> Passwort zurücksetzen
                 </button>
               </div>
 

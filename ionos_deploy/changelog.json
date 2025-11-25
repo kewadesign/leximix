@@ -1,5 +1,15 @@
 [
   {
+    "version": "2.8.1",
+    "date": "25.11.2025",
+    "changes": [
+      "✨ UI Improvements",
+      "  • Improved readability for Daily Word Training tagline",
+      "  • Premium Status box now has a cleaner, subtle white pattern design",
+      "  • Fixed text contrast in bright mode"
+    ]
+  },
+  {
     "version": "2.8.0",
     "date": "25.11.2025",
     "changes": [
