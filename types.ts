@@ -6,7 +6,9 @@ export enum GameMode {
   CATEGORY = 'CATEGORY',
   SUDOKU = 'SUDOKU',
   CHALLENGE = 'CHALLENGE',
-  RIDDLE = 'RIDDLE'
+  RIDDLE = 'RIDDLE',
+  LETTER_MAU_MAU = 'LETTER_MAU_MAU',
+  SKAT_MAU_MAU = 'SKAT_MAU_MAU'
 }
 
 export enum Tier {
@@ -60,6 +62,7 @@ export interface UserState {
   redeemedCodes?: string[]; // Track redeemed gutschein codes
   stickers?: string[]; // Collected stickers
   theme: 'light' | 'dark';
+  friendCode?: string; // Unique friend code for multiplayer
 }
 
 export interface GameConfig {

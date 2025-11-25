@@ -12,12 +12,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
-        version: '2.6.9',
-        date: '2025-11-24',
+        version: '2.7.0',
+        date: '2025-11-25',
         changes: {
+            added: [
+                'Globales Freundesystem mit einzigartigen Freundescodes',
+                'Multiplayer-Vorbereitung für alle Spiele',
+                'Freundescode im Profil sichtbar und kopierbar',
+                'Neuer Spielmodus: Mau Mau (Karten)',
+                'Belohnungen (XP & Coins) für Mau Mau Siege'
+            ],
+            changed: [
+                'Skat Mau Mau zu "Mau Mau" umbenannt',
+                'Visuelles Update für das Kartenspiel (Dark Mode)',
+                'Optimierte Ladezeiten beim Start'
+            ],
             fixed: [
-                'Firebase E-Mail/Passwort Authentifizierung aktiviert',
-                'Registrierung funktioniert jetzt einwandfrei'
+                'Anzeige-Fehler im Kartenspiel behoben',
+                'Diverse kleine UI-Verbesserungen'
             ]
         }
     },

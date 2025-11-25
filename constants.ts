@@ -4,7 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '2.6.9';
+export const APP_VERSION = '2.7.0';
 
 // ============================================================================
 // SEASON SYSTEM
@@ -167,7 +167,42 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "LETTER SUDOKU", desc: "Logic (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Challenges" },
       RIDDLE: { title: "RIDDLES", desc: "Word Puzzles" },
+      LETTER_MAU_MAU: { title: "LETTER MAU MAU", desc: "Card Game" },
+      SKAT_MAU_MAU: { title: "MAU MAU", desc: "Classic Card Game" },
       LOCKED: { title: "LOCKED", desc: "Coming Soon" }
+    },
+    MAU_MAU: {
+      TITLE: "LETTER MAU MAU",
+      YOUR_TURN: "Your Turn",
+      OPPONENT_TURN: "Opponent's Turn",
+      CARDS: "cards",
+      DRAW_PILE: "Draw Pile",
+      CURRENT_CARD: "Current Card",
+      YOUR_HAND: "Your Hand",
+      PLAY_CARD: "Play Card",
+      DRAW_CARD: "Draw Card",
+      SAY_MAU: "Say Mau!",
+      CHOOSE_CATEGORY: "Choose a Category",
+      CANCEL: "Cancel",
+      AI_THINKING: "AI is thinking...",
+      CARD_PLAYED: "played",
+      DREW_CARD: "Drew a card.",
+      GAME_STARTED: "Game started! You go",
+      FIRST: "first",
+      SECOND: "second",
+      WINS: "wins!",
+      WISHED: "Wished",
+      MAU: "Mau!",
+      CATEGORIES: {
+        VOWEL: "Vowels",
+        COMMON: "Common",
+        MEDIUM: "Medium",
+        RARE: "Rare"
+      },
+      SELECT_DIFFICULTY: "Select Difficulty",
+      EASY: "Easy",
+      MEDIUM: "Medium",
+      HARD: "Hard"
     },
     SEASON: {
       TITLE: "SEASON I: GENESIS",
@@ -321,7 +356,42 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "Buchstaben Sudoku", desc: "Logik (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Herausforderungen" },
       RIDDLE: { title: "RÄTSEL", desc: "Worträtsel" },
+      LETTER_MAU_MAU: { title: "BUCHSTABEN MAU MAU", desc: "Kartenspiel" },
+      SKAT_MAU_MAU: { title: "MAU MAU", desc: "Klassisches Kartenspiel" },
       LOCKED: { title: "BALD", desc: "Demnächst" }
+    },
+    MAU_MAU: {
+      TITLE: "BUCHSTABEN MAU MAU",
+      YOUR_TURN: "Dein Zug",
+      OPPONENT_TURN: "Gegner am Zug",
+      CARDS: "Karten",
+      DRAW_PILE: "Stapel",
+      CURRENT_CARD: "Aktuelle Karte",
+      YOUR_HAND: "Deine Hand",
+      PLAY_CARD: "Karte Spielen",
+      DRAW_CARD: "Karte Ziehen",
+      SAY_MAU: "Mau!",
+      CHOOSE_CATEGORY: "Kategorie wählen",
+      CANCEL: "Abbrechen",
+      AI_THINKING: "KI denkt nach...",
+      CARD_PLAYED: "hat gespielt",
+      DREW_CARD: "Karte gezogen.",
+      GAME_STARTED: "Spiel gestartet! Du bist",
+      FIRST: "zuerst",
+      SECOND: "zweiter",
+      WINS: "gewinnt!",
+      WISHED: "Gewünscht",
+      MAU: "Mau!",
+      CATEGORIES: {
+        VOWEL: "Vokale",
+        COMMON: "Häufig",
+        MEDIUM: "Mittel",
+        RARE: "Selten"
+      },
+      SELECT_DIFFICULTY: "Schwierigkeit wählen",
+      EASY: "Leicht",
+      MEDIUM: "Mittel",
+      HARD: "Schwer"
     },
     SEASON: {
       TITLE: "SAISON I: GENESIS",
@@ -475,7 +545,42 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "SUDOKU DE LETRAS", desc: "Lógica (A-I)" },
       CHALLENGE: { title: "DESAFÍO", desc: "Retos Premium" },
       RIDDLE: { title: "ACERTIJOS", desc: "Rompecabezas" },
+      LETTER_MAU_MAU: { title: "MAU MAU DE LETRAS", desc: "Juego de Cartas" },
+      SKAT_MAU_MAU: { title: "MAU MAU", desc: "Juego de Cartas Clásico" },
       LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
+    },
+    MAU_MAU: {
+      TITLE: "MAU MAU DE LETRAS",
+      YOUR_TURN: "Tu Turno",
+      OPPONENT_TURN: "Turno del Oponente",
+      CARDS: "cartas",
+      DRAW_PILE: "Pila",
+      CURRENT_CARD: "Carta Actual",
+      YOUR_HAND: "Tu Mano",
+      PLAY_CARD: "Jugar Carta",
+      DRAW_CARD: "Tomar Carta",
+      SAY_MAU: "¡Mau!",
+      CHOOSE_CATEGORY: "Elige una Categoría",
+      CANCEL: "Cancelar",
+      AI_THINKING: "IA está pensando...",
+      CARD_PLAYED: "jugó",
+      DREW_CARD: "Tomé una carta.",
+      GAME_STARTED: "¡Juego iniciado! Vas",
+      FIRST: "primero",
+      SECOND: "segundo",
+      WINS: "¡gana!",
+      WISHED: "Deseado",
+      MAU: "¡Mau!",
+      CATEGORIES: {
+        VOWEL: "Vocales",
+        COMMON: "Común",
+        MEDIUM: "Medio",
+        RARE: "Raro"
+      },
+      SELECT_DIFFICULTY: "Seleccionar Dificultad",
+      EASY: "Fácil",
+      MEDIUM: "Medio",
+      HARD: "Difícil"
     },
     SEASON: {
       TITLE: "TEMPORADA I: GÉNESIS",
@@ -1289,39 +1394,49 @@ export const CATEGORY_DATA_ES: Record<string, string[]> = {
 
 export const TUTORIALS: Record<GameMode, Record<Language, TutorialContent>> = {
   [GameMode.CLASSIC]: {
-    [Language.EN]: { title: "Classic Mode", text: "Guess the word in 6 tries. Green means correct spot, Yellow means wrong spot, Gray means not in word." },
-    [Language.DE]: { title: "Klassisch", text: "Errate das Wort in 6 Versuchen. Grün ist richtig, Gelb ist falsche Stelle, Grau ist nicht im Wort." },
-    [Language.ES]: { title: "Modo Clásico", text: "Adivina la palabra en 6 intentos. Verde significa lugar correcto, Amarillo lugar incorrecto, Gris no está en la palabra." }
+    [Language.EN]: { title: "CLASSIC MODE", text: "Guess the hidden word. You have 6 attempts. Green = correct letter and position. Yellow = correct letter, wrong position." },
+    [Language.DE]: { title: "KLASSISCHER MODUS", text: "Errate das versteckte Wort. Du hast 6 Versuche. Grün = richtiger Buchstabe und Position. Gelb = richtiger Buchstabe, falsche Position." },
+    [Language.ES]: { title: "MODO CLÁSICO", text: "Adivina la palabra oculta. Tienes 6 intentos. Verde = letra y posición correctas. Amarillo = letra correcta, posición incorrecta." }
   },
   [GameMode.SPEEDRUN]: {
-    [Language.EN]: { title: "Speedrun", text: "Race against the clock! You have limited time to guess based on word length." },
-    [Language.DE]: { title: "Zeitrennen", text: "Wettlauf gegen die Zeit! Du hast nur begrenzte Zeit, abhängig von der Wortlänge." },
-    [Language.ES]: { title: "Contrarreloj", text: "¡Carrera contra el reloj! Tienes tiempo limitado para adivinar según la longitud de la palabra." }
+    [Language.EN]: { title: "SPEEDRUN MODE", text: "Same rules as Classic Mode, but you're racing against the clock! Complete as fast as possible." },
+    [Language.DE]: { title: "ZEITRENNEN MODUS", text: "Gleiche Regeln wie Klassisch, aber gegen die Uhr! Schließe so schnell wie möglich ab." },
+    [Language.ES]: { title: "MODO CONTRARRELOJ", text: "Mismas reglas que el Modo Clásico, ¡pero contra el reloj! Completa lo más rápido posible." }
   },
   [GameMode.CHAIN]: {
-    [Language.EN]: { title: "Chain Reaction", text: "The previous answer is your hint for the next word. E.g. RAIN -> BOW." },
-    [Language.DE]: { title: "Wortkette", text: "Die vorherige Antwort ist dein Hinweis für das nächste Wort. Z.B. HAUS -> TIER." },
-    [Language.ES]: { title: "Reacción en Cadena", text: "La respuesta anterior es tu pista para la siguiente palabra. Ej. ARCO -> IRIS." }
+    [Language.EN]: { title: "CHAIN MODE", text: "Each word must begin with the last letter of the previous word. Break the chain and you lose!" },
+    [Language.DE]: { title: "WORTKETTEN MODUS", text: "Jedes Wort muss mit dem letzten Buchstaben des vorherigen Wortes beginnen. Breche die Kette und du verlierst!" },
+    [Language.ES]: { title: "MODO CADENA", text: "Cada palabra debe comenzar con la última letra de la palabra anterior. ¡Rompe la cadena y pierdes!" }
   },
   [GameMode.CATEGORY]: {
-    [Language.EN]: { title: "Topic Puzzle", text: "All words belong to a specific category shown at the top." },
-    [Language.DE]: { title: "Themen-Rätsel", text: "Alle Wörter gehören zu einer bestimmten Kategorie, die oben angezeigt wird." },
-    [Language.ES]: { title: "Puzzle de Temas", text: "Todas las palabras pertenecen a una categoría específica mostrada arriba." }
+    [Language.EN]: { title: "TOPIC MODE", text: "All words belong to a theme. Use the hint to guide your guesses!" },
+    [Language.DE]: { title: "THEMEN MODUS", text: "Alle Wörter gehören zu einem Thema. Nutze den Hinweis um deine Rateversuche zu lenken!" },
+    [Language.ES]: { title: "MODO TEMA", text: "Todas las palabras pertenecen a un tema. ¡Usa la pista para guiar tus intentos!" }
   },
   [GameMode.SUDOKU]: {
-    [Language.EN]: { title: "Letter Sudoku", text: "Fill the 9x9 grid with letters A-I. No repeats in rows, columns, or 3x3 boxes." },
-    [Language.DE]: { title: "Buchstaben-Sudoku", text: "Fülle das 9x9 Gitter mit A-I. Keine Wiederholungen in Zeilen, Spalten oder 3x3 Boxen." },
-    [Language.ES]: { title: "Sudoku de Letras", text: "Rellena la cuadrícula 9x9 con letras A-I. Sin repeticiones en filas, columnas o cajas de 3x3." }
+    [Language.EN]: { title: "LETTER SUDOKU", text: "Fill the 9x9 grid with letters A-I. Each row, column, and 3x3 box must contain each letter exactly once." },
+    [Language.DE]: { title: "BUCHSTABEN SUDOKU", text: "Fülle das 9x9 Gitter mit Buchstaben A-I. Jede Zeile, Spalte und 3x3 Box muss jeden Buchstaben genau einmal enthalten." },
+    [Language.ES]: { title: "SUDOKU DE LETRAS", text: "Rellena la cuadrícula 9x9 con letras A-I. Cada fila, columna y caja 3x3 debe contener cada letra exactamente una vez." }
   },
   [GameMode.CHALLENGE]: {
-    [Language.EN]: { title: "Challenge", text: "Solve math problems and words. Premium only. Costs coins." },
-    [Language.DE]: { title: "Herausforderung", text: "Löse Matheaufgaben und Wörter. Nur Premium. Kostet Münzen." },
-    [Language.ES]: { title: "Desafío", text: "Resuelve problemas matemáticos y palabras. Solo Premium. Cuesta monedas." }
+    [Language.EN]: { title: "CHALLENGE MODE", text: "Mixed challenges including word puzzles and math problems. Time is limited. Premium only." },
+    [Language.DE]: { title: "CHALLENGE MODUS", text: "Gemischte Herausforderungen mit Worträtseln und Matheaufgaben. Begrenzte Zeit. Nur Premium." },
+    [Language.ES]: { title: "MODO DESAFÍO", text: "Desafíos mixtos con rompecabezas y problemas matemáticos. Tiempo limitado. Solo Premium." }
   },
   [GameMode.RIDDLE]: {
-    [Language.EN]: { title: "Riddles", text: "Solve the riddle to find the answer. Think outside the box!" },
-    [Language.DE]: { title: "Rätsel", text: "Löse das Rätsel um die Antwort zu finden. Denk um die Ecke!" },
-    [Language.ES]: { title: "Acertijos", text: "Resuelve el acertijo para encontrar la respuesta. ¡Piensa diferente!" }
+    [Language.EN]: { title: "RIDDLE MODE", text: "Solve cryptic riddles to find the answer word. Think outside the box!" },
+    [Language.DE]: { title: "RÄTSEL MODUS", text: "Löse kryptische Rätsel um das Lösungswort zu finden. Denke um die Ecke!" },
+    [Language.ES]: { title: "MODO ACERTIJO", text: "Resuelve acertijos crípticos para encontrar la palabra. ¡Piensa fuera de la caja!" }
+  },
+  [GameMode.LETTER_MAU_MAU]: {
+    [Language.EN]: { title: "LETTER MAU MAU", text: "Play cards by matching letters or categories. Use action cards strategically. First to empty their hand wins!" },
+    [Language.DE]: { title: "BUCHSTABEN MAU MAU", text: "Spiele Karten durch passende Buchstaben oder Kategorien. Nutze Aktionskarten strategisch. Wer zuerst keine Karten hat, gewinnt!" },
+    [Language.ES]: { title: "MAU MAU DE LETRAS", text: "Juega cartas emparejando letras o categorías. Usa cartas de acción estratégicamente. ¡El primero en vaciar su mano gana!" }
+  },
+  [GameMode.SKAT_MAU_MAU]: {
+    [Language.EN]: { title: "SKAT MAU MAU", text: "Classic Mau Mau with 32 cards. Match suit or rank. 7=Draw 2, 8=Skip, Jack=Wish." },
+    [Language.DE]: { title: "SKAT MAU MAU", text: "Klassisches Mau Mau mit 32 Karten. Bedienpflicht. 7=Zieh 2, 8=Aussetzen, Bube=Wünschen." },
+    [Language.ES]: { title: "SKAT MAU MAU", text: "Mau Mau clásico con 32 cartas. 7=Tomar 2, 8=Saltar, Jota=Deseo." }
   }
 };
 

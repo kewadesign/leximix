@@ -1,5 +1,13 @@
 [
   {
+    "version": "2.7.0",
+    "date": "25.11.2025",
+    "changes": [
+      "✨ Features",
+      "  • UI redesign (neon season banner + progress bar) & Letter Mau Mau implementation plan"
+    ]
+  },
+  {
     "version": "2.6.8",
     "date": "24.11.2025",
     "changes": [

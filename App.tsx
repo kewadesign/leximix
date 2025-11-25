@@ -12,6 +12,8 @@ import { ShopView } from './components/ShopView';
 import { SudokuGrid } from './components/SudokuGrid';
 import { SudokuControls } from './components/SudokuControls';
 import { MusicPlayer } from './components/MusicPlayer';
+import { LetterMauMauGame } from './components/LetterMauMauGame';
+import SkatMauMauGame from './components/SkatMauMauGame';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
@@ -125,7 +127,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'LANGUAGE_SELECT';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'LANGUAGE_SELECT' | 'MAU_MAU' | 'SKAT_MAU_MAU';
 
 const FALLBACK_SEASON_CONFIG = {
   "activeSeasonId": 1,
@@ -410,17 +412,28 @@ export default function App() {
 
         // Background Sync on Startup: Ensure we have the latest cloud data
         // This fixes issues where local data might be stale or missing
-        import('./utils/firebase').then(async ({ loadFromCloud, normalizeUsername }) => {
+        import('./utils/firebase').then(async ({ loadFromCloud, normalizeUsername, generateFriendCode }) => {
           const normalizedUser = normalizeUsername(cloudUser);
           try {
             const cloudData = await loadFromCloud(normalizedUser);
             if (cloudData) {
+              let friendCode = cloudData.friendCode;
+              // Generate Friend Code if missing
+              if (!friendCode) {
+                friendCode = await generateFriendCode(normalizedUser);
+              }
+
               setUser(prev => ({
                 ...prev,
                 ...cloudData,
-                name: normalizedUser // Ensure username consistency
+                name: normalizedUser, // Ensure username consistency
+                friendCode: friendCode // Ensure friend code is in state
               }));
               console.log('[Cloud] Startup sync successful');
+            } else {
+                // If no cloud data but logged in (rare), try to generate code anyway
+                const code = await generateFriendCode(normalizedUser);
+                setUser(prev => ({ ...prev, friendCode: code || undefined }));
             }
           } catch (err) {
             console.error('[Cloud] Startup sync failed:', err);
@@ -843,6 +856,20 @@ export default function App() {
       return;
     }
 
+    // Letter Mau Mau goes directly to game (no level selection)
+    if (mode === GameMode.LETTER_MAU_MAU) {
+      setView('MAU_MAU');
+      return;
+    }
+
+    // Skat Mau Mau (renamed to Mau Mau) goes directly to game
+    if (mode === GameMode.SKAT_MAU_MAU) {
+      // Set default config just in case
+      setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 });
+      setView('SKAT_MAU_MAU');
+      return;
+    }
+
     setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 }); // Default
     setView('LEVELS');
   };
@@ -1079,7 +1106,13 @@ export default function App() {
   };
 
   const startGameFromTutorial = () => {
-    setView('GAME');
+    if (gameConfig?.mode === GameMode.LETTER_MAU_MAU) {
+      setView('MAU_MAU');
+    } else if (gameConfig?.mode === GameMode.SKAT_MAU_MAU) {
+      setView('SKAT_MAU_MAU');
+    } else {
+      setView('GAME');
+    }
     setTutorialMode(null);
   };
 
@@ -2040,6 +2073,22 @@ export default function App() {
           icon={HelpCircle}
           delay={350}
         />
+        <GameCard
+          mode={GameMode.LETTER_MAU_MAU}
+          title="Letter Mau Mau"
+          desc="Karten Spiel"
+          color="bg-gradient-to-br from-purple-600/30 to-pink-600/30 border border-purple-500/50"
+          icon={Sparkles}
+          delay={400}
+        />
+        <GameCard
+          mode={GameMode.SKAT_MAU_MAU}
+          title="Skat Mau Mau"
+          desc="Classic Cards"
+          color="bg-gradient-to-br from-green-600/30 to-emerald-600/30 border border-green-500/50"
+          icon={Sparkles}
+          delay={450}
+        />
       </div>
 
       <div className="text-center text-[10px] text-lexi-text-muted font-bold mt-4 pb-8 uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity">
@@ -2186,6 +2235,27 @@ export default function App() {
   };
 
   const renderGame = () => {
+    // Letter Mau Mau - Special rendering
+    if (gameConfig?.mode === GameMode.LETTER_MAU_MAU) {
+      return (
+        <LetterMauMauGame
+          playerUid={cloudUsername || user.name}
+          playerUsername={cloudUsername || user.name}
+          onExit={() => setView('HOME')}
+          onGameEnd={(coins, xp) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+            audio.playWin();
+            setView('HOME');
+          }}
+        />
+      );
+    }
+
     if (!gameState) return null;
     const isSudoku = gameConfig?.mode === GameMode.SUDOKU;
     const isSpeedrun = gameConfig?.mode === GameMode.SPEEDRUN;
@@ -2410,6 +2480,39 @@ export default function App() {
       {view === 'LEVELS' && renderLevels()}
       {view === 'GAME' && renderGame()}
       {view === 'TUTORIAL' && renderTutorial()}
+      {view === 'MAU_MAU' && (
+        <LetterMauMauGame
+          playerUid={cloudUsername || 'local'}
+          playerUsername={user.name}
+          onExit={() => setView('HOME')}
+          onGameEnd={(coins, xp) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+            setView('HOME');
+            audio.playWin();
+          }}
+        />
+      )}
+      {view === 'SKAT_MAU_MAU' && (
+        <SkatMauMauGame
+          onBack={() => setView('HOME')}
+          friendCode={user.friendCode}
+          onGameEnd={(coins, xp) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+            setView('HOME');
+            audio.playWin();
+          }}
+        />
+      )}
       {/* Navigation Icons */}
 
       {/* Challenge Mode Intro Modal */}
@@ -2992,7 +3095,7 @@ export default function App() {
           {cloudUsername && (
             <>
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.USERNAME}</h3>
-              <div className="bg-gray-900 p-4 rounded-xl border border-white/10">
+              <div className="bg-gray-900 p-4 rounded-xl border border-white/10 mb-4">
                 <p className="text-xs text-gray-400 mb-2">{t.PROFILE.CURRENT}: <span className="text-white font-bold">{cloudUsername}</span></p>
                 <input
                   type="text"
@@ -3011,6 +3114,20 @@ export default function App() {
                 >
                   {t.PROFILE.CHANGE}
                 </button>
+              </div>
+
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">FREUNDESCODE</h3>
+              <div className="bg-gray-900 p-4 rounded-xl border border-white/10 mb-4 text-center">
+                 <div className="text-2xl font-mono font-black text-cyan-400 tracking-[0.2em] select-all cursor-pointer hover:text-white transition-colors" 
+                      onClick={() => {
+                        if(user.friendCode) {
+                            navigator.clipboard.writeText(user.friendCode);
+                            // Optional: Toast notification
+                        }
+                      }}>
+                    {user.friendCode || '-----'}
+                 </div>
+                 <p className="text-[10px] text-gray-600 mt-1">Tippen zum Kopieren</p>
               </div>
             </>
           )}

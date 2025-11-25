@@ -628,4 +628,136 @@ export const createVoucher = async (
     }
 };
 
+// ============================================================================
+// FRIEND SYSTEM
+// ============================================================================
+
+/**
+ * Generate a unique friend code.
+ * Checks database to ensure uniqueness.
+ */
+export const generateFriendCode = async (username: string): Promise<string | null> => {
+    const normalizedUsername = normalizeUsername(username);
+    try {
+        // 1. Check if user already has a code
+        const userCodeRef = ref(database, `users/${normalizedUsername}/friendCode`);
+        const existingSnapshot = await get(userCodeRef);
+        if (existingSnapshot.exists()) {
+            return existingSnapshot.val();
+        }
+
+        // 2. Generate new code
+        let code = '';
+        let isUnique = false;
+        while (!isUnique) {
+            code = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const codeRef = ref(database, `friendCodes/${code}`);
+            const codeSnapshot = await get(codeRef);
+            if (!codeSnapshot.exists()) {
+                isUnique = true;
+            }
+        }
+
+        // 3. Save code
+        await set(ref(database, `users/${normalizedUsername}/friendCode`), code);
+        await set(ref(database, `friendCodes/${code}`), normalizedUsername);
+        
+        // Also save to current save state for easy access
+        await set(ref(database, `users/${normalizedUsername}/saves/current/friendCode`), code);
+
+        return code;
+    } catch (error) {
+        console.error('[Firebase] Generate Friend Code error:', error);
+        return null;
+    }
+};
+
+/**
+ * Add a friend using their Friend Code.
+ */
+export const addFriendByCode = async (myUsername: string, friendCode: string): Promise<{ success: boolean; error?: string }> => {
+    const normalizedMyUsername = normalizeUsername(myUsername);
+    const code = friendCode.trim().toUpperCase();
+
+    try {
+        // 1. Find user by code
+        const codeRef = ref(database, `friendCodes/${code}`);
+        const snapshot = await get(codeRef);
+
+        if (!snapshot.exists()) {
+            return { success: false, error: 'Ungültiger Freundescode' };
+        }
+
+        const friendUsername = snapshot.val();
+
+        if (friendUsername === normalizedMyUsername) {
+            return { success: false, error: 'Du kannst dich nicht selbst hinzufügen' };
+        }
+
+        // 2. Check if already friends
+        const myFriendRef = ref(database, `users/${normalizedMyUsername}/friends/${friendUsername}`);
+        const existingFriend = await get(myFriendRef);
+        if (existingFriend.exists()) {
+            return { success: false, error: 'Bereits befreundet' };
+        }
+
+        // 3. Send Friend Request (Atomic)
+        const requestRef = ref(database, `users/${friendUsername}/friendRequests/${normalizedMyUsername}`);
+        await set(requestRef, {
+            from: normalizedMyUsername,
+            timestamp: Date.now(),
+            status: 'pending'
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error('[Firebase] Add Friend error:', error);
+        return { success: false, error: 'Fehler beim Hinzufügen' };
+    }
+};
+
+/**
+ * Accept a friend request.
+ */
+export const acceptFriendRequest = async (myUsername: string, friendUsername: string): Promise<boolean> => {
+    const normalizedMyUsername = normalizeUsername(myUsername);
+    const normalizedFriend = normalizeUsername(friendUsername);
+
+    try {
+        // 1. Add to my friends list
+        await set(ref(database, `users/${normalizedMyUsername}/friends/${normalizedFriend}`), {
+            since: Date.now()
+        });
+
+        // 2. Add me to their friends list
+        await set(ref(database, `users/${normalizedFriend}/friends/${normalizedMyUsername}`), {
+            since: Date.now()
+        });
+
+        // 3. Remove request
+        await set(ref(database, `users/${normalizedMyUsername}/friendRequests/${normalizedFriend}`), null);
+
+        return true;
+    } catch (error) {
+        console.error('[Firebase] Accept Friend error:', error);
+        return false;
+    }
+};
+
+/**
+ * Reject a friend request.
+ */
+export const rejectFriendRequest = async (myUsername: string, friendUsername: string): Promise<boolean> => {
+    const normalizedMyUsername = normalizeUsername(myUsername);
+    const normalizedFriend = normalizeUsername(friendUsername);
+
+    try {
+        await set(ref(database, `users/${normalizedMyUsername}/friendRequests/${normalizedFriend}`), null);
+        return true;
+    } catch (error) {
+        console.error('[Firebase] Reject Friend error:', error);
+        return false;
+    }
+};
+
 export { database };
