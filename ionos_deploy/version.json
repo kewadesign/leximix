@@ -1,7 +1,7 @@
 {
     "minVersion": "2.4.0",
     "version": "2.7.0",
-    "updateMessage": "Mau Mau Update! Neue Features verfügbar.",
+    "updateMessage": "Neue Features verfügbar! Bitte aktualisiere die App.",
     "apk": {
         "url": "http://leximix.de/app-release.apk",
         "size": "25 MB",

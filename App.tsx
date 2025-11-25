@@ -431,9 +431,9 @@ export default function App() {
               }));
               console.log('[Cloud] Startup sync successful');
             } else {
-                // If no cloud data but logged in (rare), try to generate code anyway
-                const code = await generateFriendCode(normalizedUser);
-                setUser(prev => ({ ...prev, friendCode: code || undefined }));
+              // If no cloud data but logged in (rare), try to generate code anyway
+              const code = await generateFriendCode(normalizedUser);
+              setUser(prev => ({ ...prev, friendCode: code || undefined }));
             }
           } catch (err) {
             console.error('[Cloud] Startup sync failed:', err);
@@ -2235,13 +2235,12 @@ export default function App() {
   };
 
   const renderGame = () => {
-    // Letter Mau Mau - Special rendering
+    // Letter Mau Mau - Now uses Skat Cards
     if (gameConfig?.mode === GameMode.LETTER_MAU_MAU) {
       return (
-        <LetterMauMauGame
-          playerUid={cloudUsername || user.name}
-          playerUsername={cloudUsername || user.name}
-          onExit={() => setView('HOME')}
+        <SkatMauMauGame
+          onBack={() => setView('HOME')}
+          friendCode={user.friendCode}
           onGameEnd={(coins, xp) => {
             setUser(prev => ({
               ...prev,
@@ -2481,10 +2480,9 @@ export default function App() {
       {view === 'GAME' && renderGame()}
       {view === 'TUTORIAL' && renderTutorial()}
       {view === 'MAU_MAU' && (
-        <LetterMauMauGame
-          playerUid={cloudUsername || 'local'}
-          playerUsername={user.name}
-          onExit={() => setView('HOME')}
+        <SkatMauMauGame
+          onBack={() => setView('HOME')}
+          friendCode={user.friendCode}
           onGameEnd={(coins, xp) => {
             setUser(prev => ({
               ...prev,
@@ -3118,16 +3116,16 @@ export default function App() {
 
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">FREUNDESCODE</h3>
               <div className="bg-gray-900 p-4 rounded-xl border border-white/10 mb-4 text-center">
-                 <div className="text-2xl font-mono font-black text-cyan-400 tracking-[0.2em] select-all cursor-pointer hover:text-white transition-colors" 
-                      onClick={() => {
-                        if(user.friendCode) {
-                            navigator.clipboard.writeText(user.friendCode);
-                            // Optional: Toast notification
-                        }
-                      }}>
-                    {user.friendCode || '-----'}
-                 </div>
-                 <p className="text-[10px] text-gray-600 mt-1">Tippen zum Kopieren</p>
+                <div className="text-2xl font-mono font-black text-cyan-400 tracking-[0.2em] select-all cursor-pointer hover:text-white transition-colors"
+                  onClick={() => {
+                    if (user.friendCode) {
+                      navigator.clipboard.writeText(user.friendCode);
+                      // Optional: Toast notification
+                    }
+                  }}>
+                  {user.friendCode || '-----'}
+                </div>
+                <p className="text-[10px] text-gray-600 mt-1">Tippen zum Kopieren</p>
               </div>
             </>
           )}
