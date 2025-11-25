@@ -77,7 +77,7 @@ export default function SkatMauMauGame({ onBack, onGameEnd, friendCode }: SkatMa
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [currentTurn, gameStatus]);
+  }, [currentTurn, gameStatus, aiHand, playerHand, deck, discardPile, wishedSuit, drawCount]);
 
   const getCurrentTopCard = () => discardPile[discardPile.length - 1];
 
