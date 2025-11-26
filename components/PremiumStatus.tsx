@@ -35,7 +35,7 @@ export const PremiumStatus: React.FC<Props> = ({ isPremium, premiumActivatedAt, 
     const styles = isDark ? darkStyles : lightStyles;
 
     return (
-        <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${styles.container}`}>
+        <div className={`flex items-center gap-2 px-3 py-2 border-2 transform -skew-x-6 ${styles.container}`}>
             <Crown size={16} className={styles.icon} fill="currentColor" />
             <div className="text-xs">
                 <span className={`font-bold ${styles.textTitle}`}>

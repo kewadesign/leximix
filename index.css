@@ -62,16 +62,47 @@ body {
 
 /* Animated Grain Overlay */
 @keyframes grain-animation {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -10%); }
-  20% { transform: translate(-15%, 5%); }
-  30% { transform: translate(7%, -25%); }
-  40% { transform: translate(-5%, 25%); }
-  50% { transform: translate(-15%, 10%); }
-  60% { transform: translate(15%, 0%); }
-  70% { transform: translate(0%, 15%); }
-  80% { transform: translate(3%, 35%); }
-  90% { transform: translate(-10%, 10%); }
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  10% {
+    transform: translate(-5%, -10%);
+  }
+
+  20% {
+    transform: translate(-15%, 5%);
+  }
+
+  30% {
+    transform: translate(7%, -25%);
+  }
+
+  40% {
+    transform: translate(-5%, 25%);
+  }
+
+  50% {
+    transform: translate(-15%, 10%);
+  }
+
+  60% {
+    transform: translate(15%, 0%);
+  }
+
+  70% {
+    transform: translate(0%, 15%);
+  }
+
+  80% {
+    transform: translate(3%, 35%);
+  }
+
+  90% {
+    transform: translate(-10%, 10%);
+  }
 }
 
 .grain-overlay {
@@ -82,7 +113,7 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.07;
+  opacity: 0.05;
   overflow: hidden;
 }
 
@@ -93,19 +124,24 @@ body {
   left: -100%;
   width: 300%;
   height: 300%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-  animation: grain-animation 8s steps(10) infinite;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  animation: grain-animation 14s steps(10) infinite;
 }
 
 /* Animated Geometric Background Pattern */
 @keyframes scroll-bg {
-  0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
-  100% { background-position: 100px 100px, 50px 50px, 25px 25px, 75px 75px, 40px 40px, 80px 80px, 100px 100px, 24px 24px; }
+  0% {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+
+  100% {
+    background-position: 100px 100px, 50px 50px, 25px 25px, 75px 75px, 40px 40px, 80px 80px, 100px 100px, 24px 24px;
+  }
 }
 
 .geo-pattern {
   background-color: #FFF8E7;
-  background-image: 
+  background-image:
     /* Colorful gradient blobs - brighter */
     radial-gradient(ellipse at 10% 20%, rgba(131, 56, 236, 0.12) 0%, transparent 50%),
     radial-gradient(ellipse at 90% 80%, rgba(255, 0, 110, 0.1) 0%, transparent 50%),
@@ -123,7 +159,7 @@ body {
 }
 
 .geo-dots {
-  background-image: 
+  background-image:
     radial-gradient(rgba(131, 56, 236, 0.12) 2px, transparent 2px),
     radial-gradient(rgba(255, 0, 110, 0.1) 1.5px, transparent 1.5px);
   background-size: 30px 30px, 20px 20px;
@@ -131,14 +167,14 @@ body {
 }
 
 .geo-grid {
-  background-image: 
+  background-image:
     linear-gradient(rgba(131, 56, 236, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(131, 56, 236, 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 .geo-shapes {
-  background-image: 
+  background-image:
     /* Triangles */
     url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='30,10 50,50 10,50' fill='%23FF006E' fill-opacity='0.06'/%3E%3C/svg%3E"),
     /* Squares rotated */
@@ -149,19 +185,22 @@ body {
 }
 
 .geo-confetti {
-  background-image: 
+  background-image:
     url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='10' y='20' width='8' height='3' fill='%23FF006E' fill-opacity='0.15' transform='rotate(-20 14 21.5)'/%3E%3Crect x='80' y='60' width='6' height='2' fill='%2306FFA5' fill-opacity='0.15' transform='rotate(30 83 61)'/%3E%3Crect x='50' y='90' width='7' height='2.5' fill='%23FFBE0B' fill-opacity='0.15' transform='rotate(-45 53.5 91.25)'/%3E%3Crect x='100' y='20' width='5' height='2' fill='%238338EC' fill-opacity='0.15' transform='rotate(15 102.5 21)'/%3E%3Ccircle cx='30' cy='70' r='2' fill='%230096FF' fill-opacity='0.12'/%3E%3Ccircle cx='90' cy='100' r='1.5' fill='%23FF7F00' fill-opacity='0.12'/%3E%3C/svg%3E");
   background-size: 120px 120px;
 }
 
 /* Hide Scrollbar but keep functionality */
 * {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
 *::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 /* Optional: Show thin scrollbar on hover for accessibility */
@@ -175,12 +214,12 @@ body {
 }
 
 .scrollbar-on-hover::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
 .scrollbar-on-hover::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 /* ============================================

@@ -12,6 +12,38 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '3.1.1',
+        date: '2025-11-26',
+        changes: {
+            added: [
+                '🌍 Neuer Slogan: "Spielspaß mit Köpfchen" (DE) / "Smart Fun" (EN)',
+                '♟️ Multiplayer: Schach Einladungen zeigen nun korrekt "Schach" an'
+            ]
+        }
+    },
+    {
+        version: '3.1.0',
+        date: '2025-11-26',
+        changes: {
+            added: [
+                '♟️ Neuer Spielmodus: SCHACH (Chess)!',
+                '🎮 Singleplayer vs AI (Einfach/Mittel/Schwer)',
+                '🌍 Multiplayer Schach über Freundesystem'
+            ]
+        }
+    },
+    {
+        version: '3.0.3',
+        date: '2025-11-26',
+        changes: {
+            fixed: [
+                '🐞 Chain Game: Spanische Sonderzeichen (Ñ) jetzt eingebbar',
+                '🌍 Chain Game: Vollständige Übersetzung aller Texte (DE/EN/ES)',
+                '💾 Chain Game: Levelfortschritt wird nun korrekt gespeichert'
+            ]
+        }
+    },
+    {
         version: '3.0.2',
         date: '2025-11-26',
         changes: {

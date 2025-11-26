@@ -152,7 +152,7 @@ export const TRANSLATIONS = {
         speedrun: "Zeitrennen",
         speedrunDesc: "Besiege die Uhr.",
         chain: "Wortkette",
-        chainDesc: "Verbinde die Begriffe.",
+        chainDesc: "Arcade-Modus: Bilde so viele zusammengesetzte Wörter wie möglich, bevor die Zeit abläuft! Rasante Wort-Action.",
         category: "Themen-Rätsel",
         categoryDesc: "Kontextbasiertes Raten.",
         sudoku: "Buchstaben-Sudoku",

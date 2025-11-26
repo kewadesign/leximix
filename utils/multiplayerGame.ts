@@ -30,6 +30,60 @@ export interface MultiplayerGameState {
     lastActivity: number;
 }
 
+export interface ChessGameState {
+    gameId: string;
+    players: {
+        host: string;
+        guest: string;
+    };
+    fen: string;
+    turn: 'w' | 'b';
+    status: 'playing' | 'checkmate' | 'draw' | 'stalemate' | 'resigned';
+    winner?: string;
+    lastMove?: {
+        from: string;
+        to: string;
+        timestamp: number;
+    } | null;
+    createdAt: number;
+    lastActivity: number;
+}
+
+/**
+ * Initialize a new multiplayer CHESS game
+ */
+export async function initializeChessGame(
+    gameId: string,
+    hostUsername: string,
+    guestUsername: string
+): Promise<boolean> {
+    console.log('[MultiplayerGame] Initializing CHESS game:', gameId);
+    try {
+        const gameState: ChessGameState = {
+            gameId,
+            players: {
+                host: hostUsername,
+                guest: guestUsername
+            },
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', // Start FEN
+            turn: 'w',
+            status: 'playing',
+            lastMove: null,
+            createdAt: Date.now(),
+            lastActivity: Date.now()
+        };
+
+        console.log('[MultiplayerGame] Writing CHESS game state to Firebase...', gameState);
+        const sanitizedState = sanitizeForFirebase(gameState);
+        await set(ref(database, `games/${gameId}`), sanitizedState);
+        console.log('[MultiplayerGame] CHESS Game state written successfully');
+        return true;
+    } catch (error) {
+        console.error('[MultiplayerGame] Error initializing chess game:', error);
+        return false;
+    }
+}
+
 /**
  * Initialize a new multiplayer game
  */

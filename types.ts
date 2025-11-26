@@ -8,7 +8,8 @@ export enum GameMode {
   CHALLENGE = 'CHALLENGE',
   RIDDLE = 'RIDDLE',
   LETTER_MAU_MAU = 'LETTER_MAU_MAU',
-  SKAT_MAU_MAU = 'SKAT_MAU_MAU'
+  SKAT_MAU_MAU = 'SKAT_MAU_MAU',
+  CHESS = 'CHESS'
 }
 
 export enum Tier {

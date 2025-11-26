@@ -13,6 +13,9 @@ import { SudokuGrid } from './components/SudokuGrid';
 import { SudokuControls } from './components/SudokuControls';
 import { MusicPlayer } from './components/MusicPlayer';
 import { LetterMauMauGame } from './components/LetterMauMauGame';
+import { ChainGame } from './components/ChainGame';
+import { ChessGame } from './components/ChessGame';
+
 import SkatMauMauGame from './components/SkatMauMauGame';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { FriendsManager } from './components/FriendsManager';
@@ -25,7 +28,7 @@ import { audio } from './utils/audio';
 import catDanceGif from './assets/cat-dance.gif';
 
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu } from 'lucide-react';
 
 // React Icons for brutal design
 import { IoGlobeSharp, IoPersonSharp, IoSettingsSharp } from 'react-icons/io5';
@@ -212,7 +215,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS';
 
 const FALLBACK_SEASON_CONFIG = {
   "activeSeasonId": 1,
@@ -279,7 +282,7 @@ export default function App() {
 
   // Onboarding State
   const [onboardingStep, setOnboardingStep] = useState(0); // 0=Lang, 1=Name, 2=Age
-  const [tempUser, setTempUser] = useState({ name: '', age: '', language: Language.EN });
+  const [tempUser, setTempUser] = useState<{ name: string; age: string | number; language: Language }>({ name: '', age: '', language: Language.EN });
 
   const [user, setUser] = useState<UserState>(() => {
     try {
@@ -652,11 +655,13 @@ export default function App() {
   // Mau Mau Modal Flow
   const [showMauMauIntro, setShowMauMauIntro] = useState(false);
   const [showMauMauModeSelect, setShowMauMauModeSelect] = useState(false);
+  const [showChessModeSelect, setShowChessModeSelect] = useState(false);
   const [showMultiplayerLobby, setShowMultiplayerLobby] = useState(false);
   const [showFriendsManager, setShowFriendsManager] = useState(false);
   const [multiplayerGameId, setMultiplayerGameId] = useState<string | null>(null);
   const [multiplayerOpponent, setMultiplayerOpponent] = useState<string | null>(null);
-  const [globalGameInvite, setGlobalGameInvite] = useState<{ from: string; gameId: string } | null>(null);
+  const [isMultiplayerHost, setIsMultiplayerHost] = useState(false);
+  const [globalGameInvite, setGlobalGameInvite] = useState<{ from: string; gameId: string; mode?: GameMode } | null>(null);
   const [pendingSentInvite, setPendingSentInvite] = useState<{ to: string; gameId: string } | null>(null);
 
   // Global listener for sent invite acceptance (host side)
@@ -685,6 +690,7 @@ export default function App() {
             console.log('[App] Game accepted by guest, starting game for host');
             setMultiplayerOpponent(pendingSentInvite.to);
             setMultiplayerGameId(pendingSentInvite.gameId);
+            setIsMultiplayerHost(true);
             setPendingSentInvite(null);
             setShowMultiplayerLobby(false);
             setView('MAU_MAU');
@@ -725,7 +731,11 @@ export default function App() {
 
           if (pendingInvite && !showMultiplayerLobby) {
             // Show global popup only if not already in lobby
-            setGlobalGameInvite({ from: pendingInvite.from, gameId: pendingInvite.gameId });
+            setGlobalGameInvite({
+              from: pendingInvite.from,
+              gameId: pendingInvite.gameId,
+              mode: pendingInvite.mode
+            });
           }
         }
       });
@@ -755,55 +765,81 @@ export default function App() {
     try {
       const { ref, set } = await import('firebase/database');
       const { database } = await import('./utils/firebase');
-      const { initializeMultiplayerGame } = await import('./utils/multiplayerGame');
-      const { generateDeck, shuffleDeck, drawCards } = await import('./utils/maumau');
+      const { initializeMultiplayerGame, initializeChessGame } = await import('./utils/multiplayerGame');
 
       // Update invite status
       console.log('[App] Updating invite status to accepted...');
       await set(ref(database, `gameInvites/${cloudUsername}/${globalGameInvite.gameId}/status`), 'accepted');
 
-      // Generate and shuffle deck
-      console.log('[App] Generating deck...');
-      let deck = generateDeck();
-      deck = shuffleDeck(deck);
+      const inviteMode = globalGameInvite.mode || GameMode.SKAT_MAU_MAU;
 
-      // Deal cards (5 each)
-      const hostHandResult = drawCards(deck, 5);
-      const hostHand = hostHandResult.drawn;
-      deck = hostHandResult.remaining;
+      if (inviteMode === GameMode.CHESS) {
+        console.log('[App] Initializing CHESS game...');
+        const initSuccess = await initializeChessGame(
+          globalGameInvite.gameId,
+          globalGameInvite.from,  // host
+          cloudUsername           // guest
+        );
 
-      const guestHandResult = drawCards(deck, 5);
-      const guestHand = guestHandResult.drawn;
-      deck = guestHandResult.remaining;
+        if (!initSuccess) {
+          throw new Error('Failed to initialize chess game');
+        }
 
-      // Draw first card for discard pile
-      const firstCardResult = drawCards(deck, 1);
-      const discardPile = firstCardResult.drawn;
-      deck = firstCardResult.remaining;
+        // Start game
+        setMultiplayerOpponent(globalGameInvite.from);
+        setMultiplayerGameId(globalGameInvite.gameId);
+        setIsMultiplayerHost(false);
+        setGameConfig({ mode: GameMode.CHESS, tier: Tier.BEGINNER, levelId: 1 }); // Set config for render
+        setGlobalGameInvite(null);
+        setView('GAME'); // Chess uses generic GAME view wrapper or renderGame check
+      } else {
+        // Mau Mau Logic
+        const { generateDeck, shuffleDeck, drawCards } = await import('./utils/maumau');
 
-      // Initialize full game state with cards
-      console.log('[App] Initializing multiplayer game state...');
-      const initSuccess = await initializeMultiplayerGame(
-        globalGameInvite.gameId,
-        globalGameInvite.from,  // host
-        cloudUsername,          // guest
-        deck,
-        discardPile,
-        hostHand,
-        guestHand
-      );
+        // Generate and shuffle deck
+        console.log('[App] Generating deck...');
+        let deck = generateDeck();
+        deck = shuffleDeck(deck);
 
-      if (!initSuccess) {
-        throw new Error('Failed to initialize multiplayer game');
+        // Deal cards (5 each)
+        const hostHandResult = drawCards(deck, 5);
+        const hostHand = hostHandResult.drawn;
+        deck = hostHandResult.remaining;
+
+        const guestHandResult = drawCards(deck, 5);
+        const guestHand = guestHandResult.drawn;
+        deck = guestHandResult.remaining;
+
+        // Draw first card for discard pile
+        const firstCardResult = drawCards(deck, 1);
+        const discardPile = firstCardResult.drawn;
+        deck = firstCardResult.remaining;
+
+        // Initialize full game state with cards
+        console.log('[App] Initializing multiplayer game state...');
+        const initSuccess = await initializeMultiplayerGame(
+          globalGameInvite.gameId,
+          globalGameInvite.from,  // host
+          cloudUsername,          // guest
+          deck,
+          discardPile,
+          hostHand,
+          guestHand
+        );
+
+        if (!initSuccess) {
+          throw new Error('Failed to initialize multiplayer game');
+        }
+
+        console.log('[App] Game initialized successfully! Switching view...');
+
+        // Start game
+        setMultiplayerOpponent(globalGameInvite.from);
+        setMultiplayerGameId(globalGameInvite.gameId);
+        setIsMultiplayerHost(false);
+        setGlobalGameInvite(null);
+        setView('MAU_MAU');
       }
-
-      console.log('[App] Game initialized successfully! Switching view...');
-
-      // Start game
-      setMultiplayerOpponent(globalGameInvite.from);
-      setMultiplayerGameId(globalGameInvite.gameId);
-      setGlobalGameInvite(null);
-      setView('MAU_MAU');
     } catch (error) {
       console.error('[Global Invite] Accept error:', error);
     }
@@ -1174,6 +1210,12 @@ export default function App() {
       return;
     }
 
+    // Chess Mode
+    if (mode === GameMode.CHESS) {
+      setShowChessModeSelect(true);
+      return;
+    }
+
     setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 }); // Default
     setView('LEVELS');
   };
@@ -1220,6 +1262,10 @@ export default function App() {
         isMath: data.type === 'math',
         timeLeft: data.timeLimit
       });
+    } else if (config.mode === GameMode.CHAIN) {
+      setGameConfig(config);
+      setView('GAME');
+      return;
     } else {
       // This block is now handled by the useEffect below
     }
@@ -2062,6 +2108,30 @@ export default function App() {
     );
   };
 
+  const completeOnboarding = () => {
+    const ageNum = typeof tempUser.age === 'string' ? parseInt(tempUser.age) || 0 : tempUser.age;
+    const newUser: UserState = {
+      ...user,
+      name: tempUser.name,
+      age: ageNum,
+      language: tempUser.language
+    };
+    setUser(newUser);
+    localStorage.setItem('leximix_user', JSON.stringify(newUser));
+    // If we want to auto-trigger auth modal after onboarding:
+    // setView('AUTH'); 
+    // But for now let's go to HOME as requested in older memories (or default flow)
+    // Actually, memory [8142df70] says "App now automatically opens the AuthModal on startup if the user is not logged in".
+    // Since new user is not logged in (no cloudUsername), useEffect will redirect to AUTH anyway if we set view to HOME?
+    // Let's check useEffect at line 504. "if (!cloudUser) setView('AUTH')".
+    // So if I setView('HOME'), it might bounce back to AUTH if I don't set cloudUser.
+    // But wait, Onboarding is for "Local Profile".
+    // If I setView('AUTH'), they can register.
+    // Let's setView('AUTH') to be safe and consistent with "Login/Register selection screen is immediately presented".
+    setView('AUTH');
+    audio.playWin();
+  };
+
   const renderOnboarding = () => {
     return (
       <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
@@ -2210,7 +2280,7 @@ export default function App() {
               />
 
               <button
-                disabled={!tempUser.age || tempUser.age < 1}
+                disabled={!tempUser.age || Number(tempUser.age) < 1}
                 onClick={completeOnboarding}
                 className="w-full text-xl font-black uppercase p-4 transition-all duration-100"
                 style={{
@@ -2219,8 +2289,8 @@ export default function App() {
                   boxShadow: '8px 8px 0 #000',
                   color: '#FFF',
                   transform: 'skew(-5deg)',
-                  opacity: (!tempUser.age || tempUser.age < 1) ? 0.5 : 1,
-                  cursor: (!tempUser.age || tempUser.age < 1) ? 'not-allowed' : 'pointer'
+                  opacity: (!tempUser.age || Number(tempUser.age) < 1) ? 0.5 : 1,
+                  cursor: (!tempUser.age || Number(tempUser.age) < 1) ? 'not-allowed' : 'pointer'
                 }}
               >
                 {t.ONBOARDING.START}
@@ -2562,6 +2632,7 @@ export default function App() {
         <GameCard mode={GameMode.CHALLENGE} title={t.MODES.CHALLENGE.title} desc={t.MODES.CHALLENGE.desc} icon={Brain} locked={!user.isPremium} />
         <GameCard mode={GameMode.RIDDLE} title={t.MODES.RIDDLE.title} desc={t.MODES.RIDDLE.desc} icon={HelpCircle} />
         <GameCard mode={GameMode.LETTER_MAU_MAU} title="Mau Mau" desc="Karten Spiel" icon={Sparkles} />
+        <GameCard mode={GameMode.CHESS} title={t.MODES.CHESS.title} desc={t.MODES.CHESS.desc} icon={Cpu} />
       </div>
 
       {/* Footer */}
@@ -2885,6 +2956,65 @@ export default function App() {
             audio.playWin();
             setView('HOME');
           }}
+        />
+      );
+    }
+
+    // Chain Reaction Mode
+    if (gameConfig?.mode === GameMode.CHAIN) {
+      return (
+        <ChainGame
+          language={user.language}
+          user={user}
+          onUpdateUser={setUser}
+          onBack={() => setView('LEVELS')}
+          onGameEnd={(coins, xp) => {
+            setUser(prev => {
+              let newCompleted = prev.completedLevels;
+              // Mark level as completed if user gained XP (played successfully)
+              if (xp > 0 && gameConfig) {
+                const levelKey = `${GameMode.CHAIN}_${gameConfig.tier}_${gameConfig.levelId}`;
+                newCompleted = { ...prev.completedLevels, [levelKey]: true };
+              }
+
+              return {
+                ...prev,
+                coins: prev.coins + coins,
+                xp: prev.xp + xp,
+                level: Math.floor((prev.xp + xp) / 100) + 1,
+                completedLevels: newCompleted
+              };
+            });
+            if (coins > 0) audio.playWin();
+            setView('LEVELS');
+          }}
+        />
+      );
+    }
+
+    // Chess Mode
+    if (gameConfig?.mode === GameMode.CHESS) {
+      return (
+        <ChessGame
+          language={user.language}
+          user={user}
+          onBack={() => setView('HOME')}
+          onGameEnd={(xp, coins) => {
+            if (xp > 0) {
+              setUser(prev => ({
+                ...prev,
+                coins: prev.coins + coins,
+                xp: prev.xp + xp,
+                level: Math.floor((prev.xp + xp) / 100) + 1
+              }));
+              audio.playWin();
+            }
+            setView('HOME');
+          }}
+          multiplayerGameId={multiplayerGameId}
+          opponentName={multiplayerOpponent}
+          isHost={isMultiplayerHost}
+          levelId={gameConfig?.levelId || 1}
         />
       );
     }
@@ -3395,6 +3525,40 @@ export default function App() {
         </div>
       </Modal>
 
+      {/* Chess Mode Select Modal */}
+      <Modal isOpen={showChessModeSelect} onClose={() => setShowChessModeSelect(false)} title={t.CHESS.TITLE}>
+        <div className="space-y-4">
+          <div className="p-4 bg-white border-4 border-black shadow-[6px_6px_0px_#000]">
+            <p className="font-bold text-center mb-6">Select Mode</p>
+
+            <div className="grid grid-cols-1 gap-4">
+              <button
+                onClick={() => {
+                  setShowChessModeSelect(false);
+                  setGameConfig({ mode: GameMode.CHESS, tier: Tier.BEGINNER, levelId: 1 });
+                  setView('GAME');
+                }}
+                className="p-4 bg-[#06FFA5] border-4 border-black font-black text-xl uppercase hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000] flex items-center justify-center gap-3"
+              >
+                <Cpu size={24} /> Singleplayer
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowChessModeSelect(false);
+                  // Set game config for multiplayer context if needed
+                  setGameConfig({ mode: GameMode.CHESS, tier: Tier.BEGINNER, levelId: 1 });
+                  setShowMultiplayerLobby(true);
+                }}
+                className="p-4 bg-[#8338EC] text-white border-4 border-black font-black text-xl uppercase hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000] flex items-center justify-center gap-3"
+              >
+                <Users size={24} /> Multiplayer
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
       {/* Mau Mau Mode Selection Modal */}
       <Modal isOpen={showMauMauModeSelect} onClose={() => setShowMauMauModeSelect(false)} title="Spielmodus wählen">
         <div className="p-6 space-y-4">
@@ -3481,11 +3645,32 @@ export default function App() {
         onClose={() => setShowMultiplayerLobby(false)}
         currentUsername={cloudUsername || user.name}
         friends={user.friends || []}
+        mode={gameConfig?.mode || GameMode.SKAT_MAU_MAU}
         onStartGame={(opponentUsername, gameId) => {
           setMultiplayerOpponent(opponentUsername);
           setMultiplayerGameId(gameId);
+          setIsMultiplayerHost(true);
           setShowMultiplayerLobby(false);
-          setView('MAU_MAU');
+          // Redirect based on mode
+          if (gameConfig?.mode === GameMode.CHESS) {
+            setView('GAME'); // Or whatever view Chess uses. Actually it uses 'GAME' but renders ChessGame if mode is CHESS
+            // Wait, renderGame handles CHESS.
+            // renderGame is called when view === 'GAME'? No, let's check render logic.
+            // In renderContent: if (view === 'GAME') return renderGame();
+            // And renderGame checks gameConfig.mode.
+            // So setting view to 'GAME' should work if gameConfig is set.
+            // But wait, renderGame has specific checks.
+            // Mau Mau uses 'MAU_MAU' view usually? 
+            // Let's check renderGame again.
+            // if (gameConfig?.mode === GameMode.LETTER_MAU_MAU) return <SkatMauMauGame ... />
+            // if (gameConfig?.mode === GameMode.CHESS) return <ChessGame ... />
+            // So yes, if I set gameConfig correctly, I just need to set view to 'GAME'? 
+            // Or does Mau Mau use a separate view?
+            // Line 1176: setView('SKAT_MAU_MAU');
+            // Let's check renderContent for SKAT_MAU_MAU.
+          } else {
+            setView('SKAT_MAU_MAU'); // Assuming this is what Mau Mau uses
+          }
         }}
         onInviteSent={(to, gameId) => {
           setPendingSentInvite({ to, gameId });
@@ -3523,7 +3708,9 @@ export default function App() {
                 <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
                   {globalGameInvite.from}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">möchte Letter Mau-Mau spielen</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  möchte {globalGameInvite.mode === GameMode.CHESS ? 'Schach' : 'Mau Mau'} spielen
+                </p>
               </div>
 
               {/* Buttons */}
@@ -4492,5 +4679,3 @@ export default function App() {
     </div>
   );
 }
-// (c) KW 1998
-1998
