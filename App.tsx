@@ -4457,10 +4457,27 @@ export default function App() {
             href={apkDownloadUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-black/40 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white/50 hover:text-white px-4 py-2 rounded-full transition-all text-[10px] font-bold uppercase tracking-widest group"
+            className="flex items-center gap-2 px-3 py-2 transition-all duration-100 group"
+            style={{
+              backgroundColor: '#06FFA5',
+              border: '2px solid #000',
+              boxShadow: '3px 3px 0px #000',
+              transform: 'skew(-2deg)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'skew(-2deg) translateY(-1px)';
+              e.currentTarget.style.boxShadow = '4px 4px 0px #000';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'skew(-2deg)';
+              e.currentTarget.style.boxShadow = '3px 3px 0px #000';
+            }}
           >
-            <Smartphone size={14} className="group-hover:scale-110 transition-transform" />
-            <span>Get App</span>
+            <Smartphone size={16} className="text-black" />
+            <div className="flex flex-col items-start">
+              <span className="text-[8px] font-black uppercase tracking-widest text-black leading-none">Android App</span>
+              <span className="text-xs font-black uppercase tracking-wider text-black leading-none">Download</span>
+            </div>
           </a>
         </div>
       )}
