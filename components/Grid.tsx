@@ -75,7 +75,7 @@ const CurrentRow: React.FC<{ word: string; length: number; isShake: boolean; hin
             className={`
               aspect-square flex items-center justify-center ${styles.text} font-black uppercase border-2 rounded-xl transition-all duration-200
               ${char
-                ? 'border-lexi-cyan/50 bg-lexi-cyan/10 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)] scale-105'
+                ? 'border-lexi-primary-light/50 bg-lexi-primary-light/10 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] scale-105'
                 : isHint
                   ? 'border-yellow-500 bg-yellow-500/10 text-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.3)]'
                   : isCursor

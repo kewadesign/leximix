@@ -1,5 +1,4 @@
 import React from 'react';
-// KW1998 - UI Components
 import { X } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -9,19 +8,19 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button: React.FC<ButtonProps> = React.memo(({ children, variant = 'primary', fullWidth, size = 'md', className = '', ...props }) => {
-  const base = "relative overflow-hidden font-bold rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider flex items-center justify-center";
+  const base = "uppercase font-black transition-all border-brutal cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
   const sizes = {
-    sm: "py-1 px-3 text-xs",
-    md: "py-3 px-6 text-sm",
-    lg: "py-4 px-8 text-base"
+    sm: "py-2 px-4 text-xs tracking-wide",
+    md: "py-4 px-8 text-sm tracking-wider",
+    lg: "py-5 px-10 text-base tracking-widest"
   };
 
   const variants = {
-    primary: "bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white shadow-lg shadow-fuchsia-900/20 hover:brightness-110",
-    secondary: "bg-white/10 dark:bg-white/10 text-lexi-text dark:text-white border border-lexi-border dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/20 backdrop-blur-sm",
-    ghost: "text-lexi-text-muted dark:text-gray-400 hover:text-lexi-text dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5",
-    danger: "bg-red-500 text-white shadow-lg hover:bg-red-600"
+    primary: "btn-primary",
+    secondary: "btn-secondary",
+    ghost: "btn-ghost",
+    danger: "bg-brutal-pink text-white shadow-brutal hover:shadow-brutal-lg active:shadow-brutal-sm skew-brutal hover:bg-brutal-orange"
   };
 
   return (
@@ -36,15 +35,46 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
     return null;
   }
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
-      <div className={`relative w-full max-w-md glass-panel rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-8 my-auto max-h-[95vh] overflow-y-auto ${className}`}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 geo-pattern" style={{ background: '#FFF8E7' }}>
+      {/* Rainbow Top Bar */}
+      <div className="fixed top-0 left-0 right-0 flex h-4 w-full z-50">
+        <div className="flex-1" style={{ background: '#FF006E' }}></div>
+        <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+        <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+        <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+        <div className="flex-1" style={{ background: '#8338EC' }}></div>
+      </div>
+
+      <div 
+        className={`relative max-w-md w-full max-h-[85vh] overflow-y-auto p-6 geo-dots ${className}`}
+        style={{ 
+          background: '#FFF', 
+          border: '6px solid #000', 
+          boxShadow: '12px 12px 0px #8338EC'
+        }}
+      >
         {onClose && (
-          <button onClick={onClose} className="absolute top-3 right-3 sm:top-4 sm:right-4 text-lexi-text-muted hover:text-lexi-text transition-colors z-10">
-            <X size={20} className="sm:w-6 sm:h-6" />
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center transition-all"
+            style={{ 
+              background: '#FF006E', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000'
+            }}
+          >
+            <X size={24} style={{ color: '#FFF' }} />
           </button>
         )}
-        {title && <h2 className="text-lg sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-lexi-cyan to-lexi-fuchsia mb-4 sm:mb-6 uppercase tracking-widest text-center pr-8">{title}</h2>}
-        <div className="text-lexi-text">
+        {title && (
+          <h2 
+            className="text-2xl font-black uppercase mb-6 pr-14 tracking-wide"
+            style={{ color: '#000' }}
+          >
+            {title}
+          </h2>
+        )}
+        <div style={{ color: '#000' }}>
           {children}
         </div>
       </div>
@@ -53,7 +83,7 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
 });
 
 export const TierBadge: React.FC<{ tier: any; color: string }> = React.memo(({ tier, color }) => (
-  <span className={`px-2 py-0.5 rounded text-xs font-bold border ${color}`}>
+  <span className={`px-3 py-1 border-brutal font-black text-sm uppercase skew-brutal ${color}`}>
     TIER {tier}
   </span>
 ));
@@ -69,13 +99,13 @@ export const RedeemCodeInput: React.FC<{ onRedeem: (code: string) => void; place
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-4">
       <input
         type="text"
         value={code}
         onChange={(e) => setCode(e.target.value.toUpperCase())}
         placeholder={placeholder}
-        className="flex-grow glass-button text-lexi-text border-lexi-border rounded-lg px-4 py-2 placeholder:text-lexi-text-muted"
+        className="flex-grow input-modern"
       />
       <Button onClick={handleRedeem} size="md">
         {buttonText}

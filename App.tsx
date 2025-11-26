@@ -26,15 +26,13 @@ import catDanceGif from './assets/cat-dance.gif';
 
 import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X } from 'lucide-react';
 
+// React Icons for brutal design
+import { IoGlobeSharp, IoPersonSharp, IoSettingsSharp } from 'react-icons/io5';
+
 
 // --- Sub Components for Game Logic ---
 
 const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) => {
-  const vibrate = (duration: number = 30) => {
-    if (navigator && typeof navigator.vibrate === 'function') {
-      navigator.vibrate(duration);
-    }
-  };
   const rows = isMathMode ? [
     ['1', '2', '3'],
     ['4', '5', '6'],
@@ -46,35 +44,77 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
     "ZXCVBNMß".split('')
   ];
 
+  // Soft colorful key styles
+  const getKeyStyle = (status: string) => {
+    if (status === 'correct') return { 
+      background: 'linear-gradient(135deg, #06FFA5, #00D68F)', 
+      color: '#FFF', 
+      borderRadius: '8px',
+      boxShadow: '0 3px 10px rgba(6,255,165,0.3)'
+    };
+    if (status === 'present') return { 
+      background: 'linear-gradient(135deg, #FFBE0B, #FF9500)', 
+      color: '#FFF', 
+      borderRadius: '8px',
+      boxShadow: '0 3px 10px rgba(255,190,11,0.3)'
+    };
+    if (status === 'absent') return { 
+      background: '#E5E5E5', 
+      color: '#999', 
+      borderRadius: '8px',
+      boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
+    };
+    return { 
+      background: '#FFF', 
+      color: '#1a1a2e', 
+      borderRadius: '8px',
+      boxShadow: '0 3px 10px rgba(0,0,0,0.08)'
+    };
+  };
+
   return (
-    <div className="w-full max-w-2xl mx-auto p-2 select-none animate-slide-up">
+    <div className="w-full max-w-xl mx-auto px-4 pb-4 select-none">
       {rows.map((row, i) => (
-        <div key={i} className="flex justify-center gap-1.5 mb-1.5">
+        <div key={i} className="flex justify-center gap-1.5 mb-2">
           {row.map(char => {
             const status = usedKeys[char];
-            let bg = "glass-button text-lexi-text";
-            if (status === 'correct') bg = "bg-green-600 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]";
-            else if (status === 'present') bg = "bg-yellow-600 border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]";
-            else if (status === 'absent') bg = "bg-red-900/80 text-white/50 border-red-900";
-
             return (
               <button
                 key={char}
                 onClick={() => onChar(char)}
-                className={`${bg} h-12 sm:h-14 flex-1 rounded-lg font-bold text-base sm:text-lg active:scale-95 transition-all border-b-4 border-black/20 relative overflow-hidden`}
+                className="h-11 sm:h-12 flex-1 font-black text-sm sm:text-base uppercase transition-all active:scale-95"
+                style={getKeyStyle(status)}
               >
                 {char}
               </button>
             );
           })}
           {i === rows.length - 1 && (
-            <button onClick={onDelete} className="glass-button h-12 sm:h-14 px-4 sm:px-6 rounded-lg text-sm uppercase font-bold active:scale-95 transition-all text-lexi-text">
-              Del
+            <button 
+              onClick={onDelete} 
+              className="h-11 sm:h-12 px-3 sm:px-4 font-black text-xs uppercase transition-all active:scale-95"
+              style={{ 
+                background: 'linear-gradient(135deg, #FF006E, #D60054)', 
+                color: '#FFF', 
+                borderRadius: '8px',
+                boxShadow: '0 3px 10px rgba(255,0,110,0.3)'
+              }}
+            >
+              DEL
             </button>
           )}
         </div>
       ))}
-      <button onClick={onEnter} className="w-full bg-gradient-to-r from-lexi-fuchsia to-purple-600 h-14 sm:h-16 rounded-xl font-black text-sm sm:text-base md:text-lg mt-3 active:scale-95 uppercase shadow-[0_0_20px_rgba(217,70,239,0.4)] hover:brightness-110 transition-all text-white tracking-widest">
+      <button 
+        onClick={onEnter} 
+        className="w-full h-12 sm:h-14 font-black text-base sm:text-lg uppercase mt-2 transition-all active:scale-98"
+        style={{ 
+          background: 'linear-gradient(135deg, #06FFA5, #00D68F)', 
+          color: '#FFF', 
+          borderRadius: '12px',
+          boxShadow: '0 4px 16px rgba(6,255,165,0.3)'
+        }}
+      >
         {t.GAME.ENTER_GUESS}
       </button>
     </div>
@@ -84,44 +124,83 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
 const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
   const empties = Array(Math.max(0, 6 - 1 - turn)).fill(null);
 
-  // CSS Grid Logic for perfect sizing:
-  // min(14vw, 3.5rem) ensures cells are max 56px but shrink for mobile/long words
-  // w-fit ensures the container is only as wide as the grid
   const gridStyle = {
-    gridTemplateColumns: `repeat(${targetLength}, min(14vw, 3.5rem))`
+    gridTemplateColumns: `repeat(${targetLength}, min(13vw, 3.2rem))`
+  };
+
+  // Soft colorful cell styles
+  const getCellStyle = (result: string) => {
+    if (result === 'correct') return { 
+      background: 'linear-gradient(135deg, #06FFA5, #00D68F)', 
+      color: '#FFF', 
+      borderRadius: '10px',
+      boxShadow: '0 4px 12px rgba(6,255,165,0.3)'
+    };
+    if (result === 'present') return { 
+      background: 'linear-gradient(135deg, #FFBE0B, #FF9500)', 
+      color: '#FFF', 
+      borderRadius: '10px',
+      boxShadow: '0 4px 12px rgba(255,190,11,0.3)'
+    };
+    return { 
+      background: 'linear-gradient(135deg, #FF006E, #D60054)', 
+      color: '#FFF', 
+      borderRadius: '10px',
+      boxShadow: '0 4px 12px rgba(255,0,110,0.3)'
+    };
   };
 
   return (
-    <div className="flex flex-col gap-2 w-fit mx-auto transition-all">
+    <div className="flex flex-col gap-2 w-fit mx-auto">
+      {/* Submitted guesses */}
       {guesses.map((guess: any, i: number) => (
         <div key={i} className="grid gap-2 justify-center" style={gridStyle}>
           {guess.word.split('').map((char: string, j: number) => (
-            <div key={j} className={`aspect-square flex items-center justify-center rounded-lg font-mono font-bold text-2xl md:text-3xl uppercase transition-all duration-500 animate-scale-in
-  ${guess.result[j] === 'correct' ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.5)] rotate-x-0' :
-                guess.result[j] === 'present' ? 'bg-yellow-500 text-black shadow-[0_0_15px_rgba(234,179,8,0.5)]' :
-                  'bg-red-600/80 text-white shadow-inner'
-              }
-`}>
+            <div 
+              key={j} 
+              className="aspect-square flex items-center justify-center font-black text-xl md:text-2xl uppercase transition-all"
+              style={getCellStyle(guess.result[j])}
+            >
               {char}
             </div>
           ))}
         </div>
       ))}
 
+      {/* Current guess row */}
       {turn < 6 && (
         <div className="grid gap-2 justify-center" style={gridStyle}>
           {Array(targetLength).fill(null).map((_, i) => (
-            <div key={i} className={`aspect-square flex items-center justify-center rounded-xl border-2 ${currentGuess[i] ? 'border-cyan-400 text-white bg-cyan-900/40 animate-pulse shadow-[0_0_15px_rgba(34,211,238,0.3)]' : 'border-white/10 bg-white/5'} font-mono font-bold text-2xl md:text-3xl uppercase transition-colors duration-200 text-white`}>
+            <div 
+              key={i} 
+              className="aspect-square flex items-center justify-center font-black text-xl md:text-2xl uppercase transition-all"
+              style={{ 
+                background: currentGuess[i] ? '#FFF' : 'rgba(255,255,255,0.6)', 
+                color: '#1a1a2e',
+                borderRadius: '10px',
+                boxShadow: currentGuess[i] ? '0 4px 16px rgba(0,0,0,0.1)' : '0 2px 8px rgba(0,0,0,0.05)',
+                border: currentGuess[i] ? '2px solid rgba(0,0,0,0.1)' : '2px solid transparent'
+              }}
+            >
               {currentGuess[i] || ''}
             </div>
           ))}
         </div>
       )}
 
+      {/* Empty rows */}
       {empties.map((_, i) => (
-        <div key={`empty - ${i} `} className="grid gap-2 justify-center" style={gridStyle}>
+        <div key={`empty-${i}`} className="grid gap-2 justify-center" style={gridStyle}>
           {Array(targetLength).fill(null).map((__, j) => (
-            <div key={j} className="aspect-square rounded-lg border-2 border-lexi-border/30 bg-lexi-surface/5"></div>
+            <div 
+              key={j} 
+              className="aspect-square"
+              style={{ 
+                background: 'rgba(255,255,255,0.3)', 
+                borderRadius: '10px',
+                border: '2px dashed rgba(0,0,0,0.1)'
+              }}
+            ></div>
           ))}
         </div>
       ))}
@@ -234,7 +313,7 @@ export default function App() {
         xp: 0, // Start with 0 XP
         level: 1, // Start at Level 1
         completedLevels: initialLevelsUnlocked, // Start with NO levels completed
-        theme: 'dark',
+        theme: 'light',
         inventory: [],
         ownedAvatars: [AVATARS[0]],
         isPremium: false, // No premium
@@ -1863,132 +1942,264 @@ export default function App() {
 
   // --- Render Helpers ---
 
-  const GameCard = ({ mode, title, desc, color, icon: Icon, locked = false, comingSoon = false, delay = 0 }: any) => (
-    <button
-      disabled={comingSoon}
-      onClick={() => handleModeSelect(mode)}
-      className={`
-      relative p-6 md:p-8 rounded-3xl text-left overflow-hidden transition-all duration-300 hover:scale-[1.03] active:scale-95
-      ${color} h-36 md:h-48 flex flex-col justify-between shadow-xl group animate-scale-in
-  ${locked || comingSoon ? 'opacity-80 grayscale-[0.5]' : ''}
-  ${comingSoon ? 'cursor-not-allowed opacity-60 grayscale' : ''}
-`}
-      style={{ animationDelay: `${delay} ms` }}
-    >
-      <div className="absolute right-[-10px] top-[-10px] opacity-20 rotate-12 scale-125 group-hover:rotate-6 transition-transform duration-500">
-        <Icon size={120} fill="currentColor" />
-      </div>
+  // Neo-Brutalist color mapping for game modes - all unique colors
+  const brutalColors: Record<string, { bg: string; accent: string }> = {
+    [GameMode.CLASSIC]: { bg: '#06FFA5', accent: '#000' },
+    [GameMode.SPEEDRUN]: { bg: '#FF7F00', accent: '#000' },
+    [GameMode.CHAIN]: { bg: '#0096FF', accent: '#000' },
+    [GameMode.CATEGORY]: { bg: '#FFBE0B', accent: '#000' },
+    [GameMode.SUDOKU]: { bg: '#A855F7', accent: '#000' },       // Helles Lila
+    [GameMode.CHALLENGE]: { bg: '#FF006E', accent: '#000' },    // Pink
+    [GameMode.RIDDLE]: { bg: '#EC4899', accent: '#000' },       // Rosa/Magenta
+    [GameMode.LETTER_MAU_MAU]: { bg: '#C084FC', accent: '#000' }, // Helleres Lila
+  };
 
-      {comingSoon ? (
-        <div className="flex-1 flex flex-col justify-center items-center z-10">
-          <Lock size={32} className="mb-2 text-gray-400" />
-          <span className="font-bold text-xl text-gray-300 italic leading-none">{t.MODES.LOCKED.title}</span>
-          <span className="text-xs text-gray-400 mt-1">{t.MODES.LOCKED.desc}</span>
+  const GameCard = ({ mode, title, desc, icon: Icon, locked = false, comingSoon = false }: any) => {
+    const colors = brutalColors[mode] || { bg: '#FF006E', accent: '#000' };
+    
+    return (
+      <button
+        disabled={comingSoon}
+        onClick={() => handleModeSelect(mode)}
+        className={`relative text-left overflow-hidden transition-all duration-200 group ${comingSoon ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+        style={{
+          background: '#FFF',
+          border: '3px solid #000',
+          borderRadius: '16px',
+          boxShadow: '6px 6px 0px #000'
+        }}
+        onMouseEnter={(e) => {
+          if (!comingSoon) {
+            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.boxShadow = '10px 10px 0px #000';
+          }
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+        }}
+      >
+        {/* Rainbow top border */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 flex" style={{ borderRadius: '13px 13px 0 0', overflow: 'hidden' }}>
+          <div className="flex-1" style={{ background: '#FF006E' }}></div>
+          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+          <div className="flex-1" style={{ background: '#0096FF' }}></div>
+          <div className="flex-1" style={{ background: '#8338EC' }}></div>
         </div>
-      ) : (
-        <>
-          <div className="relative z-10">
-            <div className="flex justify-between items-start">
-              <h3 className="font-black italic text-sm sm:text-base md:text-lg uppercase tracking-tight leading-none mb-2 drop-shadow-sm text-white">{title}</h3>
-              {locked && <Lock size={16} className="text-white/80" />}
+
+        {/* Large animated icon - half cut off */}
+        <div 
+          className="absolute -right-6 -bottom-6 opacity-20 group-hover:opacity-40 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300"
+        >
+          <Icon size={100} style={{ color: colors.bg }} strokeWidth={1.5} />
+        </div>
+
+        {/* Content */}
+        <div className="p-5 pt-6 relative z-10">
+          <div className="flex items-center gap-3 mb-3">
+            <div 
+              className="p-2.5 transition-all group-hover:scale-110"
+              style={{ 
+                background: colors.bg, 
+                border: '3px solid #000',
+                transform: 'rotate(-3deg)',
+                boxShadow: '3px 3px 0px #000'
+              }}
+            >
+              <Icon size={24} style={{ color: '#000' }} strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] sm:text-xs md:text-sm font-bold opacity-90 leading-tight max-w-full text-white/80 line-clamp-2">{desc}</p>
+            {locked && (
+              <span 
+                className="px-2 py-1 text-[10px] font-black uppercase"
+                style={{ background: '#000', color: '#FFBE0B', transform: 'skewX(-5deg)' }}
+              >
+                PRO
+              </span>
+            )}
           </div>
-          <div className="relative z-10 mt-1">
-            <span className="bg-black/30 px-3 py-1 rounded text-[10px] md:text-xs font-bold uppercase tracking-wider border border-white/10 inline-flex items-center gap-1 text-white group-hover:bg-white group-hover:text-black transition-colors">
-              {locked ? <Lock size={10} /> : <Play size={10} fill="currentColor" />} {locked ? 'PREMIUM' : t.HOME.PLAY}
-            </span>
+          <h3 
+            className="font-black text-lg sm:text-xl uppercase leading-tight mb-2" 
+            style={{ color: '#000', transform: 'skewX(-3deg)' }}
+          >
+            {title}
+          </h3>
+          <p 
+            className="text-xs sm:text-sm font-bold leading-tight mb-4" 
+            style={{ color: '#555' }}
+          >
+            {desc}
+          </p>
+          
+          {/* Play Button */}
+          <div 
+            className="inline-flex items-center gap-2 px-4 py-2 font-black text-xs uppercase transition-all group-hover:scale-105"
+            style={{ 
+              background: colors.bg,
+              color: '#000',
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000',
+              transform: 'skewX(-5deg)'
+            }}
+          >
+            <Play size={12} fill="currentColor" style={{ transform: 'skewX(5deg)' }} /> 
+            <span style={{ transform: 'skewX(5deg)' }}>{locked ? 'UNLOCK' : t.HOME.PLAY}</span>
           </div>
-        </>
-      )}
-    </button>
-  );
+        </div>
+      </button>
+    );
+  };
 
   const renderOnboarding = () => {
     return (
       <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
         <div className="w-full max-w-md relative z-10">
           {onboardingStep === 0 && (
-            <div className="space-y-6 text-center animate-slide-up glass-panel p-8 rounded-3xl">
-              <Globe size={64} className="mx-auto text-lexi-cyan mb-4 animate-spin-slow" />
-              <h1 className="text-3xl font-black italic mb-8 text-transparent bg-clip-text bg-gradient-to-r from-lexi-text to-lexi-text-muted">{t.ONBOARDING.WELCOME}</h1>
-              <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-8 text-center bg-white p-8 relative" style={{ border: '6px solid #000', boxShadow: '12px 12px 0 #000', transform: 'skew(-2deg)' }}>
+              {/* Rainbow Stripe */}
+              <div className="absolute top-0 left-0 right-0 h-4" style={{ background: 'linear-gradient(90deg, #FF006E 0%, #FF7F00 33%, #8338EC 66%, #FFBE0B 100%)' }}></div>
+
+              {/* Globe Icon in Yellow Box */}
+              <div className="w-24 h-24 mx-auto flex items-center justify-center mt-4" style={{ backgroundColor: '#FFBE0B', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(8deg)' }}>
+                <IoGlobeSharp size={56} style={{ color: '#000' }} />
+              </div>
+
+              <h1 className="text-5xl font-black uppercase tracking-wider mt-6" style={{ color: '#000', transform: 'skew(3deg)' }}>
+                {t.ONBOARDING.WELCOME}
+              </h1>
+
+              {/* Language Cards - Stacked */}
+              <div className="grid grid-cols-1 gap-6 mt-8">
                 <button
                   onClick={() => { setTempUser({ ...tempUser, language: Language.DE }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-4 glass-button rounded-2xl hover:bg-lexi-fuchsia/20 hover:border-lexi-fuchsia transition-all group flex flex-col items-center justify-center"
+                  className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
+                  style={{ backgroundColor: '#FF006E', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-5deg)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(-8px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(0)'}
                 >
-                  <span className="text-3xl mb-2 block group-hover:scale-110 transition-transform">🇩🇪</span>
-                  <span className="font-bold text-xs md:text-sm">DEUTSCH</span>
+                  <span className="text-8xl mb-4 block">🇩🇪</span>
+                  <span className="font-black text-2xl uppercase tracking-widest text-white">DEUTSCH</span>
                 </button>
+
                 <button
                   onClick={() => { setTempUser({ ...tempUser, language: Language.EN }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-4 glass-button rounded-2xl hover:bg-lexi-cyan/20 hover:border-lexi-cyan transition-all group flex flex-col items-center justify-center"
+                  className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
+                  style={{ backgroundColor: '#FF7F00', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(5deg)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(5deg) translateY(-8px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(5deg) translateY(0)'}
                 >
-                  <span className="text-3xl mb-2 block group-hover:scale-110 transition-transform">🇺🇸</span>
-                  <span className="font-bold text-xs md:text-sm">ENGLISH</span>
+                  <span className="text-8xl mb-4 block">🇺🇸</span>
+                  <span className="font-black text-2xl uppercase tracking-widest text-white">ENGLISH</span>
                 </button>
+
                 <button
                   onClick={() => { setTempUser({ ...tempUser, language: Language.ES }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-4 glass-button rounded-2xl hover:bg-yellow-500/20 hover:border-yellow-500 transition-all group flex flex-col items-center justify-center"
+                  className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
+                  style={{ backgroundColor: '#8338EC', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-5deg)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(-8px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(0)'}
                 >
-                  <span className="text-3xl mb-2 block group-hover:scale-110 transition-transform">🇪🇸</span>
-                  <span className="font-bold text-xs md:text-sm">ESPAÑOL</span>
+                  <span className="text-8xl mb-4 block">🇪🇸</span>
+                  <span className="font-black text-2xl uppercase tracking-widest text-white">ESPAÑOL</span>
                 </button>
               </div>
             </div>
           )}
 
           {onboardingStep === 1 && (
-            <div className="space-y-6 animate-slide-up glass-panel p-8 rounded-3xl">
-              <div className="text-center">
-                <User size={48} className="mx-auto text-lexi-fuchsia mb-4" />
-                <h2 className="text-2xl font-bold mb-1">{t.ONBOARDING.NAME_TITLE}</h2>
+            <div className="space-y-8 bg-white p-8 relative" style={{ border: '6px solid #000', boxShadow: '12px 12px 0 #000', transform: 'translate(20px, -10px) skew(-3deg)' }}>
+              <div className="absolute top-0 left-0 right-0 h-4" style={{ background: 'linear-gradient(90deg, #FF7F00 0%, #FFBE0B 50%, #06FFA5 100%)' }}></div>
+
+              <div className="w-24 h-24 mx-auto flex items-center justify-center mt-4" style={{ backgroundColor: '#FF006E', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-8deg)' }}>
+                <IoPersonSharp size={56} style={{ color: '#FFF' }} />
               </div>
+
+              <h2 className="text-4xl font-black uppercase tracking-wider text-center" style={{ color: '#000' }}>
+                {t.ONBOARDING.NAME_TITLE}
+              </h2>
+
               <input
                 type="text"
                 maxLength={30}
                 value={tempUser.name}
                 onChange={(e) => setTempUser({ ...tempUser, name: e.target.value.replace(/[^a-zA-Z0-9]/g, '') })}
                 placeholder={t.ONBOARDING.NAME_PLACEHOLDER}
-                className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 text-center text-xl font-bold focus:border-lexi-fuchsia focus:outline-none transition-colors text-white"
+                className="w-full text-center text-3xl font-black uppercase p-4"
+                style={{ backgroundColor: '#FFF', border: '4px solid #000', color: '#000', transform: 'skew(-2deg)' }}
                 autoFocus
               />
-              {tempUser.name.length === 20 && <p className="text-red-500 text-xs text-center font-bold">{t.ONBOARDING.ERR_NAME}</p>}
+              {tempUser.name.length === 20 && (
+                <p className="text-sm text-center font-black uppercase" style={{ color: '#FF006E' }}>
+                  {t.ONBOARDING.ERR_NAME}
+                </p>
+              )}
 
-              <Button
-                fullWidth
+              <button
                 disabled={!tempUser.name}
                 onClick={() => { setOnboardingStep(2); audio.playClick(); }}
+                className="w-full text-xl font-black uppercase p-4 transition-all duration-100"
+                style={{
+                  backgroundColor: '#FF006E',
+                  border: '4px solid #000',
+                  boxShadow: '8px 8px 0 #000',
+                  color: '#FFF',
+                  transform: 'skew(-5deg)',
+                  opacity: !tempUser.name ? 0.5 : 1,
+                  cursor: !tempUser.name ? 'not-allowed' : 'pointer'
+                }}
               >
                 {t.ONBOARDING.CONTINUE}
-              </Button>
+              </button>
             </div>
           )}
 
           {onboardingStep === 2 && (
-            <div className="space-y-6 animate-slide-up glass-panel p-8 rounded-3xl">
-              <div className="text-center">
-                <Settings size={48} className="mx-auto text-lexi-gold mb-4" />
-                <h2 className="text-2xl font-bold mb-1">{t.ONBOARDING.AGE_TITLE}</h2>
+            <div className="space-y-8 bg-white p-8 relative" style={{ border: '6px solid #000', boxShadow: '12px 12px 0 #000', transform: 'translate(-15px, 5px) skew(4deg)' }}>
+              <div className="absolute top-0 left-0 right-0 h-4" style={{ background: 'linear-gradient(90deg, #8338EC 0%, #0096FF 50%, #06FFA5 100%)' }}></div>
+
+              <div className="w-24 h-24 mx-auto flex items-center justify-center mt-4" style={{ backgroundColor: '#FFBE0B', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(8deg)' }}>
+                <IoSettingsSharp size={56} style={{ color: '#000' }} />
               </div>
+
+              <h2 className="text-4xl font-black uppercase tracking-wider text-center" style={{ color: '#000' }}>
+                {t.ONBOARDING.AGE_TITLE}
+              </h2>
+
               <input
                 type="number"
                 min={1}
                 max={120}
-                value={tempUser.age}
-                onChange={(e) => setTempUser({ ...tempUser, age: e.target.value })}
+                value={tempUser.age || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const num = parseInt(val);
+                  if (val === '' || (num >= 1 && num <= 120)) {
+                    setTempUser({ ...tempUser, age: val ? num : 0 });
+                  }
+                }}
                 placeholder={t.ONBOARDING.AGE_PLACEHOLDER}
-                className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 text-center text-xl font-bold focus:border-lexi-gold focus:outline-none transition-colors text-white"
+                className="w-full text-center text-5xl font-black p-4"
+                style={{ backgroundColor: '#FFF', border: '4px solid #000', color: '#000', transform: 'skew(-2deg)' }}
                 autoFocus
-                onKeyDown={(e) => e.key === 'Enter' && handleOnboardingComplete()}
               />
-              <Button
-                fullWidth
-                disabled={!tempUser.age || parseInt(tempUser.age) < 1 || parseInt(tempUser.age) > 120}
-                onClick={handleOnboardingComplete}
+
+              <button
+                disabled={!tempUser.age || tempUser.age < 1}
+                onClick={completeOnboarding}
+                className="w-full text-xl font-black uppercase p-4 transition-all duration-100"
+                style={{
+                  backgroundColor: '#8338EC',
+                  border: '4px solid #000',
+                  boxShadow: '8px 8px 0 #000',
+                  color: '#FFF',
+                  transform: 'skew(-5deg)',
+                  opacity: (!tempUser.age || tempUser.age < 1) ? 0.5 : 1,
+                  cursor: (!tempUser.age || tempUser.age < 1) ? 'not-allowed' : 'pointer'
+                }}
               >
                 {t.ONBOARDING.START}
-              </Button>
+              </button>
             </div>
           )}
         </div>
@@ -2065,168 +2276,250 @@ export default function App() {
 
   const renderLanguageSelect = () => (
     <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
-      <div className="max-w-md w-full space-y-8 text-center">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-black text-white uppercase tracking-tighter drop-shadow-lg">
-            Select Language
+      <div className="w-full max-w-md relative z-10">
+        <div className="space-y-8 text-center bg-white p-8 relative" style={{ border: '6px solid #000', boxShadow: '12px 12px 0 #000', transform: 'skew(-2deg)' }}>
+          {/* Rainbow Stripe */}
+          <div className="absolute top-0 left-0 right-0 h-4" style={{ background: 'linear-gradient(90deg, #FF006E 0%, #FF7F00 33%, #8338EC 66%, #FFBE0B 100%)' }}></div>
+
+          {/* Globe Icon in Yellow Box */}
+          <div className="w-24 h-24 mx-auto flex items-center justify-center mt-4" style={{ backgroundColor: '#FFBE0B', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(8deg)' }}>
+            <IoGlobeSharp size={56} style={{ color: '#000' }} />
+          </div>
+
+          <h1 className="text-5xl font-black uppercase tracking-wider mt-6" style={{ color: '#000', transform: 'skew(3deg)' }}>
+            CHOOSE LANGUAGE
           </h1>
-          <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">
-            Wähle deine Sprache / Elige tu idioma
-          </p>
-        </div>
 
-        <div className="grid gap-4">
-          {[
-            { code: Language.EN, label: 'English', flag: '🇺🇸' },
-            { code: Language.DE, label: 'Deutsch', flag: '🇩🇪' },
-            { code: Language.ES, label: 'Español', flag: '🇪🇸' }
-          ].map((lang) => (
+          {/* Language Cards - Stacked */}
+          <div className="grid grid-cols-1 gap-6 mt-8">
             <button
-              key={lang.code}
-              onClick={() => {
-                setUser(prev => ({ ...prev, language: lang.code }));
-                localStorage.setItem('leximix_language_selected', 'true');
-                setView('AUTH');
-              }}
-              className="group relative overflow-hidden p-1 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              onClick={() => { setUser(prev => ({ ...prev, language: Language.DE })); localStorage.setItem('leximix_language_selected', 'true'); setView('AUTH'); audio.playClick(); }}
+              className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
+              style={{ backgroundColor: '#FF006E', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-5deg)' }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(-8px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(0)'}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl"></div>
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-              <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-xl p-6 flex items-center justify-between border border-white/10 group-hover:border-white/20">
-                <div className="flex items-center gap-4">
-                  <span className="text-4xl">{lang.flag}</span>
-                  <div className="text-left">
-                    <div className="text-xl font-black text-white uppercase tracking-wide">
-                      {lang.label}
-                    </div>
-                  </div>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                  <ArrowLeft className="rotate-180 text-white" size={16} />
-                </div>
-              </div>
+              <span className="text-8xl mb-4 block">🇩🇪</span>
+              <span className="font-black text-2xl uppercase tracking-widest text-white">DEUTSCH</span>
             </button>
-          ))}
+
+            <button
+              onClick={() => { setUser(prev => ({ ...prev, language: Language.EN })); localStorage.setItem('leximix_language_selected', 'true'); setView('AUTH'); audio.playClick(); }}
+              className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
+              style={{ backgroundColor: '#FF7F00', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(5deg)' }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(5deg) translateY(-8px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(5deg) translateY(0)'}
+            >
+              <span className="text-8xl mb-4 block">🇺🇸</span>
+              <span className="font-black text-2xl uppercase tracking-widest text-white">ENGLISH</span>
+            </button>
+
+            <button
+              onClick={() => { setUser(prev => ({ ...prev, language: Language.ES })); localStorage.setItem('leximix_language_selected', 'true'); setView('AUTH'); audio.playClick(); }}
+              className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
+              style={{ backgroundColor: '#8338EC', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-5deg)' }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(-8px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(0)'}
+            >
+              <span className="text-8xl mb-4 block">🇪🇸</span>
+              <span className="font-black text-2xl uppercase tracking-widest text-white">ESPAÑOL</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 
   const renderHome = () => (
-    <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-20">
-      <div className="flex justify-between items-center p-6 animate-slide-down">
-        <div className="flex items-center gap-3 flex-1" onClick={openProfile}>
-          <div className={`w-12 h-12 rounded-full border-2 border-white/20 overflow-hidden bg-gray-800 cursor-pointer ${getAvatarEffect(user.activeFrame)}`}>
+    <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-24" style={{ background: '#FFF8E7' }}>
+      {/* Rainbow Top Bar */}
+      <div className="flex h-4 w-full">
+        <div className="flex-1" style={{ background: '#FF006E' }}></div>
+        <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+        <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+        <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+        <div className="flex-1" style={{ background: '#8338EC' }}></div>
+      </div>
+
+      {/* Header - Simplified */}
+      <div className="flex flex-wrap justify-between items-start gap-3 p-4">
+        {/* Profile Button */}
+        <button 
+          onClick={openProfile}
+          className="flex items-center gap-3 p-3 transition-all duration-100"
+          style={{ 
+            background: '#FFF', 
+            border: '4px solid #000', 
+            boxShadow: '6px 6px 0px #000'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.boxShadow = '10px 10px 0px #000';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+          }}
+        >
+          <div className="w-14 h-14 overflow-hidden" style={{ border: '3px solid #000', background: '#FFF8E7' }}>
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
           </div>
-          <div className="flex-1">
-            <h2 className={`font-black text-lg leading-none mb-1.5 ${user.isPremium ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 animate-shimmer' : 'text-lexi-text'}`}>
+          <div>
+            <h2 className="font-black text-lg uppercase leading-none" style={{ color: '#000' }}>
               {cloudUsername || user.name}
             </h2>
-            {/* Season Level Progress Bar */}
-            <div className="w-full max-w-[200px]">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-bold text-cyan-600 dark:text-cyan-300/80 uppercase tracking-wider">Season Lvl {user.level}</span>
-                <span className="text-[10px] font-mono text-cyan-600/80 dark:text-cyan-300/60">{user.xp % 100}/100 XP</span>
-              </div>
-              <div className="h-2 bg-gray-200 dark:bg-black/40 rounded-full overflow-hidden border border-cyan-500/30 relative">
-                <div
-                  className="h-full bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 transition-all duration-500 relative overflow-hidden"
-                  style={{ width: `${(user.xp % 100)}%` }}
-                >
-                  <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] animate-shimmer"></div>
-                </div>
-              </div>
+            <div 
+              className="mt-2 px-3 py-1 font-black text-xs uppercase inline-block"
+              style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
+            >
+              LVL {user.level} • {user.xp % 100}/100 XP
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="flex items-center gap-3">
-          <button onClick={toggleTheme} className="w-10 h-10 glass-button rounded-full flex items-center justify-center bg-white dark:bg-lexi-surface-highlight">
-            {user.theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-gray-800" />}
+        {/* Action Buttons - Compact for mobile */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Coins Button */}
+          <button 
+            onClick={() => setView('SHOP')} 
+            className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 font-black text-sm transition-all duration-100"
+            style={{ 
+              background: '#FFBE0B', 
+              border: '3px solid #000', 
+              borderRadius: '10px',
+              boxShadow: '4px 4px 0px #000'
+            }}
+          >
+            <Gem size={16} style={{ color: '#000' }} />
+            <span style={{ color: '#000' }}>{user.coins}</span>
           </button>
 
-          <button onClick={() => setView('SHOP')} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/10 transition-colors group bg-white dark:bg-lexi-surface-highlight">
-            <div className="relative">
-              <Gem className="text-blue-600 dark:text-blue-400 group-hover:rotate-12 transition-transform" size={18} />
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
-            </div>
-            <span className="font-black text-base text-gray-800 dark:text-yellow-400 drop-shadow-md">{user.coins}</span>
-            <Plus size={12} className="bg-gray-800 dark:bg-yellow-400 text-white dark:text-black rounded-full p-0.5" />
-          </button>
-
-          <button onClick={toggleLanguage} className="glass-button px-3 py-2 rounded-full flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/10 transition-colors bg-white dark:bg-lexi-surface-highlight">
-            <Globe size={18} className="text-gray-800 dark:text-lexi-cyan" />
-            <span className="font-bold text-xs text-gray-800 dark:text-lexi-cyan uppercase">{getLanguageName(user.language)}</span>
+          {/* Language Button */}
+          <button 
+            onClick={toggleLanguage} 
+            className="flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-3 sm:py-2 sm:gap-1.5 font-black text-sm transition-all duration-100"
+            style={{ 
+              background: '#8338EC', 
+              color: '#FFF',
+              border: '3px solid #000', 
+              borderRadius: '10px',
+              boxShadow: '4px 4px 0px #000'
+            }}
+          >
+            <Globe size={16} />
+            <span className="hidden sm:inline">{getLanguageName(user.language)}</span>
           </button>
         </div>
       </div>
 
-      {/* Cloud Save Card - MOVED TO TOP! */}
-      < div className="mb-6 w-full px-2" >
-        <div className="glass-panel rounded-2xl p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {cloudUsername ? (
-              <>
-                <div className="w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center">
-                  <User size={20} className="text-green-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-lexi-text">{cloudUsername}</p>
-                  <p className="text-[10px] text-lexi-text-muted">
-                    {lastCloudSync ? `Sync: ${new Date(lastCloudSync).toLocaleTimeString('de-DE')}` : 'Cloud Sync aktiv'}
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full flex items-center justify-center">
-                  <User size={20} className="text-gray-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-lexi-text">Cloud Save</p>
-                  <p className="text-[10px] text-lexi-text-muted">Nicht angemeldet</p>
-                </div>
-              </>
-            )}
+      {/* Cloud Save Card */}
+      <div className="mx-4 mb-6">
+        <div 
+          className="p-4 flex flex-wrap items-center justify-between gap-3 geo-dots relative overflow-hidden"
+          style={{ 
+            background: cloudUsername ? '#06FFA5' : '#FFF', 
+            border: '4px solid #000', 
+            boxShadow: '6px 6px 0px #000'
+          }}
+        >
+          {/* Background Icon */}
+          <div className="absolute -right-6 -bottom-6 opacity-10">
+            <Database size={80} style={{ color: '#000' }} />
+          </div>
+          
+          <div className="flex items-center gap-3 relative z-10">
+            <User size={28} style={{ color: cloudUsername ? '#000' : '#FF006E' }} strokeWidth={2.5} />
+            <div>
+              <p className="font-black text-sm uppercase" style={{ color: '#000' }}>
+                {cloudUsername || 'Cloud Save'}
+              </p>
+              <p className="text-xs font-bold" style={{ color: 'rgba(0,0,0,0.6)' }}>
+                {cloudUsername 
+                  ? (lastCloudSync ? `Sync: ${new Date(lastCloudSync).toLocaleTimeString('de-DE')}` : 'Cloud Sync aktiv')
+                  : 'Nicht angemeldet'
+                }
+              </p>
+            </div>
           </div>
           {cloudUsername ? (
             <button
               onClick={handleCloudLogout}
-              className="px-4 py-2 bg-red-900/30 border border-red-500/30 text-red-400 hover:bg-red-900/50 rounded-xl text-xs font-bold uppercase transition-all"
+              className="px-4 py-2 font-black uppercase text-sm transition-all duration-100"
+              style={{ 
+                background: '#FF006E', 
+                color: '#FFF',
+                border: '3px solid #000',
+                boxShadow: '4px 4px 0px #000'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '4px 4px 0px #000';
+              }}
             >
-              Abmelden
+              Logout
             </button>
           ) : (
             <button
               onClick={() => setShowAuthModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-xs font-bold uppercase hover:brightness-110 transition-all shadow-lg"
+              className="px-4 py-2 font-black uppercase text-sm transition-all duration-100"
+              style={{ 
+                background: '#FF7F00', 
+                color: '#000',
+                border: '3px solid #000',
+                boxShadow: '4px 4px 0px #000'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '4px 4px 0px #000';
+              }}
             >
-              Anmelden
+              Login
             </button>
           )}
         </div>
-      </div >
-
-      {/* Logo & Title */}
-      < div className="flex flex-col items-center justify-center mb-6 animate-fade-in" >
-        <div className="mb-4 relative">
-          <img
-            src={user.theme === 'dark' ? "/LexiMix_Logo_Bright.png" : "/LexiMix_Logo_Dark.png"}
-            alt="LexiMix"
-            className="h-32 md:h-40 w-auto drop-shadow-xl"
-          />
-        </div>
-        <div className={`mt-4 text-[10px] font-bold tracking-[0.5em] uppercase animate-pulse ${user.theme === 'dark' ? 'text-lexi-accent' : 'text-gray-800'}`}>
-          {t.HOME.TAGLINE}
-        </div>
-      </div >
-
-      <div className="mb-8 w-full">
       </div>
 
-      <div className="mb-8 w-full">
+      {/* Logo & Title - Brutal Style */}
+      <div className="flex flex-col items-center justify-center mb-6 px-4">
+        <div 
+          className="p-6 mb-4"
+          style={{ 
+            background: '#FFF', 
+            border: '6px solid #000', 
+            boxShadow: '12px 12px 0px #8338EC',
+            transform: 'rotate(-2deg)'
+          }}
+        >
+          <img
+            src="/LexiMix_Logo_Dark.png"
+            alt="LexiMix"
+            className="h-24 md:h-32 w-auto"
+          />
+        </div>
+        <div 
+          className="px-6 py-2 font-black text-sm tracking-[0.3em] uppercase"
+          style={{ 
+            background: '#FF006E', 
+            color: '#FFF',
+            border: '4px solid #000',
+            boxShadow: '6px 6px 0px #000',
+            transform: 'skew(-5deg)'
+          }}
+        >
+          <span style={{ transform: 'skew(5deg)', display: 'inline-block' }}>{t.HOME.TAGLINE}</span>
+        </div>
+      </div>
+
+      {/* Season Pass Section - Brutal */}
+      <div className="mb-6 px-4">
         <SeasonPass
           xp={user.xp}
           level={user.level}
@@ -2235,243 +2528,368 @@ export default function App() {
           lang={user.language}
         />
 
-        {/* Season & Premium Info */}
-        <div className="flex gap-2 mt-2 px-2">
+        {/* Season & Premium Info - Brutal Cards */}
+        <div className="flex gap-3 mt-4">
           {/* Season Timer */}
-          <div className={`flex-1 rounded-xl p-3 flex flex-col items-center justify-center border ${user.theme === 'dark'
-            ? 'bg-gray-900/40 border-white/10'
-            : 'bg-white/90 backdrop-blur-md border-white/20 shadow-sm bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]'
-            }`}>
-            <span className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${user.theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Season Ende</span>
-            <div className={`flex items-center gap-2 font-mono font-bold ${user.theme === 'dark' ? 'text-lexi-cyan' : 'text-cyan-700'}`}>
-              <Clock size={14} />
+          <div 
+            className="flex-1 p-4 flex flex-col items-center justify-center"
+            style={{ 
+              background: '#FFF', 
+              border: '4px solid #000', 
+              boxShadow: '6px 6px 0px #000',
+              transform: 'skew(-2deg)'
+            }}
+          >
+            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: '#4A4A4A', transform: 'skew(2deg)' }}>Season Ende</span>
+            <div className="flex items-center gap-2 font-black" style={{ color: '#000', transform: 'skew(2deg)' }}>
+              <Clock size={16} />
               {Math.max(0, Math.ceil((getCurrentSeason().endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage
             </div>
           </div>
 
           {/* Premium Status */}
-          <div className={`flex-1 rounded-xl p-3 flex flex-col items-center justify-center border ${user.theme === 'dark'
-            ? 'bg-gray-900/40 border-white/10'
-            : 'bg-white/90 backdrop-blur-md border-white/20 shadow-sm bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]'
-            }`}>
-            <span className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${user.theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Premium Status</span>
+          <div 
+            className="flex-1 p-4 flex flex-col items-center justify-center"
+            style={{ 
+              background: user.isPremium ? '#FFBE0B' : '#FFF', 
+              border: '4px solid #000', 
+              boxShadow: '6px 6px 0px #000',
+              transform: 'skew(2deg)'
+            }}
+          >
+            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: '#4A4A4A', transform: 'skew(-2deg)' }}>Premium</span>
             {user.isPremium ? (
-              <div className="scale-90 origin-center">
-                <PremiumStatus isPremium={user.isPremium} premiumActivatedAt={user.premiumActivatedAt} theme={user.theme as 'dark' | 'light'} />
+              <div className="flex items-center gap-2 font-black" style={{ color: '#000', transform: 'skew(-2deg)' }}>
+                <Crown size={16} /> AKTIV
               </div>
             ) : (
-              <div className={`text-xs font-bold flex items-center gap-1 ${user.theme === 'dark' ? 'text-gray-500' : 'text-gray-700'}`}>
-                <Lock size={12} /> Inaktiv
+              <div className="flex items-center gap-1 font-black text-sm" style={{ color: '#000', transform: 'skew(-2deg)' }}>
+                <Lock size={14} /> Inaktiv
               </div>
             )}
           </div>
         </div>
       </div>
 
-
-
-      {/* Grid */}
-      {/* Grid */}
-      <div id="gamemodes" className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 px-4">
-        <GameCard
-          mode={GameMode.CLASSIC}
-          title={t.MODES.CLASSIC.title}
-          desc={t.MODES.CLASSIC.desc}
-          color="bg-lexi-card-green"
-          icon={Puzzle}
-          delay={0}
-        />
-        <GameCard
-          mode={GameMode.SPEEDRUN}
-          title={t.MODES.SPEEDRUN.title}
-          desc={t.MODES.SPEEDRUN.desc}
-          color="bg-lexi-card-orange"
-          icon={Zap}
-        />
-        <GameCard
-          mode={GameMode.CHAIN}
-          title={t.MODES.CHAIN.title}
-          desc={t.MODES.CHAIN.desc}
-          color="bg-lexi-card-blue"
-          icon={LinkIcon}
-        />
-        <GameCard
-          mode={GameMode.CATEGORY}
-          title={t.MODES.CATEGORY.title}
-          desc={t.MODES.CATEGORY.desc}
-          color="bg-lexi-card-yellow"
-          icon={BookOpen}
-        />
-        <GameCard
-          mode={GameMode.SUDOKU}
-          title={t.MODES.SUDOKU.title}
-          desc={t.MODES.SUDOKU.desc}
-          color="bg-lexi-card-purple"
-          icon={Grid3X3}
-        />
-        <GameCard
-          mode={GameMode.CHALLENGE}
-          title={t.MODES.CHALLENGE.title}
-          desc={t.MODES.CHALLENGE.desc}
-          color="bg-lexi-card-dark border border-yellow-500/30"
-          icon={Brain}
-          delay={250}
-          locked={!user.isPremium}
-        />
-        <GameCard
-          mode={GameMode.RIDDLE}
-          title={t.MODES.RIDDLE.title}
-          desc={t.MODES.RIDDLE.desc}
-          color="bg-lexi-card-pink border border-pink-500/30"
-          icon={HelpCircle}
-          delay={350}
-        />
-        <GameCard
-          mode={GameMode.LETTER_MAU_MAU}
-          title="Mau Mau"
-          desc="Karten Spiel"
-          color="bg-gradient-to-br from-purple-600/30 to-pink-600/30 border border-purple-500/50"
-          icon={Sparkles}
-          delay={400}
-        />
-      </div>
-
-      <div className="text-center text-[10px] text-lexi-text-muted font-bold mt-4 pb-8 uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity">
-        Made by Kevin Wagner 2025
-      </div>
-    </div >
-  );
-
-  const renderLevels = () => (
-    <div className="h-full overflow-y-auto animate-fade-in w-full max-w-4xl mx-auto">
-      <div className="sticky top-0 z-20 glass-panel p-4 flex items-center justify-between rounded-b-3xl mb-4">
-        <button onClick={() => setView('HOME')} className="w-10 h-10 flex items-center justify-center rounded-full glass-button">
-          <ArrowLeft size={20} className="text-lexi-text" />
-        </button>
-        <h2 className="text-2xl font-black italic uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-          {t.MODES[gameConfig?.mode as keyof typeof t.MODES]?.title}
-        </h2>
-        <div className="px-4 py-2 rounded-full glass-button text-xs font-bold text-lexi-gold flex items-center gap-2">
-          <User size={14} /> {user.level} {t.SEASON.LEVEL}
+      {/* Section Header */}
+      <div className="px-4 mb-5">
+        <div 
+          className="inline-block px-5 py-2 font-black text-lg uppercase tracking-wider"
+          style={{ background: '#000', color: '#FFF' }}
+        >
+          Game Modes
         </div>
       </div>
 
-      <div className="p-8 w-full">
-        {[Tier.BEGINNER, Tier.LEARNER, Tier.SKILLED, Tier.EXPERT, Tier.MASTER].map((tier, idx) => {
-          const isLockedTier = tier > 2;
-          const label = t.LEVELS.TIERS[tier - 1];
-          const xpReward = tier * 20;
+      {/* Game Cards Grid - Clean 2-Column Layout */}
+      <div id="gamemodes" className="grid grid-cols-2 gap-4 mb-8 px-4">
+        <GameCard mode={GameMode.CLASSIC} title={t.MODES.CLASSIC.title} desc={t.MODES.CLASSIC.desc} icon={Puzzle} />
+        <GameCard mode={GameMode.SPEEDRUN} title={t.MODES.SPEEDRUN.title} desc={t.MODES.SPEEDRUN.desc} icon={Zap} />
+        <GameCard mode={GameMode.CHAIN} title={t.MODES.CHAIN.title} desc={t.MODES.CHAIN.desc} icon={LinkIcon} />
+        <GameCard mode={GameMode.CATEGORY} title={t.MODES.CATEGORY.title} desc={t.MODES.CATEGORY.desc} icon={BookOpen} />
+        <GameCard mode={GameMode.SUDOKU} title={t.MODES.SUDOKU.title} desc={t.MODES.SUDOKU.desc} icon={Grid3X3} />
+        <GameCard mode={GameMode.CHALLENGE} title={t.MODES.CHALLENGE.title} desc={t.MODES.CHALLENGE.desc} icon={Brain} locked={!user.isPremium} />
+        <GameCard mode={GameMode.RIDDLE} title={t.MODES.RIDDLE.title} desc={t.MODES.RIDDLE.desc} icon={HelpCircle} />
+        <GameCard mode={GameMode.LETTER_MAU_MAU} title="Mau Mau" desc="Karten Spiel" icon={Sparkles} />
+      </div>
 
-          return (
-            <div key={tier} className="mb-12 animate-slide-up glass-panel p-6 rounded-3xl" style={{ animationDelay: `${idx * 100}ms` }}>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex flex-col items-start gap-1">
-                  <div className={`text-sm sm:text-base md:text-lg font-black italic tracking-tight ${isLockedTier ? 'text-gray-600' : TIER_COLORS[tier]} drop-shadow-sm truncate max-w-[280px]`}>
-                    {label}
+      {/* Footer */}
+      <div 
+        className="mx-4 mb-8 p-3 text-center"
+        style={{ 
+          background: '#000', 
+          border: '4px solid #000'
+        }}
+      >
+        <span className="font-black text-xs uppercase tracking-widest" style={{ color: '#FFF8E7' }}>
+          Made by Kevin Wagner 2025
+        </span>
+      </div>
+    </div>
+  );
+
+  const renderLevels = () => {
+    // Brutal tier colors
+    const tierBrutalColors = ['#06FFA5', '#FFBE0B', '#FF7F00', '#FF006E', '#8338EC'];
+    
+    return (
+      <div className="h-full overflow-y-auto w-full max-w-4xl mx-auto geo-pattern geo-shapes" style={{ background: '#FFF8E7' }}>
+        {/* Rainbow Top Bar */}
+        <div className="flex h-3 w-full sticky top-0 z-30">
+          <div className="flex-1" style={{ background: '#FF006E' }}></div>
+          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+          <div className="flex-1" style={{ background: '#8338EC' }}></div>
+        </div>
+
+        {/* Brutal Header */}
+        <div 
+          className="sticky top-3 z-20 mx-4 mt-4 p-4 flex items-center justify-between"
+          style={{ 
+            background: '#FFF', 
+            border: '4px solid #000', 
+            boxShadow: '6px 6px 0px #000'
+          }}
+        >
+          <button 
+            onClick={() => setView('HOME')} 
+            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
+            style={{ 
+              background: '#FF006E', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000'
+            }}
+          >
+            <ArrowLeft size={24} style={{ color: '#000' }} />
+          </button>
+          <h2 
+            className="text-xl md:text-2xl font-black uppercase tracking-wide"
+            style={{ color: '#000', transform: 'skew(-3deg)' }}
+          >
+            {t.MODES[gameConfig?.mode as keyof typeof t.MODES]?.title}
+          </h2>
+          <div 
+            className="px-4 py-2 flex items-center gap-2 font-black text-sm uppercase"
+            style={{ 
+              background: '#FFBE0B', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000',
+              transform: 'skew(3deg)'
+            }}
+          >
+            <User size={16} style={{ color: '#000' }} /> 
+            <span style={{ color: '#000', transform: 'skew(-3deg)' }}>LVL {user.level}</span>
+          </div>
+        </div>
+
+        <div className="p-4 md:p-8 w-full">
+          {[Tier.BEGINNER, Tier.LEARNER, Tier.SKILLED, Tier.EXPERT, Tier.MASTER].map((tier, idx) => {
+            const isLockedTier = tier > 2;
+            const label = t.LEVELS.TIERS[tier - 1];
+            const xpReward = tier * 20;
+            const tierColor = tierBrutalColors[idx];
+            const skewDeg = idx % 2 === 0 ? -2 : 2;
+
+            return (
+              <div 
+                key={tier} 
+                className="mb-8 p-5 md:p-6" 
+                style={{ 
+                  background: '#FFF', 
+                  border: '4px solid #000', 
+                  boxShadow: `8px 8px 0px ${tierColor}`,
+                  transform: `skew(${skewDeg}deg)`,
+                  animationDelay: `${idx * 100}ms` 
+                }}
+              >
+                <div className="flex items-center justify-between mb-5" style={{ transform: `skew(${-skewDeg}deg)` }}>
+                  <div className="flex flex-col items-start gap-2">
+                    <div 
+                      className="px-4 py-1 font-black text-base md:text-lg uppercase tracking-wide"
+                      style={{ 
+                        background: isLockedTier ? '#CCC' : tierColor, 
+                        color: '#000',
+                        border: '3px solid #000'
+                      }}
+                    >
+                      {label}
+                    </div>
+                    {!isLockedTier && (
+                      <span 
+                        className="text-xs font-black uppercase flex items-center gap-1 px-3 py-1"
+                        style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
+                      >
+                        <Sparkles size={12} /> +{xpReward} XP
+                      </span>
+                    )}
                   </div>
-                  {!isLockedTier && <span className="text-[10px] font-bold text-lexi-fuchsia bg-lexi-fuchsia/10 px-2 py-1 rounded border border-lexi-fuchsia/30 flex items-center gap-1"><Sparkles size={10} /> +{xpReward} XP</span>}
+                  <div 
+                    className="text-xs font-black uppercase tracking-wider px-3 py-2"
+                    style={{ 
+                      background: '#000', 
+                      color: tierColor,
+                      border: '2px solid #000'
+                    }}
+                  >
+                    LEVEL {(tier - 1) * 50 + 1} — {tier * 50} {isLockedTier && <Lock size={12} className="inline ml-1" />}
+                  </div>
                 </div>
-                <div className="text-xs font-bold text-lexi-text-muted tracking-widest glass-button px-3 py-1.5 rounded cursor-default">
-                  LEVEL {(tier - 1) * 50 + 1} — {tier * 50} {isLockedTier && <Lock size={12} className="inline ml-1" />}
-                </div>
-              </div>
 
-              <div className="grid grid-cols-5 md:grid-cols-8 gap-3 md:gap-4">
-                {Array.from({ length: 50 }).map((_, i) => {
-                  const lvl = (tier - 1) * 50 + i + 1;
-                  // Sequential Unlock Logic:
-                  // Level 1 is always unlocked.
-                  // Subsequent levels require the previous level to be completed.
-                  const prevLevelKey = `${gameConfig?.mode}_${tier}_${lvl - 1}`;
+                <div className="grid grid-cols-5 md:grid-cols-10 gap-2 md:gap-3" style={{ transform: `skew(${-skewDeg}deg)` }}>
+                  {Array.from({ length: 50 }).map((_, i) => {
+                    const lvl = (tier - 1) * 50 + i + 1;
+                    const prevLevelKey = `${gameConfig?.mode}_${tier}_${lvl - 1}`;
 
-                  let isUnlocked = false;
+                    let isUnlocked = false;
 
-                  if (lvl === 1) {
-                    // Very first level is always open
-                    isUnlocked = true;
-                  } else if (i === 0) {
-                    // First level of a new tier (e.g. 51, 101, etc.)
-                    // Check if the last level of the previous tier is done.
-                    // Previous Tier Last Level ID: lvl - 1
-                    const prevTierLastLevelKey = `${gameConfig?.mode}_${tier - 1}_${lvl - 1}`;
-                    isUnlocked = !!user.completedLevels[prevTierLastLevelKey];
-                  } else {
-                    // Normal in-tier progression
-                    isUnlocked = !!user.completedLevels[prevLevelKey];
-                  }
+                    if (lvl === 1) {
+                      isUnlocked = true;
+                    } else if (i === 0) {
+                      const prevTierLastLevelKey = `${gameConfig?.mode}_${tier - 1}_${lvl - 1}`;
+                      isUnlocked = !!user.completedLevels[prevTierLastLevelKey];
+                    } else {
+                      isUnlocked = !!user.completedLevels[prevLevelKey];
+                    }
 
-                  if (isUnlocked) {
-                    const levelKey = `${gameConfig?.mode}_${tier}_${lvl}`;
-                    const isCompleted = user.completedLevels[levelKey];
+                    if (isUnlocked) {
+                      const levelKey = `${gameConfig?.mode}_${tier}_${lvl}`;
+                      const isCompleted = user.completedLevels[levelKey];
+
+                      return (
+                        <button
+                          key={lvl}
+                          onClick={() => !isCompleted && handleLevelSelect(tier, lvl)}
+                          disabled={isCompleted}
+                          className="aspect-square flex items-center justify-center font-black text-sm md:text-base transition-all duration-100"
+                          style={{ 
+                            background: isCompleted ? '#06FFA5' : '#FFF', 
+                            color: '#000',
+                            border: '3px solid #000',
+                            boxShadow: isCompleted ? '4px 4px 0px #000' : '3px 3px 0px #000'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isCompleted) {
+                              e.currentTarget.style.transform = 'translateY(-3px)';
+                              e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+                              e.currentTarget.style.background = tierColor;
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isCompleted) {
+                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.boxShadow = '3px 3px 0px #000';
+                              e.currentTarget.style.background = '#FFF';
+                            }
+                          }}
+                        >
+                          {isCompleted ? <Check size={20} strokeWidth={4} /> : lvl}
+                        </button>
+                      )
+                    }
 
                     return (
                       <button
                         key={lvl}
-                        onClick={() => !isCompleted && handleLevelSelect(tier, lvl)}
-                        disabled={isCompleted}
-                        className={`aspect-square rounded-2xl flex items-center justify-center font-bold text-lg md:text-xl
-                             ${isCompleted
-                            ? 'bg-green-600 border-green-500 text-white cursor-default shadow-[0_0_15px_rgba(34,197,94,0.4)]'
-                            : 'glass-button text-lexi-text hover:scale-110'}
-                             relative group overflow-hidden transition-all`}
+                        disabled={true}
+                        className="aspect-square flex items-center justify-center"
+                        style={{ 
+                          background: '#E5E5E5', 
+                          color: '#999',
+                          border: '3px solid #CCC'
+                        }}
                       >
-                        {!isCompleted && <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>}
-                        <span className={`relative z-10 ${!isCompleted ? 'group-hover:text-lexi-fuchsia' : ''} transition-colors`}>
-                          {isCompleted ? <Check size={24} strokeWidth={4} /> : lvl}
-                        </span>
+                        <Lock size={12} />
                       </button>
                     )
-                  }
-
-                  return (
-                    <button
-                      key={lvl}
-                      disabled={true}
-                      className="aspect-square rounded-2xl flex items-center justify-center bg-lexi-bg/50 border border-lexi-border text-lexi-text-muted/50"
-                    >
-                      <Lock size={14} />
-                    </button>
-                  )
-                })}
+                  })}
+                </div>
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderTutorial = () => {
     const content = TUTORIALS[tutorialMode!]?.[user.language];
     if (!content) return null;
 
     return (
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
-        <div className="bg-[#1e102e] w-full max-w-md rounded-[2rem] border border-white/10 p-8 shadow-2xl relative overflow-hidden animate-scale-in">
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lexi-fuchsia to-lexi-cyan animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: '#FFF8E7' }}>
+        {/* Rainbow Top Bar */}
+        <div className="fixed top-0 left-0 right-0 flex h-3 w-full z-50">
+          <div className="flex-1" style={{ background: '#FF006E' }}></div>
+          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+          <div className="flex-1" style={{ background: '#8338EC' }}></div>
+        </div>
 
-          <div className="flex flex-col items-center mb-8">
-            <Puzzle size={48} className="text-green-400 mb-4 drop-shadow-[0_0_15px_rgba(74,222,128,0.5)] animate-bounce" fill="currentColor" fillOpacity={0.2} />
-            <h2 className="text-2xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 uppercase">
+        <div 
+          className="w-full max-w-md p-8 relative"
+          style={{ 
+            background: '#FFF', 
+            border: '6px solid #000', 
+            boxShadow: '12px 12px 0px #8338EC',
+            transform: 'rotate(-1deg)'
+          }}
+        >
+          <div className="flex flex-col items-center mb-8" style={{ transform: 'rotate(1deg)' }}>
+            <div 
+              className="p-4 mb-4"
+              style={{ 
+                background: '#06FFA5', 
+                border: '4px solid #000',
+                boxShadow: '6px 6px 0px #000',
+                transform: 'skew(-5deg)'
+              }}
+            >
+              <Puzzle size={48} style={{ color: '#000' }} />
+            </div>
+            <h2 
+              className="text-2xl font-black uppercase tracking-wide"
+              style={{ color: '#000', transform: 'skew(-3deg)' }}
+            >
               {content.title}
             </h2>
-            <p className="text-[10px] font-bold text-gray-500 tracking-[0.3em] mt-1">{t.TUTORIAL.HEADER}</p>
+            <span 
+              className="text-xs font-black uppercase tracking-widest mt-2 px-4 py-1"
+              style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
+            >
+              {t.TUTORIAL.HEADER}
+            </span>
           </div>
 
-          <p className="text-center text-gray-300 mb-8 leading-relaxed font-medium">{content.text}</p>
+          <p 
+            className="text-center mb-8 leading-relaxed font-bold"
+            style={{ color: '#4A4A4A' }}
+          >
+            {content.text}
+          </p>
 
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <button
               onClick={() => setView('LEVELS')}
-              className="flex-1 py-3 rounded-xl font-bold text-xs uppercase bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all duration-100"
+              style={{ 
+                background: '#FFF', 
+                color: '#000',
+                border: '4px solid #000',
+                boxShadow: '4px 4px 0px #000'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '4px 4px 0px #000';
+              }}
             >
-              <ArrowLeft size={14} /> {t.TUTORIAL.BACK}
+              <ArrowLeft size={16} /> {t.TUTORIAL.BACK}
             </button>
             <button
               onClick={startGameFromTutorial}
-              className="flex-[2] py-3 rounded-xl font-bold text-xs uppercase bg-gradient-to-r from-lexi-fuchsia to-purple-600 hover:brightness-110 shadow-[0_0_20px_rgba(217,70,239,0.4)] flex items-center justify-center gap-2 text-white transition-all active:scale-95"
+              className="flex-[2] py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all duration-100"
+              style={{ 
+                background: '#FF006E', 
+                color: '#FFF',
+                border: '4px solid #000',
+                boxShadow: '6px 6px 0px #000',
+                transform: 'skew(-3deg)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'skew(-3deg) translateY(-4px)';
+                e.currentTarget.style.boxShadow = '10px 10px 0px #000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'skew(-3deg)';
+                e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+              }}
             >
-              {t.TUTORIAL.START} <Play size={14} fill="currentColor" />
+              <span style={{ transform: 'skew(3deg)' }}>{t.TUTORIAL.START}</span> <Play size={16} fill="currentColor" />
             </button>
           </div>
         </div>
@@ -2507,66 +2925,120 @@ export default function App() {
     const isRiddle = gameConfig?.mode === GameMode.RIDDLE;
     const showTimer = gameState.timeLeft !== undefined;
 
-    // Determine Help Text based on Mode for "Info Bar"
-    let infoText = "Good Luck!";
-    if (isSudoku) infoText = "Fill grid (A-I). No repeats.";
-    else if (gameState.isMath) infoText = "Solve the math expression.";
-    else if (isRiddle) infoText = "Solve the riddle.";
-    else infoText = `${gameState.targetWord.length} ${t.GAME.INFO_BAR}`;
-
     const validationStatus = (isSudoku && gameState.data?.sudokuGrid)
       ? validateSudoku(gameState.currentGrid, gameState.data.sudokuGrid)
       : undefined;
 
+    // Get mode color
+    const modeColor = brutalColors[gameConfig?.mode || GameMode.CLASSIC]?.bg || '#06FFA5';
+
     return (
-      <div className="flex flex-col h-full max-h-screen relative z-10">
-        {/* Header - Completely Redesigned for Space and Boldness */}
-        <div className="relative z-20 pt-6 pb-4 px-6 animate-slide-down flex flex-col items-center gap-2">
-          <div className="w-full flex items-center justify-between mb-4">
-            <button onClick={() => handleNavigate('LEVELS')} className="w-12 h-12 flex items-center justify-center glass-button rounded-full hover:bg-white/10 transition-colors active:scale-95">
-              <ArrowLeft size={24} className="text-lexi-text" />
-            </button>
-
-            <div className="flex items-center gap-3">
-              {/* Friends Button */}
-              <button
-                onClick={() => setShowFriendsManager(true)}
-                className="w-12 h-12 flex items-center justify-center glass-button rounded-full hover:bg-white/10 transition-colors active:scale-95 relative"
-              >
-                <Users size={24} className="text-lexi-text" />
-                {/* Optional: Add notification dot here if needed */}
-              </button>
-
-              {/* Timer (Speedrun / Challenge) */}
-              {showTimer && (
-                <div className={`text-2xl font-black font-mono flex items-center gap-2 px-4 py-2 rounded-xl glass-panel ${gameState.timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-lexi-cyan'}`}>
-                  <Clock size={20} /> {gameState.timeLeft}s
-                </div>
-              )}
-            </div>
-
-            <div className="w-12"></div> {/* Spacer for balance */}
-          </div>
-
-          <h1 className="text-4xl md:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] animate-scale-in leading-none text-center mb-2">
-            {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : (isRiddle ? t.MODES.RIDDLE.title : t.GAME.CLASSIC_TITLE))}
-          </h1>
-
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 px-6 py-3 rounded-2xl shadow-xl animate-fade-in">
-            <p className="text-lg md:text-xl font-bold text-lexi-text-muted text-center">
-              "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
-            </p>
-          </div>
-
-          {/* Target Word (Debug/Info) - Hidden or Subtle */}
-          {/* <span className="text-xs text-red-500/50">[{gameState.targetWord}]</span> */}
+      <div className="flex flex-col h-full max-h-screen relative geo-pattern geo-shapes geo-confetti" style={{ background: '#FFF8E7' }}>
+        {/* Rainbow Top Bar */}
+        <div className="flex h-3 w-full">
+          <div className="flex-1" style={{ background: '#FF006E' }}></div>
+          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+          <div className="flex-1" style={{ background: '#8338EC' }}></div>
         </div>
 
-        {/* Game Board - Centered with more breathing room */}
-        <div className="flex-1 w-full relative flex flex-col justify-center py-8 overflow-hidden">
-          <div className="w-full max-w-3xl mx-auto px-4 animate-float-slow">
+        {/* Header - Neo Brutal */}
+        <div 
+          className="mx-4 mt-4 p-4 flex items-center justify-between relative z-50"
+          style={{ 
+            background: '#FFF', 
+            border: '4px solid #000',
+            boxShadow: '6px 6px 0px #000'
+          }}
+        >
+          {/* Back Button */}
+          <button 
+            onClick={() => { audio.playClick(); setView('LEVELS'); }} 
+            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
+            style={{ 
+              background: modeColor, 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000'
+            }}
+          >
+            <ArrowLeft size={24} style={{ color: '#000' }} />
+          </button>
+
+          {/* Title */}
+          <div className="flex-1 mx-4 text-center">
+            <h1 
+              className="font-black text-lg md:text-xl uppercase tracking-wide" 
+              style={{ color: '#000', transform: 'skewX(-3deg)' }}
+            >
+              {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : (isRiddle ? t.MODES.RIDDLE.title : t.GAME.CLASSIC_TITLE))}
+            </h1>
+          </div>
+
+          {/* Timer */}
+          <div className="flex items-center gap-2">
+            {showTimer && (
+              <div 
+                className="px-4 py-2 font-mono font-black text-lg flex items-center gap-2"
+                style={{ 
+                  background: gameState.timeLeft < 10 ? '#FF006E' : modeColor, 
+                  color: '#000',
+                  border: '3px solid #000',
+                  boxShadow: '4px 4px 0px #000'
+                }}
+              >
+                <Clock size={16} /> {gameState.timeLeft}s
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Hint Card - Neo Brutal with Black Text */}
+        <div 
+          className="mx-4 mt-4 p-4 relative overflow-hidden"
+          style={{ 
+            background: modeColor, 
+            border: '4px solid #000',
+            boxShadow: '6px 6px 0px #000'
+          }}
+        >
+          {/* Decorative elements */}
+          <div className="absolute top-3 right-3 opacity-20">
+            <Star size={14} fill="currentColor" style={{ color: '#000' }} />
+          </div>
+          <div className="absolute bottom-3 right-12 opacity-15">
+            <Sparkles size={18} style={{ color: '#000' }} />
+          </div>
+          <div className="absolute top-1/2 right-4 opacity-10">
+            <HelpCircle size={50} style={{ color: '#000' }} />
+          </div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5" style={{ background: 'rgba(0,0,0,0.15)', borderRadius: '6px' }}>
+                <HelpCircle size={16} style={{ color: '#000' }} />
+              </div>
+              <p className="text-xs font-black uppercase tracking-wider" style={{ color: 'rgba(0,0,0,0.6)' }}>HINWEIS</p>
+            </div>
+            <p className="font-black text-base md:text-lg leading-snug" style={{ color: '#000' }}>
+              "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
+            </p>
+            {!isSudoku && (
+              <div 
+                className="inline-block mt-3 px-3 py-1 text-sm font-black"
+                style={{ background: 'rgba(0,0,0,0.15)', color: '#000', border: '2px solid #000' }}
+              >
+                {gameState.targetWord.length} Buchstaben
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Game Board - Neo Brutal Style */}
+        <div className="flex-1 w-full flex flex-col justify-center py-6 overflow-hidden">
+          <div className="w-full max-w-xl mx-auto px-4">
             {isSudoku ? (
-              <div className="flex flex-col items-center gap-4 transform scale-95 md:scale-100 transition-transform">
+              <div className="flex flex-col items-center gap-4">
                 <SudokuGrid
                   board={gameState.currentGrid}
                   original={gameState.data.sudokuPuzzle}
@@ -2574,10 +3046,7 @@ export default function App() {
                   validation={validationStatus}
                   onCellSelect={(r: number, c: number) => {
                     setGameState((prev: any) => ({ ...prev, selectedCell: { r, c } }));
-                    // Focus input to ensure mobile keyboard opens
-                    if (hiddenInputRef.current) {
-                      hiddenInputRef.current.focus();
-                    }
+                    if (hiddenInputRef.current) hiddenInputRef.current.focus();
                   }}
                 />
                 <SudokuControls
@@ -2586,7 +3055,6 @@ export default function App() {
                     const currentGameState = gameStateRef.current;
                     if (currentGameState?.selectedCell) {
                       const { r, c } = currentGameState.selectedCell;
-                      // Only delete if not fixed
                       if (currentGameState.data.sudokuPuzzle[r][c] === null) {
                         const newGrid = [...currentGameState.currentGrid];
                         newGrid[r][c] = null;
@@ -2608,24 +3076,38 @@ export default function App() {
           </div>
         </div>
 
-        {/* Hint Button - Prominent, Animated, Lower */}
-        <div className="absolute bottom-8 right-6 z-30">
-          <button
-            onClick={triggerHint}
-            className="group relative w-20 h-20 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-[0_10px_30px_rgba(251,191,36,0.4)] transition-all hover:scale-110 active:scale-95 animate-bounce-slow"
+        {/* Hint Button - Redesigned */}
+        <div className="absolute bottom-6 right-6 z-30">
+          <button 
+            onClick={triggerHint} 
+            className="relative w-16 h-16 flex items-center justify-center transition-all active:scale-95 group"
+            style={{ 
+              background: '#FFBE0B', 
+              border: '4px solid #000', 
+              boxShadow: '6px 6px 0px #000'
+            }}
           >
-            <div className="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-20"></div>
-            <HelpCircle size={40} className="text-white drop-shadow-md group-hover:rotate-12 transition-transform" />
-            {/* Badge for Cost */}
+            <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity animate-bounce">
+              <Sparkles size={24} style={{ color: '#FF006E' }} />
+            </div>
+            <HelpCircle size={32} style={{ color: '#000' }} strokeWidth={2.5} />
             {hintCostMultiplier > 0 && (
-              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md border-2 border-white">
+              <div 
+                className="absolute -top-3 -right-3 px-2 py-1 text-xs font-black shadow-sm" 
+                style={{ 
+                  background: '#FF006E', 
+                  color: '#FFF', 
+                  border: '2px solid #000',
+                  transform: 'rotate(12deg)'
+                }}
+              >
                 -{hintCostMultiplier * 10}
               </div>
             )}
           </button>
         </div>
 
-        {/* Controls - Native Keyboard Input */}
+        {/* Hidden Input for Keyboard */}
         <input
           ref={hiddenInputRef}
           type="text"
@@ -2642,7 +3124,6 @@ export default function App() {
               if (isSudoku) handleSudokuInput(char);
               else handleWordKey(char);
             }
-            // Reset input to keep it empty
             e.target.value = "";
           }}
           onKeyDown={(e) => {
@@ -2653,7 +3134,6 @@ export default function App() {
             }
           }}
           onBlur={(e) => {
-            // Try to keep focus if playing
             if (gameState?.status === 'playing') {
               setTimeout(() => e.target.focus(), 10);
             }
@@ -2672,49 +3152,94 @@ export default function App() {
   );
 
   return (
-    <div className={`${user.theme} h-screen w-full text-lexi-text font-sans overflow-hidden relative selection:bg-cyan-400 selection:text-black py-4 transition-colors duration-300 ${user.theme === 'dark' ? 'bg-[#0b1120]' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
-      {/* Simplified grain texture using CSS */}
-      <div className="fixed inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        backgroundSize: '180px 180px'
-      }}></div>
-      {/* Dynamic Background Layers */}
-      <div className="fixed inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900/50 to-cyan-900/20 pointer-events-none"></div>
-      <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
+    <div className={`${user.theme} h-screen w-full text-brutal-black font-sans overflow-hidden relative selection:bg-brutal-pink selection:text-white transition-colors duration-300 geo-pattern geo-shapes`} style={{ background: '#FFF8E7' }}>
+      {/* Global Grain Overlay */}
+      <div className="grain-overlay"></div>
 
       {/* Fade Transition Removed */}
 
       {/* Version Manager - Handles Updates & Changelog */}
       <VersionManager isOnline={isOnline} t={t} />
 
-      {/* Offline Blocking Overlay */}
+      {/* Offline Blocking Overlay - Neo Brutal */}
       {!isOnline && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="glass-panel p-8 rounded-3xl max-w-md mx-4 text-center space-y-6">
-            <div className="w-20 h-20 mx-auto bg-red-500/20 rounded-full flex items-center justify-center border-2 border-red-500 animate-pulse">
-              <WifiOff size={40} className="text-red-500" />
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4" style={{ background: '#FFF8E7' }}>
+          {/* Rainbow Top Bar */}
+          <div className="fixed top-0 left-0 right-0 flex h-3 w-full">
+            <div className="flex-1" style={{ background: '#FF006E' }}></div>
+            <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+            <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+            <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+            <div className="flex-1" style={{ background: '#8338EC' }}></div>
+          </div>
+
+          <div 
+            className="max-w-md w-full p-8 text-center space-y-6"
+            style={{ 
+              background: '#FFF', 
+              border: '6px solid #000', 
+              boxShadow: '12px 12px 0px #FF006E',
+              transform: 'rotate(-1deg)'
+            }}
+          >
+            <div 
+              className="w-20 h-20 mx-auto flex items-center justify-center"
+              style={{ 
+                background: '#FF006E', 
+                border: '4px solid #000',
+                boxShadow: '6px 6px 0px #000',
+                transform: 'skew(-5deg)'
+              }}
+            >
+              <WifiOff size={40} style={{ color: '#FFF' }} />
             </div>
-            <div>
-              <h2 className="text-2xl font-black text-white mb-2 uppercase">Keine Verbindung</h2>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                LexiMix benötigt eine aktive Internetverbindung, um deine Fortschritte mit Firebase zu synchronisieren. Bitte stelle eine Verbindung her und versuche es erneut.
+            <div style={{ transform: 'rotate(1deg)' }}>
+              <h2 
+                className="text-2xl font-black uppercase mb-3"
+                style={{ color: '#000', transform: 'skew(-3deg)' }}
+              >
+                Keine Verbindung
+              </h2>
+              <p className="text-sm font-bold leading-relaxed" style={{ color: '#4A4A4A' }}>
+                LexiMix benötigt eine aktive Internetverbindung, um deine Fortschritte mit Firebase zu synchronisieren.
               </p>
             </div>
-            <div className="flex flex-col gap-2 text-xs text-gray-400">
-              <div className="flex items-center gap-2 justify-center">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <div className="flex flex-col gap-3">
+              <div 
+                className="flex items-center gap-3 justify-center py-2 px-4 font-bold text-xs uppercase"
+                style={{ background: '#000', color: '#FF006E' }}
+              >
+                <div className="w-3 h-3" style={{ background: '#FF006E' }}></div>
                 <span>Offline-Modus nicht verfügbar</span>
               </div>
-              <div className="flex items-center gap-2 justify-center">
-                <Database size={12} />
+              <div 
+                className="flex items-center gap-3 justify-center py-2 px-4 font-bold text-xs uppercase"
+                style={{ background: '#FFBE0B', color: '#000', border: '2px solid #000' }}
+              >
+                <Database size={14} />
                 <span>Firebase-Synchronisation erforderlich</span>
               </div>
             </div>
             <button
               onClick={() => window.location.reload()}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 text-white font-black uppercase rounded-xl transition-all"
+              className="w-full py-4 font-black uppercase text-lg transition-all duration-100"
+              style={{ 
+                background: '#FF7F00', 
+                color: '#000',
+                border: '4px solid #000',
+                boxShadow: '6px 6px 0px #000',
+                transform: 'skew(-3deg)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'skew(-3deg) translateY(-4px)';
+                e.currentTarget.style.boxShadow = '10px 10px 0px #000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'skew(-3deg)';
+                e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+              }}
             >
-              Neu laden
+              <span style={{ transform: 'skew(3deg)', display: 'inline-block' }}>Neu laden</span>
             </button>
           </div>
         </div>
@@ -2823,33 +3348,61 @@ export default function App() {
       {/* Mau Mau Intro Modal */}
       <Modal isOpen={showMauMauIntro} onClose={() => setShowMauMauIntro(false)} title="Mau Mau">
         <div className="p-6 text-center space-y-6">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+          <div 
+            className="w-24 h-24 mx-auto flex items-center justify-center relative"
+            style={{ 
+              background: '#C084FC', 
+              border: '4px solid #000',
+              boxShadow: '6px 6px 0px #000',
+              transform: 'rotate(-3deg)'
+            }}
+          >
+             <div className="absolute -top-3 -right-3 animate-spin-slow">
+               <Sparkles size={24} style={{ color: '#FFBE0B' }} />
+             </div>
             <span className="text-5xl">🎴</span>
           </div>
 
-          <div>
-            <h3 className="text-xl font-black text-white mb-2 uppercase italic">Das klassische Kartenspiel!</h3>
-            <p className="text-gray-300 text-sm leading-relaxed">
+          <div style={{ transform: 'skewX(-2deg)' }}>
+            <h3 className="text-xl font-black mb-2 uppercase italic" style={{ color: '#000' }}>Das klassische Kartenspiel!</h3>
+            <p className="font-bold text-sm leading-relaxed" style={{ color: '#4A4A4A' }}>
               Spiele deine Karten geschickt aus und werde alle los, bevor es dein Gegner schafft!
             </p>
           </div>
 
-          <div className="bg-gray-900/50 p-4 rounded-xl border border-white/10 text-left space-y-2">
-            <div className="flex items-start gap-3">
-              <span className="text-purple-400 font-bold text-lg">♠️</span>
-              <span className="text-xs text-gray-300">Spiele Karten mit gleicher Farbe oder gleichem Wert</span>
+          <div 
+            className="p-4 text-left space-y-3 relative overflow-hidden"
+            style={{ 
+              background: '#FFF', 
+              border: '4px solid #000', 
+              boxShadow: '6px 6px 0px #8338EC'
+            }}
+          >
+            {/* Rainbow Left Border */}
+            <div className="absolute top-0 bottom-0 left-0 w-2 flex flex-col border-r-2 border-black">
+              <div className="flex-1 bg-[#FF006E]"></div>
+              <div className="flex-1 bg-[#FF7F00]"></div>
+              <div className="flex-1 bg-[#FFBE0B]"></div>
+              <div className="flex-1 bg-[#06FFA5]"></div>
+              <div className="flex-1 bg-[#0096FF]"></div>
+              <div className="flex-1 bg-[#8338EC]"></div>
             </div>
-            <div className="flex items-start gap-3">
-              <span className="text-pink-400 font-bold text-lg">7️⃣</span>
-              <span className="text-xs text-gray-300">Sieben: Gegner muss 2 Karten ziehen</span>
+
+            <div className="flex items-start gap-3 pl-2">
+              <span className="font-black text-lg" style={{ color: '#8338EC' }}>♠️</span>
+              <span className="text-xs font-bold" style={{ color: '#000' }}>Spiele Karten mit gleicher Farbe oder gleichem Wert</span>
             </div>
-            <div className="flex items-start gap-3">
-              <span className="text-cyan-400 font-bold text-lg">8️⃣</span>
-              <span className="text-xs text-gray-300">Acht: Aussetzen - du spielst nochmal</span>
+            <div className="flex items-start gap-3 pl-2">
+              <span className="font-black text-lg" style={{ color: '#FF006E' }}>7️⃣</span>
+              <span className="text-xs font-bold" style={{ color: '#000' }}>Sieben: Gegner muss 2 Karten ziehen</span>
             </div>
-            <div className="flex items-start gap-3">
-              <span className="text-yellow-400 font-bold text-lg">🃏</span>
-              <span className="text-xs text-gray-300">Bube: Wünsche dir eine Farbe</span>
+            <div className="flex items-start gap-3 pl-2">
+              <span className="font-black text-lg" style={{ color: '#06FFA5' }}>8️⃣</span>
+              <span className="text-xs font-bold" style={{ color: '#000' }}>Acht: Aussetzen - du spielst nochmal</span>
+            </div>
+            <div className="flex items-start gap-3 pl-2">
+              <span className="font-black text-lg" style={{ color: '#FFBE0B' }}>🃏</span>
+              <span className="text-xs font-bold" style={{ color: '#000' }}>Bube: Wünsche dir eine Farbe</span>
             </div>
           </div>
 
@@ -2858,7 +3411,13 @@ export default function App() {
               setShowMauMauIntro(false);
               setShowMauMauModeSelect(true);
             }}
-            className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:brightness-110 text-white font-black uppercase tracking-widest rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+            className="w-full py-4 font-black uppercase tracking-widest transition-all active:translate-y-1 flex items-center justify-center gap-2"
+            style={{ 
+              background: '#C084FC', 
+              color: '#000',
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000'
+            }}
           >
             <Play size={20} fill="currentColor" /> Weiter
           </button>
@@ -2868,7 +3427,7 @@ export default function App() {
       {/* Mau Mau Mode Selection Modal */}
       <Modal isOpen={showMauMauModeSelect} onClose={() => setShowMauMauModeSelect(false)} title="Spielmodus wählen">
         <div className="p-6 space-y-4">
-          <p className="text-center text-gray-300 text-sm mb-6">
+          <p className="text-center text-sm font-bold mb-6" style={{ color: '#4A4A4A' }}>
             Wähle deinen bevorzugten Spielmodus:
           </p>
 
@@ -2878,16 +3437,26 @@ export default function App() {
               setShowMauMauModeSelect(false);
               setView('MAU_MAU');
             }}
-            className="w-full p-6 bg-gradient-to-br from-purple-600/30 to-pink-600/30 border-2 border-purple-500/50 hover:border-purple-400 rounded-2xl transition-all hover:scale-105 active:scale-95 group"
+            className="w-full p-5 transition-all active:scale-95 group relative overflow-hidden"
+            style={{ 
+              background: '#FFF', 
+              border: '4px solid #000', 
+              boxShadow: '6px 6px 0px #8338EC',
+              transform: 'skewX(-2deg)'
+            }}
           >
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
-                <User size={32} className="text-purple-400" />
+            <div className="flex items-center gap-4" style={{ transform: 'skewX(2deg)' }}>
+              <div 
+                className="w-14 h-14 flex items-center justify-center transition-transform group-hover:scale-110"
+                style={{ background: '#8338EC', border: '3px solid #000' }}
+              >
+                <User size={28} style={{ color: '#FFF' }} />
               </div>
               <div className="flex-1 text-left">
-                <h4 className="text-xl font-black text-white mb-1">Singleplayer</h4>
-                <p className="text-sm text-gray-400">Spiele gegen die KI</p>
+                <h4 className="text-xl font-black uppercase mb-1" style={{ color: '#000' }}>Singleplayer</h4>
+                <p className="text-xs font-bold" style={{ color: '#666' }}>Spiele gegen die KI</p>
               </div>
+              <ArrowLeft size={24} className="rotate-180" style={{ color: '#000' }} />
             </div>
           </button>
 
@@ -2897,22 +3466,38 @@ export default function App() {
               setShowMauMauModeSelect(false);
               setShowMultiplayerLobby(true);
             }}
-            className="w-full p-6 bg-gradient-to-br from-green-600/30 to-emerald-600/30 border-2 border-green-500/50 hover:border-green-400 rounded-2xl transition-all hover:scale-105 active:scale-95 group"
+            className="w-full p-5 transition-all active:scale-95 group relative overflow-hidden"
+            style={{ 
+              background: '#FFF', 
+              border: '4px solid #000', 
+              boxShadow: '6px 6px 0px #06FFA5',
+              transform: 'skewX(-2deg)'
+            }}
           >
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
-                <Users size={32} className="text-green-400" />
+            <div className="flex items-center gap-4" style={{ transform: 'skewX(2deg)' }}>
+              <div 
+                className="w-14 h-14 flex items-center justify-center transition-transform group-hover:scale-110"
+                style={{ background: '#06FFA5', border: '3px solid #000' }}
+              >
+                <Users size={28} style={{ color: '#000' }} />
               </div>
               <div className="flex-1 text-left">
-                <h4 className="text-xl font-black text-white mb-1">Multiplayer</h4>
-                <p className="text-sm text-gray-400">Spiele gegen Freunde</p>
+                <h4 className="text-xl font-black uppercase mb-1" style={{ color: '#000' }}>Multiplayer</h4>
+                <p className="text-xs font-bold" style={{ color: '#666' }}>Spiele gegen Freunde</p>
               </div>
+              <ArrowLeft size={24} className="rotate-180" style={{ color: '#000' }} />
             </div>
           </button>
 
           <button
             onClick={() => setShowMauMauModeSelect(false)}
-            className="w-full py-3 bg-gray-700 hover:bg-gray-600 rounded-xl text-white font-bold transition-colors"
+            className="w-full py-3 font-black uppercase text-sm transition-all active:translate-y-1 mt-4"
+            style={{ 
+              background: '#F5F5F5', 
+              color: '#000', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000'
+            }}
           >
             Zurück
           </button>
@@ -3037,34 +3622,68 @@ export default function App() {
 
       {/* Ad/Hint Modal */}
       <Modal isOpen={showAd} title={t.GAME.HINT_MODAL_TITLE}>
-        <div className="flex flex-col items-center justify-center py-6 space-y-6">
-          <div className="w-full h-48 bg-black rounded-2xl flex items-center justify-center relative overflow-hidden group border-2 border-gray-700">
+        <div className="flex flex-col items-center justify-center py-4 space-y-6">
+          <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden group border-4 border-black shadow-[6px_6px_0px_#000]">
             <img
               src={catDanceGif}
               alt="Ad Simulation"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover opacity-50"
             />
-            <div className="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded text-[10px] text-white/70 font-mono">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-5xl font-black font-mono text-white drop-shadow-[4px_4px_0px_#000]">
+                {adTimer > 0 ? `${adTimer}s` : 'DONE'}
+              </div>
+            </div>
+            <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-black">
               AD
             </div>
           </div>
-          <div className="text-4xl font-mono text-lexi-fuchsia font-bold drop-shadow-[0_0_10px_rgba(217,70,239,0.5)]">
-            {adTimer > 0 ? `00:${adTimer.toString().padStart(2, '0')}` : t.GAME.REWARD}
-          </div>
+
           {hintCostMultiplier > 0 && (
-            <div className="text-xs text-red-400 font-bold uppercase tracking-wider">
+            <div className="inline-block px-3 py-1 font-black text-xs uppercase bg-[#FF006E] text-white border-2 border-black transform -rotate-2">
               +{hintCostMultiplier * 10}s Wartezeit
             </div>
           )}
-          <Button
-            fullWidth
+
+          {/* Skip Button */}
+          {adTimer > 0 && (
+            <button
+              onClick={() => {
+                const skipCost = 30 + (hintCostMultiplier * 10);
+                if (user.coins >= skipCost) {
+                  setUser(prev => ({ ...prev, coins: prev.coins - skipCost }));
+                  setAdTimer(0);
+                } else {
+                  alert('Nicht genügend Coins!');
+                }
+              }}
+              className="w-full py-4 font-black uppercase text-sm flex items-center justify-center gap-2 transition-all active:translate-y-1"
+              style={{ 
+                background: '#FFBE0B', 
+                color: '#000', 
+                border: '3px solid #000',
+                boxShadow: '4px 4px 0px #000',
+                opacity: user.coins >= (30 + (hintCostMultiplier * 10)) ? 1 : 0.5
+              }}
+            >
+              <Gem size={16} /> Skip ({30 + (hintCostMultiplier * 10)})
+            </button>
+          )}
+
+          <button
             disabled={adTimer > 0}
-            variant={adTimer > 0 ? 'ghost' : 'primary'}
             onClick={closeAdAndReward}
-            className="transition-all duration-300"
+            className="w-full py-4 font-black uppercase text-sm transition-all active:translate-y-1"
+            style={{ 
+              background: adTimer > 0 ? '#E5E5E5' : '#06FFA5', 
+              color: adTimer > 0 ? '#999' : '#000', 
+              border: '3px solid #000',
+              boxShadow: adTimer > 0 ? 'none' : '4px 4px 0px #000',
+              cursor: adTimer > 0 ? 'not-allowed' : 'pointer'
+            }}
           >
-            {adTimer > 0 ? t.GAME.WATCHING : t.GAME.CLAIM}
-          </Button>
+            {adTimer > 0 ? 'Bitte warten...' : 'Hinweis ansehen'}
+          </button>
         </div>
       </Modal>
 
@@ -3151,74 +3770,102 @@ export default function App() {
         </div>
       </Modal>
 
-      {/* Win Modal */}
+      {/* Win Modal - Neo Brutal */}
       <Modal isOpen={showWin} onClose={() => setShowWin(false)} title={t.GAME.WIN_TITLE}>
-        <div className="text-center py-6">
-          <div className="inline-block p-6 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6 shadow-[0_0_30px_rgba(234,179,8,0.3)] relative">
-            <div className="absolute inset-0 rounded-full animate-ping opacity-20 bg-yellow-500"></div>
-            <Trophy className="text-yellow-400 drop-shadow-lg relative z-10 animate-pulse-fast" size={64} />
+        <div className="text-center space-y-6">
+          <div 
+            className="inline-block p-6 mb-4"
+            style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '8px 8px 0px #000', transform: 'rotate(-3deg)' }}
+          >
+            <Trophy size={64} style={{ color: '#000' }} />
           </div>
-          <div className="text-3xl font-black italic mb-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-300">{t.GAME.WIN_DESC}</div>
+          <div className="text-2xl font-black uppercase tracking-wide" style={{ color: '#000' }}>{t.GAME.WIN_DESC}</div>
 
           {/* Stats */}
-          <div className="flex justify-center gap-4 mb-8 mt-4">
-            <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 min-w-[100px] flex flex-col items-center animate-scale-in" style={{ animationDelay: '100ms' }}>
-              <Sparkles className="text-lexi-fuchsia mb-1" size={20} />
-              <span className="text-xl font-bold text-white">{winStats.xp}</span>
-              <span className="text-[10px] font-bold text-gray-500 uppercase">{t.GAME.XP_GAINED}</span>
+          <div className="flex justify-center gap-4">
+            <div 
+              className="p-4 min-w-[100px] flex flex-col items-center"
+              style={{ background: '#FF006E', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
+            >
+              <Sparkles size={24} style={{ color: '#FFF' }} className="mb-1" />
+              <span className="text-2xl font-black" style={{ color: '#FFF' }}>{winStats.xp}</span>
+              <span className="text-xs font-black uppercase" style={{ color: 'rgba(255,255,255,0.8)' }}>{t.GAME.XP_GAINED}</span>
             </div>
-            <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 min-w-[100px] flex flex-col items-center animate-scale-in" style={{ animationDelay: '200ms' }}>
-              <Gem className="text-blue-400 mb-1" size={20} />
-              <span className="text-xl font-bold text-white">{winStats.coins}</span>
-              <span className="text-[10px] font-bold text-gray-500 uppercase">{t.GAME.COINS_GAINED}</span>
+            <div 
+              className="p-4 min-w-[100px] flex flex-col items-center"
+              style={{ background: '#0096FF', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
+            >
+              <Gem size={24} style={{ color: '#FFF' }} className="mb-1" />
+              <span className="text-2xl font-black" style={{ color: '#FFF' }}>{winStats.coins}</span>
+              <span className="text-xs font-black uppercase" style={{ color: 'rgba(255,255,255,0.8)' }}>{t.GAME.COINS_GAINED}</span>
             </div>
           </div>
 
-          {/* Level Up Progress */}
-          <div className="mb-8 px-4">
-            <div className="flex justify-between text-xs font-bold text-gray-400 mb-1">
+          {/* Level Progress */}
+          <div className="px-4">
+            <div className="flex justify-between text-xs font-black mb-2" style={{ color: '#4A4A4A' }}>
               <span>LVL {user.level}</span>
               <span>{(user.xp % 100)} / 100 XP</span>
             </div>
-            <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-lexi-fuchsia to-purple-600 transition-all duration-1000 ease-out" style={{ width: `${user.xp % 100}%` }}></div>
+            <div className="h-4" style={{ background: '#000', border: '3px solid #000' }}>
+              <div className="h-full transition-all duration-1000" style={{ width: `${user.xp % 100}%`, background: '#06FFA5' }}></div>
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <Button className="flex-1" variant="secondary" onClick={() => { setShowWin(false); setView('LEVELS'); }}>
-              Zurück zur Übersicht
-            </Button>
-            <Button className="flex-1" onClick={() => { setShowWin(false); handleNextLevel(); }}>
-              Nächstes Level
-            </Button>
+          <div className="flex gap-4 pt-4">
+            <button 
+              className="flex-1 py-4 font-black uppercase text-sm transition-all"
+              style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
+              onClick={() => { setShowWin(false); setView('LEVELS'); }}
+            >
+              Übersicht
+            </button>
+            <button 
+              className="flex-1 py-4 font-black uppercase text-sm transition-all"
+              style={{ background: '#06FFA5', color: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
+              onClick={() => { setShowWin(false); handleNextLevel(); }}
+            >
+              Weiter
+            </button>
           </div>
         </div>
       </Modal>
 
-      {/* Game Over Modal */}
+      {/* Game Over Modal - Neo Brutal */}
       <Modal isOpen={gameState?.status === 'lost'} onClose={() => { setView('LEVELS'); setGameState(null); }} title="MISSION FAILED">
-        <div className="text-center py-6">
-          <div className="inline-block p-6 rounded-full bg-red-500/10 border border-red-500/20 mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)] relative">
-            <Skull className="text-red-500 drop-shadow-lg relative z-10 animate-pulse" size={64} />
+        <div className="text-center space-y-6">
+          <div 
+            className="inline-block p-6"
+            style={{ background: '#FF006E', border: '4px solid #000', boxShadow: '8px 8px 0px #000', transform: 'rotate(3deg)' }}
+          >
+            <Skull size={64} style={{ color: '#FFF' }} />
           </div>
 
-          <div className="text-3xl font-black italic mb-2 tracking-tight text-white">GAME OVER</div>
+          <div className="text-2xl font-black uppercase" style={{ color: '#000' }}>GAME OVER</div>
 
-          <div className="mb-8">
-            <p className="text-gray-400 text-sm font-bold uppercase tracking-widest mb-2">TARGET IDENTIFIED</p>
-            <div className="text-4xl font-mono font-black text-lexi-cyan drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+          <div>
+            <p className="text-sm font-black uppercase tracking-widest mb-2" style={{ color: '#4A4A4A' }}>LÖSUNG</p>
+            <div 
+              className="text-3xl font-mono font-black p-4"
+              style={{ background: '#06FFA5', border: '4px solid #000', color: '#000' }}
+            >
               {gameState?.targetWord}
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <Button className="flex-1" variant="secondary" onClick={() => { setView('LEVELS'); setGameState(null); }}>MENU</Button>
-            <Button
-              className="flex-1 bg-red-600 hover:bg-red-500 border-red-500 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
+          <div className="flex gap-4 pt-4">
+            <button 
+              className="flex-1 py-4 font-black uppercase text-sm transition-all"
+              style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
+              onClick={() => { setView('LEVELS'); setGameState(null); }}
+            >
+              MENU
+            </button>
+            <button
+              className="flex-1 py-4 font-black uppercase text-sm transition-all"
+              style={{ background: '#FF7F00', color: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
               onClick={() => {
                 const mode = gameConfig!.mode;
-
                 if (mode === GameMode.SUDOKU) {
                   setGameState((prev: any) => ({
                     ...prev,
@@ -3241,13 +3888,7 @@ export default function App() {
                     timeLeft: data.timeLimit
                   });
                 } else {
-                  const content = getLevelContent(
-                    mode,
-                    gameConfig!.tier,
-                    gameConfig!.levelId,
-                    user.language,
-                    user.playedWords || []
-                  );
+                  const content = getLevelContent(mode, gameConfig!.tier, gameConfig!.levelId, user.language, user.playedWords || []);
                   setGameState({
                     guesses: [],
                     currentGuess: '',
@@ -3265,7 +3906,7 @@ export default function App() {
               }}
             >
               RETRY
-            </Button>
+            </button>
           </div>
         </div>
       </Modal>
@@ -3352,58 +3993,78 @@ export default function App() {
         </div>
       </Modal>
 
-      {/* Premium Info Modal */}
-      {/* Premium Info Modal */}
-      <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="Premium Store">
-        <div className="space-y-4 sm:space-y-6">
+      {/* Premium Info Modal - Neo Brutal */}
+      <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="PREMIUM STORE">
+        <div className="space-y-5">
           {/* Header */}
           <div className="text-center">
-            <div className="inline-block p-3 sm:p-4 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.4)] mb-3 sm:mb-4">
-              <Crown className="text-white" size={24} fill="currentColor" />
+            <div 
+              className="inline-block p-4 mb-4"
+              style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
+            >
+              <Crown size={32} fill="currentColor" style={{ color: '#000' }} />
             </div>
-            <h3 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-              Wähle deinen Plan
-            </h3>
-            <p className="text-gray-400 text-xs sm:text-sm mt-1">Schalte alle Features frei & dominiere die Liga!</p>
+            <h3 className="text-xl font-black uppercase" style={{ color: '#000' }}>Wähle deinen Plan</h3>
+            <p className="text-sm font-bold mt-1" style={{ color: '#4A4A4A' }}>Schalte alle Features frei!</p>
           </div>
 
           {/* Plans Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {/* Plan 1: 7.99 */}
-            <div
-              className={`relative p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === 'monthly' ? 'border-yellow-400 bg-yellow-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Plan 1: Monthly */}
+            <button
+              className="relative p-4 text-left transition-all"
+              style={{ 
+                background: selectedPlan === 'monthly' ? '#FFBE0B' : '#FFF',
+                border: '4px solid #000',
+                boxShadow: selectedPlan === 'monthly' ? '8px 8px 0px #000' : '4px 4px 0px #000',
+                transform: selectedPlan === 'monthly' ? 'translateY(-4px)' : 'translateY(0)'
+              }}
               onClick={() => setSelectedPlan('monthly')}
             >
-              <div className="absolute -top-2 sm:-top-3 right-2 sm:right-4 bg-yellow-500 text-black text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full shadow-lg animate-pulse">BEST VALUE</div>
-              <h4 className="font-bold text-base sm:text-lg text-white">Monatlich</h4>
-              <div className="text-2xl sm:text-3xl font-black text-yellow-400 my-1 sm:my-2">7,99€</div>
-              <ul className="text-[10px] sm:text-xs text-gray-300 space-y-1 sm:space-y-2">
-                <li className="flex items-center gap-1 sm:gap-2"><Check size={10} className="sm:w-3 sm:h-3 text-green-400" /> Alle Premium Features</li>
-                <li className="flex items-center gap-1 sm:gap-2 text-yellow-300 font-bold"><Sparkles size={10} className="sm:w-3 sm:h-3" /> + 10 Level Boost (Sofort!)</li>
-                <li className="flex items-center gap-1 sm:gap-2"><Clock size={10} className="sm:w-3 sm:h-3 text-blue-400" /> Automatische Verlängerung</li>
+              <div 
+                className="absolute -top-3 right-2 px-2 py-1 text-[10px] font-black uppercase"
+                style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
+              >
+                BEST VALUE
+              </div>
+              <h4 className="font-black text-lg uppercase" style={{ color: '#000' }}>Monatlich</h4>
+              <div className="text-3xl font-black my-2" style={{ color: '#000' }}>7,99€</div>
+              <ul className="text-xs font-bold space-y-1" style={{ color: '#4A4A4A' }}>
+                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Premium Features</li>
+                <li className="flex items-center gap-2" style={{ color: '#FF006E' }}><Sparkles size={12} /> +10 Level Boost</li>
+                <li className="flex items-center gap-2"><Clock size={12} /> Auto-Verlängerung</li>
               </ul>
-            </div>
+            </button>
 
-            {/* Plan 2: 4.99 */}
-            <div
-              className={`relative p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${selectedPlan === '30days' ? 'border-purple-400 bg-purple-900/20 scale-[1.02] shadow-xl' : 'border-white/10 bg-black/20 hover:bg-white/5'}`}
+            {/* Plan 2: 30 Days */}
+            <button
+              className="relative p-4 text-left transition-all"
+              style={{ 
+                background: selectedPlan === '30days' ? '#8338EC' : '#FFF',
+                border: '4px solid #000',
+                boxShadow: selectedPlan === '30days' ? '8px 8px 0px #000' : '4px 4px 0px #000',
+                transform: selectedPlan === '30days' ? 'translateY(-4px)' : 'translateY(0)'
+              }}
               onClick={() => setSelectedPlan('30days')}
             >
-              <h4 className="font-bold text-base sm:text-lg text-white">30 Tage Pass</h4>
-              <div className="text-2xl sm:text-3xl font-black text-purple-400 my-1 sm:my-2">4,99€</div>
-              <ul className="text-[10px] sm:text-xs text-gray-300 space-y-1 sm:space-y-2">
-                <li className="flex items-center gap-1 sm:gap-2"><Check size={10} className="sm:w-3 sm:h-3 text-green-400" /> Alle Premium Features</li>
-                <li className="flex items-center gap-1 sm:gap-2"><CreditCard size={10} className="sm:w-3 sm:h-3 text-gray-400" /> Kein Abo (Einmalig)</li>
+              <h4 className="font-black text-lg uppercase" style={{ color: selectedPlan === '30days' ? '#FFF' : '#000' }}>30 Tage Pass</h4>
+              <div className="text-3xl font-black my-2" style={{ color: selectedPlan === '30days' ? '#FFF' : '#8338EC' }}>4,99€</div>
+              <ul className="text-xs font-bold space-y-1" style={{ color: selectedPlan === '30days' ? 'rgba(255,255,255,0.8)' : '#4A4A4A' }}>
+                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Premium Features</li>
+                <li className="flex items-center gap-2"><CreditCard size={12} /> Einmalzahlung</li>
               </ul>
-            </div>
+            </button>
           </div>
 
           {/* Payment Section */}
-          <div className="bg-black/40 p-3 sm:p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center min-h-[80px] sm:min-h-[100px]">
-            <h4 className="text-xs sm:text-sm font-bold text-gray-400 mb-3 sm:mb-4 uppercase tracking-wider text-center flex items-center gap-2">
-              <CreditCard size={14} className="sm:w-4 sm:h-4" /> Bezahlen mit PayPal
-            </h4>
-            <div className="w-full max-w-[250px] relative z-0">
+          <div 
+            className="p-4 flex flex-col items-center"
+            style={{ background: '#FFF8E7', border: '4px solid #000' }}
+          >
+            <div className="flex items-center gap-2 mb-4 font-black text-sm uppercase" style={{ color: '#000' }}>
+              <CreditCard size={16} /> Bezahlen mit PayPal
+            </div>
+            <div className="w-full max-w-[250px]">
               {selectedPlan === 'monthly' && (
                 <PayPalButton amount="7.99" onSuccess={(d: any) => handlePayPalSuccess(d, 'monthly')} />
               )}
@@ -3414,33 +4075,34 @@ export default function App() {
           </div>
 
           {/* Voucher Section */}
-          <div className="border-t border-white/10 pt-4 sm:pt-6">
-            <h4 className="text-xs sm:text-sm font-bold text-gray-400 mb-2 sm:mb-3 flex items-center gap-2">
-              <Gem size={14} className="sm:w-4 sm:h-4" /> Gutscheincode einlösen
-            </h4>
+          <div className="pt-4" style={{ borderTop: '3px solid #000' }}>
+            <div className="flex items-center gap-2 mb-3 font-black text-sm uppercase" style={{ color: '#000' }}>
+              <Gem size={16} /> Gutscheincode einlösen
+            </div>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={voucherCode}
-                onChange={(e) => setVoucherCode(e.target.value)}
-                placeholder="Code eingeben..."
-                className="flex-1 bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 rounded-lg px-2 sm:px-3 py-2 text-sm sm:text-base text-black dark:text-white focus:border-yellow-400 outline-none transition-colors font-mono uppercase"
+                onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                placeholder="CODE EINGEBEN..."
+                className="flex-1 p-3 font-mono font-bold uppercase"
+                style={{ background: '#FFF8E7', border: '3px solid #000', color: '#000' }}
               />
               <button
                 onClick={handleVoucherRedeem}
-                className="bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-black dark:text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-colors"
+                className="px-4 py-3 font-black text-sm uppercase transition-all"
+                style={{ background: '#06FFA5', color: '#000', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}
               >
                 Einlösen
               </button>
             </div>
-            {/* Error/Success Messages reuse existing states */}
             {voucherError && (
-              <div className="mt-2 text-red-500 text-xs font-bold animate-pulse flex items-center gap-1">
+              <div className="mt-2 text-xs font-black flex items-center gap-1" style={{ color: '#FF006E' }}>
                 <AlertTriangle size={12} /> {voucherError}
               </div>
             )}
             {voucherSuccess && (
-              <div className="mt-2 text-green-500 text-xs font-bold flex items-center gap-1">
+              <div className="mt-2 text-xs font-black flex items-center gap-1" style={{ color: '#06FFA5' }}>
                 <Check size={12} /> {voucherSuccess}
               </div>
             )}
@@ -3448,272 +4110,297 @@ export default function App() {
         </div>
       </Modal>
 
-      {/* Premium Required Modal */}
-      < Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title={t.HOME.PREMIUM_REQUIRED_TITLE} >
-        <div className="text-center space-y-6">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center border-2 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]">
-            <Lock size={32} className="text-yellow-500" />
+      {/* Premium Required Modal - Neo Brutal */}
+      <Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title={t.HOME.PREMIUM_REQUIRED_TITLE}>
+        <div className="text-center space-y-5">
+          <div 
+            className="w-20 h-20 mx-auto flex items-center justify-center"
+            style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
+          >
+            <Lock size={36} style={{ color: '#000' }} />
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-xl font-black text-white">{t.HOME.PREMIUM_REQUIRED_LOCKED}</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">
+            <h3 className="text-xl font-black uppercase" style={{ color: '#000' }}>{t.HOME.PREMIUM_REQUIRED_LOCKED}</h3>
+            <p className="text-sm font-bold leading-relaxed" style={{ color: '#4A4A4A' }}>
               {t.HOME.PREMIUM_REQUIRED_DESC}
             </p>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <Button
+          <div className="flex flex-col gap-3 pt-4">
+            <button
               onClick={() => { setShowPremiumRequiredModal(false); setView('SEASON'); }}
-              fullWidth
-              className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black font-black border-none hover:brightness-110"
+              className="w-full py-4 font-black uppercase text-sm transition-all"
+              style={{ background: '#FFBE0B', color: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
             >
               {t.HOME.PREMIUM_REQUIRED_GO}
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={() => setShowPremiumRequiredModal(false)}
-              fullWidth
-              className="bg-transparent border border-white/10 text-gray-400 hover:text-white hover:bg-white/5"
+              className="w-full py-4 font-black uppercase text-sm transition-all"
+              style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
             >
               {t.HOME.PREMIUM_REQUIRED_LATER}
-            </Button>
+            </button>
           </div>
         </div>
-      </Modal >
+      </Modal>
 
-      {/* Username Change Confirmation Modal */}
-      < Modal
-        isOpen={showUsernameConfirm}
-        onClose={() => setShowUsernameConfirm(false)}
-        title="Benutzername ändern?"
-      >
-        <div className="text-center space-y-6">
-          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <User size={24} className="text-yellow-400" />
-              <h3 className="text-lg font-bold text-white">Bestätigung erforderlich</h3>
-            </div>
-            <p className="text-sm text-yellow-300 font-bold">
-              Neuer Benutzername: <span className="text-white">{editUsername}</span>
+      {/* Username Change Confirmation Modal - Neo Brutal */}
+      <Modal isOpen={showUsernameConfirm} onClose={() => setShowUsernameConfirm(false)} title="BESTÄTIGUNG">
+        <div className="space-y-5">
+          <div 
+            className="p-4 text-center"
+            style={{ background: '#FFBE0B', border: '4px solid #000' }}
+          >
+            <User size={32} style={{ color: '#000' }} className="mx-auto mb-2" />
+            <p className="font-black text-sm uppercase" style={{ color: '#000' }}>
+              Neuer Name: <span style={{ color: '#000' }}>{editUsername}</span>
             </p>
-            <p className="text-sm text-yellow-400 mt-2">
+            <p className="font-bold text-sm mt-2" style={{ color: '#000' }}>
               Kosten: 2500 Münzen
             </p>
-            <p className="text-xs text-red-400 mt-3 font-bold">
+          </div>
+
+          <div 
+            className="p-3 text-center"
+            style={{ background: '#FFF', border: '3px solid #FF006E' }}
+          >
+            <p className="text-xs font-black" style={{ color: '#FF006E' }}>
               ⚠️ Diese Änderung kann nicht rückgängig gemacht werden!
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-2">
             <button
               onClick={() => setShowUsernameConfirm(false)}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+              className="flex-1 py-4 font-black text-sm uppercase transition-all"
+              style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
             >
               Abbrechen
             </button>
             <button
               onClick={confirmUsernameChange}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+              className="flex-1 py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all"
+              style={{ background: '#06FFA5', color: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
             >
               <User size={16} /> Bestätigen
             </button>
           </div>
         </div>
-        {/* Cloud Login Handler */}
-        {/* This function was missing and caused a crash. It handles the post-login logic. */}
       </Modal>
 
-      {/* Profile Modal */}
+      {/* Profile Modal - Neo Brutal */}
       <Modal isOpen={showProfile} onClose={() => setShowProfile(false)} title={t.PROFILE.TITLE}>
-        <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className="space-y-5 max-h-[70vh] overflow-y-auto">
           {/* Username Section */}
           {cloudUsername && (
             <>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.USERNAME}</h3>
-              <div className="bg-gray-900 p-4 rounded-xl border border-white/10 mb-4">
-                <p className="text-xs text-gray-400 mb-2">{t.PROFILE.CURRENT}: <span className="text-white font-bold">{cloudUsername}</span></p>
+              <div 
+                className="p-4"
+                style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #FFBE0B' }}
+              >
+                <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FFBE0B', color: '#000', border: '2px solid #000' }}>
+                  {t.PROFILE.USERNAME}
+                </div>
+                <p className="text-xs font-bold mb-2" style={{ color: '#4A4A4A' }}>
+                  {t.PROFILE.CURRENT}: <span style={{ color: '#000' }}>{cloudUsername}</span>
+                </p>
                 <input
                   type="text"
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white mb-2"
+                  className="w-full p-3 font-bold mb-2"
+                  style={{ background: '#FFF8E7', border: '3px solid #000', color: '#000' }}
                   value={editUsername}
-                  onChange={(e) => {
-                    setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
-                  }}
+                  onChange={(e) => setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
                   placeholder={t.PROFILE.NEW_USER_PLACEHOLDER}
                 />
-                {usernameError && <p className="text-red-400 text-xs font-bold">{usernameError}</p>}
-                <p className="text-xs text-yellow-400 mt-2">{t.PROFILE.COST}: 2500 {t.HOME.COINS || "Coins"}</p>
+                {usernameError && <p className="text-xs font-black mb-2" style={{ color: '#FF006E' }}>{usernameError}</p>}
+                <p className="text-xs font-bold mb-2" style={{ color: '#FF7F00' }}>{t.PROFILE.COST}: 2500 Coins</p>
                 <button
                   onClick={handleUsernameChange}
-                  className="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase rounded-lg mt-2 transition-colors"
+                  className="w-full py-3 font-black uppercase text-sm transition-all"
+                  style={{ background: '#FFBE0B', color: '#000', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}
                 >
                   {t.PROFILE.CHANGE}
                 </button>
               </div>
 
-              {/* Email & Password Reset Section */}
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ACCOUNT SICHERHEIT</h3>
-              <div className="bg-gray-900 p-4 rounded-xl border border-white/10 mb-4">
+              {/* Account Security */}
+              <div 
+                className="p-4"
+                style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #8338EC' }}
+              >
+                <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#8338EC', color: '#FFF', border: '2px solid #000' }}>
+                  ACCOUNT SICHERHEIT
+                </div>
                 {auth.currentUser?.email && (
                   <div className="mb-3">
-                    <p className="text-xs text-gray-400 mb-1">E-MAIL ADRESSE</p>
-                    <p className="text-sm font-bold text-white">{auth.currentUser.email}</p>
+                    <p className="text-xs font-bold uppercase" style={{ color: '#4A4A4A' }}>E-MAIL</p>
+                    <p className="font-black" style={{ color: '#000' }}>{auth.currentUser.email}</p>
                   </div>
                 )}
-
                 <button
                   onClick={async () => {
                     if (!auth.currentUser?.email) return;
                     if (confirm(`Passwort-Reset E-Mail an ${auth.currentUser.email} senden?`)) {
                       const { resetPassword } = await import('./utils/firebase');
                       const result = await resetPassword(auth.currentUser.email);
-                      if (result.success) {
-                        alert('E-Mail zum Zurücksetzen des Passworts wurde gesendet!');
-                      } else {
-                        alert('Fehler: ' + result.error);
-                      }
+                      alert(result.success ? 'E-Mail gesendet!' : 'Fehler: ' + result.error);
                     }
                   }}
-                  className="w-full py-3 bg-gray-800 hover:bg-gray-700 border border-white/10 text-white font-bold uppercase rounded-lg transition-colors text-xs flex items-center justify-center gap-2"
+                  className="w-full py-3 font-black uppercase text-xs flex items-center justify-center gap-2 transition-all"
+                  style={{ background: '#FFF', color: '#000', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}
                 >
                   <Lock size={14} /> Passwort zurücksetzen
                 </button>
               </div>
 
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">FREUNDESCODE</h3>
-              <div className="bg-gray-900 p-4 rounded-xl border border-white/10 mb-4 text-center">
-                <div className="text-2xl font-mono font-black text-cyan-400 tracking-[0.2em] select-all cursor-pointer hover:text-white transition-colors"
-                  onClick={() => {
-                    if (user.friendCode) {
-                      navigator.clipboard.writeText(user.friendCode);
-                      // Optional: Toast notification
-                    }
-                  }}>
+              {/* Friend Code */}
+              <div 
+                className="p-4 text-center"
+                style={{ background: '#06FFA5', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
+              >
+                <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FFF', color: '#000', border: '2px solid #000' }}>
+                  FREUNDESCODE
+                </div>
+                <div 
+                  className="text-2xl font-mono font-black tracking-[0.2em] select-all cursor-pointer p-3 transition-all"
+                  style={{ background: '#FFF', border: '3px solid #000', color: '#000' }}
+                  onClick={() => user.friendCode && navigator.clipboard.writeText(user.friendCode)}
+                >
                   {user.friendCode || '-----'}
                 </div>
-                <p className="text-[10px] text-gray-600 mt-1">Tippen zum Kopieren</p>
+                <p className="text-xs font-bold mt-2" style={{ color: '#000' }}>Tippen zum Kopieren</p>
               </div>
 
               <button
-                onClick={() => {
-                  setShowProfile(false);
-                  setShowFriendsManager(true);
-                }}
-                className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:brightness-110 text-white font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2"
+                onClick={() => { setShowProfile(false); setShowFriendsManager(true); }}
+                className="w-full py-4 font-black uppercase text-sm flex items-center justify-center gap-2 transition-all"
+                style={{ background: '#8338EC', color: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
               >
-                <Users size={16} /> Freunde verwalten
+                <Users size={18} /> Freunde verwalten
               </button>
             </>
           )}
 
           {/* Avatar Preview */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.AVATAR_PREVIEW}</h3>
+          <div 
+            className="p-4"
+            style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #FF006E' }}
+          >
+            <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}>
+              {t.PROFILE.AVATAR_PREVIEW}
+            </div>
             <div className="flex justify-center mb-4">
-              <div className={`w-24 h-24 rounded-full border-4 border-white/20 overflow-hidden ${getAvatarEffect(editFrame)}`}>
-                <img
-                  src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`}
-                  alt="Avatar"
-                  className="w-full h-full bg-gray-800"
-                />
+              <div 
+                className={`w-24 h-24 overflow-hidden bg-[#FFF8E7] ${getAvatarEffect(editFrame)}`}
+                style={{ border: '4px solid #000' }}
+              >
+                <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`} alt="Avatar" className="w-full h-full object-cover" />
               </div>
             </div>
-          </div>
 
-          {/* Avatar Selection */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.CHOOSE_AVATAR}</h3>
-            <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+            <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FFF8E7', color: '#000', border: '2px solid #000' }}>
+              {t.PROFILE.CHOOSE_AVATAR}
+            </div>
+            <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
               {(user.ownedAvatars || [AVATARS[0]]).map(avatar => (
                 <button
                   key={avatar}
                   onClick={() => setEditAvatar(avatar)}
-                  className={`aspect-square rounded-xl border-2 overflow-hidden transition-all ${editAvatar === avatar ? 'border-lexi-fuchsia scale-105' : 'border-white/10 opacity-50 hover:opacity-100'}`}
+                  className="aspect-square overflow-hidden transition-all"
+                  style={{ 
+                    border: editAvatar === avatar ? '4px solid #FF006E' : '3px solid #000',
+                    background: '#FFF8E7',
+                    transform: editAvatar === avatar ? 'scale(1.05)' : 'scale(1)'
+                  }}
                 >
-                  <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full bg-gray-800" />
+                  <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full" />
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Age Input (LOCKED) */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-              {t.PROFILE.AGE} <Lock size={12} className="text-red-400" />
-            </h3>
-            <div className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-gray-400 font-bold cursor-not-allowed flex items-center justify-between">
-              <span>{editAge}</span>
-              <span className="text-xs text-red-500 uppercase">{t.PROFILE.LOCKED}</span>
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-4 text-center" style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}>
+              <p className="text-xs font-black uppercase" style={{ color: '#000' }}>Level</p>
+              <p className="text-3xl font-black" style={{ color: '#000' }}>{user.level}</p>
             </div>
-            <p className="text-[10px] text-gray-600 mt-1">{t.PROFILE.AGE_MSG}</p>
-          </div>
-
-          {/* Stats Display */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.PROFILE.STATS}</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-gray-800 p-3 rounded-lg border border-white/5">
-                <p className="text-[10px] text-gray-400 uppercase">Level</p>
-                <p className="text-xl font-bold text-white">{user.level}</p>
-              </div>
-              <div className="bg-gray-800 p-3 rounded-lg border border-white/5">
-                <p className="text-[10px] text-gray-400 uppercase">XP</p>
-                <p className="text-xl font-bold text-lexi-fuchsia">{user.xp}</p>
-              </div>
+            <div className="p-4 text-center" style={{ background: '#FF006E', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}>
+              <p className="text-xs font-black uppercase" style={{ color: '#FFF' }}>XP</p>
+              <p className="text-3xl font-black" style={{ color: '#FFF' }}>{user.xp}</p>
             </div>
           </div>
 
-          {/* Frames / Effects Selection */}
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rahmen & Effekte</h3>
-            <div className="grid grid-cols-4 gap-2">
-              <button
-                onClick={() => setEditFrame('none')}
-                className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-gray-800 ${editFrame === 'none' ? 'border-lexi-fuchsia' : 'border-white/10'}`}
-              >
-                <span className="text-xs text-gray-500">Kein</span>
-              </button>
-              {(user.ownedFrames || []).map((frameId) => {
-                const effectClass = getAvatarEffect(frameId);
-                return (
+          {/* Age (Locked) */}
+          <div className="p-3 flex items-center justify-between" style={{ background: '#E5E5E5', border: '3px solid #CCC' }}>
+            <div>
+              <span className="text-xs font-black uppercase" style={{ color: '#999' }}>{t.PROFILE.AGE}</span>
+              <span className="ml-2 font-black" style={{ color: '#666' }}>{editAge}</span>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-black uppercase" style={{ color: '#999' }}>
+              <Lock size={12} /> {t.PROFILE.LOCKED}
+            </div>
+          </div>
+
+          {/* Frames */}
+          {(user.ownedFrames || []).length > 0 && (
+            <div className="p-4" style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #FF7F00' }}>
+              <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FF7F00', color: '#000', border: '2px solid #000' }}>
+                Rahmen & Effekte
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                <button
+                  onClick={() => setEditFrame('none')}
+                  className="aspect-square flex items-center justify-center"
+                  style={{ background: editFrame === 'none' ? '#FFBE0B' : '#FFF', border: '3px solid #000' }}
+                >
+                  <span className="text-xs font-black" style={{ color: '#000' }}>Kein</span>
+                </button>
+                {(user.ownedFrames || []).map((frameId) => (
                   <button
                     key={frameId}
                     onClick={() => setEditFrame(frameId)}
-                    className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-gray-800 relative overflow-hidden ${editFrame === frameId ? 'border-lexi-fuchsia' : 'border-white/10'}`}
+                    className={`aspect-square flex items-center justify-center relative overflow-hidden ${getAvatarEffect(frameId)}`}
+                    style={{ background: editFrame === frameId ? '#FFBE0B' : '#FFF', border: '3px solid #000' }}
                   >
-                    <div className={`w-8 h-8 rounded-full bg-gray-700 ${effectClass}`}></div>
+                    <div className="w-8 h-8" style={{ background: '#CCC' }}></div>
                   </button>
-                );
-              })}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Delete Account */}
-          <div className="border-t border-red-900/30 pt-4 mt-8">
-            <h3 className="text-xs font-bold text-red-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <AlertTriangle size={12} /> {t.PROFILE.DELETE_ACCOUNT}
-            </h3>
-            <p className="text-[10px] text-red-400 mb-3 font-bold">
-              {t.PROFILE.DELETE_WARNING}
-            </p>
+          <div className="p-4" style={{ background: '#FFF', border: '4px solid #FF006E' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle size={14} style={{ color: '#FF006E' }} />
+              <span className="font-black text-xs uppercase" style={{ color: '#FF006E' }}>{t.PROFILE.DELETE_ACCOUNT}</span>
+            </div>
+            <p className="text-xs font-bold mb-3" style={{ color: '#FF006E' }}>{t.PROFILE.DELETE_WARNING}</p>
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="w-full py-3 bg-red-900/20 border border-red-900/50 hover:bg-red-900/40 text-red-500 font-bold uppercase rounded-lg transition-colors text-xs"
+              className="w-full py-3 font-black uppercase text-xs transition-all"
+              style={{ background: '#FFF', color: '#FF006E', border: '3px solid #FF006E' }}
             >
               {t.PROFILE.DELETE_ACCOUNT}
             </button>
           </div>
 
-          <div className="flex gap-2 mt-6 pt-4 border-t border-white/10">
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
             <button
               onClick={() => setShowProfile(false)}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+              className="flex-1 py-4 font-black uppercase text-sm transition-all"
+              style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
             >
               {t.PROFILE.CANCEL}
             </button>
             <button
               onClick={saveProfile}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white hover:brightness-110 transition-all shadow-lg shadow-purple-900/20"
+              className="flex-1 py-4 font-black uppercase text-sm transition-all"
+              style={{ background: '#06FFA5', color: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
             >
               Speichern
             </button>
@@ -3721,41 +4408,45 @@ export default function App() {
         </div>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal - Neo Brutal */}
       <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title={t.PROFILE.DELETE_ACCOUNT}>
-        <div className="p-6 space-y-4">
-          <div className="bg-red-900/20 border border-red-500/30 p-4 rounded-xl flex items-start gap-3">
-            <AlertTriangle className="text-red-500 shrink-0 mt-1" size={24} />
+        <div className="space-y-5">
+          <div 
+            className="p-4 flex items-start gap-3"
+            style={{ background: '#FFF', border: '4px solid #FF006E' }}
+          >
+            <AlertTriangle size={24} style={{ color: '#FF006E' }} className="shrink-0 mt-1" />
             <div>
-              <h3 className="font-bold text-red-400 mb-1">{t.PROFILE.DELETE_WARNING}</h3>
-              <p className="text-xs text-red-300/80 leading-relaxed">
+              <h3 className="font-black mb-1" style={{ color: '#FF006E' }}>{t.PROFILE.DELETE_WARNING}</h3>
+              <p className="text-xs font-bold leading-relaxed" style={{ color: 'rgba(255,0,110,0.7)' }}>
                 Alle deine Fortschritte, Käufe und Statistiken werden unwiderruflich gelöscht.
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-500 uppercase">{t.PROFILE.CONFIRM_MSG}</label>
+            <label className="text-xs font-black uppercase" style={{ color: '#4A4A4A' }}>{t.PROFILE.CONFIRM_MSG}</label>
             <input
               type="text"
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
               placeholder={t.PROFILE.CONFIRM_PLACEHOLDER}
-              className="w-full bg-black border border-red-900/50 rounded-xl p-4 text-white font-mono text-center focus:border-red-500 focus:outline-none transition-colors"
+              className="w-full p-4 font-mono text-center"
+              style={{ background: '#FFF8E7', border: '4px solid #FF006E', color: '#000' }}
             />
           </div>
 
           <div className="flex gap-3 pt-4">
             <button
               onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+              className="flex-1 py-4 font-black text-sm uppercase transition-all"
+              style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
             >
               {t.PROFILE.CANCEL}
             </button>
             <button
               onClick={() => {
                 if (deleteInput.toLowerCase() === 'delete') {
-                  // TODO: Implement server deletion via Firebase
                   alert('Profil-Löschung noch nicht implementiert. Bald verfügbar!');
                   setShowDeleteConfirm(false);
                   setDeleteInput('');
@@ -3764,7 +4455,8 @@ export default function App() {
                 }
               }}
               disabled={deleteInput.toLowerCase() !== 'delete'}
-              className="flex-1 py-3 rounded-xl font-bold text-sm uppercase bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: '#FF006E', color: '#FFF', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
             >
               <Skull size={16} /> {t.PROFILE.CONFIRM_DELETE}
             </button>

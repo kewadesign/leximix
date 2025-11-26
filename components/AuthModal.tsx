@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './UI';
 import { registerUser, loginUser, resetPassword } from '../utils/firebase';
-import { User, Lock, AlertCircle, Calculator, Mail, CheckCircle } from 'lucide-react';
+import {
+    IoMailSharp,
+    IoPersonSharp,
+    IoLockClosedSharp,
+    IoWarningSharp,
+    IoCalculatorSharp,
+    IoCheckmarkCircleSharp,
+    IoGlobeSharp,
+    IoSettingsSharp
+} from 'react-icons/io5';
 import { TRANSLATIONS } from '../translations';
 import { Language } from '../types';
 
@@ -180,27 +189,65 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
         setShowVerificationSent(false);
     };
 
+    // Rainbow stripe component
+    const RainbowStripe = () => (
+        <div className="flex h-3 w-full">
+            <div className="flex-1" style={{ background: '#FF006E' }}></div>
+            <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+            <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+            <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+            <div className="flex-1" style={{ background: '#8338EC' }}></div>
+        </div>
+    );
+
     // If verification sent, show special view
     if (showVerificationSent) {
         const content = (
-            <div className="flex flex-col items-center justify-center p-6 space-y-6 text-center">
-                <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center">
-                    <Mail size={40} className="text-green-400" />
+            <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8" style={{ background: '#FFF8E7' }}>
+                <RainbowStripe />
+                <div className="flex flex-col items-center space-y-6 text-center max-w-md">
+                    <div
+                        className="p-6"
+                        style={{
+                            background: '#06FFA5',
+                            border: '4px solid #000',
+                            boxShadow: '8px 8px 0px #000',
+                            transform: 'skew(-5deg)'
+                        }}
+                    >
+                        <IoCheckmarkCircleSharp size={60} color="#000" />
+                    </div>
+                    <h3 className="text-4xl font-black uppercase" style={{ color: '#000', transform: 'skew(-5deg)' }}>Fast geschafft!</h3>
+                    <p className="text-lg font-bold" style={{ color: '#4A4A4A' }}>
+                        Wir haben dir eine Bestätigungs-E-Mail an <span style={{ color: '#FF006E' }}>{email}</span> gesendet.
+                        Bitte klicke auf den Link in der E-Mail, um deinen Account zu aktivieren.
+                    </p>
+                    <button
+                        onClick={() => {
+                            setMode('login');
+                            setShowVerificationSent(false);
+                        }}
+                        className="w-full py-4 px-8 font-black uppercase text-xl"
+                        style={{
+                            background: '#FF7F00',
+                            color: '#000',
+                            border: '4px solid #000',
+                            boxShadow: '8px 8px 0px #000',
+                            transform: 'skew(-5deg)',
+                            transition: 'all 0.1s linear'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                            e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'skew(-5deg)';
+                            e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                        }}
+                    >
+                        Zum Login
+                    </button>
                 </div>
-                <h3 className="text-2xl font-bold text-white">Fast geschafft!</h3>
-                <p className="text-gray-300">
-                    Wir haben dir eine Bestätigungs-E-Mail an <span className="text-lexi-fuchsia font-bold">{email}</span> gesendet.
-                    Bitte klicke auf den Link in der E-Mail, um deinen Account zu aktivieren.
-                </p>
-                <button
-                    onClick={() => {
-                        setMode('login');
-                        setShowVerificationSent(false);
-                    }}
-                    className="w-full py-4 bg-gray-800 border border-white/10 rounded-xl text-white font-bold hover:bg-gray-700 transition-all"
-                >
-                    Zum Login
-                </button>
             </div>
         );
 
@@ -211,24 +258,51 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     // If password reset sent, show special view
     if (showPasswordResetSent) {
         const content = (
-            <div className="flex flex-col items-center justify-center p-6 space-y-6 text-center">
-                <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center">
-                    <CheckCircle size={40} className="text-blue-400" />
+            <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8" style={{ background: '#FFF8E7' }}>
+                <RainbowStripe />
+                <div className="flex flex-col items-center space-y-6 text-center max-w-md">
+                    <div
+                        className="p-6"
+                        style={{
+                            background: '#8338EC',
+                            border: '4px solid #000',
+                            boxShadow: '8px 8px 0px #000',
+                            transform: 'skew(-5deg)'
+                        }}
+                    >
+                        <IoCheckmarkCircleSharp size={60} color="#FFF" />
+                    </div>
+                    <h3 className="text-4xl font-black uppercase" style={{ color: '#000', transform: 'skew(-5deg)' }}>{t.resetEmailSent}</h3>
+                    <p className="text-lg font-bold" style={{ color: '#4A4A4A' }}>
+                        {t.checkEmail}
+                    </p>
+                    <button
+                        onClick={() => {
+                            setMode('login');
+                            setShowPasswordResetSent(false);
+                            resetForm();
+                        }}
+                        className="w-full py-4 px-8 font-black uppercase text-xl"
+                        style={{
+                            background: '#FF006E',
+                            color: '#000',
+                            border: '4px solid #000',
+                            boxShadow: '8px 8px 0px #000',
+                            transform: 'skew(-5deg)',
+                            transition: 'all 0.1s linear'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                            e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'skew(-5deg)';
+                            e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                        }}
+                    >
+                        {t.backToLogin}
+                    </button>
                 </div>
-                <h3 className="text-2xl font-bold text-white">{t.resetEmailSent}</h3>
-                <p className="text-gray-300">
-                    {t.checkEmail}
-                </p>
-                <button
-                    onClick={() => {
-                        setMode('login');
-                        setShowPasswordResetSent(false);
-                        resetForm();
-                    }}
-                    className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-bold hover:brightness-110 transition-all rounded-xl"
-                >
-                    {t.backToLogin}
-                </button>
             </div>
         );
 
@@ -237,244 +311,548 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     }
 
     const formContent = (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-                <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-3 flex items-center gap-2">
-                    <AlertCircle size={18} className="text-red-400" />
-                    <span className="text-sm text-red-300">{error}</span>
-                </div>
-            )}
+        <div className="min-h-screen flex flex-col" style={{ background: '#FFF8E7' }}>
+            <RainbowStripe />
 
-            {mode === 'select_auth_type' && (
-                <div className="space-y-3">
-                    <button
-                        type="button"
-                        onClick={() => setMode('login')}
-                        className="w-full py-4 bg-gray-800 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-all group"
-                    >
-                        <span className="font-bold text-white text-lg group-hover:text-lexi-fuchsia transition-colors">{t.login}</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setMode('language_select')}
-                        className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg"
-                    >
-                        {t.register}
-                    </button>
-                </div>
-            )}
-
-            {mode === 'language_select' && (
-                <div className="grid grid-cols-1 gap-3">
-                    <button
-                        type="button"
-                        onClick={() => { onLanguageChange(Language.DE); setMode('age_verify'); }}
-                        className="p-4 bg-gray-800 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-all group"
-                    >
-                        <span className="text-2xl">🇩🇪</span>
-                        <span className="font-bold text-white group-hover:text-lexi-fuchsia transition-colors">DEUTSCH</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => { onLanguageChange(Language.EN); setMode('age_verify'); }}
-                        className="p-4 bg-gray-800 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-all group"
-                    >
-                        <span className="text-2xl">🇬🇧</span>
-                        <span className="font-bold text-white group-hover:text-lexi-fuchsia transition-colors">ENGLISH</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => { onLanguageChange(Language.ES); setMode('age_verify'); }}
-                        className="p-4 bg-gray-800 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-all group"
-                    >
-                        <span className="text-2xl">🇪🇸</span>
-                        <span className="font-bold text-white group-hover:text-lexi-fuchsia transition-colors">ESPAÑOL</span>
-                    </button>
-                </div>
-            )}
-
-            {mode === 'age_verify' && (
-                <div>
-                    <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.age}</label>
-                    <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        value={age || ''}
-                        onChange={(e) => {
-                            const val = e.target.value.replace(/[^0-9]/g, '');
-                            const num = parseInt(val);
-                            if (!val || num <= 120) {
-                                setAge(val ? num : 0);
-                            }
-                        }}
-                        className="w-full px-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white text-center font-bold text-xl focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                        placeholder={t.age}
-                        autoFocus
-                    />
-                    <p className="text-xs text-gray-500 mt-2 text-center">{t.minAge}</p>
-                    <button
-                        type="submit"
-                        disabled={!age}
-                        className="w-full mt-4 py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50"
-                    >
-                        {TRANSLATIONS[lang].ONBOARDING.CONTINUE}
-                    </button>
-                </div>
-            )}
-
-            {(mode === 'login' || mode === 'register' || mode === 'password_reset') && (
-                <>
-                    {/* Email */}
-                    <div>
-                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">E-MAIL</label>
-                        <div className="relative">
-                            <Mail size={18} className="absolute left-3 top-3 text-gray-500" />
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                placeholder="deine@email.com"
-                                disabled={loading}
-                                autoFocus
-                            />
+            <div className="flex-1 flex items-center justify-center p-6">
+                <div className="w-full max-w-md space-y-6">
+                    {/* Header Icon */}
+                    {mode === 'select_auth_type' && (
+                        <div className="flex justify-center mb-6">
+                            <div
+                                className="p-6"
+                                style={{
+                                    background: '#FFBE0B',
+                                    border: '4px solid #000',
+                                    boxShadow: '8px 8px 0px #000',
+                                    transform: 'skew(-5deg)'
+                                }}
+                            >
+                                <IoPersonSharp size={48} color="#000" />
+                            </div>
                         </div>
-                    </div>
+                    )}
+                    {mode === 'language_select' && (
+                        <div className="flex justify-center mb-6">
+                            <div
+                                className="p-6"
+                                style={{
+                                    background: '#FFBE0B',
+                                    border: '4px solid #000',
+                                    boxShadow: '8px 8px 0px #000',
+                                    transform: 'skew(-5deg)'
+                                }}
+                            >
+                                <IoGlobeSharp size={48} color="#000" />
+                            </div>
+                        </div>
+                    )}
+                    {mode === 'age_verify' && (
+                        <div className="flex justify-center mb-6">
+                            <div
+                                className="p-6"
+                                style={{
+                                    background: '#FF006E',
+                                    border: '4px solid #000',
+                                    boxShadow: '8px 8px 0px #000',
+                                    transform: 'skew(-5deg)'
+                                }}
+                            >
+                                <IoSettingsSharp size={48} color="#FFF" />
+                            </div>
+                        </div>
+                    )}
 
-                    {/* Username - ONLY FOR REGISTER */}
-                    {mode === 'register' && (
-                        <div>
-                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.username}</label>
-                            <div className="relative">
-                                <User size={18} className="absolute left-3 top-3 text-gray-500" />
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {error && (
+                            <div
+                                className="p-4 flex items-center gap-3"
+                                style={{
+                                    background: '#FF006E',
+                                    color: '#FFF',
+                                    border: '4px solid #000',
+                                    boxShadow: '4px 4px 0px #000'
+                                }}
+                            >
+                                <IoWarningSharp size={24} color="#FFF" />
+                                <span className="text-sm font-bold">{error}</span>
+                            </div>
+                        )}
+
+                        {mode === 'select_auth_type' && (
+                            <div className="space-y-4">
+                                <h2 className="text-3xl font-black uppercase text-center mb-8" style={{ color: '#000' }}>
+                                    Willkommen!
+                                </h2>
+                                <button
+                                    type="button"
+                                    onClick={() => setMode('login')}
+                                    className="w-full py-5 px-8 font-black uppercase text-xl"
+                                    style={{
+                                        background: '#FF7F00',
+                                        color: '#000',
+                                        border: '4px solid #000',
+                                        boxShadow: '8px 8px 0px #000',
+                                        transform: 'skew(-5deg)',
+                                        transition: 'all 0.1s linear'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg)';
+                                        e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                    }}
+                                >
+                                    {t.login}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setMode('language_select')}
+                                    className="w-full py-5 px-8 font-black uppercase text-xl"
+                                    style={{
+                                        background: '#FF006E',
+                                        color: '#000',
+                                        border: '4px solid #000',
+                                        boxShadow: '8px 8px 0px #000',
+                                        transform: 'skew(-5deg)',
+                                        transition: 'all 0.1s linear'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg)';
+                                        e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                    }}
+                                >
+                                    {t.register}
+                                </button>
+                            </div>
+                        )}
+
+                        {mode === 'language_select' && (
+                            <div className="space-y-4">
+                                <h2 className="text-3xl font-black uppercase text-center mb-6" style={{ color: '#000' }}>
+                                    Wähle deine Sprache
+                                </h2>
+                                <button
+                                    type="button"
+                                    onClick={() => { onLanguageChange(Language.DE); setMode('age_verify'); }}
+                                    className="w-full p-6 flex items-center justify-center gap-4 font-black uppercase text-xl"
+                                    style={{
+                                        background: '#FF006E',
+                                        color: '#000',
+                                        border: '4px solid #000',
+                                        boxShadow: '8px 8px 0px #000',
+                                        transform: 'skew(-5deg)',
+                                        transition: 'all 0.1s linear'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg)';
+                                        e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                    }}
+                                >
+                                    <span className="text-5xl">🇩🇪</span>
+                                    <span>DEUTSCH</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { onLanguageChange(Language.EN); setMode('age_verify'); }}
+                                    className="w-full p-6 flex items-center justify-center gap-4 font-black uppercase text-xl"
+                                    style={{
+                                        background: '#FF7F00',
+                                        color: '#000',
+                                        border: '4px solid #000',
+                                        boxShadow: '8px 8px 0px #000',
+                                        transform: 'skew(-5deg)',
+                                        transition: 'all 0.1s linear'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg)';
+                                        e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                    }}
+                                >
+                                    <span className="text-5xl">🇬🇧</span>
+                                    <span>ENGLISH</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { onLanguageChange(Language.ES); setMode('age_verify'); }}
+                                    className="w-full p-6 flex items-center justify-center gap-4 font-black uppercase text-xl"
+                                    style={{
+                                        background: '#8338EC',
+                                        color: '#FFF',
+                                        border: '4px solid #000',
+                                        boxShadow: '8px 8px 0px #000',
+                                        transform: 'skew(-5deg)',
+                                        transition: 'all 0.1s linear'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg)';
+                                        e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                    }}
+                                >
+                                    <span className="text-5xl">🇪🇸</span>
+                                    <span>ESPAÑOL</span>
+                                </button>
+                            </div>
+                        )}
+
+                        {mode === 'age_verify' && (
+                            <div className="space-y-4">
+                                <h2 className="text-3xl font-black uppercase text-center mb-4" style={{ color: '#000' }}>
+                                    {t.age}
+                                </h2>
                                 <input
                                     type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                    placeholder={t.username}
-                                    disabled={loading}
-                                    maxLength={30}
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    value={age || ''}
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/[^0-9]/g, '');
+                                        const num = parseInt(val);
+                                        if (!val || num <= 120) {
+                                            setAge(val ? num : 0);
+                                        }
+                                    }}
+                                    className="w-full px-6 py-4 text-center font-black text-3xl"
+                                    style={{
+                                        background: '#FFF',
+                                        color: '#000',
+                                        border: '4px solid #000',
+                                        boxShadow: '4px 4px 0px #000'
+                                    }}
+                                    placeholder={t.age}
+                                    autoFocus
                                 />
+                                <p className="text-sm font-bold text-center" style={{ color: '#4A4A4A' }}>{t.minAge}</p>
+                                <button
+                                    type="submit"
+                                    disabled={!age}
+                                    className="w-full py-5 px-8 font-black uppercase text-xl disabled:opacity-50"
+                                    style={{
+                                        background: age ? '#FF006E' : '#CCC',
+                                        color: '#000',
+                                        border: '4px solid #000',
+                                        boxShadow: '8px 8px 0px #000',
+                                        transform: 'skew(-5deg)',
+                                        transition: 'all 0.1s linear'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (age) {
+                                            e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                            e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'skew(-5deg)';
+                                        e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                    }}
+                                >
+                                    {TRANSLATIONS[lang].ONBOARDING.CONTINUE}
+                                </button>
                             </div>
-                            <p className="text-xs text-gray-500 mt-1 text-right">{username.length}/30</p>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Password */}
-                    {(mode === 'login' || mode === 'register') && (
-                        <div>
-                            <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.password}</label>
-                            <div className="relative">
-                                <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                    placeholder={t.password}
-                                    disabled={loading}
-                                />
-                            </div>
-                        </div>
-                    )}
-                </>
-            )}
+                        {(mode === 'login' || mode === 'register' || mode === 'password_reset') && (
+                            <>
+                                {/* Email */}
+                                <div>
+                                    <label className="block text-sm font-black uppercase mb-2" style={{ color: '#000' }}>E-MAIL</label>
+                                    <div className="relative">
+                                        <div
+                                            className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
+                                            style={{
+                                                background: '#FFBE0B',
+                                                border: '2px solid #000'
+                                            }}
+                                        >
+                                            <IoMailSharp size={18} color="#000" />
+                                        </div>
+                                        <input
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="w-full pl-20 pr-4 py-4 font-bold"
+                                            style={{
+                                                background: '#FFF',
+                                                color: '#000',
+                                                border: '4px solid #000',
+                                                boxShadow: '4px 4px 0px #000'
+                                            }}
+                                            placeholder="deine@email.com"
+                                            disabled={loading}
+                                            autoFocus
+                                        />
+                                    </div>
+                                </div>
 
-            {/* Confirm Password (only for register) */}
-            {mode === 'register' && (
-                <>
-                    <div>
-                        <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">{t.confirmPassword}</label>
-                        <div className="relative">
-                            <Lock size={18} className="absolute left-3 top-3 text-gray-500" />
-                            <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors"
-                                placeholder={t.confirmPassword}
-                                disabled={loading}
-                            />
-                        </div>
-                    </div>
+                                {/* Username - ONLY FOR REGISTER */}
+                                {mode === 'register' && (
+                                    <div>
+                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: '#000' }}>{t.username}</label>
+                                        <div className="relative">
+                                            <div
+                                                className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
+                                                style={{
+                                                    background: '#FF006E',
+                                                    border: '2px solid #000'
+                                                }}
+                                            >
+                                                <IoPersonSharp size={18} color="#FFF" />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={username}
+                                                onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                                                className="w-full pl-20 pr-4 py-4 font-bold"
+                                                style={{
+                                                    background: '#FFF',
+                                                    color: '#000',
+                                                    border: '4px solid #000',
+                                                    boxShadow: '4px 4px 0px #000'
+                                                }}
+                                                placeholder={t.username}
+                                                disabled={loading}
+                                                maxLength={30}
+                                            />
+                                        </div>
+                                        <p className="text-xs font-bold text-right mt-1" style={{ color: '#4A4A4A' }}>{username.length}/30</p>
+                                    </div>
+                                )}
 
-                    {/* CAPTCHA */}
-                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                        <label className="block text-sm font-bold text-lexi-fuchsia mb-2 uppercase flex items-center gap-2">
-                            <Calculator size={16} />
-                            {t.captcha}: {captcha.num1} + {captcha.num2} = ?
-                        </label>
-                        <input
-                            type="number"
-                            value={captchaInput}
-                            onChange={(e) => setCaptchaInput(e.target.value)}
-                            className="w-full px-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-lexi-fuchsia transition-colors text-center font-bold text-lg"
-                            placeholder={t.result}
-                            disabled={loading}
-                        />
-                    </div>
+                                {/* Password */}
+                                {(mode === 'login' || mode === 'register') && (
+                                    <div>
+                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: '#000' }}>{t.password}</label>
+                                        <div className="relative">
+                                            <div
+                                                className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
+                                                style={{
+                                                    background: '#8338EC',
+                                                    border: '2px solid #000'
+                                                }}
+                                            >
+                                                <IoLockClosedSharp size={18} color="#FFF" />
+                                            </div>
+                                            <input
+                                                type="password"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                className="w-full pl-20 pr-4 py-4 font-bold"
+                                                style={{
+                                                    background: '#FFF',
+                                                    color: '#000',
+                                                    border: '4px solid #000',
+                                                    boxShadow: '4px 4px 0px #000'
+                                                }}
+                                                placeholder={t.password}
+                                                disabled={loading}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                    >
-                        {loading ? t.loading : t.register}
-                    </button>
-                </>
-            )}
+                                {/* Confirm Password (only for register) */}
+                                {mode === 'register' && (
+                                    <>
+                                        <div>
+                                            <label className="block text-sm font-black uppercase mb-2" style={{ color: '#000' }}>{t.confirmPassword}</label>
+                                            <div className="relative">
+                                                <div
+                                                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
+                                                    style={{
+                                                        background: '#06FFA5',
+                                                        border: '2px solid #000'
+                                                    }}
+                                                >
+                                                    <IoLockClosedSharp size={18} color="#000" />
+                                                </div>
+                                                <input
+                                                    type="password"
+                                                    value={confirmPassword}
+                                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                                    className="w-full pl-20 pr-4 py-4 font-bold"
+                                                    style={{
+                                                        background: '#FFF',
+                                                        color: '#000',
+                                                        border: '4px solid #000',
+                                                        boxShadow: '4px 4px 0px #000'
+                                                    }}
+                                                    placeholder={t.confirmPassword}
+                                                    disabled={loading}
+                                                />
+                                            </div>
+                                        </div>
 
-            {/* Login Button */}
-            {mode === 'login' && (
-                <>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                    >
-                        {loading ? t.loading : t.login}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setMode('password_reset');
-                            resetForm();
-                        }}
-                        className="w-full text-sm text-gray-400 hover:text-lexi-fuchsia transition-colors text-center"
-                    >
-                        {t.forgotPassword}
-                    </button>
-                </>
-            )}
+                                        {/* CAPTCHA */}
+                                        <div
+                                            className="p-4 space-y-3"
+                                            style={{
+                                                background: '#FFBE0B',
+                                                border: '4px solid #000',
+                                                boxShadow: '4px 4px 0px #000',
+                                                transform: 'skew(-2deg)'
+                                            }}
+                                        >
+                                            <label className="block text-sm font-black uppercase flex items-center gap-2" style={{ color: '#000' }}>
+                                                <IoCalculatorSharp size={20} />
+                                                {t.captcha}: {captcha.num1} + {captcha.num2} = ?
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={captchaInput}
+                                                onChange={(e) => setCaptchaInput(e.target.value)}
+                                                className="w-full px-4 py-3 text-center font-black text-2xl"
+                                                style={{
+                                                    background: '#FFF',
+                                                    color: '#000',
+                                                    border: '4px solid #000',
+                                                    boxShadow: '2px 2px 0px #000'
+                                                }}
+                                                placeholder={t.result}
+                                                disabled={loading}
+                                            />
+                                        </div>
 
-            {/* Password Reset Form */}
-            {mode === 'password_reset' && (
-                <button
-                    type="button"
-                    onClick={handlePasswordReset}
-                    disabled={loading}
-                    className="w-full py-4 bg-gradient-to-r from-lexi-fuchsia to-purple-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                >
-                    {loading ? t.loading : t.sendResetEmail}
-                </button>
-            )}
+                                        <button
+                                            type="submit"
+                                            disabled={loading}
+                                            className="w-full py-5 px-8 font-black uppercase text-xl disabled:opacity-50"
+                                            style={{
+                                                background: loading ? '#CCC' : '#FF006E',
+                                                color: '#000',
+                                                border: '4px solid #000',
+                                                boxShadow: '8px 8px 0px #000',
+                                                transform: 'skew(-5deg)',
+                                                transition: 'all 0.1s linear'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (!loading) {
+                                                    e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                                    e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'skew(-5deg)';
+                                                e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                            }}
+                                        >
+                                            {loading ? t.loading : t.register}
+                                        </button>
+                                    </>
+                                )}
 
-            {/* Back Button */}
-            {mode !== 'select_auth_type' && (
-                <button
-                    type="button"
-                    onClick={() => {
-                        setMode('select_auth_type');
-                        resetForm();
-                    }}
-                    className="w-full text-sm text-gray-400 hover:text-white transition-colors flex items-center justify-center gap-2"
-                >
-                    <span>←</span> {lang === 'DE' ? 'Zurück' : lang === 'ES' ? 'Atrás' : 'Back'}
-                </button>
-            )}
-        </form>
+                                {/* Login Button */}
+                                {mode === 'login' && (
+                                    <>
+                                        <button
+                                            type="submit"
+                                            disabled={loading}
+                                            className="w-full py-5 px-8 font-black uppercase text-xl disabled:opacity-50"
+                                            style={{
+                                                background: loading ? '#CCC' : '#FF7F00',
+                                                color: '#000',
+                                                border: '4px solid #000',
+                                                boxShadow: '8px 8px 0px #000',
+                                                transform: 'skew(-5deg)',
+                                                transition: 'all 0.1s linear'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (!loading) {
+                                                    e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                                    e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'skew(-5deg)';
+                                                e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                            }}
+                                        >
+                                            {loading ? t.loading : t.login}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setMode('password_reset');
+                                                resetForm();
+                                            }}
+                                            className="w-full text-sm font-bold uppercase hover:underline"
+                                            style={{ color: '#8338EC' }}
+                                        >
+                                            {t.forgotPassword}
+                                        </button>
+                                    </>
+                                )}
+
+                                {/* Password Reset Form */}
+                                {mode === 'password_reset' && (
+                                    <button
+                                        type="button"
+                                        onClick={handlePasswordReset}
+                                        disabled={loading}
+                                        className="w-full py-5 px-8 font-black uppercase text-xl disabled:opacity-50"
+                                        style={{
+                                            background: loading ? '#CCC' : '#8338EC',
+                                            color: '#FFF',
+                                            border: '4px solid #000',
+                                            boxShadow: '8px 8px 0px #000',
+                                            transform: 'skew(-5deg)',
+                                            transition: 'all 0.1s linear'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (!loading) {
+                                                e.currentTarget.style.transform = 'skew(-5deg) translateY(-4px)';
+                                                e.currentTarget.style.boxShadow = '12px 12px 0px #000';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'skew(-5deg)';
+                                            e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+                                        }}
+                                    >
+                                        {loading ? t.loading : t.sendResetEmail}
+                                    </button>
+                                )}
+                            </>
+                        )}
+
+                        {/* Back Button */}
+                        {mode !== 'select_auth_type' && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMode('select_auth_type');
+                                    resetForm();
+                                }}
+                                className="w-full text-sm font-bold uppercase flex items-center justify-center gap-2 py-3"
+                                style={{
+                                    color: '#4A4A4A',
+                                    border: '2px solid #4A4A4A'
+                                }}
+                            >
+                                <span>←</span> {lang === 'DE' ? 'Zurück' : lang === 'ES' ? 'Atrás' : 'Back'}
+                            </button>
+                        )}
+                    </form>
+                </div>
+            </div>
+        </div>
     );
 
     if (embedded) return formContent;

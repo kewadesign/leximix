@@ -1,5 +1,18 @@
 [
   {
+    "version": "3.0.1",
+    "date": "26.11.2025",
+    "changes": [
+      "🎨 MAJOR REDESIGN: Neo-Brutalist Style!",
+      "✨ Complete UI overhaul with colorful, bold designs",
+      "🌈 Rainbow borders and animated backgrounds everywhere",
+      "🎴 Mau Mau: Full visual rework & smoother gameplay",
+      "🎁 Rewards: Fix for earning Coins/XP in all modes",
+      "⏩ Ads: Skip option added (pay with coins)",
+      "🛠️ Fixes: Back buttons, Avatars, and more"
+    ]
+  },
+  {
     "version": "2.8.1",
     "date": "25.11.2025",
     "changes": [

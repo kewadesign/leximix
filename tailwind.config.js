@@ -2,80 +2,98 @@
 export default {
     content: [
         "./index.html",
-        "./*.{js,ts,jsx,tsx}",
+        "./src/**/*.{js,ts,jsx,tsx}",
+        "./App.tsx",
         "./components/**/*.{js,ts,jsx,tsx}",
-        "./utils/**/*.{js,ts,jsx,tsx}",
     ],
-    darkMode: 'class',
+    darkMode: 'class', // Keep for compatibility but won't use
     theme: {
         extend: {
             colors: {
-                'lexi-bg': 'var(--color-bg)',
-                'lexi-surface': 'var(--color-surface)',
-                'lexi-surface-highlight': 'var(--color-surface-highlight)',
-                'lexi-text': 'var(--color-text)',
-                'lexi-text-muted': 'var(--color-text-muted)',
-                'lexi-border': 'var(--color-border)',
-                'lexi-accent': 'var(--color-accent)',
-                'lexi-dark': '#0f0718',
-                'lexi-purple': '#2d1b4e',
-                'lexi-deep-purple': '#1e102e',
-                'lexi-fuchsia': '#d946ef',
-                'lexi-cyan': '#06b6d4',
-                'lexi-gold': '#fbbf24',
-                'lexi-gray': '#1f2937',
-                'lexi-card-green': '#15803d',
-                'lexi-card-orange': '#c2410c',
-                'lexi-card-blue': '#1e40af',
-                'lexi-card-red': '#be123c',
-                'lexi-card-purple': '#6b21a8',
-                'lexi-card-yellow': '#ca8a04',
-                'lexi-card-pink': '#db2777',
-                'lexi-card-dark': '#111827',
+                // Brutal Color Palette
+                'brutal-pink': '#FF006E',
+                'brutal-orange': '#FF7F00',
+                'brutal-purple': '#8338EC',
+                'brutal-yellow': '#FFBE0B',
+                'brutal-blue': '#0096FF',
+                'brutal-green': '#06FFA5',
+                'brutal-cream': '#FFF8E7',
+                'brutal-black': '#000000',
+
+                // Legacy support (map to new colors)
+                'lexi-primary': '#FF006E',
+                'lexi-primary-hover': '#FF7F00',
+                'lexi-secondary': '#8338EC',
+                'lexi-accent': '#FFBE0B',
+                'lexi-bg': '#FFF8E7',
+                'lexi-surface': '#FFFFFF',
+                'lexi-text': '#000000',
+                'lexi-text-muted': '#4A4A4A',
+                'lexi-success': '#06FFA5',
+                'lexi-warning': '#FFBE0B',
+                'lexi-error': '#FF006E',
             },
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
-                mono: ['JetBrains Mono', 'monospace'],
+                'sans': ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+                'display': ['Poppins', 'system-ui', 'sans-serif'],
+            },
+            fontWeight: {
+                'normal': '600',
+                'semibold': '700',
+                'bold': '800',
+                'black': '900',
+            },
+            borderWidth: {
+                'brutal': '4px',
+                'brutal-thick': '6px',
+            },
+            boxShadow: {
+                'brutal': '8px 8px 0px #000',
+                'brutal-sm': '4px 4px 0px #000',
+                'brutal-lg': '12px 12px 0px #000',
+                'brutal-pink': '8px 8px 0px #FF006E',
+                'brutal-orange': '8px 8px 0px #FF7F00',
+                'brutal-purple': '8px 8px 0px #8338EC',
+                'brutal-yellow': '8px 8px 0px #FFBE0B',
+            },
+            skew: {
+                'brutal': '-5deg',
+                'brutal-reverse': '5deg',
+                'brutal-sm': '-2deg',
             },
             animation: {
-                'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-                'fade-in': 'fadeIn 0.8s ease-out forwards',
-                'slide-up': 'slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                'scale-in': 'scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                'shimmer': 'shimmer 2s linear infinite',
-                'nebula': 'nebula 20s ease infinite alternate',
+                'shake': 'shake 0.3s linear infinite',
+                'pop': 'pop 0.2s linear',
+                'slide-brutal': 'slide-brutal 0.2s linear forwards',
+                'bounce-brutal': 'bounce-brutal 1s linear infinite',
+                'spin-square': 'spin-square 2s linear infinite',
             },
             keyframes: {
                 shake: {
-                    '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                    '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                    '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                    '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                    '0%, 100%': { transform: 'skew(-5deg) translateX(0)' },
+                    '25%': { transform: 'skew(-5deg) translateX(-8px)' },
+                    '50%': { transform: 'skew(-5deg) translateX(8px)' },
+                    '75%': { transform: 'skew(-5deg) translateX(-4px)' },
                 },
-                fadeIn: {
-                    '0%': { opacity: '0' },
-                    '100%': { opacity: '1' }
+                pop: {
+                    '0%': { transform: 'scale(1) rotate(0deg)' },
+                    '50%': { transform: 'scale(1.2) rotate(5deg)' },
+                    '100%': { transform: 'scale(1) rotate(0deg)' },
                 },
-                slideUp: {
-                    '0%': { opacity: '0', transform: 'translateY(20px)' },
-                    '100%': { opacity: '1', transform: 'translateY(0)' }
+                'slide-brutal': {
+                    'from': { opacity: '0', transform: 'translateX(-100px) skew(-5deg)' },
+                    'to': { opacity: '1', transform: 'translateX(0) skew(-5deg)' },
                 },
-                scaleIn: {
-                    '0%': { opacity: '0', transform: 'scale(0.9)' },
-                    '100%': { opacity: '1', transform: 'scale(1)' }
+                'bounce-brutal': {
+                    '0%, 100%': { transform: 'translateY(0) skew(-2deg)' },
+                    '50%': { transform: 'translateY(-20px) skew(-2deg)' },
                 },
-                shimmer: {
-                    '0%': { backgroundPosition: '-200% 0' },
-                    '100%': { backgroundPosition: '200% 0' }
+                'spin-square': {
+                    'from': { transform: 'rotate(0deg)' },
+                    'to': { transform: 'rotate(360deg)' },
                 },
-                nebula: {
-                    '0%': { backgroundPosition: '0% 50%' },
-                    '50%': { backgroundPosition: '100% 50%' },
-                    '100%': { backgroundPosition: '0% 50%' }
-                }
-            }
-        }
+            },
+        },
     },
     plugins: [],
 }

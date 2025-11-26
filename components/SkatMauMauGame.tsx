@@ -69,13 +69,13 @@ export default function SkatMauMauGame({
       // Map Firebase state to local state
       setDeck(state.deck || []);
       setDiscardPile(state.discardPile || []);
-      
+
       // Ensure wishedSuit is a number if present
-      const parsedWish = state.wishedSuit !== null && state.wishedSuit !== undefined 
-          ? Number(state.wishedSuit) 
-          : null;
+      const parsedWish = state.wishedSuit !== null && state.wishedSuit !== undefined
+        ? Number(state.wishedSuit)
+        : null;
       setWishedSuit(parsedWish as CardSuit);
-      
+
       setDrawCount(state.drawCount || 0);
 
       // Hands
@@ -149,7 +149,7 @@ export default function SkatMauMauGame({
         // No need to cast to string anymore, pass number directly
         playCardMultiplayer(gameId, currentUsername, card, newHand, suitWish);
       } else {
-          console.error('[SkatGame] Missing multiplayer data:', { gameId, currentUsername });
+        console.error('[SkatGame] Missing multiplayer data:', { gameId, currentUsername });
       }
       return;
     }
@@ -277,7 +277,7 @@ export default function SkatMauMauGame({
 
     const topCard = getCurrentTopCard();
     console.log('[SkatGame] Validating against top card:', topCard, 'Wished:', wishedSuit);
-    
+
     if (canPlayCard(card, topCard, wishedSuit || undefined)) {
       if (card.rank === CardRank.JACK) {
         setPendingCard(card);
@@ -286,7 +286,7 @@ export default function SkatMauMauGame({
       }
       playCard(card);
     } else {
-        console.log('[SkatGame] Invalid move');
+      console.log('[SkatGame] Invalid move');
     }
   };
 
@@ -311,37 +311,71 @@ export default function SkatMauMauGame({
   );
 
   return (
-    <div className="fixed inset-0 bg-[#0b1120] flex flex-col items-center justify-between p-4 overflow-hidden z-[100]">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-slate-900/50 to-cyan-900/20 pointer-events-none"></div>
+    <div className="fixed inset-0 flex flex-col items-center justify-between p-4 overflow-hidden z-[100] geo-pattern geo-shapes" style={{ background: '#FFF8E7' }}>
+      {/* Rainbow Top Bar */}
+      <div className="absolute top-0 left-0 right-0 flex h-3 w-full z-50">
+        <div className="flex-1" style={{ background: '#FF006E' }}></div>
+        <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+        <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+        <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+        <div className="flex-1" style={{ background: '#0096FF' }}></div>
+        <div className="flex-1" style={{ background: '#8338EC' }}></div>
+      </div>
 
       {/* Header */}
-      <div className="w-full max-w-6xl flex justify-between items-center relative z-10">
+      <div className="w-full max-w-6xl flex justify-between items-center relative z-10 mt-4">
         <button
           onClick={onBack}
-          className="p-3 bg-white/5 hover:bg-white/10 rounded-xl backdrop-blur-md border border-white/10 transition-all active:scale-95 group"
+          className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
+          style={{ 
+            background: '#FF006E', 
+            border: '3px solid #000',
+            boxShadow: '4px 4px 0px #000'
+          }}
         >
-          <ArrowLeft className="text-white group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft size={24} style={{ color: '#000' }} />
         </button>
 
         <div className="flex flex-col items-center">
-          <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+          <h2 
+            className="text-2xl font-black uppercase tracking-widest" 
+            style={{ color: '#000', transform: 'skewX(-3deg)' }}
+          >
             Mau Mau
           </h2>
           {isMultiplayer && (
-            <div className="flex items-center gap-2 mt-1 px-3 py-1 bg-green-500/20 rounded-full border border-green-500/30">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Multiplayer</span>
+            <div 
+              className="flex items-center gap-2 mt-1 px-3 py-1 rounded-full border-2 border-black"
+              style={{ background: '#06FFA5' }}
+            >
+              <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
+              <span className="text-[10px] font-bold text-black uppercase tracking-wider">Multiplayer</span>
             </div>
           )}
         </div>
 
         <div className="flex gap-2">
-          <button onClick={() => setShowChangelog(true)} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl backdrop-blur-md border border-white/10 transition-all active:scale-95 text-white/70 hover:text-white">
-            <Info size={20} />
+          <button 
+            onClick={() => setShowChangelog(true)} 
+            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
+            style={{ 
+              background: '#FFF', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000'
+            }}
+          >
+            <Info size={20} style={{ color: '#000' }} />
           </button>
-          <button onClick={() => setShowFriends(true)} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl backdrop-blur-md border border-white/10 transition-all active:scale-95 text-white/70 hover:text-white">
-            <Users size={20} />
+          <button 
+            onClick={() => setShowFriends(true)} 
+            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
+            style={{ 
+              background: '#8338EC', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000'
+            }}
+          >
+            <Users size={20} style={{ color: '#FFF' }} />
           </button>
         </div>
       </div>
@@ -353,13 +387,13 @@ export default function SkatMauMauGame({
             key={`ai-${card.id}`}
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className="w-20 h-32 bg-gradient-to-b from-indigo-900 to-slate-900 rounded-xl border-2 border-white/10 shadow-2xl relative overflow-hidden"
-            style={{ zIndex: index }}
+            className="w-20 h-32 rounded-xl border-2 border-black shadow-xl relative overflow-hidden"
+            style={{ zIndex: index, background: '#8338EC' }}
           >
             <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')]"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-10 h-10 bg-indigo-950/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white/50 text-[10px] font-bold border border-white/10">
-                AI
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border-2 border-black">
+                <span className="font-black text-xs">AI</span>
               </div>
             </div>
           </motion.div>
@@ -371,11 +405,12 @@ export default function SkatMauMauGame({
         {/* Draw Pile */}
         <div
           onClick={() => currentTurn === 'player' && handleDrawCard('player')}
-          className={`w-28 h-40 glass-panel rounded-2xl flex items-center justify-center cursor-pointer hover:scale-105 transition-transform relative overflow-hidden group ${currentTurn === 'player' ? 'ring-2 ring-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.2)]' : ''}`}
+          className={`w-28 h-40 rounded-2xl flex items-center justify-center cursor-pointer transition-transform relative overflow-hidden group border-4 border-black shadow-[6px_6px_0px_#000] ${currentTurn === 'player' ? 'animate-pulse' : ''}`}
+          style={{ background: '#FFF' }}
         >
-          <div className="text-white/80 font-black text-center z-10 group-hover:scale-110 transition-transform">
-            <div className="text-[10px] uppercase tracking-widest mb-1 text-cyan-400">Deck</div>
-            <div className="text-3xl font-mono">{deck.length}</div>
+          <div className="font-black text-center z-10 group-hover:scale-110 transition-transform">
+            <div className="text-[10px] uppercase tracking-widest mb-1 text-black">Deck</div>
+            <div className="text-3xl font-mono text-black">{deck.length}</div>
           </div>
         </div>
 
@@ -400,14 +435,17 @@ export default function SkatMauMauGame({
 
           {/* Indicators */}
           {wishedSuit !== null && (
-            <div className="absolute -top-14 left-1/2 -translate-x-1/2 glass-panel px-4 py-2 rounded-full shadow-xl animate-bounce flex gap-2 items-center border border-lexi-fuchsia z-20 whitespace-nowrap">
-              <span className="text-[10px] font-black text-lexi-fuchsia uppercase tracking-wider">Wunsch:</span>
+            <div 
+              className="absolute -top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl shadow-xl animate-bounce flex gap-2 items-center border-2 border-black z-20 whitespace-nowrap"
+              style={{ background: '#FFF' }}
+            >
+              <span className="text-[10px] font-black text-black uppercase tracking-wider">Wunsch:</span>
               {renderSuitIcon(wishedSuit)}
             </div>
           )}
 
           {drawCount > 0 && (
-            <div className="absolute -right-6 -top-6 bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black text-lg border-4 border-[#0b1120] shadow-lg animate-pulse z-20">
+            <div className="absolute -right-6 -top-6 bg-[#FF006E] text-white w-12 h-12 rounded-full flex items-center justify-center font-black text-lg border-2 border-black shadow-lg animate-pulse z-20">
               +{drawCount}
             </div>
           )}
@@ -415,14 +453,17 @@ export default function SkatMauMauGame({
       </div>
 
       {/* Status Bar */}
-      <div className="glass-panel px-8 py-3 rounded-full shadow-lg mb-2 backdrop-blur-xl border-white/5">
-        <div className="text-white font-black text-sm uppercase tracking-widest">
+      <div 
+        className="px-8 py-3 rounded-xl shadow-[4px_4px_0px_#000] mb-2 border-2 border-black"
+        style={{ background: '#FFF' }}
+      >
+        <div className="font-black text-sm uppercase tracking-widest">
           {gameStatus === 'playing' ? (
             currentTurn === 'player' ?
-              <span className="text-cyan-400 animate-pulse">Dein Zug</span> :
-              <span className="text-gray-400 flex items-center gap-2">Gegner denkt nach <span className="inline-block w-1 h-1 bg-gray-400 rounded-full animate-bounce"></span></span>
+              <span className="text-[#06FFA5] animate-pulse bg-black px-2 py-1">Dein Zug</span> :
+              <span className="text-gray-500 flex items-center gap-2">Gegner denkt nach <span className="inline-block w-1 h-1 bg-black rounded-full animate-bounce"></span></span>
           ) : (
-            gameStatus === 'won' ? <span className="text-yellow-400">Gewonnen!</span> : <span className="text-red-400">Verloren</span>
+            gameStatus === 'won' ? <span className="text-[#FFBE0B]">Gewonnen!</span> : <span className="text-[#FF006E]">Verloren</span>
           )}
         </div>
       </div>
@@ -523,24 +564,46 @@ export default function SkatMauMauGame({
                   </div>
                 </div>
               </div>
-              <Button
-                fullWidth
+              <button
                 onClick={() => onGameEnd(150, 75)}
-                className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:brightness-110 text-white"
+                className="w-full py-4 font-black uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2"
+                style={{ 
+                  background: '#FFBE0B', 
+                  color: '#000',
+                  border: '3px solid #000',
+                  boxShadow: '4px 4px 0px #000'
+                }}
               >
                 <Trophy size={18} className="mr-2" fill="currentColor" />
                 Belohnung abholen
-              </Button>
+              </button>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              <Button fullWidth onClick={startNewGame} variant="primary">
-                <RotateCcw size={18} className="mr-2" />
+              <button 
+                onClick={startNewGame} 
+                className="w-full py-3 font-black uppercase transition-all active:scale-95 flex items-center justify-center gap-2"
+                style={{ 
+                  background: '#06FFA5', 
+                  color: '#000',
+                  border: '3px solid #000',
+                  boxShadow: '4px 4px 0px #000'
+                }}
+              >
+                <RotateCcw size={18} />
                 Nochmal versuchen
-              </Button>
-              <Button fullWidth onClick={onBack} variant="ghost">
+              </button>
+              <button 
+                onClick={onBack} 
+                className="w-full py-3 font-black uppercase transition-all active:scale-95"
+                style={{ 
+                  background: '#F5F5F5', 
+                  color: '#000',
+                  border: '3px solid #000'
+                }}
+              >
                 Zurück zum Menü
-              </Button>
+              </button>
             </div>
           )}
         </div>

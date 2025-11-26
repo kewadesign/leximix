@@ -10,45 +10,69 @@ interface SudokuGridProps {
 }
 
 export const SudokuGrid: React.FC<SudokuGridProps> = ({ board, selectedCell, onCellSelect, original, validation }) => {
+  // Neo-brutalist cell styles
+  const getCellStyle = (r: number, c: number, cell: string | null, isFixed: boolean, isSelected: boolean, isRelated: boolean, status: string | null | undefined) => {
+    if (status === 'correct') return { 
+      background: '#06FFA5', 
+      color: '#000'
+    };
+    if (status === 'error') return { 
+      background: '#FF006E', 
+      color: '#FFF'
+    };
+    if (isSelected) return { 
+      background: '#FFBE0B', 
+      color: '#000',
+      boxShadow: 'inset 0 0 0 3px #000'
+    };
+    if (isRelated) return { 
+      background: '#FFF8E7', 
+      color: '#8338EC'
+    };
+    if (isFixed) return { 
+      background: '#E5E5E5', 
+      color: '#000'
+    };
+    return { 
+      background: '#FFF', 
+      color: '#8338EC'
+    };
+  };
+
   return (
-    <div className="w-full max-w-md mx-auto aspect-square p-1 bg-gray-800/50 rounded-xl border-2 border-white/10 select-none shadow-xl backdrop-blur-sm">
-      <div className="w-full h-full grid grid-cols-9 grid-rows-9 rounded-lg overflow-hidden bg-gray-900 border border-gray-700">
-        {board.map((row, r) => 
+    <div 
+      className="w-full max-w-sm mx-auto aspect-square select-none overflow-hidden"
+      style={{ 
+        border: '4px solid #000',
+        boxShadow: '8px 8px 0px #8338EC', 
+        background: '#FFF',
+        transform: 'skewX(-2deg)'
+      }}
+    >
+      <div className="w-full h-full grid grid-cols-9 grid-rows-9" style={{ transform: 'skewX(2deg)' }}>
+        {board.map((row, r) =>
           row.map((cell, c) => {
-            // Determine borders for 3x3 subgrids
-            const borderRight = (c + 1) % 3 === 0 && c !== 8 ? 'border-r-2 border-r-lexi-fuchsia/50' : 'border-r border-r-white/5';
-            const borderBottom = (r + 1) % 3 === 0 && r !== 8 ? 'border-b-2 border-b-lexi-fuchsia/50' : 'border-b border-b-white/5';
-            
             const isSelected = selectedCell?.r === r && selectedCell?.c === c;
             const isRelated = selectedCell && (selectedCell.r === r || selectedCell.c === c);
             const isFixed = original[r][c] !== null;
             const status = validation?.[r]?.[c];
-            
-            // Styling
-            let cellBg = 'bg-transparent';
-            if (status === 'correct') cellBg = 'bg-green-500/30';
-            else if (status === 'error') cellBg = 'bg-red-500/30';
-            else if (isSelected) cellBg = 'bg-lexi-fuchsia/60';
-            else if (isRelated) cellBg = 'bg-lexi-fuchsia/10';
-            else if (isFixed) cellBg = 'bg-black/20';
 
-            let textColor = 'text-white';
-            if (isFixed) textColor = 'text-gray-400 font-bold';
-            else if (cell) textColor = 'text-lexi-cyan font-black';
-            
-            // Status text color override
-            if (status === 'correct') textColor = 'text-green-200 font-bold';
-            if (status === 'error') textColor = 'text-red-200 font-bold';
+            // Subgrid borders - bold
+            const borderRight = (c + 1) % 3 === 0 && c !== 8 ? '3px solid #000' : '1px solid #CCC';
+            const borderBottom = (r + 1) % 3 === 0 && r !== 8 ? '3px solid #000' : '1px solid #CCC';
+
+            const cellStyle = getCellStyle(r, c, cell, isFixed, isSelected, isRelated || false, status);
 
             return (
-              <div 
+              <div
                 key={`${r}-${c}`}
                 onClick={() => { sfx.playClick(); onCellSelect(r, c); }}
-                className={`
-                  relative flex items-center justify-center text-base sm:text-xl md:text-2xl cursor-pointer transition-colors duration-75
-                  ${borderRight} ${borderBottom} ${cellBg} ${textColor}
-                  hover:bg-white/10 active:bg-white/20
-                `}
+                className="relative flex items-center justify-center text-base sm:text-xl md:text-2xl cursor-pointer transition-all font-black"
+                style={{
+                  ...cellStyle,
+                  borderRight,
+                  borderBottom
+                }}
               >
                 {cell || ''}
               </div>

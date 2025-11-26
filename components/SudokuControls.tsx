@@ -10,13 +10,20 @@ export const SudokuControls: React.FC<SudokuControlsProps> = ({ onInput, onDelet
   const keys = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
   return (
-    <div className="w-full max-w-md mx-auto mt-4 px-2">
+    <div className="w-full max-w-sm mx-auto mt-4 px-2" style={{ transform: 'skewX(-2deg)' }}>
       <div className="grid grid-cols-5 gap-2 mb-2">
         {keys.slice(0, 5).map(key => (
           <button
             key={key}
             onClick={() => { sfx.playClick(); onInput(key); }}
-            className="h-12 rounded-lg bg-white/5 border border-white/10 font-bold text-xl text-white hover:bg-white/20 hover:scale-105 active:scale-95 transition-all"
+            className="h-12 font-black text-lg transition-all active:translate-y-1"
+            style={{ 
+              background: '#8338EC', 
+              color: '#FFF', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000',
+              transform: 'skewX(2deg)'
+            }}
           >
             {key}
           </button>
@@ -27,14 +34,28 @@ export const SudokuControls: React.FC<SudokuControlsProps> = ({ onInput, onDelet
           <button
             key={key}
             onClick={() => { sfx.playClick(); onInput(key); }}
-            className="h-12 rounded-lg bg-white/5 border border-white/10 font-bold text-xl text-white hover:bg-white/20 hover:scale-105 active:scale-95 transition-all"
+            className="h-12 font-black text-lg transition-all active:translate-y-1"
+            style={{ 
+              background: '#8338EC', 
+              color: '#FFF', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000',
+              transform: 'skewX(2deg)'
+            }}
           >
             {key}
           </button>
         ))}
         <button
           onClick={() => { sfx.playClick(); onDelete(); }}
-          className="h-12 rounded-lg bg-red-900/50 border border-red-500/30 font-bold text-white hover:bg-red-800/50 active:scale-95 transition-all flex items-center justify-center"
+          className="h-12 font-black text-xs transition-all active:translate-y-1 flex items-center justify-center"
+          style={{ 
+            background: '#FF006E', 
+            color: '#FFF', 
+            border: '3px solid #000',
+            boxShadow: '4px 4px 0px #000',
+            transform: 'skewX(2deg)'
+          }}
         >
           DEL
         </button>

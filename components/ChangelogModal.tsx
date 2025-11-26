@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from './UI';
-import { Sparkles, Check, Zap, Download } from 'lucide-react';
+import { Sparkles, Check, Zap, Download, Star, Rocket, Gift } from 'lucide-react';
 
 export interface ChangelogEntry {
     version: string;
@@ -19,6 +19,19 @@ interface Props {
     onDownload?: () => void;
 }
 
+// Rotating colors for entries
+const entryColors = [
+    '#06FFA5', // Green
+    '#FF006E', // Pink
+    '#FFBE0B', // Yellow
+    '#8338EC', // Purple
+    '#0096FF', // Blue
+    '#FF7F00', // Orange
+];
+
+// Icons for changes
+const changeIcons = [Star, Sparkles, Rocket, Gift, Check, Zap];
+
 export const ChangelogModal: React.FC<Props> = ({
     isOpen,
     onClose,
@@ -35,51 +48,125 @@ export const ChangelogModal: React.FC<Props> = ({
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={t.UPDATES.WHATS_NEW}>
-            <div className="space-y-6">
+            <div className="space-y-5">
+                {/* Header - Colorful */}
                 <div className="text-center">
-                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-lexi-fuchsia to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20 shadow-[0_0_30px_rgba(217,70,239,0.4)] mb-4">
-                        <Sparkles size={40} className="text-white animate-pulse" />
+                    <div 
+                        className="w-16 h-16 mx-auto flex items-center justify-center mb-3"
+                        style={{ 
+                            background: '#8338EC', 
+                            border: '3px solid #000',
+                            boxShadow: '4px 4px 0px #000',
+                            transform: 'rotate(-3deg)'
+                        }}
+                    >
+                        <Sparkles size={32} style={{ color: '#FFF' }} />
                     </div>
-                    <h2 className="text-2xl font-black text-white uppercase mb-1">LexiMix {latest?.version}</h2>
-                    <p className="text-lexi-fuchsia font-bold text-sm tracking-widest uppercase">{t.UPDATES.NOTES}</p>
+                    <h2 className="text-xl font-black uppercase mb-1" style={{ color: '#000', transform: 'skewX(-2deg)' }}>
+                        LexiMix {latest?.version}
+                    </h2>
+                    <p className="font-black text-xs tracking-widest uppercase" style={{ color: '#8338EC' }}>{t.UPDATES.NOTES}</p>
                 </div>
 
-                <div className="space-y-4 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">
-                    {entries.map((entry, index) => (
-                        <div key={entry.version} className={`p-4 rounded-2xl border ${index === 0 ? 'bg-white/10 border-lexi-fuchsia/50' : 'bg-black/20 border-white/5'}`}>
-                            <div className="flex justify-between items-center mb-3">
-                                <span className={`font-bold ${index === 0 ? 'text-white' : 'text-gray-400'}`}>v{entry.version}</span>
-                                <span className="text-xs text-gray-500">{entry.date}</span>
+                {/* Changelog Entries - Colorful Cards */}
+                <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-1">
+                    {entries.map((entry, index) => {
+                        const color = entryColors[index % entryColors.length];
+                        const isFirst = index === 0;
+                        
+                        return (
+                            <div 
+                                key={entry.version} 
+                                className="p-4 relative overflow-hidden"
+                                style={{ 
+                                    background: '#FFF',
+                                    border: '3px solid #000',
+                                    boxShadow: isFirst ? '6px 6px 0px #000' : '4px 4px 0px #999',
+                                    transform: isFirst ? 'scale(1.02)' : 'scale(1)'
+                                }}
+                            >
+                                {/* Colored Header Bar */}
+                                <div 
+                                    className="absolute top-0 left-0 right-0 h-1.5 border-b-2 border-black"
+                                    style={{ background: color }}
+                                ></div>
+                                
+                                {/* Decorative element */}
+                                {isFirst && (
+                                    <div className="absolute top-3 right-3 opacity-20">
+                                        <Sparkles size={24} style={{ color: '#000' }} />
+                                    </div>
+                                )}
+                                
+                                <div className="flex justify-between items-center mb-3 mt-2">
+                                    <span 
+                                        className="font-black text-sm px-2 py-0.5 border-2 border-black"
+                                        style={{ 
+                                            background: color, 
+                                            color: '#000',
+                                            transform: 'skewX(-5deg)'
+                                        }}
+                                    >
+                                        v{entry.version}
+                                    </span>
+                                    <span className="text-xs font-black uppercase" style={{ color: '#666' }}>{entry.date}</span>
+                                </div>
+                                
+                                <ul className="space-y-2">
+                                    {entry.changes.map((change, i) => {
+                                        const IconComponent = changeIcons[i % changeIcons.length];
+                                        const iconColor = entryColors[(index + i) % entryColors.length];
+                                        
+                                        return (
+                                            <li key={i} className="flex items-start gap-3 text-sm">
+                                                <div 
+                                                    className="mt-0.5 w-6 h-6 flex-shrink-0 flex items-center justify-center border-2 border-black"
+                                                    style={{ 
+                                                        background: iconColor,
+                                                        color: '#000'
+                                                    }}
+                                                >
+                                                    <IconComponent size={14} strokeWidth={3} />
+                                                </div>
+                                                <span className="font-bold leading-tight" style={{ color: '#000' }}>{change}</span>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
                             </div>
-                            <ul className="space-y-2">
-                                {entry.changes.map((change, i) => (
-                                    <li key={i} className="flex items-start gap-3 text-sm text-gray-300">
-                                        <div className="mt-1 w-4 h-4 flex-shrink-0 rounded-full bg-lexi-fuchsia/20 flex items-center justify-center">
-                                            <Check size={10} className="text-lexi-fuchsia" />
-                                        </div>
-                                        <span>{change}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
-                {/* Show Download Button if update is available and on Capacitor */}
+                {/* Download Button */}
                 {needsUpdate && isCapacitor && downloadUrl && onDownload && (
                     <button
                         onClick={onDownload}
-                        className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2 mb-3">
-                        <Download size={20} />
+                        className="w-full py-3 font-black uppercase text-sm flex items-center justify-center gap-2 transition-all active:translate-y-1"
+                        style={{ 
+                            background: '#06FFA5', 
+                            color: '#000', 
+                            border: '3px solid #000',
+                            boxShadow: '4px 4px 0px #000'
+                        }}
+                    >
+                        <Download size={18} />
                         {t.UPDATES.DOWNLOAD}
                     </button>
                 )}
 
+                {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="w-full py-4 bg-white text-black font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
+                    className="w-full py-3 font-black uppercase text-sm flex items-center justify-center gap-2 transition-all active:translate-y-1"
+                    style={{ 
+                        background: '#8338EC', 
+                        color: '#FFF', 
+                        border: '3px solid #000',
+                        boxShadow: '4px 4px 0px #000'
+                    }}
                 >
-                    <Zap size={20} className="text-lexi-fuchsia fill-current" />
+                    <Zap size={18} />
                     {t.UPDATES.COOL}
                 </button>
             </div>
