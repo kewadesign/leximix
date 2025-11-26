@@ -17,14 +17,15 @@ import SkatMauMauGame from './components/SkatMauMauGame';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { FriendsManager } from './components/FriendsManager';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
-import { auth } from './utils/firebase';
+import { auth, database } from './utils/firebase';
+import { ref, onValue } from 'firebase/database';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
 import catDanceGif from './assets/cat-dance.gif';
 
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone } from 'lucide-react';
 
 // React Icons for brutal design
 import { IoGlobeSharp, IoPersonSharp, IoSettingsSharp } from 'react-icons/io5';
@@ -250,6 +251,20 @@ const FALLBACK_SEASON_CONFIG = {
 
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
+  const [apkDownloadUrl, setApkDownloadUrl] = useState('http://leximix.de/LexiMix-v3.0.2-Release.apk');
+
+  useEffect(() => {
+    const systemRef = ref(database, 'system');
+    const unsubscribe = onValue(systemRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data.download_url) {
+          setApkDownloadUrl(data.download_url);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Navigation
   const navigateTo = (newView: ViewType) => {
@@ -4494,7 +4509,7 @@ export default function App() {
       {(window as any).Capacitor === undefined && (
         <div className="fixed bottom-4 right-4 z-[50]">
           <a
-            href="http://leximix.de/LexiMix-v3.0.2-Release.apk"
+            href={apkDownloadUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-black/40 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white/50 hover:text-white px-4 py-2 rounded-full transition-all text-[10px] font-bold uppercase tracking-widest group"
