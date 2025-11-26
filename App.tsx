@@ -47,27 +47,27 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
 
   // Soft colorful key styles
   const getKeyStyle = (status: string) => {
-    if (status === 'correct') return { 
-      background: 'linear-gradient(135deg, #06FFA5, #00D68F)', 
-      color: '#FFF', 
+    if (status === 'correct') return {
+      background: 'linear-gradient(135deg, #06FFA5, #00D68F)',
+      color: '#FFF',
       borderRadius: '8px',
       boxShadow: '0 3px 10px rgba(6,255,165,0.3)'
     };
-    if (status === 'present') return { 
-      background: 'linear-gradient(135deg, #FFBE0B, #FF9500)', 
-      color: '#FFF', 
+    if (status === 'present') return {
+      background: 'linear-gradient(135deg, #FFBE0B, #FF9500)',
+      color: '#FFF',
       borderRadius: '8px',
       boxShadow: '0 3px 10px rgba(255,190,11,0.3)'
     };
-    if (status === 'absent') return { 
-      background: '#E5E5E5', 
-      color: '#999', 
+    if (status === 'absent') return {
+      background: '#E5E5E5',
+      color: '#999',
       borderRadius: '8px',
       boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
     };
-    return { 
-      background: '#FFF', 
-      color: '#1a1a2e', 
+    return {
+      background: '#FFF',
+      color: '#1a1a2e',
       borderRadius: '8px',
       boxShadow: '0 3px 10px rgba(0,0,0,0.08)'
     };
@@ -91,12 +91,12 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
             );
           })}
           {i === rows.length - 1 && (
-            <button 
-              onClick={onDelete} 
+            <button
+              onClick={onDelete}
               className="h-11 sm:h-12 px-3 sm:px-4 font-black text-xs uppercase transition-all active:scale-95"
-              style={{ 
-                background: 'linear-gradient(135deg, #FF006E, #D60054)', 
-                color: '#FFF', 
+              style={{
+                background: 'linear-gradient(135deg, #FF006E, #D60054)',
+                color: '#FFF',
                 borderRadius: '8px',
                 boxShadow: '0 3px 10px rgba(255,0,110,0.3)'
               }}
@@ -106,12 +106,12 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedKeys, isMathMode, t }: any) =
           )}
         </div>
       ))}
-      <button 
-        onClick={onEnter} 
+      <button
+        onClick={onEnter}
         className="w-full h-12 sm:h-14 font-black text-base sm:text-lg uppercase mt-2 transition-all active:scale-98"
-        style={{ 
-          background: 'linear-gradient(135deg, #06FFA5, #00D68F)', 
-          color: '#FFF', 
+        style={{
+          background: 'linear-gradient(135deg, #06FFA5, #00D68F)',
+          color: '#FFF',
           borderRadius: '12px',
           boxShadow: '0 4px 16px rgba(6,255,165,0.3)'
         }}
@@ -131,21 +131,21 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 
   // Soft colorful cell styles
   const getCellStyle = (result: string) => {
-    if (result === 'correct') return { 
-      background: 'linear-gradient(135deg, #06FFA5, #00D68F)', 
-      color: '#FFF', 
+    if (result === 'correct') return {
+      background: 'linear-gradient(135deg, #06FFA5, #00D68F)',
+      color: '#FFF',
       borderRadius: '10px',
       boxShadow: '0 4px 12px rgba(6,255,165,0.3)'
     };
-    if (result === 'present') return { 
-      background: 'linear-gradient(135deg, #FFBE0B, #FF9500)', 
-      color: '#FFF', 
+    if (result === 'present') return {
+      background: 'linear-gradient(135deg, #FFBE0B, #FF9500)',
+      color: '#FFF',
       borderRadius: '10px',
       boxShadow: '0 4px 12px rgba(255,190,11,0.3)'
     };
-    return { 
-      background: 'linear-gradient(135deg, #FF006E, #D60054)', 
-      color: '#FFF', 
+    return {
+      background: 'linear-gradient(135deg, #FF006E, #D60054)',
+      color: '#FFF',
       borderRadius: '10px',
       boxShadow: '0 4px 12px rgba(255,0,110,0.3)'
     };
@@ -157,8 +157,8 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
       {guesses.map((guess: any, i: number) => (
         <div key={i} className="grid gap-2 justify-center" style={gridStyle}>
           {guess.word.split('').map((char: string, j: number) => (
-            <div 
-              key={j} 
+            <div
+              key={j}
               className="aspect-square flex items-center justify-center font-black text-xl md:text-2xl uppercase transition-all"
               style={getCellStyle(guess.result[j])}
             >
@@ -172,11 +172,11 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
       {turn < 6 && (
         <div className="grid gap-2 justify-center" style={gridStyle}>
           {Array(targetLength).fill(null).map((_, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className="aspect-square flex items-center justify-center font-black text-xl md:text-2xl uppercase transition-all"
-              style={{ 
-                background: currentGuess[i] ? '#FFF' : 'rgba(255,255,255,0.6)', 
+              style={{
+                background: currentGuess[i] ? '#FFF' : 'rgba(255,255,255,0.6)',
                 color: '#1a1a2e',
                 borderRadius: '10px',
                 boxShadow: currentGuess[i] ? '0 4px 16px rgba(0,0,0,0.1)' : '0 2px 8px rgba(0,0,0,0.05)',
@@ -193,11 +193,11 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
       {empties.map((_, i) => (
         <div key={`empty-${i}`} className="grid gap-2 justify-center" style={gridStyle}>
           {Array(targetLength).fill(null).map((__, j) => (
-            <div 
-              key={j} 
+            <div
+              key={j}
               className="aspect-square"
-              style={{ 
-                background: 'rgba(255,255,255,0.3)', 
+              style={{
+                background: 'rgba(255,255,255,0.3)',
                 borderRadius: '10px',
                 border: '2px dashed rgba(0,0,0,0.1)'
               }}
@@ -212,7 +212,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'LANGUAGE_SELECT' | 'MAU_MAU' | 'SKAT_MAU_MAU';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU';
 
 const FALLBACK_SEASON_CONFIG = {
   "activeSeasonId": 1,
@@ -501,11 +501,7 @@ export default function App() {
 
       // Must be logged in to use app
       if (!cloudUser) {
-        if (!hasLanguageSelected) {
-          setView('LANGUAGE_SELECT');
-        } else {
-          setView('AUTH'); // Show login screen
-        }
+        setView('AUTH');
       } else {
         setView('HOME'); // Go straight to home
 
@@ -1971,7 +1967,7 @@ export default function App() {
 
   const GameCard = ({ mode, title, desc, icon: Icon, locked = false, comingSoon = false }: any) => {
     const colors = brutalColors[mode] || { bg: '#FF006E', accent: '#000' };
-    
+
     return (
       <button
         disabled={comingSoon}
@@ -2005,7 +2001,7 @@ export default function App() {
         </div>
 
         {/* Large animated icon - half cut off */}
-        <div 
+        <div
           className="absolute -right-6 -bottom-6 opacity-20 group-hover:opacity-40 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300"
         >
           <Icon size={100} style={{ color: colors.bg }} strokeWidth={1.5} />
@@ -2014,10 +2010,10 @@ export default function App() {
         {/* Content */}
         <div className="p-5 pt-6 relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <div 
+            <div
               className="p-2.5 transition-all group-hover:scale-110"
-              style={{ 
-                background: colors.bg, 
+              style={{
+                background: colors.bg,
                 border: '3px solid #000',
                 transform: 'rotate(-3deg)',
                 boxShadow: '3px 3px 0px #000'
@@ -2026,7 +2022,7 @@ export default function App() {
               <Icon size={24} style={{ color: '#000' }} strokeWidth={2.5} />
             </div>
             {locked && (
-              <span 
+              <span
                 className="px-2 py-1 text-[10px] font-black uppercase"
                 style={{ background: '#000', color: '#FFBE0B', transform: 'skewX(-5deg)' }}
               >
@@ -2034,23 +2030,23 @@ export default function App() {
               </span>
             )}
           </div>
-          <h3 
-            className="font-black text-lg sm:text-xl uppercase leading-tight mb-2" 
+          <h3
+            className="font-black text-lg sm:text-xl uppercase leading-tight mb-2"
             style={{ color: '#000', transform: 'skewX(-3deg)' }}
           >
             {title}
           </h3>
-          <p 
-            className="text-xs sm:text-sm font-bold leading-tight mb-4" 
+          <p
+            className="text-xs sm:text-sm font-bold leading-tight mb-4"
             style={{ color: '#555' }}
           >
             {desc}
           </p>
-          
+
           {/* Play Button */}
-          <div 
+          <div
             className="inline-flex items-center gap-2 px-4 py-2 font-black text-xs uppercase transition-all group-hover:scale-105"
-            style={{ 
+            style={{
               background: colors.bg,
               color: '#000',
               border: '3px solid #000',
@@ -2058,7 +2054,7 @@ export default function App() {
               transform: 'skewX(-5deg)'
             }}
           >
-            <Play size={12} fill="currentColor" style={{ transform: 'skewX(5deg)' }} /> 
+            <Play size={12} fill="currentColor" style={{ transform: 'skewX(5deg)' }} />
             <span style={{ transform: 'skewX(5deg)' }}>{locked ? 'UNLOCK' : t.HOME.PLAY}</span>
           </div>
         </div>
@@ -2303,61 +2299,7 @@ export default function App() {
     }
   };
 
-  const renderLanguageSelect = () => (
-    <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
-      <div className="w-full max-w-md relative z-10">
-        <div className="space-y-8 text-center bg-white p-8 relative" style={{ border: '6px solid #000', boxShadow: '12px 12px 0 #000', transform: 'skew(-2deg)' }}>
-          {/* Rainbow Stripe */}
-          <div className="absolute top-0 left-0 right-0 h-4" style={{ background: 'linear-gradient(90deg, #FF006E 0%, #FF7F00 33%, #8338EC 66%, #FFBE0B 100%)' }}></div>
 
-          {/* Globe Icon in Yellow Box */}
-          <div className="w-24 h-24 mx-auto flex items-center justify-center mt-4" style={{ backgroundColor: '#FFBE0B', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(8deg)' }}>
-            <IoGlobeSharp size={56} style={{ color: '#000' }} />
-          </div>
-
-          <h1 className="text-5xl font-black uppercase tracking-wider mt-6" style={{ color: '#000', transform: 'skew(3deg)' }}>
-            CHOOSE LANGUAGE
-          </h1>
-
-          {/* Language Cards - Stacked */}
-          <div className="grid grid-cols-1 gap-6 mt-8">
-            <button
-              onClick={() => { setUser(prev => ({ ...prev, language: Language.DE })); localStorage.setItem('leximix_language_selected', 'true'); setView('AUTH'); audio.playClick(); }}
-              className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
-              style={{ backgroundColor: '#FF006E', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-5deg)' }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(-8px)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(0)'}
-            >
-              <span className="text-8xl mb-4 block">🇩🇪</span>
-              <span className="font-black text-2xl uppercase tracking-widest text-white">DEUTSCH</span>
-            </button>
-
-            <button
-              onClick={() => { setUser(prev => ({ ...prev, language: Language.EN })); localStorage.setItem('leximix_language_selected', 'true'); setView('AUTH'); audio.playClick(); }}
-              className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
-              style={{ backgroundColor: '#FF7F00', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(5deg)' }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(5deg) translateY(-8px)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(5deg) translateY(0)'}
-            >
-              <span className="text-8xl mb-4 block">🇺🇸</span>
-              <span className="font-black text-2xl uppercase tracking-widest text-white">ENGLISH</span>
-            </button>
-
-            <button
-              onClick={() => { setUser(prev => ({ ...prev, language: Language.ES })); localStorage.setItem('leximix_language_selected', 'true'); setView('AUTH'); audio.playClick(); }}
-              className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
-              style={{ backgroundColor: '#8338EC', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-5deg)' }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(-8px)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(0)'}
-            >
-              <span className="text-8xl mb-4 block">🇪🇸</span>
-              <span className="font-black text-2xl uppercase tracking-widest text-white">ESPAÑOL</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   const renderHome = () => (
     <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-24" style={{ background: '#FFF8E7' }}>
@@ -2373,12 +2315,12 @@ export default function App() {
       {/* Header - Simplified */}
       <div className="flex flex-wrap justify-between items-start gap-3 p-4">
         {/* Profile Button */}
-        <button 
+        <button
           onClick={openProfile}
           className="flex items-center gap-3 p-3 transition-all duration-100"
-          style={{ 
-            background: '#FFF', 
-            border: '4px solid #000', 
+          style={{
+            background: '#FFF',
+            border: '4px solid #000',
             boxShadow: '6px 6px 0px #000'
           }}
           onMouseEnter={(e) => {
@@ -2397,7 +2339,7 @@ export default function App() {
             <h2 className="font-black text-lg uppercase leading-none" style={{ color: '#000' }}>
               {cloudUsername || user.name}
             </h2>
-            <div 
+            <div
               className="mt-2 px-3 py-1 font-black text-xs uppercase inline-block"
               style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
             >
@@ -2409,12 +2351,12 @@ export default function App() {
         {/* Action Buttons - Compact for mobile */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Coins Button */}
-          <button 
-            onClick={() => setView('SHOP')} 
+          <button
+            onClick={() => setView('SHOP')}
             className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 font-black text-sm transition-all duration-100"
-            style={{ 
-              background: '#FFBE0B', 
-              border: '3px solid #000', 
+            style={{
+              background: '#FFBE0B',
+              border: '3px solid #000',
               borderRadius: '10px',
               boxShadow: '4px 4px 0px #000'
             }}
@@ -2424,13 +2366,13 @@ export default function App() {
           </button>
 
           {/* Language Button */}
-          <button 
-            onClick={toggleLanguage} 
+          <button
+            onClick={toggleLanguage}
             className="flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-3 sm:py-2 sm:gap-1.5 font-black text-sm transition-all duration-100"
-            style={{ 
-              background: '#8338EC', 
+            style={{
+              background: '#8338EC',
               color: '#FFF',
-              border: '3px solid #000', 
+              border: '3px solid #000',
               borderRadius: '10px',
               boxShadow: '4px 4px 0px #000'
             }}
@@ -2443,11 +2385,11 @@ export default function App() {
 
       {/* Cloud Save Card */}
       <div className="mx-4 mb-6">
-        <div 
+        <div
           className="p-4 flex flex-wrap items-center justify-between gap-3 geo-dots relative overflow-hidden"
-          style={{ 
-            background: cloudUsername ? '#06FFA5' : '#FFF', 
-            border: '4px solid #000', 
+          style={{
+            background: cloudUsername ? '#06FFA5' : '#FFF',
+            border: '4px solid #000',
             boxShadow: '6px 6px 0px #000'
           }}
         >
@@ -2455,7 +2397,7 @@ export default function App() {
           <div className="absolute -right-6 -bottom-6 opacity-10">
             <Database size={80} style={{ color: '#000' }} />
           </div>
-          
+
           <div className="flex items-center gap-3 relative z-10">
             <User size={28} style={{ color: cloudUsername ? '#000' : '#FF006E' }} strokeWidth={2.5} />
             <div>
@@ -2463,7 +2405,7 @@ export default function App() {
                 {cloudUsername || 'Cloud Save'}
               </p>
               <p className="text-xs font-bold" style={{ color: 'rgba(0,0,0,0.6)' }}>
-                {cloudUsername 
+                {cloudUsername
                   ? (lastCloudSync ? `Sync: ${new Date(lastCloudSync).toLocaleTimeString('de-DE')}` : 'Cloud Sync aktiv')
                   : 'Nicht angemeldet'
                 }
@@ -2474,8 +2416,8 @@ export default function App() {
             <button
               onClick={handleCloudLogout}
               className="px-4 py-2 font-black uppercase text-sm transition-all duration-100"
-              style={{ 
-                background: '#FF006E', 
+              style={{
+                background: '#FF006E',
                 color: '#FFF',
                 border: '3px solid #000',
                 boxShadow: '4px 4px 0px #000'
@@ -2495,8 +2437,8 @@ export default function App() {
             <button
               onClick={() => setShowAuthModal(true)}
               className="px-4 py-2 font-black uppercase text-sm transition-all duration-100"
-              style={{ 
-                background: '#FF7F00', 
+              style={{
+                background: '#FF7F00',
                 color: '#000',
                 border: '3px solid #000',
                 boxShadow: '4px 4px 0px #000'
@@ -2518,11 +2460,11 @@ export default function App() {
 
       {/* Logo & Title - Brutal Style */}
       <div className="flex flex-col items-center justify-center mb-6 px-4">
-        <div 
+        <div
           className="p-6 mb-4"
-          style={{ 
-            background: '#FFF', 
-            border: '6px solid #000', 
+          style={{
+            background: '#FFF',
+            border: '6px solid #000',
             boxShadow: '12px 12px 0px #8338EC',
             transform: 'rotate(-2deg)'
           }}
@@ -2533,10 +2475,10 @@ export default function App() {
             className="h-24 md:h-32 w-auto"
           />
         </div>
-        <div 
+        <div
           className="px-6 py-2 font-black text-sm tracking-[0.3em] uppercase"
-          style={{ 
-            background: '#FF006E', 
+          style={{
+            background: '#FF006E',
             color: '#FFF',
             border: '4px solid #000',
             boxShadow: '6px 6px 0px #000',
@@ -2560,11 +2502,11 @@ export default function App() {
         {/* Season & Premium Info - Brutal Cards */}
         <div className="flex gap-3 mt-4">
           {/* Season Timer */}
-          <div 
+          <div
             className="flex-1 p-4 flex flex-col items-center justify-center"
-            style={{ 
-              background: '#FFF', 
-              border: '4px solid #000', 
+            style={{
+              background: '#FFF',
+              border: '4px solid #000',
               boxShadow: '6px 6px 0px #000',
               transform: 'skew(-2deg)'
             }}
@@ -2577,11 +2519,11 @@ export default function App() {
           </div>
 
           {/* Premium Status */}
-          <div 
+          <div
             className="flex-1 p-4 flex flex-col items-center justify-center"
-            style={{ 
-              background: user.isPremium ? '#FFBE0B' : '#FFF', 
-              border: '4px solid #000', 
+            style={{
+              background: user.isPremium ? '#FFBE0B' : '#FFF',
+              border: '4px solid #000',
               boxShadow: '6px 6px 0px #000',
               transform: 'skew(2deg)'
             }}
@@ -2602,7 +2544,7 @@ export default function App() {
 
       {/* Section Header */}
       <div className="px-4 mb-5">
-        <div 
+        <div
           className="inline-block px-5 py-2 font-black text-lg uppercase tracking-wider"
           style={{ background: '#000', color: '#FFF' }}
         >
@@ -2623,10 +2565,10 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <div 
+      <div
         className="mx-4 mb-8 p-3 text-center"
-        style={{ 
-          background: '#000', 
+        style={{
+          background: '#000',
           border: '4px solid #000'
         }}
       >
@@ -2640,7 +2582,7 @@ export default function App() {
   const renderLevels = () => {
     // Brutal tier colors
     const tierBrutalColors = ['#06FFA5', '#FFBE0B', '#FF7F00', '#FF006E', '#8338EC'];
-    
+
     return (
       <div className="h-full overflow-y-auto w-full max-w-4xl mx-auto geo-pattern geo-shapes" style={{ background: '#FFF8E7' }}>
         {/* Rainbow Top Bar */}
@@ -2653,41 +2595,41 @@ export default function App() {
         </div>
 
         {/* Brutal Header */}
-        <div 
+        <div
           className="sticky top-3 z-20 mx-4 mt-4 p-4 flex items-center justify-between"
-          style={{ 
-            background: '#FFF', 
-            border: '4px solid #000', 
+          style={{
+            background: '#FFF',
+            border: '4px solid #000',
             boxShadow: '6px 6px 0px #000'
           }}
         >
-          <button 
-            onClick={() => setView('HOME')} 
+          <button
+            onClick={() => setView('HOME')}
             className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
-            style={{ 
-              background: '#FF006E', 
+            style={{
+              background: '#FF006E',
               border: '3px solid #000',
               boxShadow: '4px 4px 0px #000'
             }}
           >
             <ArrowLeft size={24} style={{ color: '#000' }} />
           </button>
-          <h2 
+          <h2
             className="text-xl md:text-2xl font-black uppercase tracking-wide"
             style={{ color: '#000', transform: 'skew(-3deg)' }}
           >
             {t.MODES[gameConfig?.mode as keyof typeof t.MODES]?.title}
           </h2>
-          <div 
+          <div
             className="px-4 py-2 flex items-center gap-2 font-black text-sm uppercase"
-            style={{ 
-              background: '#FFBE0B', 
+            style={{
+              background: '#FFBE0B',
               border: '3px solid #000',
               boxShadow: '4px 4px 0px #000',
               transform: 'skew(3deg)'
             }}
           >
-            <User size={16} style={{ color: '#000' }} /> 
+            <User size={16} style={{ color: '#000' }} />
             <span style={{ color: '#000', transform: 'skew(-3deg)' }}>LVL {user.level}</span>
           </div>
         </div>
@@ -2701,23 +2643,23 @@ export default function App() {
             const skewDeg = idx % 2 === 0 ? -2 : 2;
 
             return (
-              <div 
-                key={tier} 
-                className="mb-8 p-5 md:p-6" 
-                style={{ 
-                  background: '#FFF', 
-                  border: '4px solid #000', 
+              <div
+                key={tier}
+                className="mb-8 p-5 md:p-6"
+                style={{
+                  background: '#FFF',
+                  border: '4px solid #000',
                   boxShadow: `8px 8px 0px ${tierColor}`,
                   transform: `skew(${skewDeg}deg)`,
-                  animationDelay: `${idx * 100}ms` 
+                  animationDelay: `${idx * 100}ms`
                 }}
               >
                 <div className="flex items-center justify-between mb-5" style={{ transform: `skew(${-skewDeg}deg)` }}>
                   <div className="flex flex-col items-start gap-2">
-                    <div 
+                    <div
                       className="px-4 py-1 font-black text-base md:text-lg uppercase tracking-wide"
-                      style={{ 
-                        background: isLockedTier ? '#CCC' : tierColor, 
+                      style={{
+                        background: isLockedTier ? '#CCC' : tierColor,
                         color: '#000',
                         border: '3px solid #000'
                       }}
@@ -2725,7 +2667,7 @@ export default function App() {
                       {label}
                     </div>
                     {!isLockedTier && (
-                      <span 
+                      <span
                         className="text-xs font-black uppercase flex items-center gap-1 px-3 py-1"
                         style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
                       >
@@ -2733,10 +2675,10 @@ export default function App() {
                       </span>
                     )}
                   </div>
-                  <div 
+                  <div
                     className="text-xs font-black uppercase tracking-wider px-3 py-2"
-                    style={{ 
-                      background: '#000', 
+                    style={{
+                      background: '#000',
                       color: tierColor,
                       border: '2px solid #000'
                     }}
@@ -2771,8 +2713,8 @@ export default function App() {
                           onClick={() => !isCompleted && handleLevelSelect(tier, lvl)}
                           disabled={isCompleted}
                           className="aspect-square flex items-center justify-center font-black text-sm md:text-base transition-all duration-100"
-                          style={{ 
-                            background: isCompleted ? '#06FFA5' : '#FFF', 
+                          style={{
+                            background: isCompleted ? '#06FFA5' : '#FFF',
                             color: '#000',
                             border: '3px solid #000',
                             boxShadow: isCompleted ? '4px 4px 0px #000' : '3px 3px 0px #000'
@@ -2802,8 +2744,8 @@ export default function App() {
                         key={lvl}
                         disabled={true}
                         className="aspect-square flex items-center justify-center"
-                        style={{ 
-                          background: '#E5E5E5', 
+                        style={{
+                          background: '#E5E5E5',
                           color: '#999',
                           border: '3px solid #CCC'
                         }}
@@ -2836,20 +2778,20 @@ export default function App() {
           <div className="flex-1" style={{ background: '#8338EC' }}></div>
         </div>
 
-        <div 
+        <div
           className="w-full max-w-md p-8 relative"
-          style={{ 
-            background: '#FFF', 
-            border: '6px solid #000', 
+          style={{
+            background: '#FFF',
+            border: '6px solid #000',
             boxShadow: '12px 12px 0px #8338EC',
             transform: 'rotate(-1deg)'
           }}
         >
           <div className="flex flex-col items-center mb-8" style={{ transform: 'rotate(1deg)' }}>
-            <div 
+            <div
               className="p-4 mb-4"
-              style={{ 
-                background: '#06FFA5', 
+              style={{
+                background: '#06FFA5',
                 border: '4px solid #000',
                 boxShadow: '6px 6px 0px #000',
                 transform: 'skew(-5deg)'
@@ -2857,13 +2799,13 @@ export default function App() {
             >
               <Puzzle size={48} style={{ color: '#000' }} />
             </div>
-            <h2 
+            <h2
               className="text-2xl font-black uppercase tracking-wide"
               style={{ color: '#000', transform: 'skew(-3deg)' }}
             >
               {content.title}
             </h2>
-            <span 
+            <span
               className="text-xs font-black uppercase tracking-widest mt-2 px-4 py-1"
               style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
             >
@@ -2871,7 +2813,7 @@ export default function App() {
             </span>
           </div>
 
-          <p 
+          <p
             className="text-center mb-8 leading-relaxed font-bold"
             style={{ color: '#4A4A4A' }}
           >
@@ -2882,8 +2824,8 @@ export default function App() {
             <button
               onClick={() => setView('LEVELS')}
               className="flex-1 py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all duration-100"
-              style={{ 
-                background: '#FFF', 
+              style={{
+                background: '#FFF',
                 color: '#000',
                 border: '4px solid #000',
                 boxShadow: '4px 4px 0px #000'
@@ -2902,8 +2844,8 @@ export default function App() {
             <button
               onClick={startGameFromTutorial}
               className="flex-[2] py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all duration-100"
-              style={{ 
-                background: '#FF006E', 
+              style={{
+                background: '#FF006E',
                 color: '#FFF',
                 border: '4px solid #000',
                 boxShadow: '6px 6px 0px #000',
@@ -2973,20 +2915,20 @@ export default function App() {
         </div>
 
         {/* Header - Neo Brutal */}
-        <div 
+        <div
           className="mx-4 mt-4 p-4 flex items-center justify-between relative z-50"
-          style={{ 
-            background: '#FFF', 
+          style={{
+            background: '#FFF',
             border: '4px solid #000',
             boxShadow: '6px 6px 0px #000'
           }}
         >
           {/* Back Button */}
-          <button 
-            onClick={() => { audio.playClick(); setView('LEVELS'); }} 
+          <button
+            onClick={() => { audio.playClick(); setView('LEVELS'); }}
             className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
-            style={{ 
-              background: modeColor, 
+            style={{
+              background: modeColor,
               border: '3px solid #000',
               boxShadow: '4px 4px 0px #000'
             }}
@@ -2996,8 +2938,8 @@ export default function App() {
 
           {/* Title */}
           <div className="flex-1 mx-4 text-center">
-            <h1 
-              className="font-black text-lg md:text-xl uppercase tracking-wide" 
+            <h1
+              className="font-black text-lg md:text-xl uppercase tracking-wide"
               style={{ color: '#000', transform: 'skewX(-3deg)' }}
             >
               {gameState.hintTitle || (isSudoku ? t.GAME.SUDOKU_TITLE : (isRiddle ? t.MODES.RIDDLE.title : t.GAME.CLASSIC_TITLE))}
@@ -3007,10 +2949,10 @@ export default function App() {
           {/* Timer */}
           <div className="flex items-center gap-2">
             {showTimer && (
-              <div 
+              <div
                 className="px-4 py-2 font-mono font-black text-lg flex items-center gap-2"
-                style={{ 
-                  background: gameState.timeLeft < 10 ? '#FF006E' : modeColor, 
+                style={{
+                  background: gameState.timeLeft < 10 ? '#FF006E' : modeColor,
                   color: '#000',
                   border: '3px solid #000',
                   boxShadow: '4px 4px 0px #000'
@@ -3023,10 +2965,10 @@ export default function App() {
         </div>
 
         {/* Hint Card - Neo Brutal with Black Text */}
-        <div 
+        <div
           className="mx-4 mt-4 p-4 relative overflow-hidden"
-          style={{ 
-            background: modeColor, 
+          style={{
+            background: modeColor,
             border: '4px solid #000',
             boxShadow: '6px 6px 0px #000'
           }}
@@ -3041,7 +2983,7 @@ export default function App() {
           <div className="absolute top-1/2 right-4 opacity-10">
             <HelpCircle size={50} style={{ color: '#000' }} />
           </div>
-          
+
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-1.5" style={{ background: 'rgba(0,0,0,0.15)', borderRadius: '6px' }}>
@@ -3053,7 +2995,7 @@ export default function App() {
               "{gameState.hintDesc || (isSudoku ? t.GAME.SUDOKU_DESC : "...")}"
             </p>
             {!isSudoku && (
-              <div 
+              <div
                 className="inline-block mt-3 px-3 py-1 text-sm font-black"
                 style={{ background: 'rgba(0,0,0,0.15)', color: '#000', border: '2px solid #000' }}
               >
@@ -3107,12 +3049,12 @@ export default function App() {
 
         {/* Hint Button - Redesigned */}
         <div className="absolute bottom-6 right-6 z-30">
-          <button 
-            onClick={triggerHint} 
+          <button
+            onClick={triggerHint}
             className="relative w-16 h-16 flex items-center justify-center transition-all active:scale-95 group"
-            style={{ 
-              background: '#FFBE0B', 
-              border: '4px solid #000', 
+            style={{
+              background: '#FFBE0B',
+              border: '4px solid #000',
               boxShadow: '6px 6px 0px #000'
             }}
           >
@@ -3121,11 +3063,11 @@ export default function App() {
             </div>
             <HelpCircle size={32} style={{ color: '#000' }} strokeWidth={2.5} />
             {hintCostMultiplier > 0 && (
-              <div 
-                className="absolute -top-3 -right-3 px-2 py-1 text-xs font-black shadow-sm" 
-                style={{ 
-                  background: '#FF006E', 
-                  color: '#FFF', 
+              <div
+                className="absolute -top-3 -right-3 px-2 py-1 text-xs font-black shadow-sm"
+                style={{
+                  background: '#FF006E',
+                  color: '#FFF',
                   border: '2px solid #000',
                   transform: 'rotate(12deg)'
                 }}
@@ -3202,19 +3144,19 @@ export default function App() {
             <div className="flex-1" style={{ background: '#8338EC' }}></div>
           </div>
 
-          <div 
+          <div
             className="max-w-md w-full p-8 text-center space-y-6"
-            style={{ 
-              background: '#FFF', 
-              border: '6px solid #000', 
+            style={{
+              background: '#FFF',
+              border: '6px solid #000',
               boxShadow: '12px 12px 0px #FF006E',
               transform: 'rotate(-1deg)'
             }}
           >
-            <div 
+            <div
               className="w-20 h-20 mx-auto flex items-center justify-center"
-              style={{ 
-                background: '#FF006E', 
+              style={{
+                background: '#FF006E',
                 border: '4px solid #000',
                 boxShadow: '6px 6px 0px #000',
                 transform: 'skew(-5deg)'
@@ -3223,7 +3165,7 @@ export default function App() {
               <WifiOff size={40} style={{ color: '#FFF' }} />
             </div>
             <div style={{ transform: 'rotate(1deg)' }}>
-              <h2 
+              <h2
                 className="text-2xl font-black uppercase mb-3"
                 style={{ color: '#000', transform: 'skew(-3deg)' }}
               >
@@ -3234,14 +3176,14 @@ export default function App() {
               </p>
             </div>
             <div className="flex flex-col gap-3">
-              <div 
+              <div
                 className="flex items-center gap-3 justify-center py-2 px-4 font-bold text-xs uppercase"
                 style={{ background: '#000', color: '#FF006E' }}
               >
                 <div className="w-3 h-3" style={{ background: '#FF006E' }}></div>
                 <span>Offline-Modus nicht verfügbar</span>
               </div>
-              <div 
+              <div
                 className="flex items-center gap-3 justify-center py-2 px-4 font-bold text-xs uppercase"
                 style={{ background: '#FFBE0B', color: '#000', border: '2px solid #000' }}
               >
@@ -3252,8 +3194,8 @@ export default function App() {
             <button
               onClick={() => window.location.reload()}
               className="w-full py-4 font-black uppercase text-lg transition-all duration-100"
-              style={{ 
-                background: '#FF7F00', 
+              style={{
+                background: '#FF7F00',
                 color: '#000',
                 border: '4px solid #000',
                 boxShadow: '6px 6px 0px #000',
@@ -3275,7 +3217,7 @@ export default function App() {
       )}
 
       {view === 'ONBOARDING' && renderOnboarding()}
-      {view === 'LANGUAGE_SELECT' && renderLanguageSelect()}
+
       {view === 'HOME' && renderHome()}
       {view === 'SEASON' && (
         <SeasonPassView
@@ -3377,18 +3319,18 @@ export default function App() {
       {/* Mau Mau Intro Modal */}
       <Modal isOpen={showMauMauIntro} onClose={() => setShowMauMauIntro(false)} title="Mau Mau">
         <div className="p-6 text-center space-y-6">
-          <div 
+          <div
             className="w-24 h-24 mx-auto flex items-center justify-center relative"
-            style={{ 
-              background: '#C084FC', 
+            style={{
+              background: '#C084FC',
               border: '4px solid #000',
               boxShadow: '6px 6px 0px #000',
               transform: 'rotate(-3deg)'
             }}
           >
-             <div className="absolute -top-3 -right-3 animate-spin-slow">
-               <Sparkles size={24} style={{ color: '#FFBE0B' }} />
-             </div>
+            <div className="absolute -top-3 -right-3 animate-spin-slow">
+              <Sparkles size={24} style={{ color: '#FFBE0B' }} />
+            </div>
             <span className="text-5xl">🎴</span>
           </div>
 
@@ -3399,11 +3341,11 @@ export default function App() {
             </p>
           </div>
 
-          <div 
+          <div
             className="p-4 text-left space-y-3 relative overflow-hidden"
-            style={{ 
-              background: '#FFF', 
-              border: '4px solid #000', 
+            style={{
+              background: '#FFF',
+              border: '4px solid #000',
               boxShadow: '6px 6px 0px #8338EC'
             }}
           >
@@ -3441,8 +3383,8 @@ export default function App() {
               setShowMauMauModeSelect(true);
             }}
             className="w-full py-4 font-black uppercase tracking-widest transition-all active:translate-y-1 flex items-center justify-center gap-2"
-            style={{ 
-              background: '#C084FC', 
+            style={{
+              background: '#C084FC',
               color: '#000',
               border: '3px solid #000',
               boxShadow: '4px 4px 0px #000'
@@ -3467,15 +3409,15 @@ export default function App() {
               setView('MAU_MAU');
             }}
             className="w-full p-5 transition-all active:scale-95 group relative overflow-hidden"
-            style={{ 
-              background: '#FFF', 
-              border: '4px solid #000', 
+            style={{
+              background: '#FFF',
+              border: '4px solid #000',
               boxShadow: '6px 6px 0px #8338EC',
               transform: 'skewX(-2deg)'
             }}
           >
             <div className="flex items-center gap-4" style={{ transform: 'skewX(2deg)' }}>
-              <div 
+              <div
                 className="w-14 h-14 flex items-center justify-center transition-transform group-hover:scale-110"
                 style={{ background: '#8338EC', border: '3px solid #000' }}
               >
@@ -3496,15 +3438,15 @@ export default function App() {
               setShowMultiplayerLobby(true);
             }}
             className="w-full p-5 transition-all active:scale-95 group relative overflow-hidden"
-            style={{ 
-              background: '#FFF', 
-              border: '4px solid #000', 
+            style={{
+              background: '#FFF',
+              border: '4px solid #000',
               boxShadow: '6px 6px 0px #06FFA5',
               transform: 'skewX(-2deg)'
             }}
           >
             <div className="flex items-center gap-4" style={{ transform: 'skewX(2deg)' }}>
-              <div 
+              <div
                 className="w-14 h-14 flex items-center justify-center transition-transform group-hover:scale-110"
                 style={{ background: '#06FFA5', border: '3px solid #000' }}
               >
@@ -3521,9 +3463,9 @@ export default function App() {
           <button
             onClick={() => setShowMauMauModeSelect(false)}
             className="w-full py-3 font-black uppercase text-sm transition-all active:translate-y-1 mt-4"
-            style={{ 
-              background: '#F5F5F5', 
-              color: '#000', 
+            style={{
+              background: '#F5F5F5',
+              color: '#000',
               border: '3px solid #000',
               boxShadow: '4px 4px 0px #000'
             }}
@@ -3629,8 +3571,11 @@ export default function App() {
                   handleCloudLogin(username);
                 }}
                 lang={user.language}
-                onLanguageChange={(lang) => setUser(prev => ({ ...prev, language: lang }))}
+                onLanguageChange={(lang) => {
+                  setUser(prev => ({ ...prev, language: lang }));
+                }}
                 embedded={true}
+                initialMode={'language_select'}
               />
             </div>
           </div>
@@ -3687,9 +3632,9 @@ export default function App() {
                 }
               }}
               className="w-full py-4 font-black uppercase text-sm flex items-center justify-center gap-2 transition-all active:translate-y-1"
-              style={{ 
-                background: '#FFBE0B', 
-                color: '#000', 
+              style={{
+                background: '#FFBE0B',
+                color: '#000',
                 border: '3px solid #000',
                 boxShadow: '4px 4px 0px #000',
                 opacity: user.coins >= (30 + (hintCostMultiplier * 10)) ? 1 : 0.5
@@ -3703,9 +3648,9 @@ export default function App() {
             disabled={adTimer > 0}
             onClick={closeAdAndReward}
             className="w-full py-4 font-black uppercase text-sm transition-all active:translate-y-1"
-            style={{ 
-              background: adTimer > 0 ? '#E5E5E5' : '#06FFA5', 
-              color: adTimer > 0 ? '#999' : '#000', 
+            style={{
+              background: adTimer > 0 ? '#E5E5E5' : '#06FFA5',
+              color: adTimer > 0 ? '#999' : '#000',
               border: '3px solid #000',
               boxShadow: adTimer > 0 ? 'none' : '4px 4px 0px #000',
               cursor: adTimer > 0 ? 'not-allowed' : 'pointer'
@@ -3802,7 +3747,7 @@ export default function App() {
       {/* Win Modal - Neo Brutal */}
       <Modal isOpen={showWin} onClose={() => setShowWin(false)} title={t.GAME.WIN_TITLE}>
         <div className="text-center space-y-6">
-          <div 
+          <div
             className="inline-block p-6 mb-4"
             style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '8px 8px 0px #000', transform: 'rotate(-3deg)' }}
           >
@@ -3812,7 +3757,7 @@ export default function App() {
 
           {/* Stats */}
           <div className="flex justify-center gap-4">
-            <div 
+            <div
               className="p-4 min-w-[100px] flex flex-col items-center"
               style={{ background: '#FF006E', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
             >
@@ -3820,7 +3765,7 @@ export default function App() {
               <span className="text-2xl font-black" style={{ color: '#FFF' }}>{winStats.xp}</span>
               <span className="text-xs font-black uppercase" style={{ color: 'rgba(255,255,255,0.8)' }}>{t.GAME.XP_GAINED}</span>
             </div>
-            <div 
+            <div
               className="p-4 min-w-[100px] flex flex-col items-center"
               style={{ background: '#0096FF', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
             >
@@ -3842,14 +3787,14 @@ export default function App() {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <button 
+            <button
               className="flex-1 py-4 font-black uppercase text-sm transition-all"
               style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
               onClick={() => { setShowWin(false); setView('LEVELS'); }}
             >
               Übersicht
             </button>
-            <button 
+            <button
               className="flex-1 py-4 font-black uppercase text-sm transition-all"
               style={{ background: '#06FFA5', color: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
               onClick={() => { setShowWin(false); handleNextLevel(); }}
@@ -3863,7 +3808,7 @@ export default function App() {
       {/* Game Over Modal - Neo Brutal */}
       <Modal isOpen={gameState?.status === 'lost'} onClose={() => { setView('LEVELS'); setGameState(null); }} title="MISSION FAILED">
         <div className="text-center space-y-6">
-          <div 
+          <div
             className="inline-block p-6"
             style={{ background: '#FF006E', border: '4px solid #000', boxShadow: '8px 8px 0px #000', transform: 'rotate(3deg)' }}
           >
@@ -3874,7 +3819,7 @@ export default function App() {
 
           <div>
             <p className="text-sm font-black uppercase tracking-widest mb-2" style={{ color: '#4A4A4A' }}>LÖSUNG</p>
-            <div 
+            <div
               className="text-3xl font-mono font-black p-4"
               style={{ background: '#06FFA5', border: '4px solid #000', color: '#000' }}
             >
@@ -3883,7 +3828,7 @@ export default function App() {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <button 
+            <button
               className="flex-1 py-4 font-black uppercase text-sm transition-all"
               style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
               onClick={() => { setView('LEVELS'); setGameState(null); }}
@@ -4027,7 +3972,7 @@ export default function App() {
         <div className="space-y-5">
           {/* Header */}
           <div className="text-center">
-            <div 
+            <div
               className="inline-block p-4 mb-4"
               style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
             >
@@ -4042,7 +3987,7 @@ export default function App() {
             {/* Plan 1: Monthly */}
             <button
               className="relative p-4 text-left transition-all"
-              style={{ 
+              style={{
                 background: selectedPlan === 'monthly' ? '#FFBE0B' : '#FFF',
                 border: '4px solid #000',
                 boxShadow: selectedPlan === 'monthly' ? '8px 8px 0px #000' : '4px 4px 0px #000',
@@ -4050,7 +3995,7 @@ export default function App() {
               }}
               onClick={() => setSelectedPlan('monthly')}
             >
-              <div 
+              <div
                 className="absolute -top-3 right-2 px-2 py-1 text-[10px] font-black uppercase"
                 style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
               >
@@ -4068,7 +4013,7 @@ export default function App() {
             {/* Plan 2: 30 Days */}
             <button
               className="relative p-4 text-left transition-all"
-              style={{ 
+              style={{
                 background: selectedPlan === '30days' ? '#8338EC' : '#FFF',
                 border: '4px solid #000',
                 boxShadow: selectedPlan === '30days' ? '8px 8px 0px #000' : '4px 4px 0px #000',
@@ -4086,7 +4031,7 @@ export default function App() {
           </div>
 
           {/* Payment Section */}
-          <div 
+          <div
             className="p-4 flex flex-col items-center"
             style={{ background: '#FFF8E7', border: '4px solid #000' }}
           >
@@ -4142,7 +4087,7 @@ export default function App() {
       {/* Premium Required Modal - Neo Brutal */}
       <Modal isOpen={showPremiumRequiredModal} onClose={() => setShowPremiumRequiredModal(false)} title={t.HOME.PREMIUM_REQUIRED_TITLE}>
         <div className="text-center space-y-5">
-          <div 
+          <div
             className="w-20 h-20 mx-auto flex items-center justify-center"
             style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
           >
@@ -4178,7 +4123,7 @@ export default function App() {
       {/* Username Change Confirmation Modal - Neo Brutal */}
       <Modal isOpen={showUsernameConfirm} onClose={() => setShowUsernameConfirm(false)} title="BESTÄTIGUNG">
         <div className="space-y-5">
-          <div 
+          <div
             className="p-4 text-center"
             style={{ background: '#FFBE0B', border: '4px solid #000' }}
           >
@@ -4191,7 +4136,7 @@ export default function App() {
             </p>
           </div>
 
-          <div 
+          <div
             className="p-3 text-center"
             style={{ background: '#FFF', border: '3px solid #FF006E' }}
           >
@@ -4225,7 +4170,7 @@ export default function App() {
           {/* Username Section */}
           {cloudUsername && (
             <>
-              <div 
+              <div
                 className="p-4"
                 style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #FFBE0B' }}
               >
@@ -4255,7 +4200,7 @@ export default function App() {
               </div>
 
               {/* Account Security */}
-              <div 
+              <div
                 className="p-4"
                 style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #8338EC' }}
               >
@@ -4285,14 +4230,14 @@ export default function App() {
               </div>
 
               {/* Friend Code */}
-              <div 
+              <div
                 className="p-4 text-center"
                 style={{ background: '#06FFA5', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
               >
                 <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FFF', color: '#000', border: '2px solid #000' }}>
                   FREUNDESCODE
                 </div>
-                <div 
+                <div
                   className="text-2xl font-mono font-black tracking-[0.2em] select-all cursor-pointer p-3 transition-all"
                   style={{ background: '#FFF', border: '3px solid #000', color: '#000' }}
                   onClick={() => user.friendCode && navigator.clipboard.writeText(user.friendCode)}
@@ -4313,7 +4258,7 @@ export default function App() {
           )}
 
           {/* Avatar Preview */}
-          <div 
+          <div
             className="p-4"
             style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #FF006E' }}
           >
@@ -4321,7 +4266,7 @@ export default function App() {
               {t.PROFILE.AVATAR_PREVIEW}
             </div>
             <div className="flex justify-center mb-4">
-              <div 
+              <div
                 className={`w-24 h-24 overflow-hidden bg-[#FFF8E7] ${getAvatarEffect(editFrame)}`}
                 style={{ border: '4px solid #000' }}
               >
@@ -4338,7 +4283,7 @@ export default function App() {
                   key={avatar}
                   onClick={() => setEditAvatar(avatar)}
                   className="aspect-square overflow-hidden transition-all"
-                  style={{ 
+                  style={{
                     border: editAvatar === avatar ? '4px solid #FF006E' : '3px solid #000',
                     background: '#FFF8E7',
                     transform: editAvatar === avatar ? 'scale(1.05)' : 'scale(1)'
@@ -4440,7 +4385,7 @@ export default function App() {
       {/* Delete Confirmation Modal - Neo Brutal */}
       <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title={t.PROFILE.DELETE_ACCOUNT}>
         <div className="space-y-5">
-          <div 
+          <div
             className="p-4 flex items-start gap-3"
             style={{ background: '#FFF', border: '4px solid #FF006E' }}
           >

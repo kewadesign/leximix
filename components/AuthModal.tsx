@@ -21,10 +21,11 @@ interface Props {
     lang: Language;
     onLanguageChange: (lang: Language) => void;
     embedded?: boolean;
+    initialMode?: 'login' | 'register' | 'age_verify' | 'language_select' | 'select_auth_type' | 'password_reset';
 }
 
-export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, onLanguageChange, embedded = false }) => {
-    const [mode, setMode] = useState<'login' | 'register' | 'age_verify' | 'language_select' | 'select_auth_type' | 'password_reset'>('select_auth_type');
+export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, onLanguageChange, embedded = false, initialMode = 'select_auth_type' }) => {
+    const [mode, setMode] = useState<'login' | 'register' | 'age_verify' | 'language_select' | 'select_auth_type' | 'password_reset'>(initialMode);
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -409,7 +410,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setMode('language_select')}
+                                    onClick={() => setMode('age_verify')}
                                     className="w-full py-5 px-8 font-black uppercase text-xl"
                                     style={{
                                         background: '#FF006E',
@@ -440,7 +441,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 </h2>
                                 <button
                                     type="button"
-                                    onClick={() => { onLanguageChange(Language.DE); setMode('age_verify'); }}
+                                    onClick={() => { onLanguageChange(Language.DE); setMode('select_auth_type'); }}
                                     className="w-full p-6 flex items-center justify-center gap-4 font-black uppercase text-xl"
                                     style={{
                                         background: '#FF006E',
@@ -464,7 +465,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => { onLanguageChange(Language.EN); setMode('age_verify'); }}
+                                    onClick={() => { onLanguageChange(Language.EN); setMode('select_auth_type'); }}
                                     className="w-full p-6 flex items-center justify-center gap-4 font-black uppercase text-xl"
                                     style={{
                                         background: '#FF7F00',
@@ -488,7 +489,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => { onLanguageChange(Language.ES); setMode('age_verify'); }}
+                                    onClick={() => { onLanguageChange(Language.ES); setMode('select_auth_type'); }}
                                     className="w-full p-6 flex items-center justify-center gap-4 font-black uppercase text-xl"
                                     style={{
                                         background: '#8338EC',
