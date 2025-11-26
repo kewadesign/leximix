@@ -4494,13 +4494,13 @@ export default function App() {
       {(window as any).Capacitor === undefined && (
         <div className="fixed bottom-4 right-4 z-[50]">
           <a
-            href="http://leximix.de/app-release.apk"
+            href="http://leximix.de/LexiMix-v3.0.2-Release.apk"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-black/40 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white/50 hover:text-white px-4 py-2 rounded-full transition-all text-[10px] font-bold uppercase tracking-widest group"
           >
-            <Download size={14} className="group-hover:text-lexi-fuchsia transition-colors" />
-            <span>Android App</span>
+            <Smartphone size={14} className="group-hover:scale-110 transition-transform" />
+            <span>Get App</span>
           </a>
         </div>
       )}
