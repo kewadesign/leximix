@@ -12,6 +12,34 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '3.0.2',
+        date: '2025-11-26',
+        changes: {
+            added: [
+                '🎨 Brand Update: Neues Logo & Favicon',
+                '🌍 Onboarding: Englisch als Standard ausgewählt',
+                '✨ UI Polish: Onboarding Modal Layout optimiert'
+            ]
+        }
+    },
+    {
+        version: '3.0.1',
+        date: '2025-11-26',
+        changes: {
+            added: [
+                '🎨 MAJOR REDESIGN: Neo-Brutalist Style!',
+                '🌈 Animierte Hintergründe & Globaler Grain-Effekt',
+                '🎴 Mau Mau: Komplettes visuelles Redesign',
+                '⏩ Ads: Skip-Funktion (mit Coins bezahlen)',
+                '🎁 Rewards: Fix für Belohnungen in allen Modi'
+            ],
+            changed: [
+                'Komplette UI-Überarbeitung mit fetten Rahmen & Schatten',
+                'Verbesserte Navigation & Back-Buttons'
+            ]
+        }
+    },
+    {
         version: '2.7.0',
         date: '2025-11-25',
         changes: {

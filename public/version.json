@@ -1,11 +1,11 @@
 {
     "minVersion": "2.4.0",
-    "version": "2.8.1",
-    "updateMessage": "Neue Features verfügbar! Bitte aktualisiere die App.",
+    "version": "3.0.2",
+    "updateMessage": "LexiMix v3.0.2: Brandneues Design & Features!",
     "apk": {
-        "url": "http://leximix.de/app-release.apk",
-        "size": "25 MB",
-        "version": "2.8.1",
-        "forceUpdate": false
+        "url": "http://leximix.de/LexiMix-v3.0.2-Release.apk",
+        "size": "46 MB",
+        "version": "3.0.2",
+        "forceUpdate": true
     }
 }
