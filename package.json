@@ -1,11 +1,11 @@
 {
   "name": "leximix",
   "private": true,
-  "version": "3.0.1",
+  "version": "3.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "pwd && vite build --outDir dist && echo 'Build Complete'",
     "preview": "vite preview",
     "update-changelog": "node scripts/update_changelog.js"
   },

@@ -1,0 +1,149 @@
+[
+  {
+    "version": "2.8.1",
+    "date": "25.11.2025",
+    "changes": [
+      "✨ UI Improvements",
+      "  • Improved readability for Daily Word Training tagline",
+      "  • Premium Status box now has a cleaner, subtle white pattern design",
+      "  • Fixed text contrast in bright mode"
+    ]
+  },
+  {
+    "version": "2.8.0",
+    "date": "25.11.2025",
+    "changes": [
+      "✨ Features",
+      "  • Global Game Invite Popup (App-wide)",
+      "  • New Logos (Bright/Dark Mode)",
+      "🐞 Bugfixes",
+      "  • Multiplayer Sync: Host now correctly joins game",
+      "  • Mau Mau: Fixed Card Validation & Wished Suit Logic",
+      "  • Multiplayer: Fixed Card Playing & Drawing"
+    ]
+  },
+  {
+    "version": "2.7.0",
+    "date": "25.11.2025",
+    "changes": [
+      "✨ Features",
+      "  • UI redesign (neon season banner + progress bar) & Letter Mau Mau implementation plan"
+    ]
+  },
+  {
+    "version": "2.6.8",
+    "date": "24.11.2025",
+    "changes": [
+      "  • Deploy: Updated web files in ionos_deploy",
+      "  • v2.6.8 Update: NICE text change & optimization"
+    ]
+  },
+  {
+    "version": "2.6.4",
+    "date": "24.11.2025",
+    "changes": [
+      "  • Fix Season Switching Logic"
+    ]
+  },
+  {
+    "version": "2.6.3",
+    "date": "24.11.2025",
+    "changes": [
+      "✨ Features",
+      "  • Show changelog button in optional update modal"
+    ]
+  },
+  {
+    "version": "2.6.2",
+    "date": "24.11.2025",
+    "changes": [
+      "✨ Features",
+      "  • Add Maintenance Mode & Fix Changelog Button UI",
+      "🐞 Bugfixes",
+      "  • Web users see 'Please wait' instead of force download",
+      "🔧 Maintenance",
+      "  • Update firebase template with maintenance fields",
+      "👷 Build & Deploy",
+      "  • Full release build v2.6.2 (Web + APK + Changelog)",
+      "  • Update APK to v2.6.2 (Debug build renamed to release)",
+      "  • Update ionos_deploy with latest web build (v2.6.2)",
+      "📝 Documentation",
+      "  • Auto-generate changelog from git history"
+    ]
+  },
+  {
+    "version": "2.6.1",
+    "date": "24.11.2025",
+    "changes": [
+      "👤 Benutzername wird nun korrekt im Header angezeigt",
+      "🌍 Premium-Modal Texte vollständig übersetzt (DE/EN/ES)"
+    ]
+  },
+  {
+    "version": "2.6.0",
+    "date": "24.11.2025",
+    "changes": [
+      "🎮 Neuer Spielmodus: Rätsel (Riddle Mode)",
+      "🇪🇸 Spanische Sprache (Español) hinzugefügt",
+      "🌙 Dark Mode Button im Header wiederhergestellt",
+      "🎨 Layout-Optimierungen im Hauptmenü",
+      "🎨 Season Pass Design wiederhergestellt (Orange)",
+      "🔓 Sudoku Modus jetzt für alle verfügbar",
+      "⭐ Challenge Modus erfordert Premium"
+    ]
+  },
+  {
+    "version": "2.5.2",
+    "date": "24.11.2025",
+    "changes": [
+      "🐞 Hotfix: Scrolling auf dem Home-Screen gefixt",
+      "🌍 Neuer Start-Screen: Sprachauswahl für neue Spieler",
+      "💎 Verbessertes UI: Season Pass Fortschritt jetzt prominenter"
+    ]
+  },
+  {
+    "version": "2.5.0",
+    "date": "24.11.2025",
+    "changes": [
+      "🧩 Neuer Spielmodus: RÄTSEL (Riddles) - Löse knifflige Worträtsel!",
+      "⏳ Season & Premium Status: Jetzt direkt auf dem Home-Screen sichtbar",
+      "🇪🇸 Voller Spanisch-Support für alle Spielmodi",
+      "✨ UI Verbesserungen & Bugfixes"
+    ]
+  },
+  {
+    "version": "2.3.2",
+    "date": "24.11.2025",
+    "changes": [
+      "🇪🇸 Nuevo idioma: ¡Español!",
+      "🌐 Full language support: EN, DE, ES",
+      "🛠️ Improved download system"
+    ]
+  },
+  {
+    "version": "2.3.1",
+    "date": "23.11.2025",
+    "changes": [
+      "feat: internationalize update modals and changelog"
+    ]
+  },
+  {
+    "version": "2.3.0",
+    "date": "24.11.2025",
+    "changes": [
+      "🔥 Update-System: Wir stellen sicher, dass du immer die beste Version spielst!",
+      "🎨 UI Verbesserungen: Optimiertes Design für Mobile",
+      "🐞 Bugfixes: Stabilere Verbindung und Performance",
+      "⚡️ Neue Firebase Regeln für faire Spiele"
+    ]
+  },
+  {
+    "version": "2.2.0",
+    "date": "10.11.2025",
+    "changes": [
+      "🚀 Season 2: Neon Uprising ist da!",
+      "🏆 Neuer Challenge Mode",
+      "🛍️ Shop Überarbeitung"
+    ]
+  }
+]

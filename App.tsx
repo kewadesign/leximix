@@ -2056,52 +2056,66 @@ export default function App() {
       <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
         <div className="w-full max-w-md relative z-10">
           {onboardingStep === 0 && (
-            <div className="space-y-8 text-center bg-white p-8 relative" style={{ border: '6px solid #000', boxShadow: '12px 12px 0 #000', transform: 'skew(-2deg)' }}>
+            <div className="space-y-6 text-center p-6 relative overflow-hidden" style={{ background: '#FFF', border: '4px solid #000', boxShadow: '8px 8px 0 #000' }}>
               {/* Rainbow Stripe */}
-              <div className="absolute top-0 left-0 right-0 h-4" style={{ background: 'linear-gradient(90deg, #FF006E 0%, #FF7F00 33%, #8338EC 66%, #FFBE0B 100%)' }}></div>
-
-              {/* Globe Icon in Yellow Box */}
-              <div className="w-24 h-24 mx-auto flex items-center justify-center mt-4" style={{ backgroundColor: '#FFBE0B', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(8deg)' }}>
-                <IoGlobeSharp size={56} style={{ color: '#000' }} />
+              <div className="absolute top-0 left-0 right-0 h-3 flex">
+                <div className="flex-1" style={{ background: '#FF006E' }}></div>
+                <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+                <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+                <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+                <div className="flex-1" style={{ background: '#0096FF' }}></div>
+                <div className="flex-1" style={{ background: '#8338EC' }}></div>
               </div>
 
-              <h1 className="text-5xl font-black uppercase tracking-wider mt-6" style={{ color: '#000', transform: 'skew(3deg)' }}>
+              {/* Globe Icon */}
+              <div className="w-20 h-20 mx-auto flex items-center justify-center mt-4 rounded-full" style={{ background: '#000' }}>
+                <IoGlobeSharp size={40} style={{ color: '#FFF' }} />
+              </div>
+
+              <h1 className="text-3xl font-black uppercase tracking-wide mt-2" style={{ color: '#000' }}>
                 {t.ONBOARDING.WELCOME}
               </h1>
 
-              {/* Language Cards - Stacked */}
-              <div className="grid grid-cols-1 gap-6 mt-8">
+              <p className="font-bold text-sm" style={{ color: '#666' }}>
+                {t.ONBOARDING.SELECT_LANG}
+              </p>
+
+              {/* Language Cards - Vertical List */}
+              <div className="flex flex-col gap-3 mt-4">
                 <button
-                  onClick={() => { setTempUser({ ...tempUser, language: Language.DE }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
-                  style={{ backgroundColor: '#FF006E', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-5deg)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(-8px)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(0)'}
+                  onClick={() => { setTempUser({ ...tempUser, language: Language.EN }); setOnboardingStep(1); audio.playClick(); }}
+                  className="w-full py-4 flex items-center justify-between px-6 transition-all active:scale-95 group relative overflow-hidden"
+                  style={{ background: '#0096FF', border: '3px solid #000', boxShadow: '4px 4px 0 #000' }}
                 >
-                  <span className="text-8xl mb-4 block">🇩🇪</span>
-                  <span className="font-black text-2xl uppercase tracking-widest text-white">DEUTSCH</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🇺🇸</span>
+                    <span className="font-black text-lg uppercase text-white">English</span>
+                  </div>
+                  <ArrowLeft className="rotate-180 text-white group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 <button
-                  onClick={() => { setTempUser({ ...tempUser, language: Language.EN }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
-                  style={{ backgroundColor: '#FF7F00', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(5deg)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(5deg) translateY(-8px)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(5deg) translateY(0)'}
+                  onClick={() => { setTempUser({ ...tempUser, language: Language.DE }); setOnboardingStep(1); audio.playClick(); }}
+                  className="w-full py-4 flex items-center justify-between px-6 transition-all active:scale-95 group relative overflow-hidden"
+                  style={{ background: '#FF006E', border: '3px solid #000', boxShadow: '4px 4px 0 #000' }}
                 >
-                  <span className="text-8xl mb-4 block">🇺🇸</span>
-                  <span className="font-black text-2xl uppercase tracking-widest text-white">ENGLISH</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🇩🇪</span>
+                    <span className="font-black text-lg uppercase text-white">Deutsch</span>
+                  </div>
+                  <ArrowLeft className="rotate-180 text-white group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 <button
                   onClick={() => { setTempUser({ ...tempUser, language: Language.ES }); setOnboardingStep(1); audio.playClick(); }}
-                  className="p-8 flex flex-col items-center justify-center transition-all duration-100 group"
-                  style={{ backgroundColor: '#8338EC', border: '4px solid #000', boxShadow: '8px 8px 0 #000', transform: 'skew(-5deg)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(-8px)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'skew(-5deg) translateY(0)'}
+                  className="w-full py-4 flex items-center justify-between px-6 transition-all active:scale-95 group relative overflow-hidden"
+                  style={{ background: '#FFBE0B', border: '3px solid #000', boxShadow: '4px 4px 0 #000' }}
                 >
-                  <span className="text-8xl mb-4 block">🇪🇸</span>
-                  <span className="font-black text-2xl uppercase tracking-widest text-white">ESPAÑOL</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🇪🇸</span>
+                    <span className="font-black text-lg uppercase text-white">Español</span>
+                  </div>
+                  <ArrowLeft className="rotate-180 text-white group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>

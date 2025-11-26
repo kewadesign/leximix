@@ -1,0 +1,277 @@
+import React, { useEffect, useState } from 'react';
+import { getDatabase, ref, get, onValue } from 'firebase/database';
+import { Modal } from './UI';
+import { AlertTriangle, ArrowLeft, Sparkles, Download } from 'lucide-react';
+import { ChangelogModal, ChangelogEntry } from './ChangelogModal';
+import { MaintenanceScreen } from './MaintenanceScreen';
+import { APP_VERSION } from '../constants';
+
+interface Props {
+  isOnline: boolean;
+  t: any;
+}
+
+export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
+  const [serverVersion, setServerVersion] = useState('');
+  const [minVersion, setMinVersion] = useState('');
+  const [downloadUrl, setDownloadUrl] = useState('');
+
+  const [showForceUpdate, setShowForceUpdate] = useState(false);
+  const [showOptionalUpdate, setShowOptionalUpdate] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
+  const [viewingChangelogFromForce, setViewingChangelogFromForce] = useState(false);
+  
+  // Maintenance State
+  const [isMaintenance, setIsMaintenance] = useState(false);
+  const [maintenanceMessage, setMaintenanceMessage] = useState('');
+
+  const [changelogData, setChangelogData] = useState<ChangelogEntry[]>([]);
+
+  const isCapacitor = (window as any).Capacitor !== undefined;
+
+  // Fetch Version Info from Firebase & Changelog
+  useEffect(() => {
+    if (!isOnline) return;
+
+    const db = getDatabase();
+    const systemRef = ref(db, 'system');
+
+    // Listen for version changes
+    const unsubscribe = onValue(systemRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+
+        const latest = isCapacitor ? (data.latest_apk_version || data.latest_version) : data.latest_version;
+        const minimum = data.min_version || '0.0.0';
+
+        // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
+        const url = data.download_url || (isCapacitor ? 'http://leximix.de/app-release.apk' : '/app-release.apk');
+
+        // Check Maintenance Mode
+        if (data.maintenance_active) {
+          setIsMaintenance(true);
+          setMaintenanceMessage(data.maintenance_message || '');
+        } else {
+          setIsMaintenance(false);
+        }
+
+        setServerVersion(latest);
+        setMinVersion(minimum);
+        setDownloadUrl(url);
+
+        checkVersion(latest, minimum);
+      }
+    });
+
+    // Fetch Changelog
+    fetch('/changelog.json')
+      .then(res => res.json())
+      .then(data => setChangelogData(data))
+      .catch(err => console.error('Failed to load changelog', err));
+
+    return () => unsubscribe();
+  }, [isOnline, isCapacitor]);
+
+  const checkVersion = (latest: string, minimum: string) => {
+    // Helper to compare versions
+    const compare = (v1: string, v2: string) => {
+      const p1 = v1.split('.').map(Number);
+      const p2 = v2.split('.').map(Number);
+      for (let i = 0; i < 3; i++) {
+        const n1 = p1[i] || 0;
+        const n2 = p2[i] || 0;
+        if (n1 > n2) return 1;
+        if (n1 < n2) return -1;
+      }
+      return 0;
+    };
+
+    const current = APP_VERSION;
+
+    // 1. Check Force Update
+    if (compare(current, minimum) < 0) {
+      setShowForceUpdate(true);
+      setShowOptionalUpdate(false); // Force takes precedence
+      return;
+    } else {
+      setShowForceUpdate(false);
+    }
+
+    // 2. Check Optional Update
+    if (compare(current, latest) < 0) {
+      setShowOptionalUpdate(true);
+    }
+
+    // 3. Check Changelog (if we are on the latest version or compatible)
+    // We show changelog if the last seen version < current version
+    const lastSeen = localStorage.getItem('last_seen_version');
+    if (!lastSeen || compare(current, lastSeen) > 0) {
+      if (compare(current, latest) >= 0) {
+        setShowChangelog(true);
+        localStorage.setItem('last_seen_version', current);
+      }
+    }
+  };
+
+  const handleDownload = () => {
+    if (isCapacitor) {
+      // Direct download link for APK (external browser)
+      window.open(downloadUrl, '_system');
+    } else {
+      if (downloadUrl.endsWith('.apk')) {
+        window.location.href = downloadUrl;
+      } else if (downloadUrl.startsWith('http')) {
+        window.location.href = downloadUrl;
+      } else {
+        // For web updates (reload)
+        window.location.reload();
+      }
+    }
+  };
+
+  // Maintenance Mode (Blocking)
+  if (isMaintenance) {
+    return <MaintenanceScreen message={maintenanceMessage} />;
+  }
+
+  // Force Update Modal (Blocking)
+  if (showForceUpdate) {
+    return (
+      <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/95 backdrop-blur-xl animate-in fade-in duration-300">
+        <div className="glass-panel p-8 rounded-3xl max-w-md mx-4 text-center space-y-6 border-orange-500/30 shadow-[0_0_50px_rgba(249,115,22,0.2)]">
+          <div className="w-24 h-24 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center border-2 border-orange-500 animate-pulse-slow">
+            <AlertTriangle size={48} className="text-orange-500" />
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-wider">{t.UPDATES.REQUIRED_TITLE}</h2>
+            <p className="text-gray-300 leading-relaxed">
+              {t.UPDATES.REQUIRED_DESC}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-400 bg-black/40 p-4 rounded-xl border border-white/5">
+            <div className="flex flex-col items-center">
+              <span className="text-gray-500 uppercase text-[10px] tracking-widest">{t.UPDATES.INSTALLED}</span>
+              <span className="font-mono text-red-400 text-lg">v{APP_VERSION}</span>
+            </div>
+            <ArrowLeft size={20} className="rotate-180 text-orange-500" />
+            <div className="flex flex-col items-center">
+              <span className="text-gray-500 uppercase text-[10px] tracking-widest">{t.UPDATES.REQUIRED}</span>
+              <span className="font-mono text-green-400 font-bold text-lg">v{minVersion}</span>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {isCapacitor ? (
+              <button
+                onClick={handleDownload}
+                className="w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                <Download size={20} />
+                {t.UPDATES.UPDATE_NOW}
+              </button>
+            ) : (
+              <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-200 text-sm space-y-3">
+                <p className="leading-relaxed">
+                  Die Website wird gerade aktualisiert. Bitte habe einen Moment Geduld.
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="w-full py-3 bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-500/50 text-yellow-200 rounded-lg text-xs uppercase font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <Download size={16} />
+                  Seite neu laden
+                </button>
+              </div>
+            )}
+
+            <button
+              onClick={() => {
+                setViewingChangelogFromForce(true);
+                setShowChangelog(true);
+              }}
+              className="w-full text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors pt-2"
+            >
+              {t.UPDATES.WHATS_NEW}
+            </button>
+          </div>
+
+          <p className="text-[10px] text-gray-600 uppercase tracking-widest">{t.UPDATES.SECURITY}</p>
+        </div>
+
+        {/* Show Changelog on top if requested */}
+        {showChangelog && viewingChangelogFromForce && (
+          <div className="absolute inset-0 z-[100000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+            <ChangelogModal
+              isOpen={true}
+              onClose={() => {
+                setShowChangelog(false);
+                setViewingChangelogFromForce(false);
+              }}
+              entries={changelogData}
+              t={t}
+              downloadUrl={downloadUrl}
+              currentVersion={APP_VERSION}
+              latestVersion={serverVersion}
+              onDownload={handleDownload}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Optional Update Modal */}
+      <Modal
+        isOpen={showOptionalUpdate}
+        onClose={() => setShowOptionalUpdate(false)}
+        title={t.UPDATES.AVAILABLE_TITLE}
+      >
+        <div className="text-center space-y-6">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-pulse">
+            <Sparkles size={40} className="text-white" />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-xl font-black text-white">{t.UPDATES.NEW_VERSION}{serverVersion}</h3>
+            <p className="text-sm text-gray-300 leading-relaxed">
+              {isCapacitor
+                ? t.UPDATES.AVAILABLE_DESC_APP
+                : t.UPDATES.AVAILABLE_DESC_WEB}
+            </p>
+          </div>
+
+          <button
+            onClick={handleDownload}
+            className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black uppercase rounded-xl hover:brightness-110 transition-all shadow-lg flex items-center justify-center gap-2"
+          >
+            <Download size={20} />
+            {isCapacitor ? t.UPDATES.DOWNLOAD : t.UPDATES.RELOAD}
+          </button>
+
+          <button
+            onClick={() => setShowChangelog(true)}
+            className="w-full text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors pt-2"
+          >
+            {t.UPDATES.WHATS_NEW}
+          </button>
+        </div>
+      </Modal>
+
+      {/* Changelog Modal */}
+      <ChangelogModal
+        isOpen={showChangelog}
+        onClose={() => setShowChangelog(false)}
+        entries={changelogData}
+        t={t}
+        downloadUrl={downloadUrl}
+        currentVersion={APP_VERSION}
+        latestVersion={serverVersion}
+        onDownload={handleDownload}
+      />
+    </>
+  );
+};

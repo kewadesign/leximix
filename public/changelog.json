@@ -1,5 +1,14 @@
 [
   {
+    "version": "3.0.2",
+    "date": "26.11.2025",
+    "changes": [
+      "🎨 Brand Update: New Logo & Favicon",
+      "✨ UI Polish: Fixed Onboarding Modal alignment",
+      "🌍 Onboarding: English is now default selected"
+    ]
+  },
+  {
     "version": "3.0.1",
     "date": "26.11.2025",
     "changes": [

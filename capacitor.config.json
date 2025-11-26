@@ -1,0 +1,6 @@
+{
+  "appId": "com.leximix.app",
+  "appName": "LexiMix",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
