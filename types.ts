@@ -9,7 +9,10 @@ export enum GameMode {
   RIDDLE = 'RIDDLE',
   LETTER_MAU_MAU = 'LETTER_MAU_MAU',
   SKAT_MAU_MAU = 'SKAT_MAU_MAU',
-  CHESS = 'CHESS'
+  CHESS = 'CHESS',
+  CHECKERS = 'CHECKERS',
+  NINE_MENS_MORRIS = 'NINE_MENS_MORRIS',
+  RUMMY = 'RUMMY'
 }
 
 export enum Tier {

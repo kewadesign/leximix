@@ -170,6 +170,9 @@ export const TRANSLATIONS = {
       LETTER_MAU_MAU: { title: "LETTER MAU MAU", desc: "Card Game" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Classic Card Game" },
       CHESS: { title: "CHESS", desc: "Classic Strategy Game" },
+      CHECKERS: { title: "CHECKERS", desc: "Classic Board Game" },
+      NINE_MENS_MORRIS: { title: "NINE MEN'S MORRIS", desc: "Strategy Mill Game" },
+      RUMMY: { title: "RUMMY", desc: "Classic Card Game" },
       LOCKED: { title: "LOCKED", desc: "Coming Soon" }
     },
     MAU_MAU: {
@@ -223,6 +226,39 @@ export const TRANSLATIONS = {
       EXIT: "Exit",
       WHITE: "White",
       BLACK: "Black"
+    },
+    CHECKERS: {
+      TITLE: "CHECKERS",
+      YOUR_TURN: "Your Turn",
+      OPPONENT_TURN: "Opponent's Turn",
+      WIN: "You Win!",
+      LOSS: "You Lose!",
+      KING: "King",
+      JUMP: "Jump!",
+      HINT: "Hint"
+    },
+    NINE_MENS_MORRIS: {
+      TITLE: "NINE MEN'S MORRIS",
+      YOUR_TURN: "Your Turn",
+      OPPONENT_TURN: "Opponent's Turn",
+      WIN: "You Win!",
+      LOSS: "You Lose!",
+      MILL: "Mill!",
+      REMOVE_PIECE: "Remove opponent's piece!",
+      PLACING_PHASE: "Placing Phase",
+      MOVING_PHASE: "Moving Phase"
+    },
+    RUMMY: {
+      TITLE: "RUMMY",
+      YOUR_TURN: "Your Turn",
+      OPPONENT_TURN: "Opponent's Turn",
+      WIN: "You Win!",
+      LOSS: "You Lose!",
+      DRAW_CARD: "Draw Card",
+      DISCARD: "Discard",
+      MELD: "Meld",
+      SET: "Set",
+      RUN: "Run"
     },
     SEASON: {
       TITLE: "SEASON I: GENESIS",
@@ -319,12 +355,13 @@ export const TRANSLATIONS = {
       LOCKED: "LOCKED",
       AGE_MSG: "Age cannot be changed later.",
       STATS: "STATS",
-      DELETE_ACCOUNT: "DELETE ACCOUNT",
-      DELETE_WARNING: "WARNING!",
-      CONFIRM_MSG: "Type 'delete' to confirm:",
-      CONFIRM_PLACEHOLDER: "delete",
-      CANCEL: "CANCEL",
-      CONFIRM_DELETE: "PERMANENTLY DELETE"
+      DELETE_ACCOUNT: "Delete Account",
+      DELETE_WARNING: "Are you sure?",
+      DELETE_INFO: "Your progress, coins and all data will be permanently deleted.",
+      CONFIRM_MSG: "Type 'DELETE' to confirm:",
+      CONFIRM_PLACEHOLDER: "DELETE",
+      CANCEL: "Cancel",
+      CONFIRM_DELETE: "Yes, delete account"
     },
     SHOP: {
       TITLE: "BLACK MARKET",
@@ -399,6 +436,9 @@ export const TRANSLATIONS = {
       LETTER_MAU_MAU: { title: "BUCHSTABEN MAU MAU", desc: "Kartenspiel" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Klassisches Kartenspiel" },
       CHESS: { title: "SCHACH", desc: "Klassisches Strategiespiel" },
+      CHECKERS: { title: "DAME", desc: "Klassisches Brettspiel" },
+      NINE_MENS_MORRIS: { title: "MÜHLE", desc: "Strategie-Brettspiel" },
+      RUMMY: { title: "ROMMÉ", desc: "Klassisches Kartenspiel" },
       LOCKED: { title: "BALD", desc: "Demnächst" }
     },
     MAU_MAU: {
@@ -451,6 +491,39 @@ export const TRANSLATIONS = {
       EXIT: "Beenden",
       WHITE: "Weiß",
       BLACK: "Schwarz"
+    },
+    CHECKERS: {
+      TITLE: "DAME",
+      YOUR_TURN: "Du bist am Zug",
+      OPPONENT_TURN: "Gegner ist am Zug",
+      WIN: "Du hast gewonnen!",
+      LOSS: "Du hast verloren!",
+      KING: "Dame",
+      JUMP: "Sprung!",
+      HINT: "Hinweis"
+    },
+    NINE_MENS_MORRIS: {
+      TITLE: "MÜHLE",
+      YOUR_TURN: "Du bist am Zug",
+      OPPONENT_TURN: "Gegner ist am Zug",
+      WIN: "Du hast gewonnen!",
+      LOSS: "Du hast verloren!",
+      MILL: "Mühle!",
+      REMOVE_PIECE: "Gegnerischen Stein entfernen!",
+      PLACING_PHASE: "Setzphase",
+      MOVING_PHASE: "Ziehphase"
+    },
+    RUMMY: {
+      TITLE: "ROMMÉ",
+      YOUR_TURN: "Du bist am Zug",
+      OPPONENT_TURN: "Gegner ist am Zug",
+      WIN: "Du hast gewonnen!",
+      LOSS: "Du hast verloren!",
+      DRAW_CARD: "Karte ziehen",
+      DISCARD: "Abwerfen",
+      MELD: "Ablegen",
+      SET: "Satz",
+      RUN: "Reihe"
     },
     SEASON: {
       TITLE: "SAISON I: GENESIS",
@@ -547,12 +620,13 @@ export const TRANSLATIONS = {
       LOCKED: "FIXIERT",
       AGE_MSG: "Das Alter kann nachträglich nicht geändert werden.",
       STATS: "STATISTIKEN",
-      DELETE_ACCOUNT: "ACCOUNT LÖSCHEN",
-      DELETE_WARNING: "WARNUNG!",
-      CONFIRM_MSG: "Tippe 'delete' um zu bestätigen:",
-      CONFIRM_PLACEHOLDER: "delete",
-      CANCEL: "ABBRECHEN",
-      CONFIRM_DELETE: "ENDGÜLTIG LÖSCHEN"
+      DELETE_ACCOUNT: "Account löschen",
+      DELETE_WARNING: "Bist du sicher?",
+      DELETE_INFO: "Dein Fortschritt, Münzen und alle Daten werden unwiderruflich gelöscht.",
+      CONFIRM_MSG: "Tippe 'LÖSCHEN' zur Bestätigung:",
+      CONFIRM_PLACEHOLDER: "LÖSCHEN",
+      CANCEL: "Abbrechen",
+      CONFIRM_DELETE: "Ja, Account löschen"
     },
     SHOP: {
       TITLE: "Marktplatz",
@@ -627,6 +701,9 @@ export const TRANSLATIONS = {
       LETTER_MAU_MAU: { title: "MAU MAU DE LETRAS", desc: "Juego de Cartas" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Juego de Cartas Clásico" },
       CHESS: { title: "AJEDREZ", desc: "Juego de Estrategia Clásico" },
+      CHECKERS: { title: "DAMAS", desc: "Juego de Mesa Clásico" },
+      NINE_MENS_MORRIS: { title: "MOLINO", desc: "Juego de Estrategia" },
+      RUMMY: { title: "RUMMY", desc: "Juego de Cartas Clásico" },
       LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
     },
     MAU_MAU: {
@@ -678,6 +755,39 @@ export const TRANSLATIONS = {
       EXIT: "Salir",
       WHITE: "Blancas",
       BLACK: "Negras"
+    },
+    CHECKERS: {
+      TITLE: "DAMAS",
+      YOUR_TURN: "Tu Turno",
+      OPPONENT_TURN: "Turno del Oponente",
+      WIN: "¡Ganaste!",
+      LOSS: "¡Perdiste!",
+      KING: "Dama",
+      JUMP: "¡Salto!",
+      HINT: "Pista"
+    },
+    NINE_MENS_MORRIS: {
+      TITLE: "MOLINO",
+      YOUR_TURN: "Tu Turno",
+      OPPONENT_TURN: "Turno del Oponente",
+      WIN: "¡Ganaste!",
+      LOSS: "¡Perdiste!",
+      MILL: "¡Molino!",
+      REMOVE_PIECE: "¡Quitar pieza del oponente!",
+      PLACING_PHASE: "Fase de Colocación",
+      MOVING_PHASE: "Fase de Movimiento"
+    },
+    RUMMY: {
+      TITLE: "RUMMY",
+      YOUR_TURN: "Tu Turno",
+      OPPONENT_TURN: "Turno del Oponente",
+      WIN: "¡Ganaste!",
+      LOSS: "¡Perdiste!",
+      DRAW_CARD: "Robar Carta",
+      DISCARD: "Descartar",
+      MELD: "Combinar",
+      SET: "Grupo",
+      RUN: "Escalera"
     },
     SEASON: {
       TITLE: "TEMPORADA I: GÉNESIS",
@@ -774,12 +884,13 @@ export const TRANSLATIONS = {
       LOCKED: "BLOQUEADO",
       AGE_MSG: "La edad no se puede cambiar después.",
       STATS: "ESTADÍSTICAS",
-      DELETE_ACCOUNT: "BORRAR CUENTA",
-      DELETE_WARNING: "¡ADVERTENCIA!",
-      CONFIRM_MSG: "Escribe 'delete' para confirmar:",
-      CONFIRM_PLACEHOLDER: "delete",
-      CANCEL: "CANCELAR",
-      CONFIRM_DELETE: "BORRAR PERMANENTEMENTE"
+      DELETE_ACCOUNT: "Borrar cuenta",
+      DELETE_WARNING: "¿Estás seguro?",
+      DELETE_INFO: "Tu progreso, monedas y todos los datos se eliminarán permanentemente.",
+      CONFIRM_MSG: "Escribe 'BORRAR' para confirmar:",
+      CONFIRM_PLACEHOLDER: "BORRAR",
+      CANCEL: "Cancelar",
+      CONFIRM_DELETE: "Sí, borrar cuenta"
     },
     SHOP: {
       TITLE: "MERCADO NEGRO",
@@ -1605,6 +1716,21 @@ export const TUTORIALS: Record<GameMode, Record<Language, TutorialContent>> = {
     [Language.EN]: { title: "CHESS", text: "Classic Strategy Game. Checkmate your opponent's King to win. White moves first." },
     [Language.DE]: { title: "SCHACH", text: "Klassisches Strategiespiel. Setze den gegnerischen König Schachmatt. Weiß zieht zuerst." },
     [Language.ES]: { title: "AJEDREZ", text: "Juego de Estrategia Clásico. Jaque mate al Rey oponente para ganar. Las blancas mueven primero." }
+  },
+  [GameMode.CHECKERS]: {
+    [Language.EN]: { title: "CHECKERS", text: "Classic board game. Jump over opponent pieces to capture. Reach the end to become a King!" },
+    [Language.DE]: { title: "DAME", text: "Klassisches Brettspiel. Überspringe gegnerische Steine um zu schlagen. Erreiche das Ende für eine Dame!" },
+    [Language.ES]: { title: "DAMAS", text: "Juego de mesa clásico. Salta sobre las piezas del oponente para capturar. ¡Llega al final para ser Dama!" }
+  },
+  [GameMode.NINE_MENS_MORRIS]: {
+    [Language.EN]: { title: "NINE MEN'S MORRIS", text: "Form mills (3 in a row) to remove opponent pieces. Reduce enemy to 2 pieces to win!" },
+    [Language.DE]: { title: "MÜHLE", text: "Bilde Mühlen (3 in einer Reihe) um gegnerische Steine zu entfernen. Reduziere den Gegner auf 2 Steine!" },
+    [Language.ES]: { title: "MOLINO", text: "Forma molinos (3 en línea) para quitar piezas. ¡Reduce al enemigo a 2 piezas para ganar!" }
+  },
+  [GameMode.RUMMY]: {
+    [Language.EN]: { title: "RUMMY", text: "Form melds: Sets (same value) or Runs (consecutive same suit). Empty your hand to win!" },
+    [Language.DE]: { title: "ROMMÉ", text: "Bilde Kombinationen: Sätze (gleicher Wert) oder Reihen (aufeinanderfolgende Farbe). Leere deine Hand!" },
+    [Language.ES]: { title: "RUMMY", text: "Forma combinaciones: Grupos (mismo valor) o Escaleras (consecutivas del mismo palo). ¡Vacía tu mano!" }
   }
 };
 

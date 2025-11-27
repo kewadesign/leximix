@@ -15,6 +15,9 @@ import { MusicPlayer } from './components/MusicPlayer';
 import { LetterMauMauGame } from './components/LetterMauMauGame';
 import { ChainGame } from './components/ChainGame';
 import { ChessGame } from './components/ChessGame';
+import { CheckersGame } from './components/CheckersGame';
+import { NineMensMorrisGame } from './components/NineMensMorrisGame';
+import { RummyGame } from './components/RummyGame';
 
 import SkatMauMauGame from './components/SkatMauMauGame';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
@@ -28,7 +31,7 @@ import { audio } from './utils/audio';
 import catDanceGif from './assets/cat-dance.gif';
 
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu, Circle, Target, Layers } from 'lucide-react';
 
 // React Icons for brutal design
 import { IoGlobeSharp, IoPersonSharp, IoSettingsSharp } from 'react-icons/io5';
@@ -215,7 +218,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS' | 'NINE_MENS_MORRIS' | 'RUMMY';
 
 const FALLBACK_SEASON_CONFIG = {
   "activeSeasonId": 1,
@@ -1202,22 +1205,33 @@ export default function App() {
       return;
     }
 
-    // Skat Mau Mau (renamed to Mau Mau) goes directly to game
+    // Skat Mau Mau (Classic Mau Mau) - Show tutorial modal first, then mode select
     if (mode === GameMode.SKAT_MAU_MAU) {
-      // Set default config just in case
       setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 });
-      setView('SKAT_MAU_MAU');
+      setTutorialMode(mode);
+      setView('TUTORIAL');
       return;
     }
 
-    // Chess Mode
+    // Chess Mode - Show tutorial first, then mode select
     if (mode === GameMode.CHESS) {
-      setShowChessModeSelect(true);
+      setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 });
+      setTutorialMode(mode);
+      setView('TUTORIAL');
+      return;
+    }
+
+    // Checkers, Nine Men's Morris, Rummy - Show tutorial first, then level selection
+    if (mode === GameMode.CHECKERS || mode === GameMode.NINE_MENS_MORRIS || mode === GameMode.RUMMY) {
+      setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 });
+      setTutorialMode(mode);
+      setView('TUTORIAL');
       return;
     }
 
     setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 }); // Default
-    setView('LEVELS');
+    setTutorialMode(mode);
+    setView('TUTORIAL');
   };
 
   const handleLevelSelect = (tier: Tier, levelId: number) => {
@@ -1249,6 +1263,8 @@ export default function App() {
         selectedCell: null,
         history: []
       });
+      setTutorialMode(config.mode);
+      setView('TUTORIAL');
     } else if (config.mode === GameMode.CHALLENGE) {
       const data = generateChallenge(user.language, tier, levelId);
       setGameState({
@@ -1262,16 +1278,29 @@ export default function App() {
         isMath: data.type === 'math',
         timeLeft: data.timeLimit
       });
+      setTutorialMode(config.mode);
+      setView('TUTORIAL');
     } else if (config.mode === GameMode.CHAIN) {
       setGameConfig(config);
       setView('GAME');
       return;
+    } else if (config.mode === GameMode.CHECKERS) {
+      // Go directly to Checkers game
+      setView('CHECKERS');
+      return;
+    } else if (config.mode === GameMode.NINE_MENS_MORRIS) {
+      // Go directly to Nine Men's Morris game
+      setView('NINE_MENS_MORRIS');
+      return;
+    } else if (config.mode === GameMode.RUMMY) {
+      // Go directly to Rummy game
+      setView('RUMMY');
+      return;
     } else {
       // This block is now handled by the useEffect below
+      setTutorialMode(config.mode);
+      setView('TUTORIAL');
     }
-
-    setTutorialMode(config.mode);
-    setView('TUTORIAL');
   };
 
   const handleNextLevel = () => {
@@ -1484,18 +1513,35 @@ export default function App() {
   const startGameFromTutorial = () => {
     const mode = gameConfig?.mode;
 
-    // Mau Mau - Show intro modal first
+    // Mau Mau - Show intro modal first (Letter-based Mau Mau)
     if (mode === GameMode.LETTER_MAU_MAU) {
       setShowMauMauIntro(true);
       return;
     }
 
-    // Skat Mau Mau - Legacy direct start
+    // Skat Mau Mau (Classic Mau Mau) - Show multiplayer selection modal
     if (mode === GameMode.SKAT_MAU_MAU) {
-      setView('SKAT_MAU_MAU');
-    } else {
-      setView('GAME');
+      setShowMauMauModeSelect(true);
+      setTutorialMode(null);
+      return;
     }
+
+    // Chess - Show multiplayer selection modal  
+    if (mode === GameMode.CHESS) {
+      setShowChessModeSelect(true);
+      setTutorialMode(null);
+      return;
+    }
+
+    // Checkers, Nine Men's Morris, Rummy - Go to level selection
+    if (mode === GameMode.CHECKERS || mode === GameMode.NINE_MENS_MORRIS || mode === GameMode.RUMMY) {
+      setView('LEVELS');
+      setTutorialMode(null);
+      return;
+    }
+
+    // Default: Go to level selection for other modes
+    setView('LEVELS');
     setTutorialMode(null);
   };
 
@@ -2009,6 +2055,10 @@ export default function App() {
     [GameMode.CHALLENGE]: { bg: '#FF006E', accent: '#000' },    // Pink
     [GameMode.RIDDLE]: { bg: '#EC4899', accent: '#000' },       // Rosa/Magenta
     [GameMode.LETTER_MAU_MAU]: { bg: '#C084FC', accent: '#000' }, // Helleres Lila
+    [GameMode.CHESS]: { bg: '#4B5563', accent: '#000' },        // Grau für Schach
+    [GameMode.CHECKERS]: { bg: '#DC2626', accent: '#000' },     // Rot für Dame
+    [GameMode.NINE_MENS_MORRIS]: { bg: '#D97706', accent: '#000' }, // Amber für Mühle
+    [GameMode.RUMMY]: { bg: '#059669', accent: '#000' },        // Smaragd für Rommé
   };
 
   const GameCard = ({ mode, title, desc, icon: Icon, locked = false, comingSoon = false }: any) => {
@@ -2633,6 +2683,9 @@ export default function App() {
         <GameCard mode={GameMode.RIDDLE} title={t.MODES.RIDDLE.title} desc={t.MODES.RIDDLE.desc} icon={HelpCircle} />
         <GameCard mode={GameMode.LETTER_MAU_MAU} title="Mau Mau" desc="Karten Spiel" icon={Sparkles} />
         <GameCard mode={GameMode.CHESS} title={t.MODES.CHESS.title} desc={t.MODES.CHESS.desc} icon={Cpu} />
+        <GameCard mode={GameMode.CHECKERS} title={t.MODES.CHECKERS.title} desc={t.MODES.CHECKERS.desc} icon={Circle} />
+        <GameCard mode={GameMode.NINE_MENS_MORRIS} title={t.MODES.NINE_MENS_MORRIS.title} desc={t.MODES.NINE_MENS_MORRIS.desc} icon={Target} />
+        <GameCard mode={GameMode.RUMMY} title={t.MODES.RUMMY.title} desc={t.MODES.RUMMY.desc} icon={Layers} />
       </div>
 
       {/* Footer */}
@@ -3400,6 +3453,60 @@ export default function App() {
             setView('HOME');
             audio.playWin();
           }}
+        />
+      )}
+      {view === 'CHECKERS' && (
+        <CheckersGame
+          language={user.language}
+          user={user}
+          onBack={() => setView('HOME')}
+          onGameEnd={(xp, coins) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+            setView('HOME');
+            audio.playWin();
+          }}
+          levelId={gameConfig?.levelId || 1}
+        />
+      )}
+      {view === 'NINE_MENS_MORRIS' && (
+        <NineMensMorrisGame
+          language={user.language}
+          user={user}
+          onBack={() => setView('HOME')}
+          onGameEnd={(xp, coins) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+            setView('HOME');
+            audio.playWin();
+          }}
+          levelId={gameConfig?.levelId || 1}
+        />
+      )}
+      {view === 'RUMMY' && (
+        <RummyGame
+          language={user.language}
+          user={user}
+          onBack={() => setView('HOME')}
+          onGameEnd={(xp, coins) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+            setView('HOME');
+            audio.playWin();
+          }}
+          levelId={gameConfig?.levelId || 1}
         />
       )}
       {/* Navigation Icons */}
@@ -4534,12 +4641,11 @@ export default function App() {
           )}
 
           {/* Delete Account */}
-          <div className="p-4" style={{ background: '#FFF', border: '4px solid #FF006E' }}>
+          <div className="p-4" style={{ background: '#FFF', border: '3px solid #ccc' }}>
             <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle size={14} style={{ color: '#FF006E' }} />
-              <span className="font-black text-xs uppercase" style={{ color: '#FF006E' }}>{t.PROFILE.DELETE_ACCOUNT}</span>
+              <span className="font-bold text-xs" style={{ color: '#666' }}>{t.PROFILE.DELETE_ACCOUNT}</span>
             </div>
-            <p className="text-xs font-bold mb-3" style={{ color: '#FF006E' }}>{t.PROFILE.DELETE_WARNING}</p>
+            <p className="text-xs mb-3" style={{ color: '#999' }}>{t.PROFILE.DELETE_INFO || 'Dein Account und alle Daten werden gelöscht.'}</p>
             <button
               onClick={() => setShowDeleteConfirm(true)}
               className="w-full py-3 font-black uppercase text-xs transition-all"
@@ -4580,7 +4686,7 @@ export default function App() {
             <div>
               <h3 className="font-black mb-1" style={{ color: '#FF006E' }}>{t.PROFILE.DELETE_WARNING}</h3>
               <p className="text-xs font-bold leading-relaxed" style={{ color: 'rgba(255,0,110,0.7)' }}>
-                Alle deine Fortschritte, Käufe und Statistiken werden unwiderruflich gelöscht.
+                {t.PROFILE.DELETE_INFO || 'Alle deine Fortschritte werden unwiderruflich gelöscht.'}
               </p>
             </div>
           </div>
@@ -4607,7 +4713,7 @@ export default function App() {
             </button>
             <button
               onClick={() => {
-                if (deleteInput.toLowerCase() === 'delete') {
+                if (deleteInput.toUpperCase() === t.PROFILE.CONFIRM_PLACEHOLDER) {
                   alert('Profil-Löschung noch nicht implementiert. Bald verfügbar!');
                   setShowDeleteConfirm(false);
                   setDeleteInput('');
@@ -4615,7 +4721,7 @@ export default function App() {
                   alert(t.PROFILE.CONFIRM_MSG);
                 }
               }}
-              disabled={deleteInput.toLowerCase() !== 'delete'}
+              disabled={deleteInput.toUpperCase() !== t.PROFILE.CONFIRM_PLACEHOLDER}
               className="flex-1 py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ background: '#FF006E', color: '#FFF', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
             >

@@ -49,6 +49,149 @@ export interface ChessGameState {
     lastActivity: number;
 }
 
+export interface NineMensMorrisGameState {
+    gameId: string;
+    players: {
+        host: string;
+        guest: string;
+    };
+    board: (string | null)[]; // 24 positions, null = empty, 'white' or 'black'
+    currentPlayer: 'white' | 'black';
+    phase: 'placing' | 'moving' | 'flying' | 'removing';
+    piecesToPlace: { white: number; black: number };
+    mustRemove: boolean;
+    status: 'playing' | 'finished';
+    winner?: string;
+    moveHistory: string[];
+    createdAt: number;
+    lastActivity: number;
+}
+
+export interface RummyCard {
+    id: string;
+    suit: 'hearts' | 'diamonds' | 'clubs' | 'spades';
+    value: number;
+}
+
+export interface RummyGameState {
+    gameId: string;
+    players: {
+        host: string;
+        guest: string;
+    };
+    deck: RummyCard[];
+    discardPile: RummyCard[];
+    hostHand: RummyCard[];
+    guestHand: RummyCard[];
+    hostMelds: RummyCard[][];
+    guestMelds: RummyCard[][];
+    currentPlayer: 'host' | 'guest';
+    phase: 'draw' | 'play';
+    status: 'playing' | 'finished';
+    winner?: string;
+    createdAt: number;
+    lastActivity: number;
+}
+
+/**
+ * Initialize a new multiplayer RUMMY game
+ */
+export async function initializeRummyGame(
+    gameId: string,
+    hostUsername: string,
+    guestUsername: string
+): Promise<boolean> {
+    console.log('[MultiplayerGame] Initializing RUMMY game:', gameId);
+    try {
+        // Create and shuffle deck
+        const suits: ('hearts' | 'diamonds' | 'clubs' | 'spades')[] = ['hearts', 'diamonds', 'clubs', 'spades'];
+        const deck: RummyCard[] = [];
+        
+        for (const suit of suits) {
+            for (let value = 1; value <= 13; value++) {
+                deck.push({ id: `${suit}-${value}`, suit, value });
+            }
+        }
+        
+        // Shuffle
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        
+        // Deal 7 cards each
+        const hostHand = deck.splice(0, 7);
+        const guestHand = deck.splice(0, 7);
+        const discardPile = [deck.splice(0, 1)[0]];
+        
+        const gameState: RummyGameState = {
+            gameId,
+            players: {
+                host: hostUsername,
+                guest: guestUsername
+            },
+            deck,
+            discardPile,
+            hostHand,
+            guestHand,
+            hostMelds: [],
+            guestMelds: [],
+            currentPlayer: 'host',
+            phase: 'draw',
+            status: 'playing',
+            createdAt: Date.now(),
+            lastActivity: Date.now()
+        };
+
+        console.log('[MultiplayerGame] Writing RUMMY game state to Firebase...');
+        const sanitizedState = sanitizeForFirebase(gameState);
+        await set(ref(database, `games/${gameId}`), sanitizedState);
+        console.log('[MultiplayerGame] RUMMY Game state written successfully');
+        return true;
+    } catch (error) {
+        console.error('[MultiplayerGame] Error initializing rummy game:', error);
+        return false;
+    }
+}
+
+/**
+ * Initialize a new multiplayer NINE MENS MORRIS game
+ */
+export async function initializeNineMensMorrisGame(
+    gameId: string,
+    hostUsername: string,
+    guestUsername: string
+): Promise<boolean> {
+    console.log('[MultiplayerGame] Initializing NINE MENS MORRIS game:', gameId);
+    try {
+        const gameState: NineMensMorrisGameState = {
+            gameId,
+            players: {
+                host: hostUsername,
+                guest: guestUsername
+            },
+            board: Array(24).fill(null),
+            currentPlayer: 'white', // White (host) starts
+            phase: 'placing',
+            piecesToPlace: { white: 9, black: 9 },
+            mustRemove: false,
+            status: 'playing',
+            moveHistory: [],
+            createdAt: Date.now(),
+            lastActivity: Date.now()
+        };
+
+        console.log('[MultiplayerGame] Writing MORRIS game state to Firebase...', gameState);
+        const sanitizedState = sanitizeForFirebase(gameState);
+        await set(ref(database, `games/${gameId}`), sanitizedState);
+        console.log('[MultiplayerGame] MORRIS Game state written successfully');
+        return true;
+    } catch (error) {
+        console.error('[MultiplayerGame] Error initializing morris game:', error);
+        return false;
+    }
+}
+
 /**
  * Initialize a new multiplayer CHESS game
  */

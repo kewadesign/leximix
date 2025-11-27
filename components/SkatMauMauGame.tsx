@@ -323,22 +323,22 @@ export default function SkatMauMauGame({
       </div>
 
       {/* Header */}
-      <div className="w-full max-w-6xl flex justify-between items-center relative z-10 mt-4">
+      <div className="w-full max-w-6xl flex justify-between items-center relative z-10 mt-6 px-4">
         <button
           onClick={onBack}
-          className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
+          className="w-14 h-14 flex items-center justify-center transition-all active:translate-y-1 hover:-translate-y-1"
           style={{ 
             background: '#FF006E', 
             border: '3px solid #000',
             boxShadow: '4px 4px 0px #000'
           }}
         >
-          <ArrowLeft size={24} style={{ color: '#000' }} />
+          <ArrowLeft size={26} style={{ color: '#000' }} />
         </button>
 
         <div className="flex flex-col items-center">
           <h2 
-            className="text-2xl font-black uppercase tracking-widest" 
+            className="text-2xl md:text-3xl font-black uppercase tracking-widest" 
             style={{ color: '#000', transform: 'skewX(-3deg)' }}
           >
             Mau Mau
@@ -401,7 +401,7 @@ export default function SkatMauMauGame({
       </div>
 
       {/* Center Area */}
-      <div className="flex items-center gap-12 my-4 relative z-0">
+      <div className="flex items-center gap-8 md:gap-12 my-6 relative z-0">
         {/* Draw Pile */}
         <div
           onClick={() => currentTurn === 'player' && handleDrawCard('player')}

@@ -3,7 +3,7 @@ import { Modal, Button } from './UI';
 import { Users, Send, X, Check, UserPlus, Clock, Play } from 'lucide-react';
 import { ref, set, get, onValue, off } from 'firebase/database';
 import { database } from '../utils/firebase';
-import { initializeMultiplayerGame, initializeChessGame } from '../utils/multiplayerGame';
+import { initializeMultiplayerGame, initializeChessGame, initializeNineMensMorrisGame, initializeRummyGame } from '../utils/multiplayerGame';
 import { generateDeck, shuffleDeck, drawCards } from '../utils/maumau';
 import { GameMode } from '../types';
 
@@ -293,6 +293,28 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
                     invite.from,     // host
                     currentUsername  // guest
                 );
+            } else if (inviteMode === GameMode.NINE_MENS_MORRIS) {
+                // Initialize Nine Men's Morris Game
+                await initializeNineMensMorrisGame(
+                    invite.gameId,
+                    invite.from,     // host
+                    currentUsername  // guest
+                );
+            } else if (inviteMode === GameMode.CHECKERS) {
+                // Initialize Checkers Game - simple board state
+                await set(ref(database, `games/${invite.gameId}`), {
+                    players: { host: invite.from, guest: currentUsername },
+                    status: 'playing',
+                    currentPlayer: 'red',
+                    createdAt: Date.now()
+                });
+            } else if (inviteMode === GameMode.RUMMY) {
+                // Initialize Rummy Game with proper card dealing
+                await initializeRummyGame(
+                    invite.gameId,
+                    invite.from,     // host
+                    currentUsername  // guest
+                );
             } else {
                 // Initialize Mau Mau Game (Legacy logic)
                 // Generate and shuffle deck
@@ -352,33 +374,43 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
         <Modal isOpen={isOpen} onClose={onClose} title={`Lobby: ${mode === GameMode.CHESS ? 'CHESS' : 'MAU MAU'}`}>
             <div className="p-6 space-y-6">
 
-                {/* Matchmaking Section */}
-                <div className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border border-indigo-500/30 rounded-xl p-4">
-                    <h4 className="text-sm font-bold text-indigo-300 mb-3 uppercase tracking-wider flex items-center gap-2">
-                        <Users size={16} /> Zufälliger Gegner
-                    </h4>
+                {/* Matchmaking Section - Neo-Brutalist */}
+                <div 
+                    className="relative bg-gradient-to-br from-purple-500 to-pink-500 border-4 border-black p-4"
+                    style={{ 
+                        transform: 'skew(-1deg)', 
+                        boxShadow: '6px 6px 0px #000'
+                    }}
+                >
+                    <div style={{ transform: 'skew(1deg)' }}>
+                        <h4 className="text-sm font-black text-black mb-3 uppercase tracking-wider flex items-center gap-2">
+                            <Users size={16} /> RANDOM MATCH
+                        </h4>
 
-                    {isSearching ? (
-                        <div className="text-center py-4">
-                            <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-                            <p className="text-white font-bold animate-pulse">Suche Gegner...</p>
-                            <p className="text-xs text-indigo-400 mt-1">{searchTime}s</p>
+                        {isSearching ? (
+                            <div className="text-center py-4 bg-black/20 border-2 border-black rounded-lg">
+                                <div className="animate-spin w-10 h-10 border-4 border-white border-t-transparent rounded-full mx-auto mb-3"></div>
+                                <p className="text-white font-black text-lg animate-pulse uppercase">Suche Gegner...</p>
+                                <p className="text-sm text-white/80 mt-1 font-mono">{searchTime}s</p>
+                                <button
+                                    onClick={cancelMatchmaking}
+                                    className="mt-4 px-6 py-2 bg-red-500 hover:bg-red-400 text-white border-3 border-black font-black uppercase text-sm transition-all hover:translate-x-1 hover:-translate-y-1"
+                                    style={{ boxShadow: '4px 4px 0px #000' }}
+                                >
+                                    ABBRECHEN
+                                </button>
+                            </div>
+                        ) : (
                             <button
-                                onClick={cancelMatchmaking}
-                                className="mt-4 px-4 py-2 bg-red-600/20 hover:bg-red-600/40 text-red-300 rounded-lg text-xs font-bold transition-colors"
+                                onClick={startMatchmaking}
+                                className="w-full py-4 bg-yellow-400 hover:bg-yellow-300 text-black font-black uppercase text-lg border-4 border-black transition-all flex items-center justify-center gap-3 group hover:translate-x-1 hover:-translate-y-1"
+                                style={{ boxShadow: '6px 6px 0px #000' }}
                             >
-                                Abbrechen
+                                <Users size={24} className="group-hover:rotate-12 transition-transform" />
+                                GEGNER FINDEN
                             </button>
-                        </div>
-                    ) : (
-                        <button
-                            onClick={startMatchmaking}
-                            className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-white font-bold shadow-lg shadow-indigo-900/50 transition-all flex items-center justify-center gap-2 group"
-                        >
-                            <Users className="group-hover:scale-110 transition-transform" />
-                            Gegner finden
-                        </button>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 <div className="relative flex py-2 items-center">

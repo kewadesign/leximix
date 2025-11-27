@@ -60,51 +60,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Animated Grain Overlay */
-@keyframes grain-animation {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-
-  10% {
-    transform: translate(-5%, -10%);
-  }
-
-  20% {
-    transform: translate(-15%, 5%);
-  }
-
-  30% {
-    transform: translate(7%, -25%);
-  }
-
-  40% {
-    transform: translate(-5%, 25%);
-  }
-
-  50% {
-    transform: translate(-15%, 10%);
-  }
-
-  60% {
-    transform: translate(15%, 0%);
-  }
-
-  70% {
-    transform: translate(0%, 15%);
-  }
-
-  80% {
-    transform: translate(3%, 35%);
-  }
-
-  90% {
-    transform: translate(-10%, 10%);
-  }
-}
-
+/* Static Halftone Grain Overlay */
 .grain-overlay {
   position: fixed;
   top: 0;
@@ -113,19 +69,13 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.05;
-  overflow: hidden;
-}
-
-.grain-overlay::after {
-  content: "";
-  position: absolute;
-  top: -100%;
-  left: -100%;
-  width: 300%;
-  height: 300%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-  animation: grain-animation 14s steps(10) infinite;
+  opacity: 0.025;
+  /* Halftone dot pattern in darker beige */
+  background-image: 
+    radial-gradient(circle at center, #C4B494 0.8px, transparent 0.8px),
+    radial-gradient(circle at center, #C4B494 0.5px, transparent 0.5px);
+  background-size: 4px 4px, 6px 6px;
+  background-position: 0 0, 2px 2px;
 }
 
 /* Animated Geometric Background Pattern */
@@ -142,20 +92,26 @@ body {
 .geo-pattern {
   background-color: #FFF8E7;
   background-image:
-    /* Colorful gradient blobs - brighter */
-    radial-gradient(ellipse at 10% 20%, rgba(131, 56, 236, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 90% 80%, rgba(255, 0, 110, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 5%, rgba(6, 255, 165, 0.1) 0%, transparent 40%),
-    radial-gradient(ellipse at 80% 30%, rgba(255, 190, 11, 0.1) 0%, transparent 40%),
-    radial-gradient(ellipse at 20% 70%, rgba(0, 150, 255, 0.08) 0%, transparent 40%),
+    /* Soft 3D gradient overlays */
+    linear-gradient(160deg, rgba(131, 56, 236, 0.05) 0%, transparent 40%),
+    linear-gradient(200deg, rgba(255, 0, 110, 0.04) 0%, transparent 40%),
+    linear-gradient(340deg, rgba(6, 255, 165, 0.04) 0%, transparent 40%),
+    /* 3D Isometric hexagon grid */
+    url("data:image/svg+xml,%3Csvg width='56' height='48' viewBox='0 0 56 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M28 0 L56 14 L56 42 L28 48 L0 42 L0 14 Z' fill='none' stroke='%238338EC' stroke-opacity='0.05' stroke-width='0.5'/%3E%3Cpath d='M28 0 L28 24 M56 14 L28 24 M0 14 L28 24' stroke='%238338EC' stroke-opacity='0.03' stroke-width='0.5'/%3E%3C/svg%3E"),
+    /* Colorful gradient blobs - softer */
+    radial-gradient(ellipse at 10% 20%, rgba(131, 56, 236, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(255, 0, 110, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 5%, rgba(6, 255, 165, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 30%, rgba(255, 190, 11, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 20% 70%, rgba(0, 150, 255, 0.05) 0%, transparent 40%),
     /* Plus signs pattern */
     url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%238338EC' fill-opacity='0.06'%3E%3Cpath d='M36 36h8v-8h-8v8zm0 8h8v8h-8v-8z'/%3E%3Cpath d='M28 44h8v-8h-8v8zm16 0h8v-8h-8v8z'/%3E%3C/g%3E%3C/svg%3E"),
     /* Stars pattern */
     url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='50,5 61,40 98,40 68,62 79,97 50,75 21,97 32,62 2,40 39,40' fill='%23FFBE0B' fill-opacity='0.05' transform='scale(0.3) translate(80,80)'/%3E%3Ccircle cx='20' cy='70' r='3' fill='%23FF006E' fill-opacity='0.06'/%3E%3Ccircle cx='75' cy='25' r='2' fill='%2306FFA5' fill-opacity='0.07'/%3E%3C/svg%3E"),
     /* Dots grid */
     radial-gradient(circle, rgba(0, 0, 0, 0.05) 1.5px, transparent 1.5px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 80px 80px, 100px 100px, 24px 24px;
-  animation: scroll-bg 60s linear infinite;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 56px 48px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 80px 80px, 100px 100px, 24px 24px;
+  animation: scroll-bg 80s linear infinite;
 }
 
 .geo-dots {
@@ -188,6 +144,76 @@ body {
   background-image:
     url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='10' y='20' width='8' height='3' fill='%23FF006E' fill-opacity='0.15' transform='rotate(-20 14 21.5)'/%3E%3Crect x='80' y='60' width='6' height='2' fill='%2306FFA5' fill-opacity='0.15' transform='rotate(30 83 61)'/%3E%3Crect x='50' y='90' width='7' height='2.5' fill='%23FFBE0B' fill-opacity='0.15' transform='rotate(-45 53.5 91.25)'/%3E%3Crect x='100' y='20' width='5' height='2' fill='%238338EC' fill-opacity='0.15' transform='rotate(15 102.5 21)'/%3E%3Ccircle cx='30' cy='70' r='2' fill='%230096FF' fill-opacity='0.12'/%3E%3Ccircle cx='90' cy='100' r='1.5' fill='%23FF7F00' fill-opacity='0.12'/%3E%3C/svg%3E");
   background-size: 120px 120px;
+}
+
+/* 3D Isometric Grid Background - Light & Clean */
+.bg-3d {
+  background-color: #FFF8E7;
+  background-image:
+    /* Soft gradient overlays */
+    linear-gradient(135deg, rgba(131, 56, 236, 0.03) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(255, 0, 110, 0.03) 0%, transparent 50%),
+    linear-gradient(45deg, rgba(6, 255, 165, 0.02) 0%, transparent 50%),
+    /* 3D Isometric cube pattern */
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 15 L60 45 L30 60 L0 45 L0 15 Z' fill='none' stroke='%238338EC' stroke-opacity='0.06' stroke-width='1'/%3E%3Cpath d='M30 0 L30 30 M60 15 L30 30 M0 15 L30 30' stroke='%238338EC' stroke-opacity='0.04' stroke-width='1'/%3E%3C/svg%3E"),
+    /* Floating dots */
+    radial-gradient(circle at 20% 30%, rgba(255, 190, 11, 0.08) 0%, transparent 2%),
+    radial-gradient(circle at 80% 70%, rgba(255, 0, 110, 0.06) 0%, transparent 2%),
+    radial-gradient(circle at 50% 50%, rgba(6, 255, 165, 0.05) 0%, transparent 3%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 60px 52px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+/* Animated 3D floating cubes */
+@keyframes float-3d {
+  0%, 100% { transform: translateY(0) rotateX(0deg); }
+  50% { transform: translateY(-10px) rotateX(5deg); }
+}
+
+.bg-3d-animated {
+  position: relative;
+}
+
+.bg-3d-animated::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 10 L65 25 L65 55 L40 70 L15 55 L15 25 Z' fill='%23FFBE0B' fill-opacity='0.04' stroke='%23000' stroke-opacity='0.03' stroke-width='1'/%3E%3Cpath d='M40 10 L40 40 M65 25 L40 40 M15 25 L40 40' stroke='%23000' stroke-opacity='0.02' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 80px 70px;
+  opacity: 0.8;
+  animation: scroll-bg 120s linear infinite;
+  pointer-events: none;
+}
+
+/* Soft gradient orbs - decorative */
+.gradient-orb-pink {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 0, 110, 0.15) 0%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.gradient-orb-purple {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(131, 56, 236, 0.12) 0%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.gradient-orb-green {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6, 255, 165, 0.1) 0%, transparent 70%);
+  filter: blur(35px);
+  pointer-events: none;
 }
 
 /* Hide Scrollbar but keep functionality */
@@ -521,4 +547,51 @@ body {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 2px;
+}
+
+/* ============================================
+   SPACING & LAYOUT HELPERS
+   ============================================ */
+
+/* Better base spacing for game containers */
+.game-container {
+  padding: 1.25rem;
+  margin: 1rem auto;
+}
+
+@media (min-width: 768px) {
+  .game-container {
+    padding: 2rem;
+    margin: 1.5rem auto;
+  }
+}
+
+/* Consistent card spacing */
+.brutal-card {
+  background: var(--color-surface);
+  border: 4px solid #000;
+  box-shadow: var(--shadow-brutal);
+  padding: 1.5rem;
+}
+
+/* Section spacing */
+.section-gap {
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-gap {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Flex gaps */
+.gap-brutal {
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .gap-brutal {
+    gap: 1.5rem;
+  }
 }
