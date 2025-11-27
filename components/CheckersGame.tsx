@@ -515,7 +515,7 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
           height: '40px',
           borderRadius: '50%',
           background: isRed ? '#FF006E' : '#000',
-          border: '3px solid #000',
+          border: '3px solid var(--color-border)',
           boxShadow: '3px 3px 0px #000'
         }}
       >
@@ -548,20 +548,20 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={onBack}
-          className="p-3 border-3 border-black transition-all hover:-translate-y-1 hover:scale-105"
-          style={{ background: modeColor, boxShadow: '4px 4px 0px #000' }}
+          className="p-3 border-3 border-[var(--color-border)] transition-all hover:-translate-y-1 hover:scale-105"
+          style={{ background: modeColor, boxShadow: '4px 4px 0px var(--color-border)' }}
         >
           <ArrowLeft size={24} className="text-white" />
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
-            <Coins size={20} className="text-black" />
-            <span className="text-black text-lg">{user.coins}</span>
+          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
+            <Coins size={20} className="text-[var(--color-text)]" />
+            <span className="text-[var(--color-text)] text-lg">{user.coins}</span>
           </div>
 
           {!isMultiplayer && (
-            <div className="px-4 py-2 border-3 border-black font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
+            <div className="px-4 py-2 border-3 border-[var(--color-border)] font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
               LEVEL {levelId}
             </div>
           )}
@@ -572,14 +572,14 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
       <div
         className="max-w-lg mx-auto mt-4"
         style={{
-          background: '#FFF8E7',
-          border: '4px solid #000',
-          boxShadow: '8px 8px 0px #000'
+          background: 'var(--color-bg)',
+          border: '4px solid var(--color-border)',
+          boxShadow: '8px 8px 0px var(--color-border)'
         }}
       >
         {/* Title Bar */}
         <div
-          className="flex items-center justify-between px-5 py-4 border-b-4 border-black"
+          className="flex items-center justify-between px-5 py-4 border-b-4 border-[var(--color-border)]"
           style={{ background: modeColor }}
         >
           <div className="flex items-center gap-3">
@@ -587,7 +587,7 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
             <span className="font-black text-white uppercase text-lg">Dame</span>
           </div>
           <div
-            className={`px-4 py-2 font-black text-sm uppercase border-2 border-black ${currentPlayer === playerColor ? 'bg-[#06FFA5] text-black' : 'bg-white text-black'
+            className={`px-4 py-2 font-black text-sm uppercase border-2 border-[var(--color-border)] ${currentPlayer === playerColor ? 'bg-[#06FFA5] text-[var(--color-text)]' : 'bg-[var(--color-surface)] text-[var(--color-text)]'
               }`}
           >
             {currentPlayer === playerColor ? 'DEIN ZUG' : (isMultiplayer ? opponentName?.toUpperCase() : 'KI DENKT')}
@@ -599,21 +599,21 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
           {/* Score/Info Bar */}
           <div className="flex justify-between items-center mb-5 px-2">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#FF006E] border-3 border-black" style={{ boxShadow: '2px 2px 0px #000' }}></div>
-              <span className="font-black text-black text-lg">DU</span>
+              <div className="w-8 h-8 rounded-full bg-[#FF006E] border-3 border-[var(--color-border)]" style={{ boxShadow: '2px 2px 0px #000' }}></div>
+              <span className="font-black text-[var(--color-text)] text-lg">DU</span>
             </div>
             <div className="px-4 py-2 bg-black text-white font-black text-sm">
               VS
             </div>
             <div className="flex items-center gap-3">
-              <span className="font-black text-black text-lg">{isMultiplayer ? opponentName?.toUpperCase() : 'KI'}</span>
-              <div className="w-8 h-8 rounded-full bg-[#1F2937] border-3 border-black" style={{ boxShadow: '2px 2px 0px #000' }}></div>
+              <span className="font-black text-[var(--color-text)] text-lg">{isMultiplayer ? opponentName?.toUpperCase() : 'KI'}</span>
+              <div className="w-8 h-8 rounded-full bg-[#1F2937] border-3 border-[var(--color-border)]" style={{ boxShadow: '2px 2px 0px #000' }}></div>
             </div>
           </div>
 
           {/* Board Grid - Neo-Brutalist */}
           <div
-            className="mx-auto border-4 border-black"
+            className="mx-auto border-4 border-[var(--color-border)]"
             style={{ boxShadow: '6px 6px 0px #000' }}
           >
             {board.map((row, rowIndex) => (
@@ -638,7 +638,7 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
                       style={{
                         width: '52px',
                         height: '52px',
-                        background: isDark ? '#D4A574' : '#FFF8E7',
+                        background: isDark ? '#D4A574' : 'var(--color-bg)',
                         borderRight: colIndex < 7 ? '1px solid rgba(0,0,0,0.2)' : 'none',
                         borderBottom: rowIndex < 7 ? '1px solid rgba(0,0,0,0.2)' : 'none'
                       }}
@@ -646,7 +646,7 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
                       {cell && renderPiece(cell)}
                       {isValidMove && (
                         <div
-                          className="absolute rounded-full animate-pulse border-2 border-black"
+                          className="absolute rounded-full animate-pulse border-2 border-[var(--color-border)]"
                           style={{
                             width: '24px',
                             height: '24px',
@@ -668,8 +668,8 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
           <div className="flex gap-3 mt-4 justify-center flex-wrap">
             <button
               onClick={getHint}
-              className="flex items-center gap-2 px-5 py-3 bg-[#FFBE0B] hover:bg-yellow-400 text-black font-black uppercase border-3 border-black transition-all hover:-translate-y-1"
-              style={{ boxShadow: '4px 4px 0px #000' }}
+              className="flex items-center gap-2 px-5 py-3 bg-[#FFBE0B] hover:bg-yellow-400 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)] transition-all hover:-translate-y-1"
+              style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
             >
               <Lightbulb size={20} />
               HINWEIS
@@ -678,8 +678,8 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
             {!isMultiplayer && (
               <button
                 onClick={restartGame}
-                className="flex items-center gap-2 px-5 py-3 bg-white hover:bg-gray-100 text-black font-black uppercase border-3 border-black transition-all hover:-translate-y-1"
-                style={{ boxShadow: '4px 4px 0px #000' }}
+                className="flex items-center gap-2 px-5 py-3 bg-[var(--color-surface)] hover:bg-gray-100 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)] transition-all hover:-translate-y-1"
+                style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
               >
                 <RotateCcw size={20} />
                 NEUSTART
@@ -693,18 +693,18 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
       {showStartModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div
-            className="bg-[#FFF8E7] p-6 max-w-md w-full border-4 border-black"
+            className="bg-[var(--color-bg)] p-6 max-w-md w-full border-4 border-[var(--color-border)]"
             style={{ boxShadow: '10px 10px 0px #000' }}
           >
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 bg-[#DC2626] border-3 border-black" style={{ boxShadow: '3px 3px 0px #000' }}>
+              <div className="p-3 bg-[#DC2626] border-3 border-[var(--color-border)]" style={{ boxShadow: '3px 3px 0px #000' }}>
                 <Circle size={28} className="text-white" />
               </div>
-              <h2 className="text-3xl font-black uppercase text-black">DAME</h2>
+              <h2 className="text-3xl font-black uppercase text-[var(--color-text)]">DAME</h2>
             </div>
 
-            <div className="bg-white p-4 border-3 border-black mb-4" style={{ boxShadow: '4px 4px 0px #000' }}>
-              <h3 className="font-black text-sm mb-2 text-black uppercase">Spielregeln</h3>
+            <div className="bg-[var(--color-surface)] p-4 border-3 border-[var(--color-border)] mb-4" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
+              <h3 className="font-black text-sm mb-2 text-[var(--color-text)] uppercase">Spielregeln</h3>
               <ul className="text-sm text-gray-700 space-y-1">
                 <li>• Steine ziehen diagonal vorwärts</li>
                 <li>• Gegnerische Steine überspringen zum Schlagen</li>
@@ -714,25 +714,25 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
             </div>
 
             <div className="flex gap-3 mb-4">
-              <div className="flex-1 bg-red-100 p-3 border-3 border-black text-center">
+              <div className="flex-1 bg-red-100 p-3 border-3 border-[var(--color-border)] text-center">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-400 to-red-600 border-3 border-red-800 mx-auto mb-2"></div>
-                <span className="text-xs font-black text-black">DU (ROT)</span>
+                <span className="text-xs font-black text-[var(--color-text)]">DU (ROT)</span>
               </div>
-              <div className="flex-1 bg-gray-100 p-3 border-3 border-black text-center">
+              <div className="flex-1 bg-gray-100 p-3 border-3 border-[var(--color-border)] text-center">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500 to-gray-700 border-3 border-gray-800 mx-auto mb-2"></div>
-                <span className="text-xs font-black text-black">KI (SCHWARZ)</span>
+                <span className="text-xs font-black text-[var(--color-text)]">KI (SCHWARZ)</span>
               </div>
             </div>
 
             {!isMultiplayer && (
               <div className="text-center mb-4">
-                <span className="bg-[#8338EC] text-white px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '3px 3px 0px #000' }}>LEVEL {levelId}</span>
+                <span className="bg-[#8338EC] text-white px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>LEVEL {levelId}</span>
               </div>
             )}
 
             <button
               onClick={() => setShowStartModal(false)}
-              className="w-full py-4 bg-[#06FFA5] hover:bg-emerald-300 text-black font-black uppercase text-xl border-4 border-black transition-all flex items-center justify-center gap-3"
+              className="w-full py-4 bg-[#06FFA5] hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase text-xl border-4 border-[var(--color-border)] transition-all flex items-center justify-center gap-3"
               style={{ boxShadow: '6px 6px 0px #000' }}
             >
               <Play size={28} />
@@ -746,18 +746,18 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
       {gameStatus !== 'playing' && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div
-            className="bg-[#FFF8E7] p-6 max-w-md w-full border-4 border-black"
+            className="bg-[var(--color-bg)] p-6 max-w-md w-full border-4 border-[var(--color-border)]"
             style={{ boxShadow: '10px 10px 0px #000' }}
           >
             <div className="text-center">
-              <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 border-black ${gameStatus === 'won' ? 'bg-[#06FFA5]' : 'bg-red-400'}`}>
-                <Trophy size={40} className={gameStatus === 'won' ? 'text-black' : 'text-white'} />
+              <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 border-[var(--color-border)] ${gameStatus === 'won' ? 'bg-[#06FFA5]' : 'bg-red-400'}`}>
+                <Trophy size={40} className={gameStatus === 'won' ? 'text-[var(--color-text)]' : 'text-white'} />
               </div>
-              <h2 className="text-3xl font-black uppercase mb-2 text-black">
+              <h2 className="text-3xl font-black uppercase mb-2 text-[var(--color-text)]">
                 {gameStatus === 'won' ? 'GEWONNEN!' : 'VERLOREN!'}
               </h2>
-              <div className="bg-white p-3 border-3 border-black mb-4 inline-block" style={{ boxShadow: '3px 3px 0px #000' }}>
-                <p className="text-black font-bold">
+              <div className="bg-[var(--color-surface)] p-3 border-3 border-[var(--color-border)] mb-4 inline-block" style={{ boxShadow: '3px 3px 0px #000' }}>
+                <p className="text-[var(--color-text)] font-bold">
                   {gameStatus === 'won'
                     ? `+${50 + levelId * 5} XP, +${20 + levelId * 2} Münzen`
                     : '+10 XP, +5 Münzen'}
@@ -767,16 +767,16 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={onBack}
-                  className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-black uppercase border-3 border-black"
-                  style={{ boxShadow: '4px 4px 0px #000' }}
+                  className="px-6 py-3 bg-[var(--color-surface)] hover:bg-gray-100 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)]"
+                  style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
                 >
                   MENÜ
                 </button>
                 {!isMultiplayer && (
                   <button
                     onClick={restartGame}
-                    className="px-6 py-3 bg-[#06FFA5] hover:bg-emerald-300 text-black font-black uppercase border-3 border-black"
-                    style={{ boxShadow: '4px 4px 0px #000' }}
+                    className="px-6 py-3 bg-[#06FFA5] hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)]"
+                    style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
                   >
                     NOCHMAL
                   </button>
@@ -790,32 +790,32 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
       {/* Ad/Hint Modal */}
       {showHintModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#FFF8E7] p-6 border-4 border-black max-w-sm w-full relative" style={{ boxShadow: '8px 8px 0px #000' }}>
+          <div className="bg-[var(--color-bg)] p-6 border-4 border-[var(--color-border)] max-w-sm w-full relative" style={{ boxShadow: '8px 8px 0px var(--color-border)' }}>
             {/* Close Button */}
             <button
               onClick={() => setShowHintModal(false)}
-              className="absolute top-2 right-2 p-1 bg-white border-2 border-black hover:bg-gray-100"
+              className="absolute top-2 right-2 p-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] hover:bg-gray-100"
               style={{ boxShadow: '2px 2px 0px #000' }}
             >
-              <X size={16} className="text-black" />
+              <X size={16} className="text-[var(--color-text)]" />
             </button>
 
-            <h3 className="text-xl font-black uppercase mb-4 text-black text-center">HINWEIS FREISCHALTEN</h3>
+            <h3 className="text-xl font-black uppercase mb-4 text-[var(--color-text)] text-center">HINWEIS FREISCHALTEN</h3>
 
             {/* Ad with Cat Dance GIF */}
-            <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden border-4 border-black mb-4" style={{ boxShadow: '4px 4px 0px #000' }}>
+            <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden border-4 border-[var(--color-border)] mb-4" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
               <img src={catDanceGif} alt="Ad" className="w-full h-full object-cover opacity-50" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-5xl font-black font-mono text-white drop-shadow-[4px_4px_0px_#000]">
                   {adTimer > 0 ? `${adTimer}s` : 'FERTIG'}
                 </div>
               </div>
-              <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-black">AD</div>
+              <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-[var(--color-border)]">AD</div>
             </div>
 
             {hintCost > 0 && (
               <div className="text-center mb-3">
-                <span className="bg-[#FF006E] text-white px-3 py-1 text-xs font-black border-2 border-black">+{hintCost}s Wartezeit</span>
+                <span className="bg-[#FF006E] text-white px-3 py-1 text-xs font-black border-2 border-[var(--color-border)]">+{hintCost}s Wartezeit</span>
               </div>
             )}
 
@@ -831,7 +831,7 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
                   }
                 }}
                 disabled={user.coins < (30 + hintCost * 2)}
-                className="w-full py-3 mb-2 font-black uppercase text-sm flex items-center justify-center gap-2 border-3 border-black transition-all hover:scale-[1.02]"
+                className="w-full py-3 mb-2 font-black uppercase text-sm flex items-center justify-center gap-2 border-3 border-[var(--color-border)] transition-all hover:scale-[1.02]"
                 style={{
                   background: user.coins >= (30 + hintCost * 2) ? '#FFBE0B' : '#E5E5E5',
                   color: user.coins >= (30 + hintCost * 2) ? '#000' : '#999',
@@ -846,7 +846,7 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
             <button
               disabled={adTimer > 0}
               onClick={claimHint}
-              className="w-full py-3 font-black uppercase text-sm border-3 border-black"
+              className="w-full py-3 font-black uppercase text-sm border-3 border-[var(--color-border)]"
               style={{
                 background: adTimer > 0 ? '#E5E5E5' : '#06FFA5',
                 color: adTimer > 0 ? '#999' : '#000',

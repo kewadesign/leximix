@@ -35,7 +35,7 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
     return null;
   }
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 geo-pattern" style={{ background: '#FFF8E7' }}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 geo-pattern" style={{ background: 'var(--color-bg)' }}>
       {/* Rainbow Top Bar */}
       <div className="fixed top-0 left-0 right-0 flex h-4 w-full z-50">
         <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -45,11 +45,11 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
         <div className="flex-1" style={{ background: '#8338EC' }}></div>
       </div>
 
-      <div 
+      <div
         className={`relative max-w-md w-full max-h-[85vh] overflow-y-auto p-6 geo-dots ${className}`}
-        style={{ 
-          background: '#FFF', 
-          border: '6px solid #000', 
+        style={{
+          background: 'var(--color-surface)',
+          border: '6px solid var(--color-border)',
           boxShadow: '12px 12px 0px #8338EC'
         }}
       >
@@ -57,24 +57,24 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
           <button
             onClick={onClose}
             className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center transition-all"
-            style={{ 
-              background: '#FF006E', 
-              border: '3px solid #000',
-              boxShadow: '4px 4px 0px #000'
+            style={{
+              background: '#FF006E',
+              border: '3px solid var(--color-border)',
+              boxShadow: '4px 4px 0px var(--color-border)'
             }}
           >
             <X size={24} style={{ color: '#FFF' }} />
           </button>
         )}
         {title && (
-          <h2 
+          <h2
             className="text-2xl font-black uppercase mb-6 pr-14 tracking-wide"
-            style={{ color: '#000' }}
+            style={{ color: 'var(--color-text)' }}
           >
             {title}
           </h2>
         )}
-        <div style={{ color: '#000' }}>
+        <div style={{ color: 'var(--color-text)' }}>
           {children}
         </div>
       </div>

@@ -19,7 +19,7 @@ export const SudokuControls: React.FC<SudokuControlsProps> = ({ onInput, onDelet
             className="h-12 font-black text-lg transition-all active:translate-y-1"
             style={{ 
               background: '#8338EC', 
-              color: '#FFF', 
+              color: 'var(--color-text)', 
               border: '3px solid #000',
               boxShadow: '4px 4px 0px #000',
               transform: 'skewX(2deg)'
@@ -37,7 +37,7 @@ export const SudokuControls: React.FC<SudokuControlsProps> = ({ onInput, onDelet
             className="h-12 font-black text-lg transition-all active:translate-y-1"
             style={{ 
               background: '#8338EC', 
-              color: '#FFF', 
+              color: 'var(--color-text)', 
               border: '3px solid #000',
               boxShadow: '4px 4px 0px #000',
               transform: 'skewX(2deg)'
@@ -51,7 +51,7 @@ export const SudokuControls: React.FC<SudokuControlsProps> = ({ onInput, onDelet
           className="h-12 font-black text-xs transition-all active:translate-y-1 flex items-center justify-center"
           style={{ 
             background: '#FF006E', 
-            color: '#FFF', 
+            color: 'var(--color-text)', 
             border: '3px solid #000',
             boxShadow: '4px 4px 0px #000',
             transform: 'skewX(2deg)'

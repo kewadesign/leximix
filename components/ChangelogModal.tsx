@@ -79,7 +79,7 @@ export const ChangelogModal: React.FC<Props> = ({
                                 key={entry.version} 
                                 className="p-4 relative overflow-hidden"
                                 style={{ 
-                                    background: '#FFF',
+                                    background: 'var(--color-surface)',
                                     border: '3px solid #000',
                                     boxShadow: isFirst ? '6px 6px 0px #000' : '4px 4px 0px #999',
                                     transform: isFirst ? 'scale(1.02)' : 'scale(1)'

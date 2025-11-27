@@ -42,7 +42,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
     const activeBanner = BANNERS[currentBanner] || BANNERS[0];
 
     return (
-        <div className="h-full flex flex-col max-w-4xl mx-auto w-full overflow-hidden" style={{ background: '#FFF8E7' }}>
+        <div className="h-full flex flex-col max-w-4xl mx-auto w-full overflow-hidden" style={{ background: 'var(--color-bg)' }}>
             {/* Rainbow Top Bar */}
             <div className="flex h-3 w-full sticky top-0 z-30">
                 <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -53,19 +53,19 @@ export const ShopView: React.FC<ShopViewProps> = ({
             </div>
 
             {/* Shop Header - Neo Brutal */}
-            <div 
+            <div
                 className="p-4 flex items-center justify-between z-20 sticky top-3 mx-4 mt-4"
-                style={{ 
-                    background: '#FFF', 
-                    border: '4px solid #000', 
+                style={{
+                    background: 'var(--color-surface)',
+                    border: '4px solid #000',
                     boxShadow: '6px 6px 0px #000'
                 }}
             >
-                <button 
-                    onClick={() => setView('HOME')} 
+                <button
+                    onClick={() => setView('HOME')}
                     className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
-                    style={{ 
-                        background: '#FF006E', 
+                    style={{
+                        background: '#FF006E',
                         border: '3px solid #000',
                         boxShadow: '4px 4px 0px #000'
                     }}
@@ -73,10 +73,10 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     <ArrowLeft size={24} style={{ color: '#000' }} />
                 </button>
                 <div className="flex items-center gap-3">
-                    <ShoppingBag size={24} style={{ color: '#000' }} />
-                    <h2 
+                    <ShoppingBag size={24} style={{ color: 'var(--color-text)' }} />
+                    <h2
                         className="text-xl font-black uppercase tracking-wide"
-                        style={{ color: '#000', transform: 'skew(-3deg)' }}
+                        style={{ color: 'var(--color-text)', transform: 'skew(-3deg)' }}
                     >
                         {t.SHOP.TITLE}
                     </h2>
@@ -85,9 +85,9 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     <button
                         onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
                         className="hidden md:flex items-center gap-2 px-4 py-2 font-black text-xs uppercase transition-all duration-100"
-                        style={{ 
-                            background: '#8338EC', 
-                            color: '#FFF',
+                        style={{
+                            background: '#8338EC',
+                            color: 'var(--color-text)',
                             border: '3px solid #000',
                             boxShadow: '4px 4px 0px #000'
                         }}
@@ -102,10 +102,10 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     >
                         <Sparkles size={14} /> Code
                     </button>
-                    <div 
+                    <div
                         className="flex items-center gap-2 px-4 py-2 font-black"
-                        style={{ 
-                            background: '#FFBE0B', 
+                        style={{
+                            background: '#FFBE0B',
                             border: '3px solid #000',
                             boxShadow: '4px 4px 0px #000'
                         }}
@@ -118,9 +118,9 @@ export const ShopView: React.FC<ShopViewProps> = ({
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scrollbar-hide">
                 {/* Featured Banner - Neo Brutal */}
-                <div 
+                <div
                     className="w-full p-6 relative overflow-hidden transition-all duration-100"
-                    style={{ 
+                    style={{
                         background: currentBanner === 0 ? '#FF006E' : currentBanner === 1 ? '#06FFA5' : '#FFBE0B',
                         border: '4px solid #000',
                         boxShadow: '8px 8px 0px #000',
@@ -132,7 +132,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                             <h3 className="text-2xl md:text-3xl font-black uppercase mb-1" style={{ color: '#000' }}>{activeBanner.title}</h3>
                             <p className="font-bold tracking-widest uppercase text-xs" style={{ color: 'rgba(0,0,0,0.7)' }}>{activeBanner.subtitle}</p>
                         </div>
-                        <div 
+                        <div
                             className="w-16 h-16 flex items-center justify-center"
                             style={{ background: '#000', border: '3px solid #000' }}
                         >
@@ -147,16 +147,16 @@ export const ShopView: React.FC<ShopViewProps> = ({
                         <button
                             onClick={handlePrev}
                             className="w-10 h-10 flex items-center justify-center transition-all"
-                            style={{ background: '#FFF', border: '3px solid #000' }}
+                            style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
                         >
-                            <ChevronLeft size={20} style={{ color: '#000' }} />
+                            <ChevronLeft size={20} style={{ color: 'var(--color-text)' }} />
                         </button>
                         {BANNERS.map((_, i) => (
-                            <div 
-                                key={i} 
+                            <div
+                                key={i}
                                 className="w-4 h-4 transition-all"
-                                style={{ 
-                                    background: i === currentBanner ? '#000' : '#FFF',
+                                style={{
+                                    background: i === currentBanner ? '#000' : 'var(--color-surface)',
                                     border: '2px solid #000'
                                 }}
                             ></div>
@@ -164,9 +164,9 @@ export const ShopView: React.FC<ShopViewProps> = ({
                         <button
                             onClick={handleNext}
                             className="w-10 h-10 flex items-center justify-center transition-all"
-                            style={{ background: '#FFF', border: '3px solid #000' }}
+                            style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
                         >
-                            <ChevronRight size={20} style={{ color: '#000' }} />
+                            <ChevronRight size={20} style={{ color: 'var(--color-text)' }} />
                         </button>
                     </div>
                 </div>
@@ -176,9 +176,9 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     <button
                         onClick={() => { setShowRedeemModal(true); setRedeemStep('code'); }}
                         className="w-full py-4 flex items-center justify-center gap-2 font-black text-sm uppercase transition-all duration-100"
-                        style={{ 
-                            background: '#8338EC', 
-                            color: '#FFF',
+                        style={{
+                            background: '#8338EC',
+                            color: 'var(--color-text)',
                             border: '4px solid #000',
                             boxShadow: '6px 6px 0px #000'
                         }}
@@ -189,7 +189,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
 
                 {/* Avatar Section - Neo Brutal */}
                 <div>
-                    <div 
+                    <div
                         className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
                         style={{ background: '#000', color: '#06FFA5' }}
                     >
@@ -204,22 +204,22 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                 <div
                                     key={item.id}
                                     className="p-4 flex flex-col items-center relative overflow-hidden group transition-all duration-100"
-                                    style={{ 
-                                        background: isEquipped ? '#06FFA5' : '#FFF', 
+                                    style={{
+                                        background: isEquipped ? '#06FFA5' : 'var(--color-surface)',
                                         border: '4px solid #000',
                                         boxShadow: '6px 6px 0px #000',
                                         transform: 'skewX(-3deg)'
                                     }}
                                 >
-                                    <div 
+                                    <div
                                         className="w-20 h-20 mb-3 overflow-hidden group-hover:scale-105 transition-transform"
                                         style={{ border: '3px solid #000', transform: 'skewX(3deg)' }}
                                     >
                                         <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${item.value}`} alt={item.name} className="w-full h-full" />
                                     </div>
-                                    <span 
+                                    <span
                                         className="text-sm font-black uppercase mb-2 text-center leading-tight"
-                                        style={{ color: '#000', transform: 'skewX(3deg)' }}
+                                        style={{ color: isEquipped ? '#000' : 'var(--color-text)', transform: 'skewX(3deg)' }}
                                     >
                                         {item.name}
                                     </span>
@@ -230,9 +230,9 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                                 disabled={isEquipped}
                                                 onClick={() => setUser({ ...user, avatarId: item.value as string })}
                                                 className="w-full py-2 font-black text-xs uppercase transition-all"
-                                                style={{ 
-                                                    background: isEquipped ? '#000' : '#FFF', 
-                                                    color: isEquipped ? '#06FFA5' : '#000',
+                                                style={{
+                                                    background: isEquipped ? '#000' : 'var(--color-surface)',
+                                                    color: isEquipped ? '#06FFA5' : 'var(--color-text)',
                                                     border: '3px solid #000',
                                                     boxShadow: '3px 3px 0px #000'
                                                 }}
@@ -243,8 +243,8 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                             <button
                                                 onClick={() => handleBuyItem(item)}
                                                 className="w-full py-2 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
-                                                style={{ 
-                                                    background: '#FFBE0B', 
+                                                style={{
+                                                    background: '#FFBE0B',
                                                     color: '#000',
                                                     border: '3px solid #000',
                                                     boxShadow: '3px 3px 0px #000'
@@ -262,7 +262,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
 
                 {/* Currency Section - Neo Brutal */}
                 <div>
-                    <div 
+                    <div
                         className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
                         style={{ background: '#000', color: '#FFBE0B' }}
                     >
@@ -274,28 +274,28 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                 <div
                                     key={item.id}
                                     className="p-4 flex flex-col items-center relative overflow-hidden group transition-all duration-100"
-                                    style={{ 
-                                        background: '#FFF', 
+                                    style={{
+                                        background: 'var(--color-surface)',
                                         border: '4px solid #000',
                                         boxShadow: '6px 6px 0px #FFBE0B',
                                         transform: 'skewX(-3deg)'
                                     }}
                                 >
-                                    <div 
+                                    <div
                                         className="w-14 h-14 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"
                                         style={{ background: '#FFBE0B', border: '3px solid #000', transform: 'skewX(3deg)' }}
                                     >
                                         <Coins size={28} style={{ color: '#000' }} />
                                     </div>
-                                    <span 
+                                    <span
                                         className="text-2xl font-black mb-0 leading-none"
-                                        style={{ color: '#000', transform: 'skewX(3deg)' }}
+                                        style={{ color: 'var(--color-text)', transform: 'skewX(3deg)' }}
                                     >
                                         {item.currencyAmount}
                                     </span>
-                                    <span 
+                                    <span
                                         className="text-[10px] font-black uppercase mb-3"
-                                        style={{ color: '#4A4A4A', transform: 'skewX(3deg)' }}
+                                        style={{ color: 'var(--color-text-muted)', transform: 'skewX(3deg)' }}
                                     >
                                         {t.GAME.COINS_GAINED}
                                     </span>
@@ -316,8 +316,8 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                             <button
                                                 onClick={() => handleBuyItem(item)}
                                                 className="w-full py-2 font-black text-sm uppercase transition-all"
-                                                style={{ 
-                                                    background: '#FF7F00', 
+                                                style={{
+                                                    background: '#FF7F00',
                                                     color: '#000',
                                                     border: '3px solid #000',
                                                     boxShadow: '3px 3px 0px #000'
@@ -333,6 +333,6 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

@@ -311,7 +311,7 @@ export default function SkatMauMauGame({
   );
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-between p-4 overflow-hidden z-[100] geo-pattern geo-shapes" style={{ background: '#FFF8E7' }}>
+    <div className="fixed inset-0 flex flex-col items-center justify-between p-4 overflow-hidden z-[100] geo-pattern geo-shapes" style={{ background: 'var(--color-bg)' }}>
       {/* Rainbow Top Bar */}
       <div className="absolute top-0 left-0 right-0 flex h-3 w-full z-50">
         <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -327,52 +327,52 @@ export default function SkatMauMauGame({
         <button
           onClick={onBack}
           className="w-14 h-14 flex items-center justify-center transition-all active:translate-y-1 hover:-translate-y-1"
-          style={{ 
-            background: '#FF006E', 
-            border: '3px solid #000',
-            boxShadow: '4px 4px 0px #000'
+          style={{
+            background: '#FF006E',
+            border: '3px solid var(--color-border)',
+            boxShadow: '4px 4px 0px var(--color-border)'
           }}
         >
-          <ArrowLeft size={26} style={{ color: '#000' }} />
+          <ArrowLeft size={26} style={{ color: 'var(--color-text)' }} />
         </button>
 
         <div className="flex flex-col items-center">
-          <h2 
-            className="text-2xl md:text-3xl font-black uppercase tracking-widest" 
-            style={{ color: '#000', transform: 'skewX(-3deg)' }}
+          <h2
+            className="text-2xl md:text-3xl font-black uppercase tracking-widest"
+            style={{ color: 'var(--color-text)', transform: 'skewX(-3deg)' }}
           >
             Mau Mau
           </h2>
           {isMultiplayer && (
-            <div 
-              className="flex items-center gap-2 mt-1 px-3 py-1 rounded-full border-2 border-black"
+            <div
+              className="flex items-center gap-2 mt-1 px-3 py-1 rounded-full border-2 border-[var(--color-border)]"
               style={{ background: '#06FFA5' }}
             >
               <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
-              <span className="text-[10px] font-bold text-black uppercase tracking-wider">Multiplayer</span>
+              <span className="text-[10px] font-bold text-[var(--color-text)] uppercase tracking-wider">Multiplayer</span>
             </div>
           )}
         </div>
 
         <div className="flex gap-2">
-          <button 
-            onClick={() => setShowChangelog(true)} 
+          <button
+            onClick={() => setShowChangelog(true)}
             className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
-            style={{ 
-              background: '#FFF', 
-              border: '3px solid #000',
-              boxShadow: '4px 4px 0px #000'
+            style={{
+              background: 'var(--color-surface)',
+              border: '3px solid var(--color-border)',
+              boxShadow: '4px 4px 0px var(--color-border)'
             }}
           >
-            <Info size={20} style={{ color: '#000' }} />
+            <Info size={20} style={{ color: 'var(--color-text)' }} />
           </button>
-          <button 
-            onClick={() => setShowFriends(true)} 
+          <button
+            onClick={() => setShowFriends(true)}
             className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
-            style={{ 
-              background: '#8338EC', 
-              border: '3px solid #000',
-              boxShadow: '4px 4px 0px #000'
+            style={{
+              background: '#8338EC',
+              border: '3px solid var(--color-border)',
+              boxShadow: '4px 4px 0px var(--color-border)'
             }}
           >
             <Users size={20} style={{ color: '#FFF' }} />
@@ -387,12 +387,12 @@ export default function SkatMauMauGame({
             key={`ai-${card.id}`}
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className="w-20 h-32 rounded-xl border-2 border-black shadow-xl relative overflow-hidden"
+            className="w-20 h-32 rounded-xl border-2 border-[var(--color-border)] shadow-xl relative overflow-hidden"
             style={{ zIndex: index, background: '#8338EC' }}
           >
             <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')]"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border-2 border-black">
+              <div className="w-10 h-10 bg-[var(--color-surface)] rounded-full flex items-center justify-center border-2 border-[var(--color-border)]">
                 <span className="font-black text-xs">AI</span>
               </div>
             </div>
@@ -405,12 +405,12 @@ export default function SkatMauMauGame({
         {/* Draw Pile */}
         <div
           onClick={() => currentTurn === 'player' && handleDrawCard('player')}
-          className={`w-28 h-40 rounded-2xl flex items-center justify-center cursor-pointer transition-transform relative overflow-hidden group border-4 border-black shadow-[6px_6px_0px_#000] ${currentTurn === 'player' ? 'animate-pulse' : ''}`}
-          style={{ background: '#FFF' }}
+          className={`w-28 h-40 rounded-2xl flex items-center justify-center cursor-pointer transition-transform relative overflow-hidden group border-4 border-[var(--color-border)] shadow-[6px_6px_0px_#000] ${currentTurn === 'player' ? 'animate-pulse' : ''}`}
+          style={{ background: 'var(--color-surface)' }}
         >
           <div className="font-black text-center z-10 group-hover:scale-110 transition-transform">
-            <div className="text-[10px] uppercase tracking-widest mb-1 text-black">Deck</div>
-            <div className="text-3xl font-mono text-black">{deck.length}</div>
+            <div className="text-[10px] uppercase tracking-widest mb-1 text-[var(--color-text)]">Deck</div>
+            <div className="text-3xl font-mono text-[var(--color-text)]">{deck.length}</div>
           </div>
         </div>
 
@@ -435,17 +435,17 @@ export default function SkatMauMauGame({
 
           {/* Indicators */}
           {wishedSuit !== null && (
-            <div 
-              className="absolute -top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl shadow-xl animate-bounce flex gap-2 items-center border-2 border-black z-20 whitespace-nowrap"
-              style={{ background: '#FFF' }}
+            <div
+              className="absolute -top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl shadow-xl animate-bounce flex gap-2 items-center border-2 border-[var(--color-border)] z-20 whitespace-nowrap"
+              style={{ background: 'var(--color-surface)' }}
             >
-              <span className="text-[10px] font-black text-black uppercase tracking-wider">Wunsch:</span>
+              <span className="text-[10px] font-black text-[var(--color-text)] uppercase tracking-wider">Wunsch:</span>
               {renderSuitIcon(wishedSuit)}
             </div>
           )}
 
           {drawCount > 0 && (
-            <div className="absolute -right-6 -top-6 bg-[#FF006E] text-white w-12 h-12 rounded-full flex items-center justify-center font-black text-lg border-2 border-black shadow-lg animate-pulse z-20">
+            <div className="absolute -right-6 -top-6 bg-[#FF006E] text-white w-12 h-12 rounded-full flex items-center justify-center font-black text-lg border-2 border-[var(--color-border)] shadow-lg animate-pulse z-20">
               +{drawCount}
             </div>
           )}
@@ -453,9 +453,9 @@ export default function SkatMauMauGame({
       </div>
 
       {/* Status Bar */}
-      <div 
-        className="px-8 py-3 rounded-xl shadow-[4px_4px_0px_#000] mb-2 border-2 border-black"
-        style={{ background: '#FFF' }}
+      <div
+        className="px-8 py-3 rounded-xl shadow-[4px_4px_0px_#000] mb-2 border-2 border-[var(--color-border)]"
+        style={{ background: 'var(--color-surface)' }}
       >
         <div className="font-black text-sm uppercase tracking-widest">
           {gameStatus === 'playing' ? (
@@ -506,7 +506,7 @@ export default function SkatMauMauGame({
             <button
               key={suit}
               onClick={() => handleWishSelection(suit)}
-              className="p-6 bg-white/5 hover:bg-white/10 rounded-2xl flex items-center justify-center text-5xl border-2 border-transparent hover:border-cyan-400 transition-all active:scale-95"
+              className="p-6 bg-[var(--color-surface)]/5 hover:bg-[var(--color-surface)]/10 rounded-2xl flex items-center justify-center text-5xl border-2 border-transparent hover:border-cyan-400 transition-all active:scale-95"
             >
               <span style={{ color: getSuitColor(suit) }}>{getSuitSymbol(suit)}</span>
             </button>
@@ -517,7 +517,7 @@ export default function SkatMauMauGame({
       {/* Changelog Modal */}
       <Modal isOpen={showChangelog} onClose={() => setShowChangelog(false)} title="Changelog">
         <div className="space-y-4 text-sm">
-          <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+          <div className="p-4 bg-[var(--color-surface)]/5 rounded-xl border border-white/10">
             <h4 className="font-bold text-cyan-400 mb-2 uppercase tracking-wide">v2.7.0 - Mau Mau Update</h4>
             <ul className="space-y-2 text-gray-300">
               <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Skat Mau Mau umbenannt zu Mau Mau</li>
@@ -567,11 +567,11 @@ export default function SkatMauMauGame({
               <button
                 onClick={() => onGameEnd(150, 75)}
                 className="w-full py-4 font-black uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2"
-                style={{ 
-                  background: '#FFBE0B', 
-                  color: '#000',
-                  border: '3px solid #000',
-                  boxShadow: '4px 4px 0px #000'
+                style={{
+                  background: '#FFBE0B',
+                  color: 'var(--color-text)',
+                  border: '3px solid var(--color-border)',
+                  boxShadow: '4px 4px 0px var(--color-border)'
                 }}
               >
                 <Trophy size={18} className="mr-2" fill="currentColor" />
@@ -580,26 +580,26 @@ export default function SkatMauMauGame({
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              <button 
-                onClick={startNewGame} 
+              <button
+                onClick={startNewGame}
                 className="w-full py-3 font-black uppercase transition-all active:scale-95 flex items-center justify-center gap-2"
-                style={{ 
-                  background: '#06FFA5', 
-                  color: '#000',
-                  border: '3px solid #000',
-                  boxShadow: '4px 4px 0px #000'
+                style={{
+                  background: '#06FFA5',
+                  color: 'var(--color-text)',
+                  border: '3px solid var(--color-border)',
+                  boxShadow: '4px 4px 0px var(--color-border)'
                 }}
               >
                 <RotateCcw size={18} />
                 Nochmal versuchen
               </button>
-              <button 
-                onClick={onBack} 
+              <button
+                onClick={onBack}
                 className="w-full py-3 font-black uppercase transition-all active:scale-95"
-                style={{ 
-                  background: '#F5F5F5', 
-                  color: '#000',
-                  border: '3px solid #000'
+                style={{
+                  background: '#F5F5F5',
+                  color: 'var(--color-text)',
+                  border: '3px solid var(--color-border)'
                 }}
               >
                 Zurück zum Menü

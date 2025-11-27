@@ -136,7 +136,7 @@ export const LetterMauMauGame: React.FC<Props> = ({
     if (!game || !difficulty) {
         return (
             <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-6">
-                <button onClick={onExit} className="absolute top-4 left-4 p-2 hover:bg-white/10 rounded-lg">
+                <button onClick={onExit} className="absolute top-4 left-4 p-2 hover:bg-[var(--color-surface)]/10 rounded-lg">
                     <ArrowLeft className="text-white" size={24} />
                 </button>
 
@@ -229,7 +229,7 @@ export const LetterMauMauGame: React.FC<Props> = ({
         <div className="h-full flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 relative overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-4 bg-black/30 backdrop-blur-sm border-b border-white/10 z-10">
-                <button onClick={onExit} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                <button onClick={onExit} className="p-2 hover:bg-[var(--color-surface)]/10 rounded-lg transition-colors">
                     <ArrowLeft className="text-white" size={24} />
                 </button>
                 <h1 className="text-2xl font-black text-white uppercase tracking-wider">Mau Mau</h1>
@@ -266,7 +266,7 @@ export const LetterMauMauGame: React.FC<Props> = ({
                     </div>
                     {game.currentPlayer === 2 && (
                         <motion.div
-                            className="px-4 py-2 bg-yellow-500 text-black font-bold rounded-full text-sm"
+                            className="px-4 py-2 bg-yellow-500 text-[var(--color-text)] font-bold rounded-full text-sm"
                             animate={{ scale: [1, 1.1, 1] }}
                             transition={{ repeat: Infinity, duration: 1 }}
                         >
@@ -337,7 +337,7 @@ export const LetterMauMauGame: React.FC<Props> = ({
                         {player1.hand.length === 1 && !player1.saidMau && (
                             <motion.button
                                 onClick={handleSayMau}
-                                className="px-4 py-2 bg-yellow-500 text-black font-black rounded-lg text-sm shadow-lg"
+                                className="px-4 py-2 bg-yellow-500 text-[var(--color-text)] font-black rounded-lg text-sm shadow-lg"
                                 animate={{ scale: [1, 1.1, 1] }}
                                 transition={{ repeat: Infinity, duration: 0.5 }}
                                 whileHover={{ scale: 1.2 }}

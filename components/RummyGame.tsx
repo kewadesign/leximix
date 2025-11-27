@@ -43,8 +43,8 @@ const SUIT_SYMBOLS: Record<Suit, string> = {
 const SUIT_COLORS: Record<Suit, string> = {
   hearts: 'text-red-500',
   diamonds: 'text-red-500',
-  clubs: 'text-black',
-  spades: 'text-black'
+  clubs: 'text-[var(--color-text)]',
+  spades: 'text-[var(--color-text)]'
 };
 const VALUE_DISPLAY: Record<CardValue, string> = {
   1: 'A', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7',
@@ -685,20 +685,20 @@ export const RummyGame: React.FC<RummyGameProps> = ({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={onBack}
-          className="p-3 border-3 border-black transition-all hover:-translate-y-1 hover:scale-105"
-          style={{ background: modeColor, boxShadow: '4px 4px 0px #000' }}
+          className="p-3 border-3 border-[var(--color-border)] transition-all hover:-translate-y-1 hover:scale-105"
+          style={{ background: modeColor, boxShadow: '4px 4px 0px var(--color-border)' }}
         >
           <ArrowLeft size={24} className="text-white" />
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
-            <Coins size={20} className="text-black" />
-            <span className="text-black text-lg">{user.coins}</span>
+          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
+            <Coins size={20} className="text-[var(--color-text)]" />
+            <span className="text-[var(--color-text)] text-lg">{user.coins}</span>
           </div>
 
           {!isMultiplayer && (
-            <div className="px-4 py-2 border-3 border-black font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
+            <div className="px-4 py-2 border-3 border-[var(--color-border)] font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
               LEVEL {levelId}
             </div>
           )}
@@ -708,7 +708,7 @@ export const RummyGame: React.FC<RummyGameProps> = ({
       {/* Message */}
       {message && (
         <div className="text-center mb-4">
-          <span className="bg-[#059669] text-white px-5 py-3 border-3 border-black text-sm font-black" style={{ boxShadow: '4px 4px 0px #000' }}>{message}</span>
+          <span className="bg-[#059669] text-white px-5 py-3 border-3 border-[var(--color-border)] text-sm font-black" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>{message}</span>
         </div>
       )}
 
@@ -716,17 +716,17 @@ export const RummyGame: React.FC<RummyGameProps> = ({
       <div
         className="max-w-4xl mx-auto p-5 md:p-8 mt-4"
         style={{
-          background: '#FFF8E7',
+          background: 'var(--color-bg)',
           border: '6px solid transparent',
-          backgroundImage: 'linear-gradient(#FFF8E7, #FFF8E7), linear-gradient(90deg, #FF006E 0%, #FF7F00 16.66%, #FFBE0B 33.33%, #06FFA5 50%, #0096FF 66.66%, #8338EC 83.33%, #FF006E 100%)',
+          backgroundImage: 'linear-gradient(var(--color-bg), var(--color-bg)), linear-gradient(90deg, #FF006E 0%, #FF7F00 16.66%, #FFBE0B 33.33%, #06FFA5 50%, #0096FF 66.66%, #8338EC 83.33%, #FF006E 100%)',
           backgroundOrigin: 'border-box',
           backgroundClip: 'padding-box, border-box',
-          boxShadow: '8px 8px 0px #000'
+          boxShadow: '8px 8px 0px var(--color-border)'
         }}
       >
         {/* Title Bar */}
         <div
-          className="flex items-center justify-between px-4 py-3 mb-6 border-4 border-black"
+          className="flex items-center justify-between px-4 py-3 mb-6 border-4 border-[var(--color-border)]"
           style={{ background: modeColor }}
         >
           <div className="flex items-center gap-3">
@@ -734,16 +734,16 @@ export const RummyGame: React.FC<RummyGameProps> = ({
             <span className="font-black text-white uppercase text-lg">ROMMÉ</span>
           </div>
           <div
-            className={`px-4 py-2 font-black text-sm uppercase border-2 border-black ${currentPlayer === 'player' ? 'bg-[#06FFA5] text-black' : 'bg-white text-black'
+            className={`px-4 py-2 font-black text-sm uppercase border-2 border-[var(--color-border)] ${currentPlayer === 'player' ? 'bg-[#06FFA5] text-[var(--color-text)]' : 'bg-[var(--color-surface)] text-[var(--color-text)]'
               }`}
           >
             {currentPlayer === 'player' ? 'DEIN ZUG' : (isMultiplayer ? opponentName?.toUpperCase() : 'KI DENKT')}
           </div>
         </div>
         {/* AI Area */}
-        <div className="mb-6 p-4 border-3 border-black" style={{ background: '#E5E5E5', boxShadow: '4px 4px 0px #000' }}>
+        <div className="mb-6 p-4 border-3 border-[var(--color-border)]" style={{ background: '#E5E5E5', boxShadow: '4px 4px 0px var(--color-border)' }}>
           <div className="flex items-center justify-between mb-4">
-            <span className="font-black uppercase text-sm text-black">{isMultiplayer ? opponentName : '🤖 KI'} ({aiHand.length} Karten)</span>
+            <span className="font-black uppercase text-sm text-[var(--color-text)]">{isMultiplayer ? opponentName : '🤖 KI'} ({aiHand.length} Karten)</span>
             {currentPlayer === 'ai' && <span className="text-[#FF006E] animate-pulse font-black">💭 Denkt...</span>}
           </div>
           <div className="flex gap-1 flex-wrap justify-center">
@@ -814,7 +814,7 @@ export const RummyGame: React.FC<RummyGameProps> = ({
           <div className="flex items-center justify-between mb-4">
             <span className="font-black uppercase text-sm text-white/90">🃏 Deine Karten ({playerHand.length})</span>
             {currentPlayer === 'player' && (
-              <span className={`px-4 py-2 text-xs font-black rounded-lg ${phase === 'draw' ? 'bg-blue-500 text-white' : 'bg-yellow-400 text-black'}`}
+              <span className={`px-4 py-2 text-xs font-black rounded-lg ${phase === 'draw' ? 'bg-blue-500 text-white' : 'bg-yellow-400 text-[var(--color-text)]'}`}
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
                 {phase === 'draw' ? '👆 KARTE ZIEHEN' : '✋ KARTE ABLEGEN'}
               </span>
@@ -874,7 +874,7 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
               <button
                 onClick={getHint}
-                className="flex items-center gap-2 px-5 py-3 bg-amber-400 hover:bg-amber-300 text-black font-black uppercase rounded-lg transition-all hover:scale-105"
+                className="flex items-center gap-2 px-5 py-3 bg-amber-400 hover:bg-amber-300 text-[var(--color-text)] font-black uppercase rounded-lg transition-all hover:scale-105"
                 style={{ boxShadow: '0 4px 12px rgba(251,191,36,0.4)' }}
               >
                 <Lightbulb size={18} />
@@ -889,18 +889,18 @@ export const RummyGame: React.FC<RummyGameProps> = ({
       {showStartModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div
-            className="bg-[#FFF8E7] p-6 max-w-md w-full border-4 border-black"
+            className="bg-[var(--color-bg)] p-6 max-w-md w-full border-4 border-[var(--color-border)]"
             style={{ boxShadow: '10px 10px 0px #000' }}
           >
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 bg-[#059669] border-3 border-black" style={{ boxShadow: '3px 3px 0px #000' }}>
+              <div className="p-3 bg-[#059669] border-3 border-[var(--color-border)]" style={{ boxShadow: '3px 3px 0px #000' }}>
                 <Sparkles size={28} className="text-white" />
               </div>
-              <h2 className="text-3xl font-black uppercase text-black">ROMMÉ</h2>
+              <h2 className="text-3xl font-black uppercase text-[var(--color-text)]">ROMMÉ</h2>
             </div>
 
-            <div className="bg-white p-4 border-3 border-black mb-4" style={{ boxShadow: '4px 4px 0px #000' }}>
-              <h3 className="font-black text-sm mb-2 text-black uppercase">Spielregeln</h3>
+            <div className="bg-[var(--color-surface)] p-4 border-3 border-[var(--color-border)] mb-4" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
+              <h3 className="font-black text-sm mb-2 text-[var(--color-text)] uppercase">Spielregeln</h3>
               <ul className="text-sm text-gray-700 space-y-1">
                 <li>• Ziehe vom Stapel oder Ablage</li>
                 <li>• Bilde 3+ Karten Kombinationen</li>
@@ -909,7 +909,7 @@ export const RummyGame: React.FC<RummyGameProps> = ({
               </ul>
             </div>
 
-            <div className="flex gap-3 mb-4 justify-center bg-white p-3 border-3 border-black">
+            <div className="flex gap-3 mb-4 justify-center bg-[var(--color-surface)] p-3 border-3 border-[var(--color-border)]">
               {(['hearts', 'diamonds', 'clubs', 'spades'] as Suit[]).map(suit => (
                 <span key={suit} className={`text-3xl ${SUIT_COLORS[suit]}`}>{SUIT_SYMBOLS[suit]}</span>
               ))}
@@ -917,13 +917,13 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
             {!isMultiplayer && (
               <div className="text-center mb-4">
-                <span className="bg-[#8338EC] text-white px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '3px 3px 0px #000' }}>LEVEL {levelId}</span>
+                <span className="bg-[#8338EC] text-white px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>LEVEL {levelId}</span>
               </div>
             )}
 
             <button
               onClick={() => setShowStartModal(false)}
-              className="w-full py-4 bg-[#06FFA5] hover:bg-emerald-300 text-black font-black uppercase text-xl border-4 border-black transition-all flex items-center justify-center gap-3"
+              className="w-full py-4 bg-[#06FFA5] hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase text-xl border-4 border-[var(--color-border)] transition-all flex items-center justify-center gap-3"
               style={{ boxShadow: '6px 6px 0px #000' }}
             >
               <Play size={28} />
@@ -937,18 +937,18 @@ export const RummyGame: React.FC<RummyGameProps> = ({
       {gameStatus !== 'playing' && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div
-            className="bg-[#FFF8E7] p-6 max-w-md w-full border-4 border-black"
+            className="bg-[var(--color-bg)] p-6 max-w-md w-full border-4 border-[var(--color-border)]"
             style={{ boxShadow: '10px 10px 0px #000' }}
           >
             <div className="text-center">
-              <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 border-black ${gameStatus === 'won' ? 'bg-[#06FFA5]' : 'bg-red-400'}`}>
-                <Trophy size={40} className={gameStatus === 'won' ? 'text-black' : 'text-white'} />
+              <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 border-[var(--color-border)] ${gameStatus === 'won' ? 'bg-[#06FFA5]' : 'bg-red-400'}`}>
+                <Trophy size={40} className={gameStatus === 'won' ? 'text-[var(--color-text)]' : 'text-white'} />
               </div>
-              <h2 className="text-3xl font-black uppercase mb-2 text-black">
+              <h2 className="text-3xl font-black uppercase mb-2 text-[var(--color-text)]">
                 {gameStatus === 'won' ? 'GEWONNEN!' : 'VERLOREN!'}
               </h2>
-              <div className="bg-white p-3 border-3 border-black mb-4 inline-block" style={{ boxShadow: '3px 3px 0px #000' }}>
-                <p className="text-black font-bold">
+              <div className="bg-[var(--color-surface)] p-3 border-3 border-[var(--color-border)] mb-4 inline-block" style={{ boxShadow: '3px 3px 0px #000' }}>
+                <p className="text-[var(--color-text)] font-bold">
                   {gameStatus === 'won'
                     ? `+${50 + levelId * 5} XP, +${20 + levelId * 2} Münzen`
                     : '+10 XP, +5 Münzen'}
@@ -958,8 +958,8 @@ export const RummyGame: React.FC<RummyGameProps> = ({
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={onBack}
-                  className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-black uppercase border-3 border-black"
-                  style={{ boxShadow: '4px 4px 0px #000' }}
+                  className="px-6 py-3 bg-[var(--color-surface)] hover:bg-gray-100 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)]"
+                  style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
                 >
                   MENÜ
                 </button>
@@ -970,8 +970,8 @@ export const RummyGame: React.FC<RummyGameProps> = ({
                       setShowStartModal(false);
                       startNewGame();
                     }}
-                    className="px-6 py-3 bg-[#06FFA5] hover:bg-emerald-300 text-black font-black uppercase border-3 border-black"
-                    style={{ boxShadow: '4px 4px 0px #000' }}
+                    className="px-6 py-3 bg-[#06FFA5] hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)]"
+                    style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
                   >
                     NOCHMAL
                   </button>
@@ -985,23 +985,23 @@ export const RummyGame: React.FC<RummyGameProps> = ({
       {/* Ad/Hint Modal */}
       {showHintModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 border-4 border-black max-w-sm w-full" style={{ boxShadow: '8px 8px 0px #000' }}>
-            <h3 className="text-xl font-black uppercase mb-4 text-black text-center">HINWEIS FREISCHALTEN</h3>
+          <div className="bg-[var(--color-surface)] p-6 border-4 border-[var(--color-border)] max-w-sm w-full" style={{ boxShadow: '8px 8px 0px var(--color-border)' }}>
+            <h3 className="text-xl font-black uppercase mb-4 text-[var(--color-text)] text-center">HINWEIS FREISCHALTEN</h3>
 
             {/* Ad with Cat Dance GIF */}
-            <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden border-4 border-black mb-4" style={{ boxShadow: '4px 4px 0px #000' }}>
+            <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden border-4 border-[var(--color-border)] mb-4" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
               <img src={catDanceGif} alt="Ad" className="w-full h-full object-cover opacity-50" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-5xl font-black font-mono text-white drop-shadow-[4px_4px_0px_#000]">
                   {adTimer > 0 ? `${adTimer}s` : 'FERTIG'}
                 </div>
               </div>
-              <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-black">AD</div>
+              <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-[var(--color-border)]">AD</div>
             </div>
 
             {hintCost > 0 && (
               <div className="text-center mb-3">
-                <span className="bg-[#FF006E] text-white px-3 py-1 text-xs font-black border-2 border-black">+{hintCost}s Wartezeit</span>
+                <span className="bg-[#FF006E] text-white px-3 py-1 text-xs font-black border-2 border-[var(--color-border)]">+{hintCost}s Wartezeit</span>
               </div>
             )}
 
@@ -1014,8 +1014,8 @@ export const RummyGame: React.FC<RummyGameProps> = ({
                     setAdTimer(0);
                   }
                 }}
-                className="w-full py-3 mb-2 font-black uppercase text-sm flex items-center justify-center gap-2 bg-[#FFBE0B] text-black border-3 border-black"
-                style={{ boxShadow: '4px 4px 0px #000', opacity: user.coins >= (30 + hintCost * 2) ? 1 : 0.5 }}
+                className="w-full py-3 mb-2 font-black uppercase text-sm flex items-center justify-center gap-2 bg-[#FFBE0B] text-[var(--color-text)] border-3 border-[var(--color-border)]"
+                style={{ boxShadow: '4px 4px 0px var(--color-border)', opacity: user.coins >= (30 + hintCost * 2) ? 1 : 0.5 }}
               >
                 <Gem size={16} /> SKIP ({30 + hintCost * 2} Coins)
               </button>
@@ -1024,7 +1024,7 @@ export const RummyGame: React.FC<RummyGameProps> = ({
             <button
               disabled={adTimer > 0}
               onClick={claimHint}
-              className="w-full py-3 font-black uppercase text-sm border-3 border-black"
+              className="w-full py-3 font-black uppercase text-sm border-3 border-[var(--color-border)]"
               style={{
                 background: adTimer > 0 ? '#E5E5E5' : '#06FFA5',
                 color: adTimer > 0 ? '#999' : '#000',

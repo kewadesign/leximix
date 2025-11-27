@@ -12,40 +12,40 @@ interface SudokuGridProps {
 export const SudokuGrid: React.FC<SudokuGridProps> = ({ board, selectedCell, onCellSelect, original, validation }) => {
   // Neo-brutalist cell styles
   const getCellStyle = (r: number, c: number, cell: string | null, isFixed: boolean, isSelected: boolean, isRelated: boolean, status: string | null | undefined) => {
-    if (status === 'correct') return { 
-      background: '#06FFA5', 
+    if (status === 'correct') return {
+      background: '#06FFA5',
       color: '#000'
     };
-    if (status === 'error') return { 
-      background: '#FF006E', 
+    if (status === 'error') return {
+      background: '#FF006E',
       color: '#FFF'
     };
-    if (isSelected) return { 
-      background: '#FFBE0B', 
+    if (isSelected) return {
+      background: '#FFBE0B',
       color: '#000',
       boxShadow: 'inset 0 0 0 3px #000'
     };
-    if (isRelated) return { 
-      background: '#FFF8E7', 
+    if (isRelated) return {
+      background: 'var(--color-bg)',
       color: '#8338EC'
     };
-    if (isFixed) return { 
-      background: '#E5E5E5', 
+    if (isFixed) return {
+      background: '#E5E5E5',
       color: '#000'
     };
-    return { 
-      background: '#FFF', 
+    return {
+      background: 'var(--color-surface)',
       color: '#8338EC'
     };
   };
 
   return (
-    <div 
+    <div
       className="w-full max-w-sm mx-auto aspect-square select-none overflow-hidden"
-      style={{ 
+      style={{
         border: '4px solid #000',
-        boxShadow: '8px 8px 0px #8338EC', 
-        background: '#FFF',
+        boxShadow: '8px 8px 0px #8338EC',
+        background: 'var(--color-surface)',
         transform: 'skewX(-2deg)'
       }}
     >

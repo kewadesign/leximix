@@ -125,7 +125,7 @@ export const FriendsManager: React.FC<FriendsManagerProps> = ({
                 <div 
                     className="p-4 relative overflow-hidden"
                     style={{ 
-                        background: '#FFF',
+                        background: 'var(--color-surface)',
                         border: '3px solid #000',
                         borderRadius: '16px',
                         boxShadow: '6px 6px 0px #8338EC'
@@ -181,7 +181,7 @@ export const FriendsManager: React.FC<FriendsManagerProps> = ({
                 <div 
                     className="p-4"
                     style={{ 
-                        background: '#FFF',
+                        background: 'var(--color-surface)',
                         border: '3px solid #000',
                         borderRadius: '16px',
                         boxShadow: '6px 6px 0px #06FFA5'
@@ -281,7 +281,7 @@ export const FriendsManager: React.FC<FriendsManagerProps> = ({
                                         key={friend.code}
                                         className="flex items-center justify-between p-3 transition-all"
                                         style={{ 
-                                            background: '#FFF',
+                                            background: 'var(--color-surface)',
                                             border: '2px solid #000',
                                             borderRadius: '12px',
                                             boxShadow: `4px 4px 0px ${color}`

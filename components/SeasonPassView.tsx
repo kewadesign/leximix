@@ -40,7 +40,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
     const t = TRANSLATIONS[user.language];
 
     return (
-        <div className="h-full flex flex-col relative overflow-hidden geo-pattern geo-shapes geo-confetti" style={{ background: '#FFF8E7' }}>
+        <div className="h-full flex flex-col relative overflow-hidden geo-pattern geo-shapes geo-confetti" style={{ background: 'var(--color-bg)' }}>
             {/* Rainbow Top Bar */}
             <div className="flex h-4 w-full">
                 <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -51,25 +51,25 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
             </div>
 
             {/* Header - Neo Brutal */}
-            <div 
+            <div
                 className="mx-4 mt-4 p-4 flex items-center justify-between z-20"
-                style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
+                style={{ background: 'var(--color-surface)', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
             >
-                <button 
-                    onClick={onClose} 
+                <button
+                    onClick={onClose}
                     className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
                     style={{ background: '#FF006E', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}
                 >
                     <ArrowLeft size={24} style={{ color: '#000' }} />
                 </button>
                 <div className="flex flex-col items-center flex-1 mx-4">
-                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-wide mb-2" style={{ color: '#000' }}>
+                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-wide mb-2" style={{ color: 'var(--color-text)' }}>
                         {t.SEASON.TITLE}
                     </h2>
-                    
+
                     {/* Level & XP */}
                     <div className="flex items-center gap-3">
-                        <div 
+                        <div
                             className="px-4 py-2 font-black text-sm uppercase flex items-center gap-2"
                             style={{ background: user.isPremium ? '#FFBE0B' : '#8338EC', color: user.isPremium ? '#000' : '#FFF', border: '3px solid #000' }}
                         >
@@ -78,15 +78,15 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-32 h-4" style={{ background: '#000', border: '2px solid #000' }}>
-                                <div 
-                                    className="h-full transition-all duration-500" 
+                                <div
+                                    className="h-full transition-all duration-500"
                                     style={{ width: `${Math.min(100, Math.max(5, user.xp % 100))}%`, background: '#06FFA5' }}
                                 ></div>
                             </div>
-                            <span className="text-xs font-black" style={{ color: '#000' }}>{user.xp % 100}/100</span>
+                            <span className="text-xs font-black" style={{ color: 'var(--color-text)' }}>{user.xp % 100}/100</span>
                         </div>
                     </div>
-                    
+
                     <div className="mt-2 text-xs font-black uppercase" style={{ color: '#FF7F00' }}>
                         {Math.max(0, Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage übrig
                     </div>
@@ -100,10 +100,10 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     <button
                         onClick={onShowPremium}
                         className="px-8 py-4 font-black uppercase text-lg flex items-center gap-3 transition-all"
-                        style={{ 
-                            background: '#FFBE0B', 
-                            color: '#000', 
-                            border: '4px solid #000', 
+                        style={{
+                            background: '#FFBE0B',
+                            color: '#000',
+                            border: '4px solid #000',
                             boxShadow: '8px 8px 0px #000'
                         }}
                         onMouseEnter={(e) => {
@@ -122,25 +122,25 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
             )}
 
             {/* Reward Legend - Neo Brutal */}
-            <div 
+            <div
                 className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-4 text-xs font-black uppercase z-20"
-                style={{ background: '#FFF', border: '3px solid #000' }}
+                style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
             >
                 <div className="flex items-center gap-2">
                     <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><Sparkles size={14} style={{ color: '#FFF' }} /></div>
-                    <span style={{ color: '#000' }}>Frame</span>
+                    <span style={{ color: 'var(--color-text)' }}>Frame</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="p-1" style={{ background: '#0096FF', border: '2px solid #000' }}><ImageIcon size={14} style={{ color: '#FFF' }} /></div>
-                    <span style={{ color: '#000' }}>Avatar</span>
+                    <span style={{ color: 'var(--color-text)' }}>Avatar</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Zap size={14} style={{ color: '#000' }} /></div>
-                    <span style={{ color: '#000' }}>Booster</span>
+                    <span style={{ color: 'var(--color-text)' }}>Booster</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={14} style={{ color: '#000' }} /></div>
-                    <span style={{ color: '#000' }}>Münzen</span>
+                    <span style={{ color: 'var(--color-text)' }}>Münzen</span>
                 </div>
             </div>
 
@@ -157,7 +157,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
             >
                 <div className="flex items-center h-full px-[50vw] min-w-max gap-6 py-8">
                     {/* Rainbow Stepped Track Line */}
-                    <div 
+                    <div
                         className="absolute top-1/2 left-0 right-0 h-6 -translate-y-1/2 z-0 flex"
                         style={{ border: '3px solid #000' }}
                     >
@@ -172,7 +172,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     {/* Progress overlay (gray over unfinished) */}
                     <div
                         className="absolute top-1/2 h-6 -translate-y-1/2 z-1 transition-all duration-1000"
-                        style={{ 
+                        style={{
                             left: `${(user.level / 100) * 100}%`,
                             right: 0,
                             background: '#E5E5E5',
@@ -185,10 +185,10 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     {rewards.map((item, index) => {
                         const lvl = item.level;
                         const isUnlocked = user.level >= lvl;
-                        
+
                         const isFreeClaimed = user.claimedSeasonRewards?.includes(lvl);
                         const isPremiumClaimed = user.claimedPremiumRewards?.includes(lvl);
-                        
+
                         const canClaimFree = isUnlocked && !isFreeClaimed;
                         const canClaimPremium = isUnlocked && !isPremiumClaimed;
 
@@ -207,9 +207,9 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                 className="flex flex-col items-center justify-center relative w-52 h-full shrink-0 snap-center group"
                             >
                                 {/* Level Node (Center) - Bigger & Colorful */}
-                                <div 
+                                <div
                                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 z-10 flex items-center justify-center text-base font-black transition-all"
-                                    style={{ 
+                                    style={{
                                         background: isUnlocked ? cardColor : '#E5E5E5',
                                         color: isUnlocked ? '#FFF' : '#999',
                                         border: '4px solid #000',
@@ -222,7 +222,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
                                 {/* PREMIUM REWARD (TOP) - Bigger */}
                                 <div className={`absolute bottom-[55%] flex flex-col items-center justify-end h-44 w-full transition-all ${isUnlocked ? 'opacity-100' : 'opacity-50 grayscale'}`}>
-                                    <div 
+                                    <div
                                         className="px-3 py-1 text-[10px] font-black uppercase mb-2"
                                         style={{ background: '#FFBE0B', color: '#000', border: '2px solid #000' }}
                                     >
@@ -230,10 +230,10 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                     </div>
 
                                     {premiumReward ? (
-                                        <div 
+                                        <div
                                             className="relative w-36 p-4 flex flex-col items-center transition-all group-hover:-translate-y-3"
-                                            style={{ 
-                                                background: '#FFF',
+                                            style={{
+                                                background: 'var(--color-surface)',
                                                 border: '4px solid #000',
                                                 boxShadow: `8px 8px 0px ${cardColor}`
                                             }}
@@ -246,11 +246,19 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                 <img
                                                     src={premiumReward.preview}
                                                     alt="Avatar"
-                                                    className="w-12 h-12"
+                                                    className="w-12 h-12 object-cover"
                                                     style={{ border: '3px solid #000' }}
                                                 />
                                             ) : premiumReward.type === 'effect' ? (
-                                                <Sparkles size={36} style={{ color: '#8338EC' }} />
+                                                premiumReward.icon && premiumReward.icon.startsWith('/') ? (
+                                                    <img
+                                                        src={premiumReward.icon}
+                                                        alt="Frame"
+                                                        className="w-12 h-12 object-contain"
+                                                    />
+                                                ) : (
+                                                    <span className="text-4xl">{premiumReward.icon || '✨'}</span>
+                                                )
                                             ) : premiumReward.type === 'mystery' ? (
                                                 <Box size={36} style={{ color: '#8338EC' }} />
                                             ) : premiumReward.type === 'booster' ? (
@@ -260,7 +268,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                             )}
 
                                             <div className="mt-2 text-center">
-                                                <div className="text-[10px] font-black uppercase" style={{ color: '#000' }}>{premiumReward.type}</div>
+                                                <div className="text-[10px] font-black uppercase" style={{ color: 'var(--color-text)' }}>{premiumReward.type}</div>
                                                 <div className="text-[9px] font-bold" style={{ color: '#666' }}>{premiumReward.amount ? `x${premiumReward.amount}` : 'Rare'}</div>
                                             </div>
 
@@ -288,7 +296,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
                                 {/* FREE REWARD (BOTTOM) - Bigger */}
                                 <div className={`absolute top-[55%] flex flex-col items-center justify-start h-44 w-full transition-all ${isUnlocked ? 'opacity-100' : 'opacity-50 grayscale'}`}>
-                                    <div 
+                                    <div
                                         className="px-3 py-1 text-[10px] font-black uppercase mt-10 mb-2"
                                         style={{ background: '#06FFA5', color: '#000', border: '2px solid #000' }}
                                     >
@@ -296,10 +304,10 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                     </div>
 
                                     {freeReward ? (
-                                        <div 
+                                        <div
                                             className="relative w-32 p-4 flex flex-col items-center transition-all group-hover:translate-y-3"
-                                            style={{ 
-                                                background: '#FFF',
+                                            style={{
+                                                background: 'var(--color-surface)',
                                                 border: '4px solid #000',
                                                 boxShadow: '6px 6px 0px #000'
                                             }}
@@ -311,9 +319,9 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                             ) : (
                                                 <Coins size={32} style={{ color: '#FFBE0B' }} />
                                             )}
-                                            
+
                                             <div className="mt-2 text-center">
-                                                <div className="text-[11px] font-black uppercase" style={{ color: '#000' }}>{freeReward.type}</div>
+                                                <div className="text-[11px] font-black uppercase" style={{ color: 'var(--color-text)' }}>{freeReward.type}</div>
                                                 {freeReward.amount && <div className="text-[10px] font-bold" style={{ color: '#666' }}>x{freeReward.amount}</div>}
                                             </div>
 

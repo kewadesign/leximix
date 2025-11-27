@@ -546,20 +546,20 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={onBack}
-          className="p-3 border-3 border-black transition-all hover:-translate-y-1 hover:scale-105"
-          style={{ background: modeColor, boxShadow: '4px 4px 0px #000' }}
+          className="p-3 border-3 border-[var(--color-border)] transition-all hover:-translate-y-1 hover:scale-105"
+          style={{ background: modeColor, boxShadow: '4px 4px 0px var(--color-border)' }}
         >
           <ArrowLeft size={24} className="text-white" />
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
-            <Coins size={20} className="text-black" />
-            <span className="text-black text-lg">{user.coins}</span>
+          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
+            <Coins size={20} className="text-[var(--color-text)]" />
+            <span className="text-[var(--color-text)] text-lg">{user.coins}</span>
           </div>
 
           {!isMultiplayer && (
-            <div className="px-4 py-2 border-3 border-black font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
+            <div className="px-4 py-2 border-3 border-[var(--color-border)] font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
               LEVEL {levelId}
             </div>
           )}
@@ -570,14 +570,14 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
       <div
         className="max-w-xl mx-auto p-5 md:p-8 mt-4"
         style={{
-          background: '#FFF8E7',
-          border: '4px solid #000',
-          boxShadow: '8px 8px 0px #000'
+          background: 'var(--color-bg)',
+          border: '4px solid var(--color-border)',
+          boxShadow: '8px 8px 0px var(--color-border)'
         }}
       >
         {/* Title Bar */}
         <div
-          className="flex items-center justify-between px-4 py-3 mb-6 border-4 border-black"
+          className="flex items-center justify-between px-4 py-3 mb-6 border-4 border-[var(--color-border)]"
           style={{ background: modeColor }}
         >
           <div className="flex items-center gap-3">
@@ -585,7 +585,7 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
             <span className="font-black text-white uppercase text-lg">MÜHLE</span>
           </div>
           <div
-            className={`px-4 py-2 font-black text-sm uppercase border-2 border-black ${currentPlayer === playerColor ? 'bg-[#06FFA5] text-black' : 'bg-white text-black'
+            className={`px-4 py-2 font-black text-sm uppercase border-2 border-[var(--color-border)] ${currentPlayer === playerColor ? 'bg-[#06FFA5] text-[var(--color-text)]' : 'bg-[var(--color-surface)] text-[var(--color-text)]'
               }`}
           >
             {currentPlayer === playerColor ? 'DEIN ZUG' : (isMultiplayer ? opponentName?.toUpperCase() : 'KI DENKT')}
@@ -595,13 +595,13 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
         {/* Status */}
         <div className="mb-6 flex flex-wrap gap-4 justify-center">
           {mustRemove && (
-            <div className="px-5 py-3 bg-[#FF006E] font-black uppercase animate-pulse text-white border-3 border-black" style={{ boxShadow: '4px 4px 0px #000' }}>
+            <div className="px-5 py-3 bg-[#FF006E] font-black uppercase animate-pulse text-white border-3 border-[var(--color-border)]" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
               STEIN ENTFERNEN!
             </div>
           )}
 
           {phase === 'placing' && (
-            <div className="px-5 py-3 bg-[#0096FF] font-black text-white border-3 border-black" style={{ boxShadow: '4px 4px 0px #000' }}>
+            <div className="px-5 py-3 bg-[#0096FF] font-black text-white border-3 border-[var(--color-border)]" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
               ⚪ {piecesToPlace.white} | ⚫ {piecesToPlace.black}
             </div>
           )}
@@ -611,12 +611,12 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
         <div
           className="relative w-72 h-72 md:w-80 md:h-80 mx-auto"
           style={{
-            background: '#FFF8E7',
+            background: 'var(--color-bg)',
             border: '6px solid transparent',
-            backgroundImage: 'linear-gradient(#FFF8E7, #FFF8E7), linear-gradient(90deg, #FF006E 0%, #FF7F00 16.66%, #FFBE0B 33.33%, #06FFA5 50%, #0096FF 66.66%, #8338EC 83.33%, #FF006E 100%)',
+            backgroundImage: 'linear-gradient(var(--color-bg), var(--color-bg)), linear-gradient(90deg, #FF006E 0%, #FF7F00 16.66%, #FFBE0B 33.33%, #06FFA5 50%, #0096FF 66.66%, #8338EC 83.33%, #FF006E 100%)',
             backgroundOrigin: 'border-box',
             backgroundClip: 'padding-box, border-box',
-            boxShadow: '8px 8px 0px #000'
+            boxShadow: '8px 8px 0px var(--color-border)'
           }}
         >
           {/* Draw lines */}
@@ -663,8 +663,8 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
               >
                 {piece && (
                   <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full border-3 shadow-lg ${piece === 'white'
-                      ? 'bg-gradient-to-br from-gray-100 to-gray-300 border-gray-400'
-                      : 'bg-gradient-to-br from-gray-700 to-gray-900 border-gray-950'
+                    ? 'bg-gradient-to-br from-gray-100 to-gray-300 border-gray-400'
+                    : 'bg-gradient-to-br from-gray-700 to-gray-900 border-gray-950'
                     }`} />
                 )}
               </div>
@@ -676,7 +676,7 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
         <div className="flex gap-4 mt-6 justify-center flex-wrap">
           <button
             onClick={getHint}
-            className="flex items-center gap-2 px-5 py-3 bg-[#06FFA5] hover:bg-emerald-400 text-black font-black uppercase rounded-lg transition-all hover:scale-105"
+            className="flex items-center gap-2 px-5 py-3 bg-[#06FFA5] hover:bg-emerald-400 text-[var(--color-text)] font-black uppercase rounded-lg transition-all hover:scale-105"
             style={{ boxShadow: '0 4px 12px rgba(6,255,165,0.4)' }}
           >
             <Lightbulb size={20} />
@@ -700,18 +700,18 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
       {showStartModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div
-            className="bg-[#FFF8E7] p-6 max-w-md w-full border-4 border-black"
+            className="bg-[var(--color-bg)] p-6 max-w-md w-full border-4 border-[var(--color-border)]"
             style={{ boxShadow: '10px 10px 0px #000' }}
           >
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 bg-[#D97706] border-3 border-black" style={{ boxShadow: '3px 3px 0px #000' }}>
+              <div className="p-3 bg-[#D97706] border-3 border-[var(--color-border)]" style={{ boxShadow: '3px 3px 0px #000' }}>
                 <Target size={28} className="text-white" />
               </div>
-              <h2 className="text-3xl font-black uppercase text-black">MÜHLE</h2>
+              <h2 className="text-3xl font-black uppercase text-[var(--color-text)]">MÜHLE</h2>
             </div>
 
-            <div className="bg-white p-4 border-3 border-black mb-4" style={{ boxShadow: '4px 4px 0px #000' }}>
-              <h3 className="font-black text-sm mb-2 text-black uppercase">Spielregeln</h3>
+            <div className="bg-[var(--color-surface)] p-4 border-3 border-[var(--color-border)] mb-4" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
+              <h3 className="font-black text-sm mb-2 text-[var(--color-text)] uppercase">Spielregeln</h3>
               <ul className="text-sm text-gray-700 space-y-1">
                 <li>• Jeder Spieler hat 9 Steine</li>
                 <li>• 3 Steine in einer Reihe = Mühle</li>
@@ -721,25 +721,25 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
             </div>
 
             <div className="flex gap-3 mb-4">
-              <div className="flex-1 bg-gray-100 p-3 border-3 border-black text-center">
+              <div className="flex-1 bg-gray-100 p-3 border-3 border-[var(--color-border)] text-center">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-300 border-3 border-gray-400 mx-auto mb-2"></div>
-                <span className="text-xs font-black text-black">DU (WEISS)</span>
+                <span className="text-xs font-black text-[var(--color-text)]">DU (WEISS)</span>
               </div>
-              <div className="flex-1 bg-gray-200 p-3 border-3 border-black text-center">
+              <div className="flex-1 bg-gray-200 p-3 border-3 border-[var(--color-border)] text-center">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 border-3 border-gray-900 mx-auto mb-2"></div>
-                <span className="text-xs font-black text-black">KI (SCHWARZ)</span>
+                <span className="text-xs font-black text-[var(--color-text)]">KI (SCHWARZ)</span>
               </div>
             </div>
 
             {!isMultiplayer && (
               <div className="text-center mb-4">
-                <span className="bg-[#8338EC] text-white px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '3px 3px 0px #000' }}>LEVEL {levelId}</span>
+                <span className="bg-[#8338EC] text-white px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>LEVEL {levelId}</span>
               </div>
             )}
 
             <button
               onClick={() => setShowStartModal(false)}
-              className="w-full py-4 bg-[#06FFA5] hover:bg-emerald-300 text-black font-black uppercase text-xl border-4 border-black transition-all flex items-center justify-center gap-3"
+              className="w-full py-4 bg-[#06FFA5] hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase text-xl border-4 border-[var(--color-border)] transition-all flex items-center justify-center gap-3"
               style={{ boxShadow: '6px 6px 0px #000' }}
             >
               <Play size={28} />
@@ -753,18 +753,18 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
       {gameStatus !== 'playing' && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div
-            className="bg-[#FFF8E7] p-6 max-w-md w-full border-4 border-black"
+            className="bg-[var(--color-bg)] p-6 max-w-md w-full border-4 border-[var(--color-border)]"
             style={{ boxShadow: '10px 10px 0px #000' }}
           >
             <div className="text-center">
-              <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 border-black ${gameStatus === 'won' ? 'bg-[#06FFA5]' : 'bg-red-400'}`}>
-                <Trophy size={40} className={gameStatus === 'won' ? 'text-black' : 'text-white'} />
+              <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 border-[var(--color-border)] ${gameStatus === 'won' ? 'bg-[#06FFA5]' : 'bg-red-400'}`}>
+                <Trophy size={40} className={gameStatus === 'won' ? 'text-[var(--color-text)]' : 'text-white'} />
               </div>
-              <h2 className="text-3xl font-black uppercase mb-2 text-black">
+              <h2 className="text-3xl font-black uppercase mb-2 text-[var(--color-text)]">
                 {gameStatus === 'won' ? 'GEWONNEN!' : 'VERLOREN!'}
               </h2>
-              <div className="bg-white p-3 border-3 border-black mb-4 inline-block" style={{ boxShadow: '3px 3px 0px #000' }}>
-                <p className="text-black font-bold">
+              <div className="bg-[var(--color-surface)] p-3 border-3 border-[var(--color-border)] mb-4 inline-block" style={{ boxShadow: '3px 3px 0px #000' }}>
+                <p className="text-[var(--color-text)] font-bold">
                   {gameStatus === 'won'
                     ? `+${50 + levelId * 5} XP, +${20 + levelId * 2} Münzen`
                     : '+10 XP, +5 Münzen'}
@@ -774,16 +774,16 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={onBack}
-                  className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-black uppercase border-3 border-black"
-                  style={{ boxShadow: '4px 4px 0px #000' }}
+                  className="px-6 py-3 bg-[var(--color-surface)] hover:bg-gray-100 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)]"
+                  style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
                 >
                   MENÜ
                 </button>
                 {!isMultiplayer && (
                   <button
                     onClick={restartGame}
-                    className="px-6 py-3 bg-[#06FFA5] hover:bg-emerald-300 text-black font-black uppercase border-3 border-black"
-                    style={{ boxShadow: '4px 4px 0px #000' }}
+                    className="px-6 py-3 bg-[#06FFA5] hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)]"
+                    style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
                   >
                     NOCHMAL
                   </button>
@@ -797,23 +797,23 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
       {/* Ad/Hint Modal */}
       {showHintModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 border-4 border-black max-w-sm w-full" style={{ boxShadow: '8px 8px 0px #000' }}>
-            <h3 className="text-xl font-black uppercase mb-4 text-black text-center">HINWEIS FREISCHALTEN</h3>
+          <div className="bg-[var(--color-surface)] p-6 border-4 border-[var(--color-border)] max-w-sm w-full" style={{ boxShadow: '8px 8px 0px var(--color-border)' }}>
+            <h3 className="text-xl font-black uppercase mb-4 text-[var(--color-text)] text-center">HINWEIS FREISCHALTEN</h3>
 
             {/* Ad with Cat Dance GIF */}
-            <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden border-4 border-black mb-4" style={{ boxShadow: '4px 4px 0px #000' }}>
+            <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden border-4 border-[var(--color-border)] mb-4" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
               <img src={catDanceGif} alt="Ad" className="w-full h-full object-cover opacity-50" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-5xl font-black font-mono text-white drop-shadow-[4px_4px_0px_#000]">
                   {adTimer > 0 ? `${adTimer}s` : 'FERTIG'}
                 </div>
               </div>
-              <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-black">AD</div>
+              <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-[var(--color-border)]">AD</div>
             </div>
 
             {hintCost > 0 && (
               <div className="text-center mb-3">
-                <span className="bg-[#FF006E] text-white px-3 py-1 text-xs font-black border-2 border-black">+{hintCost}s Wartezeit</span>
+                <span className="bg-[#FF006E] text-white px-3 py-1 text-xs font-black border-2 border-[var(--color-border)]">+{hintCost}s Wartezeit</span>
               </div>
             )}
 
@@ -826,8 +826,8 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
                     setAdTimer(0);
                   }
                 }}
-                className="w-full py-3 mb-2 font-black uppercase text-sm flex items-center justify-center gap-2 bg-[#FFBE0B] text-black border-3 border-black"
-                style={{ boxShadow: '4px 4px 0px #000', opacity: user.coins >= (30 + hintCost * 2) ? 1 : 0.5 }}
+                className="w-full py-3 mb-2 font-black uppercase text-sm flex items-center justify-center gap-2 bg-[#FFBE0B] text-[var(--color-text)] border-3 border-[var(--color-border)]"
+                style={{ boxShadow: '4px 4px 0px var(--color-border)', opacity: user.coins >= (30 + hintCost * 2) ? 1 : 0.5 }}
               >
                 <Gem size={16} /> SKIP ({30 + hintCost * 2} Coins)
               </button>
@@ -836,7 +836,7 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
             <button
               disabled={adTimer > 0}
               onClick={claimHint}
-              className="w-full py-3 font-black uppercase text-sm border-3 border-black"
+              className="w-full py-3 font-black uppercase text-sm border-3 border-[var(--color-border)]"
               style={{
                 background: adTimer > 0 ? '#E5E5E5' : '#06FFA5',
                 color: adTimer > 0 ? '#999' : '#000',
