@@ -1,5 +1,11 @@
 {
-    "version": "3.1.3",
-    "build": 313,
-    "date": "2025-11-29"
+    "minVersion": "2.4.0",
+    "version": "3.2.0",
+    "updateMessage": "LexiMix v3.2.0: Mau Mau & Rommé Redesign!",
+    "apk": {
+        "url": "http://leximix.de/LexiMix-v3.2.0-Release.apk",
+        "size": "46 MB",
+        "version": "3.2.0",
+        "forceUpdate": false
+    }
 }
