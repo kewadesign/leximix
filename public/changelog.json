@@ -1,5 +1,15 @@
 [
   {
+    "version": "3.2.0",
+    "date": "29.11.2025",
+    "changes": [
+      "🎴 Rommé: Neues Neo-Brutalism Design",
+      "🃏 Mau Mau: Komplett überarbeitetes UI",
+      "🐞 Mau Mau: Spiel lädt jetzt korrekt",
+      "🐞 Rommé: Scrolling-Problem behoben"
+    ]
+  },
+  {
     "version": "3.0.2",
     "date": "26.11.2025",
     "changes": [

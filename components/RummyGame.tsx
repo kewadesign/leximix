@@ -564,141 +564,131 @@ export const RummyGame: React.FC<RummyGameProps> = ({
   // Game mode color
   const modeColor = '#059669'; // Emerald for Rummy
 
-  // Render realistic playing card - BIGGER SIZE
+  // Render realistic playing card - NEO BRUTAL RETRO STYLE
   const renderCard = (card: Card, onClick?: () => void, isSelected?: boolean, isHint?: boolean) => {
     const isRed = card.suit === 'hearts' || card.suit === 'diamonds';
-    const color = isRed ? '#DC2626' : '#1F2937';
+    const color = isRed ? '#FF006E' : '#000'; // Neon Pink for red suits, Black for black suits
 
     return (
       <div
         key={card.id}
         onClick={onClick}
         className={`relative cursor-pointer transition-all duration-200 select-none
-          ${isSelected ? '-translate-y-4 scale-110' : 'hover:-translate-y-1 hover:scale-102'}
+          ${isSelected ? '-translate-y-6 rotate-2 scale-110 z-50' : 'hover:-translate-y-2 hover:rotate-1 hover:scale-105 z-10'}
         `}
         style={{
-          width: '70px',
-          height: '98px',
+          width: '75px',
+          height: '105px',
           background: isHint
-            ? 'linear-gradient(145deg, #D1FAE5 0%, #A7F3D0 100%)'
-            : 'linear-gradient(145deg, #FFFFFF 0%, #F8F8F8 100%)',
-          borderRadius: '10px',
-          border: isSelected ? '4px solid #FFBE0B' : isHint ? '4px solid #06FFA5' : '2px solid #CCC',
+            ? '#06FFA5' // Green for hints
+            : '#FFF',
+          borderRadius: '4px', // Less rounded
+          border: isSelected ? '4px solid #FFBE0B' : isHint ? '4px solid #06FFA5' : '3px solid #000',
           boxShadow: isSelected
-            ? '0 12px 28px rgba(255,190,11,0.5), 0 6px 12px rgba(0,0,0,0.2)'
+            ? '8px 8px 0px rgba(0,0,0,1)'
             : isHint
-              ? '0 12px 28px rgba(6,255,165,0.6), 0 6px 12px rgba(0,0,0,0.2), 0 0 20px rgba(6,255,165,0.4)'
-              : '0 2px 6px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1)',
-          animation: isHint ? 'pulse 1s ease-in-out infinite' : 'none'
+              ? '6px 6px 0px #06FFA5'
+              : '4px 4px 0px #000',
+          transform: isSelected ? 'skew(-2deg)' : 'none'
         }}
       >
-        {/* Hint glow overlay */}
+        {/* Hint glow overlay - Retro scanline */}
         {isHint && (
-          <div className="absolute inset-0 rounded-lg animate-ping" style={{ background: 'rgba(6,255,165,0.3)' }} />
+            <div className="absolute inset-0 bg-white opacity-20 animate-pulse" style={{backgroundImage: 'linear-gradient(transparent 50%, rgba(0,0,0,0.5) 50%)', backgroundSize: '100% 4px'}}></div>
         )}
 
         {/* Top left corner */}
-        <div className="absolute top-1.5 left-2 flex flex-col items-center leading-none">
-          <span style={{ color, fontSize: '16px', fontWeight: 800, fontFamily: 'Georgia, serif' }}>
+        <div className="absolute top-1 left-1.5 flex flex-col items-center leading-none">
+          <span style={{ color, fontSize: '18px', fontWeight: 900, fontFamily: 'monospace' }}>
             {VALUE_DISPLAY[card.value]}
           </span>
-          <span style={{ color, fontSize: '14px', marginTop: '-2px' }}>
+          <span style={{ color, fontSize: '16px', marginTop: '-2px' }}>
             {SUIT_SYMBOLS[card.suit]}
           </span>
         </div>
 
-        {/* Center symbol */}
+        {/* Center symbol - Big & Bold */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span style={{ color, fontSize: '32px' }}>
+          <span style={{ color, fontSize: '42px', filter: 'drop-shadow(2px 2px 0px rgba(0,0,0,0.2))' }}>
             {SUIT_SYMBOLS[card.suit]}
           </span>
         </div>
 
         {/* Bottom right corner (rotated) */}
-        <div className="absolute bottom-1.5 right-2 flex flex-col items-center leading-none rotate-180">
-          <span style={{ color, fontSize: '16px', fontWeight: 800, fontFamily: 'Georgia, serif' }}>
+        <div className="absolute bottom-1 right-1.5 flex flex-col items-center leading-none rotate-180">
+          <span style={{ color, fontSize: '18px', fontWeight: 900, fontFamily: 'monospace' }}>
             {VALUE_DISPLAY[card.value]}
           </span>
-          <span style={{ color, fontSize: '14px', marginTop: '-2px' }}>
+          <span style={{ color, fontSize: '16px', marginTop: '-2px' }}>
             {SUIT_SYMBOLS[card.suit]}
           </span>
         </div>
-
-        {/* Subtle inner border effect */}
-        <div
-          className="absolute inset-1 pointer-events-none"
-          style={{
-            border: '1px solid rgba(0,0,0,0.05)',
-            borderRadius: '8px'
-          }}
-        />
       </div>
     );
   };
 
-  // Render card back with elegant pattern - BIGGER SIZE
+  // Render card back with elegant pattern - NEO BRUTAL STYLE
   const renderCardBack = () => (
     <div
       style={{
-        width: '70px',
-        height: '98px',
-        background: 'linear-gradient(145deg, #1E40AF 0%, #1E3A8A 100%)',
-        borderRadius: '8px',
-        border: '2px solid #1E3A8A',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1)',
+        width: '75px',
+        height: '105px',
+        background: '#3B82F6', // Bright Blue
+        borderRadius: '4px',
+        border: '3px solid #000',
+        boxShadow: '4px 4px 0px #000',
         position: 'relative',
         overflow: 'hidden'
       }}
     >
-      {/* Diamond pattern */}
+      {/* Retro pattern */}
       <div
-        className="absolute inset-2 flex items-center justify-center"
+        className="absolute inset-0 flex items-center justify-center opacity-40"
         style={{
-          background: `repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 4px,
-            rgba(255,255,255,0.1) 4px,
-            rgba(255,255,255,0.1) 8px
-          )`,
-          borderRadius: '4px',
-          border: '2px solid rgba(255,255,255,0.2)'
+            backgroundImage: 'repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #3B82F6 25%, #3B82F6 75%, #000 75%, #000)',
+            backgroundPosition: '0 0, 10px 10px',
+            backgroundSize: '20px 20px'
         }}
       >
-        <div
-          className="w-8 h-8 flex items-center justify-center"
-          style={{
-            background: 'rgba(255,255,255,0.15)',
-            borderRadius: '50%',
-            border: '2px solid rgba(255,255,255,0.3)'
-          }}
-        >
-          <span className="text-white/60 text-lg font-black">L</span>
-        </div>
       </div>
+       <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-10 h-10 bg-black rotate-45 border-2 border-white flex items-center justify-center shadow-[4px_4px_0px_#FFF]">
+                 <span className="text-white -rotate-45 font-black text-xl">L</span>
+            </div>
+       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen p-4 geo-pattern">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#FFF8E7] pb-safe">
+      <div className="min-h-full p-4 pb-32 geo-pattern geo-shapes">
+       {/* Rainbow Top Bar */}
+      <div className="fixed top-0 left-0 right-0 flex h-3 w-full z-[60]">
+        <div className="flex-1" style={{ background: '#FF006E' }}></div>
+        <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+        <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+        <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+        <div className="flex-1" style={{ background: '#8338EC' }}></div>
+      </div>
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6 relative z-10 pt-6">
         <button
           onClick={onBack}
-          className="p-3 border-3 border-black transition-all hover:-translate-y-1 hover:scale-105"
-          style={{ background: modeColor, boxShadow: '4px 4px 0px #000' }}
+          className="w-12 h-12 flex items-center justify-center bg-[#FF006E] border-3 border-black transition-all hover:-translate-y-1 active:translate-y-0"
+          style={{ boxShadow: '4px 4px 0px #000' }}
         >
-          <ArrowLeft size={24} className="text-white" />
+          <ArrowLeft size={24} className="text-black" />
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
+          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '4px 4px 0px #000' }}>
             <Coins size={20} className="text-black" />
             <span className="text-black text-lg">{user.coins}</span>
           </div>
 
           {!isMultiplayer && (
-            <div className="px-4 py-2 border-3 border-black font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
+            <div className="px-4 py-2 border-3 border-black font-black text-white" style={{ background: '#8338EC', boxShadow: '4px 4px 0px #000' }}>
               LEVEL {levelId}
             </div>
           )}
@@ -707,55 +697,67 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
       {/* Message */}
       {message && (
-        <div className="text-center mb-4">
-          <span className="bg-[#059669] text-white px-5 py-3 border-3 border-black text-sm font-black" style={{ boxShadow: '4px 4px 0px #000' }}>{message}</span>
+        <div className="text-center mb-4 relative z-10">
+          <span className="inline-block bg-[#06FFA5] text-black px-6 py-3 border-3 border-black text-sm font-black uppercase tracking-wider transform -rotate-1" style={{ boxShadow: '6px 6px 0px #000' }}>
+            {message}
+          </span>
         </div>
       )}
 
       {/* Game Table - Neo-Brutalist */}
       <div
-        className="max-w-4xl mx-auto p-5 md:p-8 mt-4"
+        className="max-w-4xl mx-auto p-5 md:p-8 mt-4 relative"
         style={{
           background: '#FFF8E7',
-          border: '6px solid transparent',
-          backgroundImage: 'linear-gradient(#FFF8E7, #FFF8E7), linear-gradient(90deg, #FF006E 0%, #FF7F00 16.66%, #FFBE0B 33.33%, #06FFA5 50%, #0096FF 66.66%, #8338EC 83.33%, #FF006E 100%)',
-          backgroundOrigin: 'border-box',
-          backgroundClip: 'padding-box, border-box',
+          border: '4px solid #000',
           boxShadow: '8px 8px 0px #000'
         }}
       >
+        {/* Decorative corner accents */}
+        <div className="absolute top-0 left-0 w-8 h-8 border-r-4 border-b-4 border-black bg-[#FF006E]" style={{boxShadow: '4px 4px 0px #000'}}></div>
+        <div className="absolute top-0 right-0 w-8 h-8 border-l-4 border-b-4 border-black bg-[#06FFA5]" style={{boxShadow: '-4px 4px 0px #000'}}></div>
+        <div className="absolute bottom-0 left-0 w-8 h-8 border-r-4 border-t-4 border-black bg-[#FFBE0B]" style={{boxShadow: '4px -4px 0px #000'}}></div>
+        <div className="absolute bottom-0 right-0 w-8 h-8 border-l-4 border-t-4 border-black bg-[#8338EC]" style={{boxShadow: '-4px -4px 0px #000'}}></div>
+
         {/* Title Bar */}
         <div
           className="flex items-center justify-between px-4 py-3 mb-6 border-4 border-black"
-          style={{ background: modeColor }}
+          style={{ background: modeColor, boxShadow: '4px 4px 0px #000' }}
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🃏</span>
-            <span className="font-black text-white uppercase text-lg">ROMMÉ</span>
+            <span className="text-2xl drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">🃏</span>
+            <span className="font-black text-white uppercase text-lg tracking-wider drop-shadow-[2px_2px_0px_#000]">ROMMÉ</span>
           </div>
           <div
-            className={`px-4 py-2 font-black text-sm uppercase border-2 border-black ${currentPlayer === 'player' ? 'bg-[#06FFA5] text-black' : 'bg-white text-black'
+            className={`px-4 py-2 font-black text-sm uppercase border-3 border-black ${currentPlayer === 'player' ? 'bg-[#06FFA5] text-black' : 'bg-white text-black'
               }`}
+            style={{boxShadow: '2px 2px 0px #000'}}
           >
             {currentPlayer === 'player' ? 'DEIN ZUG' : (isMultiplayer ? opponentName?.toUpperCase() : 'KI DENKT')}
           </div>
         </div>
+
         {/* AI Area */}
-        <div className="mb-6 p-4 border-3 border-black" style={{ background: '#E5E5E5', boxShadow: '4px 4px 0px #000' }}>
-          <div className="flex items-center justify-between mb-4">
-            <span className="font-black uppercase text-sm text-black">{isMultiplayer ? opponentName : '🤖 KI'} ({aiHand.length} Karten)</span>
-            {currentPlayer === 'ai' && <span className="text-[#FF006E] animate-pulse font-black">💭 Denkt...</span>}
+        <div className="mb-6 p-4 border-3 border-black relative" style={{ background: '#E5E5E5', boxShadow: '6px 6px 0px #000' }}>
+           {/* Scanline pattern overlay */}
+           <div className="absolute inset-0 opacity-10 pointer-events-none" style={{backgroundImage: 'linear-gradient(transparent 50%, #000 50%)', backgroundSize: '100% 4px'}}></div>
+
+          <div className="flex items-center justify-between mb-4 relative z-10">
+            <div className="px-3 py-1 bg-black text-white font-black uppercase text-sm transform -rotate-1 inline-block border-2 border-white">
+                {isMultiplayer ? opponentName : '🤖 KI'} ({aiHand.length} Karten)
+            </div>
+            {currentPlayer === 'ai' && <span className="px-3 py-1 bg-[#FF006E] text-white border-2 border-black font-black animate-pulse">💭 Denkt...</span>}
           </div>
-          <div className="flex gap-1 flex-wrap justify-center">
+          <div className="flex gap-1 flex-wrap justify-center relative z-10">
             {aiHand.map((_, i) => (
-              <div key={i} style={{ marginLeft: i > 0 ? '-25px' : '0' }}>{renderCardBack()}</div>
+              <div key={i} style={{ marginLeft: i > 0 ? '-40px' : '0' }}>{renderCardBack()}</div>
             ))}
           </div>
           {aiMelds.length > 0 && (
-            <div className="mt-3 flex gap-3 flex-wrap justify-center">
+            <div className="mt-4 flex gap-4 flex-wrap justify-center relative z-10 p-2 border-2 border-black border-dashed bg-white/50">
               {aiMelds.map((meld, mi) => (
-                <div key={mi} className="flex -space-x-4 p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.1)' }}>
-                  {meld.cards.map((c, ci) => <div key={c.id} style={{ marginLeft: ci > 0 ? '-20px' : '0', transform: 'scale(0.75)' }}>{renderCard(c)}</div>)}
+                <div key={mi} className="flex -space-x-8 p-2">
+                  {meld.cards.map((c, ci) => <div key={c.id} style={{ marginLeft: ci > 0 ? '-30px' : '0', transform: 'scale(0.8)' }}>{renderCard(c)}</div>)}
                 </div>
               ))}
             </div>
@@ -763,46 +765,48 @@ export const RummyGame: React.FC<RummyGameProps> = ({
         </div>
 
         {/* Center - Deck and Discard */}
-        <div className="flex justify-center gap-12 items-center py-6">
+        <div className="flex justify-center gap-16 items-center py-8 bg-[#FFBE0B] border-4 border-black mb-6" style={{boxShadow: 'inest 0 0 20px rgba(0,0,0,0.1)'}}>
           {/* Deck Stack */}
-          <div className="text-center relative">
-            <div className="relative">
+          <div className="text-center relative group">
+            <div className="relative transition-transform duration-200 group-hover:-translate-y-2">
               {/* Stack effect */}
-              <div className="absolute top-1 left-1 opacity-60">{renderCardBack()}</div>
-              <div className="absolute top-0.5 left-0.5 opacity-80">{renderCardBack()}</div>
+              <div className="absolute top-2 left-2">{renderCardBack()}</div>
+              <div className="absolute top-1 left-1">{renderCardBack()}</div>
               <div
                 onClick={drawFromDeck}
-                className={`relative cursor-pointer transition-all duration-200 ${currentPlayer === 'player' && phase === 'draw' ? 'hover:scale-105 hover:-translate-y-1' : 'opacity-50'}`}
+                className={`relative cursor-pointer transition-all duration-200 ${currentPlayer === 'player' && phase === 'draw' ? 'hover:scale-105 active:scale-95' : 'opacity-80'}`}
               >
                 {renderCardBack()}
               </div>
             </div>
-            <span className="text-white/80 text-xs mt-2 block font-bold">Stapel ({deck.length})</span>
+            <span className="inline-block mt-4 px-2 py-1 bg-black text-white text-xs font-black uppercase border-2 border-white -rotate-2">Stapel ({deck.length})</span>
           </div>
 
           {/* Discard Pile */}
-          <div className="text-center">
+          <div className="text-center group">
             <div
               onClick={drawFromDiscard}
-              className={`cursor-pointer transition-all duration-200 ${currentPlayer === 'player' && phase === 'draw' && discardPile.length > 0 ? 'hover:scale-105 hover:-translate-y-1' : ''}`}
+              className={`cursor-pointer transition-transform duration-200 group-hover:-translate-y-2 ${currentPlayer === 'player' && phase === 'draw' && discardPile.length > 0 ? 'hover:scale-105 active:scale-95' : ''}`}
             >
               {discardPile.length > 0
                 ? renderCard(discardPile[discardPile.length - 1])
-                : <div style={{ width: '60px', height: '84px', border: '2px dashed rgba(255,255,255,0.3)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '10px' }}>Leer</div>
+                : <div style={{ width: '75px', height: '105px', border: '3px dashed #000', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontSize: '12px', fontWeight: 'bold', background: 'rgba(255,255,255,0.5)' }}>LEER</div>
               }
             </div>
-            <span className="text-white/80 text-xs mt-2 block font-bold">Ablage</span>
+            <span className="inline-block mt-4 px-2 py-1 bg-black text-white text-xs font-black uppercase border-2 border-white rotate-2">Ablage</span>
           </div>
         </div>
 
         {/* Player Melds */}
         {playerMelds.length > 0 && (
-          <div className="mb-4 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.1)' }}>
-            <span className="text-xs font-black uppercase mb-3 block text-white/90">✨ Deine Kombinationen:</span>
-            <div className="flex gap-4 flex-wrap justify-center">
+          <div className="mb-4 p-4 border-3 border-black bg-[#8338EC] relative" style={{boxShadow: '6px 6px 0px #000'}}>
+             <div className="absolute -top-3 left-4 px-3 py-1 bg-[#06FFA5] border-2 border-black text-xs font-black uppercase text-black transform -rotate-1">
+                ✨ Deine Kombinationen
+             </div>
+            <div className="flex gap-6 flex-wrap justify-center mt-2">
               {playerMelds.map((meld, mi) => (
-                <div key={mi} className="flex -space-x-3 p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.1)' }}>
-                  {meld.cards.map((c, ci) => <div key={c.id} style={{ marginLeft: ci > 0 ? '-15px' : '0' }}>{renderCard(c)}</div>)}
+                <div key={mi} className="flex -space-x-8 p-2 bg-black/20 rounded border-2 border-black">
+                  {meld.cards.map((c, ci) => <div key={c.id} style={{ marginLeft: ci > 0 ? '-35px' : '0' }}>{renderCard(c)}</div>)}
                 </div>
               ))}
             </div>
@@ -810,35 +814,41 @@ export const RummyGame: React.FC<RummyGameProps> = ({
         )}
 
         {/* Player Hand */}
-        <div className="p-4 rounded-xl" style={{ background: 'rgba(0,0,0,0.25)' }}>
-          <div className="flex items-center justify-between mb-4">
-            <span className="font-black uppercase text-sm text-white/90">🃏 Deine Karten ({playerHand.length})</span>
+        <div className="p-6 border-4 border-black bg-[#1F2937] relative" style={{ boxShadow: '8px 8px 0px #000' }}>
+           {/* Striped Background */}
+           <div className="absolute inset-0 opacity-10 pointer-events-none" style={{backgroundImage: 'repeating-linear-gradient(-45deg, #000, #000 10px, transparent 10px, transparent 20px)'}}></div>
+
+          <div className="flex items-center justify-between mb-6 relative z-10">
+            <span className="px-4 py-2 bg-white border-3 border-black font-black uppercase text-sm text-black shadow-[4px_4px_0px_#000]">
+                🃏 Deine Karten ({playerHand.length})
+            </span>
             {currentPlayer === 'player' && (
-              <span className={`px-4 py-2 text-xs font-black rounded-lg ${phase === 'draw' ? 'bg-blue-500 text-white' : 'bg-yellow-400 text-black'}`}
-                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+              <span className={`px-4 py-2 text-xs font-black border-3 border-black transform rotate-1 ${phase === 'draw' ? 'bg-[#0096FF] text-white' : 'bg-[#FFBE0B] text-black'}`}
+                style={{ boxShadow: '4px 4px 0px #000' }}>
                 {phase === 'draw' ? '👆 KARTE ZIEHEN' : '✋ KARTE ABLEGEN'}
               </span>
             )}
           </div>
 
           {/* Fan-style card display */}
-          <div className="flex justify-center items-end py-4" style={{ minHeight: '120px' }}>
+          <div className="flex justify-center items-end py-6 relative z-10" style={{ minHeight: '140px' }}>
             {playerHand.map((card, index) => {
               const totalCards = playerHand.length;
               const middleIndex = (totalCards - 1) / 2;
               const offset = index - middleIndex;
-              const rotation = offset * 3; // 3 degrees per card
-              const translateY = Math.abs(offset) * 3; // slight curve
+              const rotation = offset * 4; // 4 degrees per card (more spread)
+              const translateY = Math.abs(offset) * 4; // slight curve
 
               return (
                 <div
                   key={card.id}
                   onClick={() => phase === 'play' && toggleCardSelection(card.id)}
                   style={{
-                    marginLeft: index > 0 ? '-20px' : '0',
+                    marginLeft: index > 0 ? '-35px' : '0', // Less overlap for visibility
                     transform: `rotate(${rotation}deg) translateY(${translateY}px)`,
                     transformOrigin: 'bottom center',
-                    zIndex: selectedCards.has(card.id) ? 100 : index
+                    zIndex: selectedCards.has(card.id) ? 100 : index,
+                    cursor: phase === 'play' ? 'pointer' : 'default'
                   }}
                 >
                   {renderCard(card, undefined, selectedCards.has(card.id), hintCards.has(card.id))}
@@ -849,14 +859,14 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
           {/* Actions */}
           {phase === 'play' && currentPlayer === 'player' && (
-            <div className="flex gap-3 mt-4 justify-center flex-wrap">
+            <div className="flex gap-4 mt-6 justify-center flex-wrap relative z-10">
               {selectedCards.size >= 3 && (
                 <button
                   onClick={meldSelectedCards}
-                  className="flex items-center gap-2 px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-black uppercase rounded-lg transition-all hover:scale-105"
-                  style={{ boxShadow: '0 4px 12px rgba(16,185,129,0.4)' }}
+                  className="flex items-center gap-2 px-6 py-3 bg-[#06FFA5] hover:bg-[#00D68F] text-black border-3 border-black font-black uppercase transition-all hover:-translate-y-1 active:translate-y-0"
+                  style={{ boxShadow: '4px 4px 0px #000' }}
                 >
-                  <Check size={18} />
+                  <Check size={20} strokeWidth={3} />
                   KOMBINATION LEGEN
                 </button>
               )}
@@ -864,20 +874,20 @@ export const RummyGame: React.FC<RummyGameProps> = ({
               {selectedCards.size === 1 && (
                 <button
                   onClick={() => discardCard(Array.from(selectedCards)[0])}
-                  className="flex items-center gap-2 px-5 py-3 bg-red-500 hover:bg-red-400 text-white font-black uppercase rounded-lg transition-all hover:scale-105"
-                  style={{ boxShadow: '0 4px 12px rgba(239,68,68,0.4)' }}
+                  className="flex items-center gap-2 px-6 py-3 bg-[#FF006E] hover:bg-[#D60054] text-white border-3 border-black font-black uppercase transition-all hover:-translate-y-1 active:translate-y-0"
+                  style={{ boxShadow: '4px 4px 0px #000' }}
                 >
-                  <X size={18} />
+                  <X size={20} strokeWidth={3} />
                   ABWERFEN
                 </button>
               )}
 
               <button
                 onClick={getHint}
-                className="flex items-center gap-2 px-5 py-3 bg-amber-400 hover:bg-amber-300 text-black font-black uppercase rounded-lg transition-all hover:scale-105"
-                style={{ boxShadow: '0 4px 12px rgba(251,191,36,0.4)' }}
+                className="flex items-center gap-2 px-6 py-3 bg-[#FFBE0B] hover:bg-[#E6AB00] text-black border-3 border-black font-black uppercase transition-all hover:-translate-y-1 active:translate-y-0"
+                style={{ boxShadow: '4px 4px 0px #000' }}
               >
-                <Lightbulb size={18} />
+                <Lightbulb size={20} strokeWidth={3} />
                 HINWEIS
               </button>
             </div>
@@ -887,46 +897,50 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
       {/* Start Modal */}
       {showStartModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div
-            className="bg-[#FFF8E7] p-6 max-w-md w-full border-4 border-black"
-            style={{ boxShadow: '10px 10px 0px #000' }}
+            className="bg-[#FFF8E7] p-8 max-w-md w-full border-6 border-black relative"
+            style={{ boxShadow: '12px 12px 0px #FF006E', transform: 'rotate(-1deg)' }}
           >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 bg-[#059669] border-3 border-black" style={{ boxShadow: '3px 3px 0px #000' }}>
-                <Sparkles size={28} className="text-white" />
-              </div>
-              <h2 className="text-3xl font-black uppercase text-black">ROMMÉ</h2>
+            <div className="absolute -top-6 -right-6 w-16 h-16 bg-[#FFBE0B] border-4 border-black flex items-center justify-center rotate-12" style={{boxShadow: '4px 4px 0px #000'}}>
+                <span className="text-3xl">🃏</span>
             </div>
 
-            <div className="bg-white p-4 border-3 border-black mb-4" style={{ boxShadow: '4px 4px 0px #000' }}>
-              <h3 className="font-black text-sm mb-2 text-black uppercase">Spielregeln</h3>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• Ziehe vom Stapel oder Ablage</li>
-                <li>• Bilde 3+ Karten Kombinationen</li>
-                <li>• Wirf eine Karte ab</li>
-                <li>• Ziel: Alle Karten ablegen!</li>
+            <div className="flex flex-col items-center gap-4 mb-6">
+              <div className="p-4 bg-[#06FFA5] border-4 border-black" style={{ boxShadow: '6px 6px 0px #000', transform: 'rotate(2deg)' }}>
+                <Sparkles size={32} className="text-black" />
+              </div>
+              <h2 className="text-4xl font-black uppercase text-black tracking-widest" style={{textShadow: '2px 2px 0px #FFF, 4px 4px 0px #000'}}>ROMMÉ</h2>
+            </div>
+
+            <div className="bg-white p-5 border-4 border-black mb-6 transform rotate-1" style={{ boxShadow: '6px 6px 0px #000' }}>
+              <h3 className="font-black text-lg mb-3 text-black uppercase bg-[#FF006E] text-white inline-block px-2 border-2 border-black">Spielregeln</h3>
+              <ul className="text-sm font-bold text-black space-y-2">
+                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Ziehe vom Stapel oder Ablage</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Bilde 3+ Karten Kombinationen</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Wirf eine Karte ab</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Ziel: Alle Karten ablegen!</li>
               </ul>
             </div>
 
-            <div className="flex gap-3 mb-4 justify-center bg-white p-3 border-3 border-black">
+            <div className="flex gap-4 mb-6 justify-center bg-black p-3 border-4 border-white transform -rotate-1 shadow-[4px_4px_0px_#000]">
               {(['hearts', 'diamonds', 'clubs', 'spades'] as Suit[]).map(suit => (
-                <span key={suit} className={`text-3xl ${SUIT_COLORS[suit]}`}>{SUIT_SYMBOLS[suit]}</span>
+                <span key={suit} className={`text-3xl ${SUIT_COLORS[suit] === 'text-red-500' ? 'text-[#FF006E]' : 'text-[#06FFA5]'}`}>{SUIT_SYMBOLS[suit]}</span>
               ))}
             </div>
 
             {!isMultiplayer && (
-              <div className="text-center mb-4">
-                <span className="bg-[#8338EC] text-white px-4 py-2 border-3 border-black font-black" style={{ boxShadow: '3px 3px 0px #000' }}>LEVEL {levelId}</span>
+              <div className="text-center mb-6">
+                <span className="bg-[#8338EC] text-white px-6 py-2 border-3 border-black font-black text-xl uppercase transform skew-x-12 inline-block" style={{ boxShadow: '4px 4px 0px #000' }}>LEVEL {levelId}</span>
               </div>
             )}
 
             <button
               onClick={() => setShowStartModal(false)}
-              className="w-full py-4 bg-[#06FFA5] hover:bg-emerald-300 text-black font-black uppercase text-xl border-4 border-black transition-all flex items-center justify-center gap-3"
-              style={{ boxShadow: '6px 6px 0px #000' }}
+              className="w-full py-5 bg-[#06FFA5] hover:bg-[#00D68F] text-black font-black uppercase text-2xl border-4 border-black transition-all flex items-center justify-center gap-3 transform hover:-translate-y-1 active:translate-y-0"
+              style={{ boxShadow: '8px 8px 0px #000' }}
             >
-              <Play size={28} />
+              <Play size={32} strokeWidth={3} />
               SPIEL STARTEN
             </button>
           </div>
@@ -935,31 +949,31 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
       {/* Game Over Modal */}
       {gameStatus !== 'playing' && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div
-            className="bg-[#FFF8E7] p-6 max-w-md w-full border-4 border-black"
-            style={{ boxShadow: '10px 10px 0px #000' }}
+            className="bg-[#FFF8E7] p-8 max-w-md w-full border-6 border-black relative"
+            style={{ boxShadow: '12px 12px 0px #000', transform: 'rotate(1deg)' }}
           >
             <div className="text-center">
-              <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 border-black ${gameStatus === 'won' ? 'bg-[#06FFA5]' : 'bg-red-400'}`}>
-                <Trophy size={40} className={gameStatus === 'won' ? 'text-black' : 'text-white'} />
+              <div className={`w-24 h-24 mx-auto mb-6 flex items-center justify-center border-4 border-black ${gameStatus === 'won' ? 'bg-[#FFBE0B]' : 'bg-[#FF006E]'}`} style={{boxShadow: '6px 6px 0px #000', transform: 'rotate(-3deg)'}}>
+                <Trophy size={48} className="text-black" strokeWidth={2.5} />
               </div>
-              <h2 className="text-3xl font-black uppercase mb-2 text-black">
+              <h2 className="text-5xl font-black uppercase mb-2 text-black tracking-wider" style={{textShadow: '3px 3px 0px #FFF'}}>
                 {gameStatus === 'won' ? 'GEWONNEN!' : 'VERLOREN!'}
               </h2>
-              <div className="bg-white p-3 border-3 border-black mb-4 inline-block" style={{ boxShadow: '3px 3px 0px #000' }}>
-                <p className="text-black font-bold">
+              <div className="bg-white p-4 border-4 border-black mb-8 inline-block transform rotate-2" style={{ boxShadow: '6px 6px 0px #000' }}>
+                <p className="text-black font-black text-xl">
                   {gameStatus === 'won'
-                    ? `+${50 + levelId * 5} XP, +${20 + levelId * 2} Münzen`
-                    : '+10 XP, +5 Münzen'}
+                    ? `+${50 + levelId * 5} XP • +${20 + levelId * 2} Münzen`
+                    : '+10 XP • +5 Münzen'}
                 </p>
               </div>
 
-              <div className="flex gap-3 justify-center">
+              <div className="flex gap-4 justify-center flex-col sm:flex-row">
                 <button
                   onClick={onBack}
-                  className="px-6 py-3 bg-white hover:bg-gray-100 text-black font-black uppercase border-3 border-black"
-                  style={{ boxShadow: '4px 4px 0px #000' }}
+                  className="px-6 py-4 bg-white hover:bg-gray-100 text-black font-black uppercase border-4 border-black transition-transform hover:-translate-y-1"
+                  style={{ boxShadow: '6px 6px 0px #000' }}
                 >
                   MENÜ
                 </button>
@@ -970,8 +984,8 @@ export const RummyGame: React.FC<RummyGameProps> = ({
                       setShowStartModal(false);
                       startNewGame();
                     }}
-                    className="px-6 py-3 bg-[#06FFA5] hover:bg-emerald-300 text-black font-black uppercase border-3 border-black"
-                    style={{ boxShadow: '4px 4px 0px #000' }}
+                    className="px-8 py-4 bg-[#06FFA5] hover:bg-[#00D68F] text-black font-black uppercase border-4 border-black transition-transform hover:-translate-y-1"
+                    style={{ boxShadow: '6px 6px 0px #000' }}
                   >
                     NOCHMAL
                   </button>
@@ -984,24 +998,24 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
       {/* Ad/Hint Modal */}
       {showHintModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 border-4 border-black max-w-sm w-full" style={{ boxShadow: '8px 8px 0px #000' }}>
-            <h3 className="text-xl font-black uppercase mb-4 text-black text-center">HINWEIS FREISCHALTEN</h3>
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white p-6 border-6 border-black max-w-sm w-full relative" style={{ boxShadow: '12px 12px 0px #8338EC', transform: 'rotate(-2deg)' }}>
+            <h3 className="text-2xl font-black uppercase mb-4 text-black text-center bg-[#FFBE0B] border-3 border-black py-2 shadow-[4px_4px_0px_#000]">HINWEIS FREISCHALTEN</h3>
 
             {/* Ad with Cat Dance GIF */}
-            <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden border-4 border-black mb-4" style={{ boxShadow: '4px 4px 0px #000' }}>
-              <img src={catDanceGif} alt="Ad" className="w-full h-full object-cover opacity-50" />
+            <div className="w-full h-48 bg-black flex items-center justify-center relative overflow-hidden border-4 border-black mb-6" style={{ boxShadow: '6px 6px 0px #000' }}>
+              <img src={catDanceGif} alt="Ad" className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-5xl font-black font-mono text-white drop-shadow-[4px_4px_0px_#000]">
-                  {adTimer > 0 ? `${adTimer}s` : 'FERTIG'}
+                <div className="text-6xl font-black font-mono text-white drop-shadow-[4px_4px_0px_#FF006E]">
+                  {adTimer > 0 ? `${adTimer}` : 'GO!'}
                 </div>
               </div>
-              <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-black">AD</div>
+              <div className="absolute top-2 right-2 bg-[#FF006E] px-3 py-1 text-xs font-black text-white border-2 border-black rotate-3">AD</div>
             </div>
 
             {hintCost > 0 && (
-              <div className="text-center mb-3">
-                <span className="bg-[#FF006E] text-white px-3 py-1 text-xs font-black border-2 border-black">+{hintCost}s Wartezeit</span>
+              <div className="text-center mb-4">
+                <span className="bg-[#FF006E] text-white px-4 py-2 text-sm font-black border-3 border-black uppercase transform rotate-1 inline-block">+{hintCost}s Wartezeit</span>
               </div>
             )}
 
@@ -1014,21 +1028,22 @@ export const RummyGame: React.FC<RummyGameProps> = ({
                     setAdTimer(0);
                   }
                 }}
-                className="w-full py-3 mb-2 font-black uppercase text-sm flex items-center justify-center gap-2 bg-[#FFBE0B] text-black border-3 border-black"
-                style={{ boxShadow: '4px 4px 0px #000', opacity: user.coins >= (30 + hintCost * 2) ? 1 : 0.5 }}
+                className="w-full py-4 mb-3 font-black uppercase text-sm flex items-center justify-center gap-2 bg-[#FFBE0B] text-black border-4 border-black hover:bg-[#FFD60A] transition-transform active:translate-y-1"
+                style={{ boxShadow: '6px 6px 0px #000', opacity: user.coins >= (30 + hintCost * 2) ? 1 : 0.5 }}
               >
-                <Gem size={16} /> SKIP ({30 + hintCost * 2} Coins)
+                <Gem size={20} strokeWidth={2.5} /> SKIP ({30 + hintCost * 2} Coins)
               </button>
             )}
 
             <button
               disabled={adTimer > 0}
               onClick={claimHint}
-              className="w-full py-3 font-black uppercase text-sm border-3 border-black"
+              className="w-full py-4 font-black uppercase text-lg border-4 border-black transition-all"
               style={{
                 background: adTimer > 0 ? '#E5E5E5' : '#06FFA5',
                 color: adTimer > 0 ? '#999' : '#000',
-                boxShadow: adTimer > 0 ? 'none' : '4px 4px 0px #000',
+                boxShadow: adTimer > 0 ? 'none' : '6px 6px 0px #000',
+                transform: adTimer > 0 ? 'none' : 'translateY(-2px)',
                 cursor: adTimer > 0 ? 'not-allowed' : 'pointer'
               }}
             >
@@ -1037,6 +1052,7 @@ export const RummyGame: React.FC<RummyGameProps> = ({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

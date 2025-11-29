@@ -12,6 +12,21 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '3.2.0',
+        date: '2025-11-29',
+        changes: {
+            added: [
+                '🎴 Rommé: Neues Neo-Brutalism Design',
+                '🃏 Mau Mau: Komplett überarbeitetes UI im Neo-Brutalism Stil'
+            ],
+            fixed: [
+                '🐞 Mau Mau: Spiel lädt jetzt korrekt (fehlende Funktionen hinzugefügt)',
+                '🐞 Rommé: Scrolling-Problem behoben',
+                '🐞 Stabilere Spielinitialisierung'
+            ]
+        }
+    },
+    {
         version: '3.1.1',
         date: '2025-11-26',
         changes: {

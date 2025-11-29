@@ -122,7 +122,9 @@ export function drawCards(deck: Card[], count: number): { drawn: Card[]; remaini
 }
 
 // Check if a card can be played
-export function canPlayCard(card: Card, currentCard: Card, wishedSuit?: CardSuit): boolean {
+export function canPlayCard(card: Card, currentCard: Card | undefined, wishedSuit?: CardSuit): boolean {
+    if (!currentCard && !wishedSuit) return false;
+
     // Jack (Bube) can always be played
     if (card.rank === CardRank.JACK) {
         return true;
@@ -132,6 +134,8 @@ export function canPlayCard(card: Card, currentCard: Card, wishedSuit?: CardSuit
     if (wishedSuit !== undefined) {
         return card.suit === wishedSuit;
     }
+
+    if (!currentCard) return false;
 
     // Otherwise, must match suit or rank
     return card.suit === currentCard.suit || card.rank === currentCard.rank;

@@ -1297,9 +1297,9 @@ export default function App() {
       setView('RUMMY');
       return;
     } else {
-      // This block is now handled by the useEffect below
-      setTutorialMode(config.mode);
-      setView('TUTORIAL');
+      // Go directly to game
+      setTutorialMode(null);
+      setView('GAME');
     }
   };
 
@@ -2995,6 +2995,7 @@ export default function App() {
   const renderGame = () => {
     // Letter Mau Mau - Now uses Skat Cards
     if (gameConfig?.mode === GameMode.LETTER_MAU_MAU) {
+      // The gameConfig must have levelId, otherwise use defaults
       return (
         <SkatMauMauGame
           onBack={() => setView('HOME')}
@@ -3008,6 +3009,26 @@ export default function App() {
             }));
             audio.playWin();
             setView('HOME');
+          }}
+        />
+      );
+    }
+
+    // Skat Mau Mau (Classic)
+    if (gameConfig?.mode === GameMode.SKAT_MAU_MAU) {
+      return (
+        <SkatMauMauGame
+          onBack={() => setView('HOME')}
+          friendCode={user.friendCode}
+          onGameEnd={(coins, xp) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+            setView('HOME');
+            audio.playWin();
           }}
         />
       );

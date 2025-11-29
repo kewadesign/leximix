@@ -231,33 +231,66 @@ export default function SkatMauMauGame({
 
   // Initialize Game
   const startNewGame = useCallback(() => {
+    console.log('Starting New Game...', { isMultiplayer });
     if (isMultiplayer) return; // Multiplayer game is initialized by lobby
 
-    const newDeck = generateDeck();
-    const { drawn: pHand, remaining: d1 } = drawCards(newDeck, 5);
-    const { drawn: aHand, remaining: d2 } = drawCards(d1, 5);
-    const { drawn: startCards, remaining: finalDeck } = drawCards(d2, 1);
+    try {
+      let newDeck = generateDeck();
+      // Fallback if generateDeck fails or returns empty
+      if (!newDeck || newDeck.length === 0) {
+        console.warn('generateDeck returned empty, using fallback deck');
+        // Simple manual deck generation
+        newDeck = [];
+        const suits = [0, 1, 2, 3]; // Spades, Hearts, Diamonds, Clubs
+        const ranks = [7, 8, 9, 10, 11, 12, 13, 14];
+        for (const s of suits) {
+            for (const r of ranks) {
+                newDeck.push({
+                    id: `${s}_${r}`,
+                    suit: s as any,
+                    rank: r as any,
+                    points: r >= 11 ? 10 : r,
+                    isAction: r === 7 || r === 8 || r === 11
+                });
+            }
+        }
+        // Shuffle manually
+        for (let i = newDeck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+        }
+      }
 
-    setPlayerHand(pHand);
-    setAiHand(aHand);
-    setDiscardPile(startCards);
-    setDeck(finalDeck);
-    setCurrentTurn('player');
-    setGameStatus('playing');
-    setWishedSuit(null);
-    setDrawCount(0);
-    setShowWishModal(false);
-    setPendingCard(null);
+      console.log('Deck size:', newDeck.length);
+      const { drawn: pHand, remaining: d1 } = drawCards(newDeck, 5);
+      const { drawn: aHand, remaining: d2 } = drawCards(d1, 5);
+      const { drawn: startCards, remaining: finalDeck } = drawCards(d2, 1);
 
-    const firstCard = startCards[0];
-    if (firstCard.rank === CardRank.SEVEN) {
-      setDrawCount(2);
+      setPlayerHand(pHand);
+      setAiHand(aHand);
+      setDiscardPile(startCards);
+      setDeck(finalDeck);
+      setCurrentTurn('player');
+      setGameStatus('playing');
+      setWishedSuit(null);
+      setDrawCount(0);
+      setShowWishModal(false);
+      setPendingCard(null);
+
+      const firstCard = startCards[0];
+      if (firstCard && firstCard.rank === CardRank.SEVEN) {
+        setDrawCount(2);
+      }
+    } catch (e) {
+      console.error("Error starting game:", e);
     }
   }, [isMultiplayer]);
 
   useEffect(() => {
-    startNewGame();
-  }, [startNewGame]);
+    if (!isMultiplayer) {
+        startNewGame();
+    }
+  }, [isMultiplayer, startNewGame]);
 
   // AI Turn Logic
   useEffect(() => {
@@ -298,16 +331,114 @@ export default function SkatMauMauGame({
     }
   };
 
-  const handleAddFriend = (code: string) => {
-    // Placeholder - actual logic would call Firebase
-    console.log("Adding friend:", code);
-    // You might want to show a toast or status here
+  const getRankDisplay = (rank: CardRank): string => {
+    switch (rank) {
+      case CardRank.SEVEN: return '7';
+      case CardRank.EIGHT: return '8';
+      case CardRank.NINE: return '9';
+      case CardRank.TEN: return '10';
+      case CardRank.JACK: return 'J';
+      case CardRank.QUEEN: return 'Q';
+      case CardRank.KING: return 'K';
+      case CardRank.ACE: return 'A';
+      default: return '?';
+    }
   };
 
-  const renderSuitIcon = (suit: CardSuit) => (
-    <span style={{ color: getSuitColor(suit), fontSize: '1.5rem' }}>
-      {getSuitSymbol(suit)}
-    </span>
+  // Helper to render suit icon
+  const renderSuitIcon = (suit: CardSuit) => {
+    const symbol = getSuitSymbol(suit);
+    const isRed = suit === CardSuit.HEARTS || suit === CardSuit.DIAMONDS;
+    return (
+      <span style={{ fontSize: '32px', color: isRed ? '#FF006E' : '#000' }}>
+        {symbol}
+      </span>
+    );
+  };
+
+  // Placeholder for friend handling
+  const handleAddFriend = (code: string) => {
+    console.log('Add friend:', code);
+  };
+
+  const renderCard = (card: Card, onClick?: () => void, isPlayable: boolean = false) => {
+    const isRed = card.suit === CardSuit.HEARTS || card.suit === CardSuit.DIAMONDS;
+    const color = isRed ? '#FF006E' : '#000';
+    const symbol = getSuitSymbol(card.suit);
+    const display = getRankDisplay(card.rank);
+
+    return (
+      <div
+        onClick={onClick}
+        className={`relative cursor-pointer transition-all duration-200 select-none bg-white
+          ${isPlayable ? 'hover:-translate-y-4 hover:scale-110 z-50' : ''}
+          ${!isPlayable && currentTurn === 'player' ? 'brightness-90 grayscale-[30%]' : ''}
+        `}
+        style={{
+          width: '80px',
+          height: '112px',
+          borderRadius: '6px',
+          border: isPlayable ? '3px solid #06FFA5' : '3px solid #000',
+          boxShadow: isPlayable ? '6px 6px 0px #06FFA5' : '4px 4px 0px #000',
+        }}
+      >
+        {/* Top left */}
+        <div className="absolute top-1 left-1.5 flex flex-col items-center leading-none">
+          <span style={{ color, fontSize: '18px', fontWeight: 900, fontFamily: 'monospace' }}>
+            {display}
+          </span>
+          <span style={{ color, fontSize: '16px', marginTop: '-2px' }}>
+            {symbol}
+          </span>
+        </div>
+
+        {/* Center */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span style={{ color, fontSize: '42px', filter: 'drop-shadow(2px 2px 0px rgba(0,0,0,0.1))' }}>
+            {symbol}
+          </span>
+        </div>
+
+        {/* Bottom right */}
+        <div className="absolute bottom-1 right-1.5 flex flex-col items-center leading-none rotate-180">
+          <span style={{ color, fontSize: '18px', fontWeight: 900, fontFamily: 'monospace' }}>
+            {display}
+          </span>
+          <span style={{ color, fontSize: '16px', marginTop: '-2px' }}>
+            {symbol}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCardBack = () => (
+    <div
+      style={{
+        width: '80px',
+        height: '112px',
+        background: '#3B82F6',
+        borderRadius: '6px',
+        border: '3px solid #000',
+        boxShadow: '4px 4px 0px #000',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      <div
+        className="absolute inset-0 flex items-center justify-center opacity-40"
+        style={{
+            backgroundImage: 'repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #3B82F6 25%, #3B82F6 75%, #000 75%, #000)',
+            backgroundPosition: '0 0, 10px 10px',
+            backgroundSize: '20px 20px'
+        }}
+      ></div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-10 h-10 bg-black rotate-45 border-2 border-white flex items-center justify-center shadow-[4px_4px_0px_#FFF]">
+             <span className="text-white -rotate-45 font-black text-xl">M</span>
+        </div>
+      </div>
+    </div>
   );
 
   return (
@@ -326,29 +457,23 @@ export default function SkatMauMauGame({
       <div className="w-full max-w-6xl flex justify-between items-center relative z-10 mt-6 px-4">
         <button
           onClick={onBack}
-          className="w-14 h-14 flex items-center justify-center transition-all active:translate-y-1 hover:-translate-y-1"
-          style={{ 
-            background: '#FF006E', 
-            border: '3px solid #000',
-            boxShadow: '4px 4px 0px #000'
-          }}
+          className="w-14 h-14 flex items-center justify-center transition-all active:translate-y-1 hover:-translate-y-1 bg-[#FF006E] border-3 border-black shadow-[4px_4px_0px_#000]"
         >
           <ArrowLeft size={26} style={{ color: '#000' }} />
         </button>
 
         <div className="flex flex-col items-center">
           <h2 
-            className="text-2xl md:text-3xl font-black uppercase tracking-widest" 
+            className="text-3xl md:text-4xl font-black uppercase tracking-widest drop-shadow-[2px_2px_0px_rgba(0,0,0,0.2)]" 
             style={{ color: '#000', transform: 'skewX(-3deg)' }}
           >
             Mau Mau
           </h2>
           {isMultiplayer && (
             <div 
-              className="flex items-center gap-2 mt-1 px-3 py-1 rounded-full border-2 border-black"
-              style={{ background: '#06FFA5' }}
+              className="flex items-center gap-2 mt-1 px-3 py-1 border-2 border-black bg-[#06FFA5] shadow-[2px_2px_0px_#000]"
             >
-              <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
+              <div className="w-2 h-2 bg-black animate-pulse" />
               <span className="text-[10px] font-bold text-black uppercase tracking-wider">Multiplayer</span>
             </div>
           )}
@@ -357,23 +482,13 @@ export default function SkatMauMauGame({
         <div className="flex gap-2">
           <button 
             onClick={() => setShowChangelog(true)} 
-            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
-            style={{ 
-              background: '#FFF', 
-              border: '3px solid #000',
-              boxShadow: '4px 4px 0px #000'
-            }}
+            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1 bg-white border-3 border-black shadow-[4px_4px_0px_#000]"
           >
             <Info size={20} style={{ color: '#000' }} />
           </button>
           <button 
             onClick={() => setShowFriends(true)} 
-            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
-            style={{ 
-              background: '#8338EC', 
-              border: '3px solid #000',
-              boxShadow: '4px 4px 0px #000'
-            }}
+            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1 bg-[#8338EC] border-3 border-black shadow-[4px_4px_0px_#000]"
           >
             <Users size={20} style={{ color: '#FFF' }} />
           </button>
@@ -387,65 +502,67 @@ export default function SkatMauMauGame({
             key={`ai-${card.id}`}
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className="w-20 h-32 rounded-xl border-2 border-black shadow-xl relative overflow-hidden"
-            style={{ zIndex: index, background: '#8338EC' }}
+            className="relative"
+            style={{ zIndex: index }}
           >
-            <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')]"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border-2 border-black">
-                <span className="font-black text-xs">AI</span>
-              </div>
-            </div>
+            {renderCardBack()}
           </motion.div>
         ))}
+        <div className="absolute -right-24 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-1 font-black uppercase text-xs border-2 border-white -rotate-3 shadow-lg">
+           {isMultiplayer ? (opponentUsername || 'Gegner') : 'AI'} ({aiHand.length})
+        </div>
       </div>
 
       {/* Center Area */}
-      <div className="flex items-center gap-8 md:gap-12 my-6 relative z-0">
+      <div className="flex items-center gap-12 md:gap-16 my-6 relative z-0 p-8 border-4 border-black bg-[#FFBE0B] shadow-[8px_8px_0px_#000] rotate-1">
+        
+        {/* Decorative corners */}
+        <div className="absolute -top-2 -left-2 w-4 h-4 bg-black"></div>
+        <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-black"></div>
+
         {/* Draw Pile */}
-        <div
-          onClick={() => currentTurn === 'player' && handleDrawCard('player')}
-          className={`w-28 h-40 rounded-2xl flex items-center justify-center cursor-pointer transition-transform relative overflow-hidden group border-4 border-black shadow-[6px_6px_0px_#000] ${currentTurn === 'player' ? 'animate-pulse' : ''}`}
-          style={{ background: '#FFF' }}
-        >
-          <div className="font-black text-center z-10 group-hover:scale-110 transition-transform">
-            <div className="text-[10px] uppercase tracking-widest mb-1 text-black">Deck</div>
-            <div className="text-3xl font-mono text-black">{deck.length}</div>
-          </div>
+        <div className="relative group">
+           <div className="absolute top-2 left-2">{renderCardBack()}</div>
+           <div className="absolute top-1 left-1">{renderCardBack()}</div>
+           <div
+            onClick={() => currentTurn === 'player' && handleDrawCard('player')}
+            className={`cursor-pointer transition-transform ${currentTurn === 'player' ? 'hover:-translate-y-2 hover:scale-105 active:scale-95' : 'opacity-80'}`}
+           >
+             {renderCardBack()}
+           </div>
+           <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-xs uppercase bg-black text-white px-2 py-1">Deck ({deck.length})</div>
         </div>
 
         {/* Discard Pile */}
-        <div className="relative w-28 h-40">
-          {discardPile.slice(-3).map((card, index) => (
-            <motion.div
-              key={card.id}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1, rotate: Math.random() * 6 - 3 }}
-              className="absolute inset-0"
-              style={{ zIndex: index }}
-            >
-              <img
-                src={getCardAssetPath(card)}
-                alt={`${getSuitName(card.suit)} ${card.rank}`}
-                className="w-full h-full object-contain drop-shadow-2xl"
-                onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/100x150?text=Card'; }}
-              />
-            </motion.div>
-          ))}
+        <div className="relative w-20 h-28 flex items-center justify-center">
+          {discardPile.length === 0 ? (
+             <div className="w-[80px] h-[112px] border-3 border-black border-dashed flex items-center justify-center bg-white/30 font-black text-black/50 uppercase text-xs">Ablage</div>
+          ) : (
+            discardPile.slice(-3).map((card, index) => (
+              <motion.div
+                key={card.id}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1, rotate: Math.random() * 6 - 3 }}
+                className="absolute"
+                style={{ zIndex: index }}
+              >
+                {renderCard(card)}
+              </motion.div>
+            ))
+          )}
 
           {/* Indicators */}
           {wishedSuit !== null && (
             <div 
-              className="absolute -top-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl shadow-xl animate-bounce flex gap-2 items-center border-2 border-black z-20 whitespace-nowrap"
-              style={{ background: '#FFF' }}
+              className="absolute -top-20 left-1/2 -translate-x-1/2 px-4 py-3 bg-white border-3 border-black shadow-[6px_6px_0px_#FF006E] animate-bounce z-20 whitespace-nowrap flex flex-col items-center"
             >
-              <span className="text-[10px] font-black text-black uppercase tracking-wider">Wunsch:</span>
+              <span className="text-[10px] font-black text-black uppercase tracking-wider mb-1">Wunsch</span>
               {renderSuitIcon(wishedSuit)}
             </div>
           )}
 
           {drawCount > 0 && (
-            <div className="absolute -right-6 -top-6 bg-[#FF006E] text-white w-12 h-12 rounded-full flex items-center justify-center font-black text-lg border-2 border-black shadow-lg animate-pulse z-20">
+            <div className="absolute -right-12 -top-12 bg-[#FF006E] text-white w-14 h-14 flex items-center justify-center font-black text-xl border-3 border-black shadow-[4px_4px_0px_#000] animate-pulse z-20 rotate-12">
               +{drawCount}
             </div>
           )}
@@ -454,22 +571,21 @@ export default function SkatMauMauGame({
 
       {/* Status Bar */}
       <div 
-        className="px-8 py-3 rounded-xl shadow-[4px_4px_0px_#000] mb-2 border-2 border-black"
-        style={{ background: '#FFF' }}
+        className="px-8 py-3 mb-2 border-3 border-black bg-white shadow-[6px_6px_0px_#000] transform -skew-x-6"
       >
-        <div className="font-black text-sm uppercase tracking-widest">
+        <div className="font-black text-sm uppercase tracking-widest transform skew-x-6">
           {gameStatus === 'playing' ? (
             currentTurn === 'player' ?
-              <span className="text-[#06FFA5] animate-pulse bg-black px-2 py-1">Dein Zug</span> :
-              <span className="text-gray-500 flex items-center gap-2">Gegner denkt nach <span className="inline-block w-1 h-1 bg-black rounded-full animate-bounce"></span></span>
+              <span className="text-black bg-[#06FFA5] px-3 py-1 border-2 border-black">Dein Zug</span> :
+              <span className="text-gray-500 flex items-center gap-2">Gegner denkt... <Clock size={16} className="animate-spin" /></span>
           ) : (
-            gameStatus === 'won' ? <span className="text-[#FFBE0B]">Gewonnen!</span> : <span className="text-[#FF006E]">Verloren</span>
+            gameStatus === 'won' ? <span className="text-[#FFBE0B] bg-black px-3 py-1">Gewonnen!</span> : <span className="text-[#FF006E] bg-black px-3 py-1">Verloren</span>
           )}
         </div>
       </div>
 
       {/* Player Hand */}
-      <div className="flex -space-x-8 pb-6 items-end h-48 overflow-visible px-4 perspective-1000 w-full justify-center max-w-3xl">
+      <div className="flex -space-x-8 pb-6 items-end h-48 overflow-visible px-4 perspective-1000 w-full justify-center max-w-4xl">
         <AnimatePresence>
           {playerHand.map((card, index) => {
             const isPlayable = currentTurn === 'player' && canPlayCard(card, getCurrentTopCard(), wishedSuit || undefined);
@@ -479,20 +595,15 @@ export default function SkatMauMauGame({
                 layout
                 initial={{ y: 200, opacity: 0 }}
                 animate={{
-                  y: isPlayable ? -30 : 0,
+                  y: isPlayable ? -20 : 0,
                   opacity: 1,
                   scale: isPlayable ? 1.1 : 1,
                   zIndex: index
                 }}
-                whileHover={{ y: -60, scale: 1.2, zIndex: 100 }}
-                onClick={() => handlePlayerCardClick(card)}
-                className={`w-28 h-40 relative cursor-pointer transition-all duration-200 origin-bottom`}
+                whileHover={{ y: -50, scale: 1.2, zIndex: 100 }}
+                className="origin-bottom"
               >
-                <img
-                  src={getCardAssetPath(card)}
-                  alt={`${getSuitName(card.suit)} ${card.rank}`}
-                  className={`w-full h-full object-contain drop-shadow-2xl ${!isPlayable && currentTurn === 'player' ? 'brightness-50 grayscale-[50%]' : ''}`}
-                />
+                 {renderCard(card, () => handlePlayerCardClick(card), isPlayable)}
               </motion.div>
             );
           })}
@@ -506,9 +617,11 @@ export default function SkatMauMauGame({
             <button
               key={suit}
               onClick={() => handleWishSelection(suit)}
-              className="p-6 bg-white/5 hover:bg-white/10 rounded-2xl flex items-center justify-center text-5xl border-2 border-transparent hover:border-cyan-400 transition-all active:scale-95"
+              className={`p-6 bg-white border-3 border-black shadow-[4px_4px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center text-5xl active:scale-95`}
             >
-              <span style={{ color: getSuitColor(suit) }}>{getSuitSymbol(suit)}</span>
+              <span style={{ color: getSuitColor(suit) === 'text-red-500' ? '#FF006E' : '#000' }}>
+                 {getSuitSymbol(suit)}
+              </span>
             </button>
           ))}
         </div>
@@ -516,14 +629,14 @@ export default function SkatMauMauGame({
 
       {/* Changelog Modal */}
       <Modal isOpen={showChangelog} onClose={() => setShowChangelog(false)} title="Changelog">
-        <div className="space-y-4 text-sm">
-          <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-            <h4 className="font-bold text-cyan-400 mb-2 uppercase tracking-wide">v2.7.0 - Mau Mau Update</h4>
-            <ul className="space-y-2 text-gray-300">
-              <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Skat Mau Mau umbenannt zu Mau Mau</li>
-              <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Neues Design im LexiMix Stil</li>
-              <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Belohnungen für Siege (XP & Coins)</li>
-              <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Freundesliste (Beta)</li>
+        <div className="space-y-4 text-sm font-bold">
+          <div className="p-4 bg-white border-3 border-black shadow-[4px_4px_0px_#000]">
+            <h4 className="font-black text-[#0096FF] mb-2 uppercase tracking-wide bg-black px-2 py-1 inline-block">v3.2.0 - Neo-Brutalism Update</h4>
+            <ul className="space-y-2 text-black mt-2">
+              <li className="flex items-start gap-2"><span className="text-[#FF006E] font-black">•</span> Komplett neues Neo-Brutalism Design</li>
+              <li className="flex items-start gap-2"><span className="text-[#FF006E] font-black">•</span> Verbesserte Kartenanimationen</li>
+              <li className="flex items-start gap-2"><span className="text-[#FF006E] font-black">•</span> Bugfix: Spiel lädt jetzt korrekt</li>
+              <li className="flex items-start gap-2"><span className="text-[#FF006E] font-black">•</span> Freundesliste (Beta)</li>
             </ul>
           </div>
         </div>
@@ -540,41 +653,35 @@ export default function SkatMauMauGame({
       {/* Game Over Modal */}
       <Modal isOpen={gameStatus !== 'playing'} title={gameStatus === 'won' ? 'VICTORY!' : 'DEFEAT'}>
         <div className="text-center">
-          <div className="text-6xl mb-6 animate-bounce drop-shadow-lg">
+          <div className={`text-6xl mb-6 animate-bounce inline-block p-4 border-4 border-black rounded-full shadow-[6px_6px_0px_#000] ${gameStatus === 'won' ? 'bg-[#FFBE0B]' : 'bg-[#FF006E]'}`}>
             {gameStatus === 'won' ? '🏆' : '💀'}
           </div>
 
-          <p className="text-gray-400 mb-8 font-medium">
+          <p className="text-black mb-8 font-black text-lg">
             {gameStatus === 'won' ? 'Du hast das Match dominiert!' : 'Der Gegner war besser.'}
           </p>
 
           {gameStatus === 'won' ? (
             <div className="space-y-4">
               <div className="flex justify-center gap-4 mb-6">
-                <div className="bg-yellow-500/10 px-5 py-3 rounded-2xl flex flex-col items-center border border-yellow-500/30 min-w-[100px]">
-                  <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest mb-1">Coins</span>
-                  <div className="flex items-center gap-1 text-2xl font-black text-yellow-400">
+                <div className="bg-[#FFBE0B] px-5 py-3 border-3 border-black shadow-[4px_4px_0px_#000] flex flex-col items-center min-w-[100px] transform -rotate-2">
+                  <span className="text-[10px] font-black text-black uppercase tracking-widest mb-1 bg-white px-1">Coins</span>
+                  <div className="flex items-center gap-1 text-2xl font-black text-black">
                     <Coins size={20} fill="currentColor" /> 150
                   </div>
                 </div>
-                <div className="bg-purple-500/10 px-5 py-3 rounded-2xl flex flex-col items-center border border-purple-500/30 min-w-[100px]">
-                  <span className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-1">XP</span>
-                  <div className="flex items-center gap-1 text-2xl font-black text-purple-400">
+                <div className="bg-[#8338EC] px-5 py-3 border-3 border-black shadow-[4px_4px_0px_#000] flex flex-col items-center min-w-[100px] transform rotate-2">
+                  <span className="text-[10px] font-black text-white uppercase tracking-widest mb-1 bg-black px-1">XP</span>
+                  <div className="flex items-center gap-1 text-2xl font-black text-white">
                     <Star size={20} fill="currentColor" /> 75
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => onGameEnd(150, 75)}
-                className="w-full py-4 font-black uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2"
-                style={{ 
-                  background: '#FFBE0B', 
-                  color: '#000',
-                  border: '3px solid #000',
-                  boxShadow: '4px 4px 0px #000'
-                }}
+                className="w-full py-4 font-black uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 bg-[#06FFA5] border-3 border-black shadow-[6px_6px_0px_#000] hover:-translate-y-1"
               >
-                <Trophy size={18} className="mr-2" fill="currentColor" />
+                <Trophy size={18} className="mr-2" />
                 Belohnung abholen
               </button>
             </div>
@@ -582,25 +689,14 @@ export default function SkatMauMauGame({
             <div className="flex flex-col gap-3">
               <button 
                 onClick={startNewGame} 
-                className="w-full py-3 font-black uppercase transition-all active:scale-95 flex items-center justify-center gap-2"
-                style={{ 
-                  background: '#06FFA5', 
-                  color: '#000',
-                  border: '3px solid #000',
-                  boxShadow: '4px 4px 0px #000'
-                }}
+                className="w-full py-4 font-black uppercase transition-all active:scale-95 flex items-center justify-center gap-2 bg-[#06FFA5] border-3 border-black shadow-[4px_4px_0px_#000] hover:-translate-y-1"
               >
                 <RotateCcw size={18} />
                 Nochmal versuchen
               </button>
               <button 
                 onClick={onBack} 
-                className="w-full py-3 font-black uppercase transition-all active:scale-95"
-                style={{ 
-                  background: '#F5F5F5', 
-                  color: '#000',
-                  border: '3px solid #000'
-                }}
+                className="w-full py-4 font-black uppercase transition-all active:scale-95 bg-white border-3 border-black shadow-[4px_4px_0px_#000] hover:-translate-y-1"
               >
                 Zurück zum Menü
               </button>

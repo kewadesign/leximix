@@ -1,11 +1,11 @@
 {
     "minVersion": "2.4.0",
-    "version": "3.0.3",
-    "updateMessage": "LexiMix v3.0.3: Brandneues Design & Features!",
+    "version": "3.2.0",
+    "updateMessage": "LexiMix v3.2.0: Mau Mau & Rommé Redesign!",
     "apk": {
-        "url": "http://leximix.de/LexiMix-v3.0.3-Release.apk",
+        "url": "http://leximix.de/LexiMix-v3.2.0-Release.apk",
         "size": "46 MB",
-        "version": "3.0.3",
-        "forceUpdate": true
+        "version": "3.2.0",
+        "forceUpdate": false
     }
 }
