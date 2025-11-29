@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem, Gift, Type, Palette, CreditCard, X, Info } from 'lucide-react';
+import { ArrowLeft, Crown, Lock, Check, Zap, Box, Star, Image as ImageIcon, Coins, Gem, Gift, Type, Palette, CreditCard, X, Info, Frame } from 'lucide-react';
 import { UserState, SeasonReward, SeasonRewardItem } from '../types';
 import { SEASON_REWARDS, getCurrentSeason, TRANSLATIONS, PROFILE_FRAMES, PROFILE_EFFECTS, PROFILE_FONTS } from '../constants';
 import { audio } from '../utils/audio';
@@ -161,7 +161,7 @@ const RewardInfoPopup: React.FC<RewardInfoProps> = ({ reward, isPremium, positio
                                     className={`w-24 h-24 flex items-center justify-center ${getFramePreview()}`}
                                     style={{ background: '#8338EC', border: '4px solid #000' }}
                                 >
-                                    <Sparkles size={40} className="text-white" />
+                                    <span className="text-4xl">🖼️</span>
                                 </div>
                             </div>
                         ) : reward.type === 'effect' ? (
@@ -478,7 +478,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     <span style={{ color: 'var(--color-text)' }}>Avatar</span>
                 </div>
                 <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><Sparkles size={12} style={{ color: '#FFF' }} /></div>
+                    <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><span style={{ fontSize: '10px' }}>🖼️</span></div>
                     <span style={{ color: 'var(--color-text)' }}>Effekt</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -636,7 +636,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                     className="w-12 h-12 flex items-center justify-center"
                                                     style={{ background: '#8338EC', border: '3px solid #000' }}
                                                 >
-                                                    <Sparkles size={24} className="text-white" />
+                                                    <span className="text-2xl">🖼️</span>
                                                 </div>
                                             ) : premiumReward.type === 'effect' ? (
                                                 <div 
