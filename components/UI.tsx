@@ -46,7 +46,7 @@ export const Modal: React.FC<{ isOpen: boolean; onClose?: () => void; title?: st
       </div>
 
       <div
-        className={`relative max-w-md w-full max-h-[85vh] overflow-y-auto p-6 geo-dots ${className}`}
+        className={`relative max-w-md w-full max-h-[85vh] overflow-y-auto p-6 geo-dots animate-scale-in ${className}`}
         style={{
           background: 'var(--color-surface)',
           border: '6px solid var(--color-border)',

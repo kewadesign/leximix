@@ -590,9 +590,9 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                     {/* Game Status */}
                     <div className="p-2 md:p-4 flex justify-center shrink-0">
                         <div className={`
-                            px-4 md:px-6 py-2 md:py-3 border-4 border-[var(--color-border)] font-black text-sm md:text-xl uppercase shadow-[4px_4px_0px_#000] transform -skew-x-3
+                            px-4 md:px-6 py-2 md:py-3 border-4 border-[var(--color-border)] font-black text-sm md:text-xl uppercase shadow-[4px_4px_0px_#000] transform -skew-x-3 transition-all
                             ${gameStatus === 'playing'
-                                ? (game.turn() === myColor ? 'bg-[#06FFA5]' : 'bg-[var(--color-surface)]')
+                                ? (game.turn() === myColor ? 'bg-[#06FFA5] animate-pulse-subtle' : 'bg-[var(--color-surface)]')
                                 : 'bg-[#FF006E] text-white'}
                         `}>
                             {gameStatus === 'playing' ? (

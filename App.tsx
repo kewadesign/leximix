@@ -2516,7 +2516,7 @@ export default function App() {
               {cloudUsername || user.name}
             </h2>
             <div
-              className="mt-2 px-3 py-1 font-black text-xs uppercase inline-block"
+              className="mt-2 px-3 py-1 font-black text-xs uppercase inline-block animate-pulse-subtle"
               style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
             >
               LVL {user.level} • {user.xp % 100}/100 XP
@@ -2529,7 +2529,7 @@ export default function App() {
           {/* Coins Button */}
           <button
             onClick={() => setView('SHOP')}
-            className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 font-black text-sm transition-all duration-100"
+            className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 font-black text-sm transition-all duration-100 animate-shadow-breathe"
             style={{
               background: '#FFBE0B',
               border: '3px solid #000',
@@ -2537,7 +2537,7 @@ export default function App() {
               boxShadow: '4px 4px 0px #000'
             }}
           >
-            <Gem size={16} style={{ color: '#000' }} />
+            <Gem size={16} style={{ color: '#000' }} className="animate-sparkle" />
             <span style={{ color: '#000' }}>{user.coins}</span>
           </button>
 
@@ -2654,7 +2654,7 @@ export default function App() {
       {/* Logo & Title - Brutal Style */}
       <div className="flex flex-col items-center justify-center mb-6 px-4">
         <div
-          className="p-6 mb-4"
+          className="p-6 mb-4 animate-float"
           style={{
             background: '#FFF',
             border: '6px solid #000',
@@ -2696,16 +2696,16 @@ export default function App() {
         <div className="flex gap-3 mt-4">
           {/* Season Timer */}
           <div
-            className="flex-1 p-4 flex flex-col items-center justify-center"
+            className="flex-1 p-4 flex flex-col items-center justify-center animate-float-delay-1"
             style={{
-              background: '#FFF',
-              border: '4px solid #000',
-              boxShadow: '6px 6px 0px #000',
+              background: 'var(--color-surface)',
+              border: '4px solid var(--color-border)',
+              boxShadow: '6px 6px 0px var(--color-border)',
               transform: 'skew(-2deg)'
             }}
           >
-            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: '#4A4A4A', transform: 'skew(2deg)' }}>Season Ende</span>
-            <div className="flex items-center gap-2 font-black" style={{ color: '#000', transform: 'skew(2deg)' }}>
+            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)', transform: 'skew(2deg)' }}>Season Ende</span>
+            <div className="flex items-center gap-2 font-black" style={{ color: 'var(--color-text)', transform: 'skew(2deg)' }}>
               <Clock size={16} />
               {Math.max(0, Math.ceil((getCurrentSeason().endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage
             </div>
@@ -2713,21 +2713,21 @@ export default function App() {
 
           {/* Premium Status */}
           <div
-            className="flex-1 p-4 flex flex-col items-center justify-center"
+            className={`flex-1 p-4 flex flex-col items-center justify-center animate-float-delay-2 ${user.isPremium ? 'animate-glow-idle' : ''}`}
             style={{
-              background: user.isPremium ? '#FFBE0B' : '#FFF',
-              border: '4px solid #000',
-              boxShadow: '6px 6px 0px #000',
+              background: user.isPremium ? '#FFBE0B' : 'var(--color-surface)',
+              border: '4px solid var(--color-border)',
+              boxShadow: '6px 6px 0px var(--color-border)',
               transform: 'skew(2deg)'
             }}
           >
-            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: '#4A4A4A', transform: 'skew(-2deg)' }}>Premium</span>
+            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: user.isPremium ? 'rgba(0,0,0,0.6)' : 'var(--color-text-muted)', transform: 'skew(-2deg)' }}>Premium</span>
             {user.isPremium ? (
               <div className="flex items-center gap-2 font-black" style={{ color: '#000', transform: 'skew(-2deg)' }}>
-                <Crown size={16} /> AKTIV
+                <Crown size={16} className="animate-sparkle" /> AKTIV
               </div>
             ) : (
-              <div className="flex items-center gap-1 font-black text-sm" style={{ color: '#000', transform: 'skew(-2deg)' }}>
+              <div className="flex items-center gap-1 font-black text-sm" style={{ color: 'var(--color-text)', transform: 'skew(-2deg)' }}>
                 <Lock size={14} /> Inaktiv
               </div>
             )}

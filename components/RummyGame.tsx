@@ -425,7 +425,7 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
         {/* TURN INDICATOR */}
         <div className="flex justify-center mb-2">
-          <div className="px-6 py-2 font-black text-sm uppercase tracking-wider" style={{
+          <div className={`px-6 py-2 font-black text-sm uppercase tracking-wider transition-all ${currentPlayer === 'player' ? 'animate-pulse-subtle' : ''}`} style={{
             background: currentPlayer === 'player' ? '#06FFA5' : '#FF006E',
             color: currentPlayer === 'player' ? '#000' : '#FFF',
             border: `4px solid ${B}`, boxShadow: `6px 6px 0px ${B}`, transform: 'skewX(-5deg) rotate(-1deg)'

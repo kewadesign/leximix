@@ -12,6 +12,46 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '3.4.1',
+        date: '2025-11-29',
+        changes: {
+            added: [
+                '✨ Neue Idle-Animationen: Float, Pulse, Glow, Sparkle',
+                '🎯 Mühle: Responsive Skalierung für PC-Bildschirme',
+                '🎮 "Dein Zug" Puls-Animation in allen Spielmodi',
+                '🏠 Home-Screen: Animierte UI-Elemente',
+                '💫 Modal-Einblendungen mit Scale-Animation'
+            ],
+            fixed: [
+                '🌙 Dark Mode: Fixes in Mühle & Changelog Modals',
+                '🌙 Dark Mode: Season Timer & Premium Status Karten',
+                '📏 Mühle: Spielsteine skalieren korrekt mit Board'
+            ],
+            changed: [
+                '🎨 15+ neue CSS Animation Utilities',
+                '🎮 Verbesserte Turn-Indicator Animationen',
+                '🖼️ Konsistentere Modal-Styles'
+            ]
+        }
+    },
+    {
+        version: '3.4.0',
+        date: '2025-11-29',
+        changes: {
+            added: [
+                '🎭 Season Pass Mega Update: Sticker Album mit 72 Stickern',
+                '🖼️ Profile Editor: Rahmen, Schriften & Effekte',
+                '🎁 Neue Season Rewards: Frames, Fonts, Sticker Packs',
+                '🃏 Neue Spielkarten-Assets für Rommé & Mau Mau',
+                '🌈 Google Fonts Integration für Profil-Namen'
+            ],
+            changed: [
+                '🎨 Schräge Design-Elemente in Schach, Dame, Skat',
+                '🏆 Überarbeitete Season Pass Reward-Verteilung'
+            ]
+        }
+    },
+    {
         version: '3.3.0',
         date: '2025-11-29',
         changes: {

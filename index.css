@@ -732,3 +732,219 @@ body {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
+
+/* ============================================
+   STYLE POLISH RELEASE v3.4.1
+   Moderate Idle Animations & Effects
+   ============================================ */
+
+/* Float Animation - Subtle hovering effect */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-delay-1 {
+  animation: float 3s ease-in-out infinite 0.5s;
+}
+
+.animate-float-delay-2 {
+  animation: float 3s ease-in-out infinite 1s;
+}
+
+.animate-float-delay-3 {
+  animation: float 3s ease-in-out infinite 1.5s;
+}
+
+/* Pulse Subtle - Softer than pulse */
+@keyframes pulse-subtle {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.85; 
+    transform: scale(0.98);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2.5s ease-in-out infinite;
+}
+
+/* Glow Idle - Subtle shadow breathing */
+@keyframes glow-idle {
+  0%, 100% { 
+    box-shadow: 6px 6px 0px var(--color-border);
+  }
+  50% { 
+    box-shadow: 8px 8px 0px var(--color-border), 0 0 15px rgba(255,190,11,0.3);
+  }
+}
+
+.animate-glow-idle {
+  animation: glow-idle 3s ease-in-out infinite;
+}
+
+/* Hover Lift - Smooth lift on hover */
+.animate-hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.animate-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 10px 10px 0px var(--color-border);
+}
+
+/* Press Effect - Button press feedback */
+.animate-press {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.animate-press:active {
+  transform: translateY(2px);
+  box-shadow: 2px 2px 0px var(--color-border);
+}
+
+/* Shake Subtle - Attention grabber */
+@keyframes shake-subtle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px) rotate(-1deg); }
+  75% { transform: translateX(2px) rotate(1deg); }
+}
+
+.animate-shake-subtle {
+  animation: shake-subtle 0.5s ease-in-out;
+}
+
+/* Scale In - Modal entrance */
+@keyframes scale-in {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.9);
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out forwards;
+}
+
+/* Fade In Up - Element entrance */
+@keyframes fade-in-up {
+  0% { 
+    opacity: 0; 
+    transform: translateY(10px);
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out forwards;
+}
+
+/* Bounce Subtle - Soft bounce */
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 1s ease-in-out infinite;
+}
+
+/* Sparkle - For coins/rewards */
+@keyframes sparkle {
+  0%, 100% { 
+    filter: brightness(1);
+    transform: scale(1);
+  }
+  50% { 
+    filter: brightness(1.2);
+    transform: scale(1.05);
+  }
+}
+
+.animate-sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+/* Your Turn Indicator */
+@keyframes your-turn-pulse {
+  0%, 100% { 
+    box-shadow: 6px 6px 0px var(--color-border);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 8px 8px 0px var(--color-border), 0 0 20px rgba(6,255,165,0.5);
+    transform: scale(1.02);
+  }
+}
+
+.animate-your-turn {
+  animation: your-turn-pulse 1.5s ease-in-out infinite;
+}
+
+/* Card Hover Effect */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) rotate(-2deg);
+  box-shadow: 8px 12px 0px var(--color-border);
+}
+
+/* Piece Glow - For board game pieces */
+@keyframes piece-glow {
+  0%, 100% { 
+    filter: drop-shadow(0 0 0px transparent);
+  }
+  50% { 
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
+
+.animate-piece-glow {
+  animation: piece-glow 2s ease-in-out infinite;
+}
+
+/* Available Move Indicator */
+@keyframes available-move {
+  0%, 100% { 
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.animate-available-move {
+  animation: available-move 1s ease-in-out infinite;
+}
+
+/* Shadow Breathe - For cards/containers */
+@keyframes shadow-breathe {
+  0%, 100% { 
+    box-shadow: 4px 4px 0px var(--color-border);
+  }
+  50% { 
+    box-shadow: 6px 6px 0px var(--color-border);
+  }
+}
+
+.animate-shadow-breathe {
+  animation: shadow-breathe 3s ease-in-out infinite;
+}

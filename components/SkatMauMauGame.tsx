@@ -593,7 +593,7 @@ export default function SkatMauMauGame({
         <div className="font-black text-sm uppercase tracking-widest transform skew-x-6">
           {gameStatus === 'playing' ? (
             currentTurn === 'player' ?
-              <span className="text-black bg-[#06FFA5] px-3 py-1 border-2 border-black">Dein Zug</span> :
+              <span className="text-black bg-[#06FFA5] px-3 py-1 border-2 border-black animate-pulse-subtle">Dein Zug</span> :
               <span className="text-gray-500 flex items-center gap-2">Gegner denkt... <Clock size={16} className="animate-spin" /></span>
           ) : (
             gameStatus === 'won' ? <span className="text-[#FFBE0B] bg-black px-3 py-1">Gewonnen!</span> : <span className="text-[#FF006E] bg-black px-3 py-1">Verloren</span>

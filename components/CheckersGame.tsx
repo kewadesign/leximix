@@ -613,7 +613,7 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
             <span className="font-black text-white uppercase text-lg">Dame</span>
           </div>
           <div
-            className={`px-4 py-2 font-black text-sm uppercase border-2 border-[var(--color-border)] ${currentPlayer === playerColor ? 'bg-[#06FFA5] text-[var(--color-text)]' : 'bg-[var(--color-surface)] text-[var(--color-text)]'
+            className={`px-4 py-2 font-black text-sm uppercase border-2 border-[var(--color-border)] transition-all ${currentPlayer === playerColor ? 'bg-[#06FFA5] text-[var(--color-text)] animate-pulse-subtle' : 'bg-[var(--color-surface)] text-[var(--color-text)]'
               }`}
           >
             {currentPlayer === playerColor ? 'DEIN ZUG' : (isMultiplayer ? opponentName?.toUpperCase() : 'KI DENKT')}

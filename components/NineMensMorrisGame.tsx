@@ -580,13 +580,13 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
           </div>
         </div>
 
-        {/* Neo-Brutalist Game Container */}
+        {/* Neo-Brutalist Game Container - Responsive */}
         <div
-          className="max-w-lg mx-auto p-6 md:p-8"
+          className="max-w-2xl mx-auto p-4 md:p-6 lg:p-8"
           style={{
-            background: '#FFF',
-            border: '4px solid #000',
-            boxShadow: '8px 8px 0px #000'
+            background: 'var(--color-surface)',
+            border: '4px solid var(--color-border)',
+            boxShadow: '8px 8px 0px var(--color-border)'
           }}
         >
           {/* Title Bar */}
@@ -599,12 +599,12 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
               <span className="font-black text-white uppercase text-xl tracking-wider">MÜHLE</span>
             </div>
             <div
-              className="px-4 py-2 font-black text-sm uppercase"
+              className={`px-4 py-2 font-black text-sm uppercase transition-all ${currentPlayer === playerColor ? 'animate-pulse-subtle' : ''}`}
               style={{ 
-                background: currentPlayer === playerColor ? '#06FFA5' : '#FFF', 
-                color: '#000',
-                border: '3px solid #000',
-                boxShadow: '2px 2px 0px #000'
+                background: currentPlayer === playerColor ? '#06FFA5' : 'var(--color-surface)', 
+                color: currentPlayer === playerColor ? '#000' : 'var(--color-text)',
+                border: '3px solid var(--color-border)',
+                boxShadow: '2px 2px 0px var(--color-border)'
               }}
             >
               {currentPlayer === playerColor ? 'DEIN ZUG' : (isMultiplayer ? opponentName?.toUpperCase() : 'KI DENKT')}
@@ -633,9 +633,9 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
             )}
           </div>
 
-          {/* Board Grid - IMPROVED DESIGN */}
+          {/* Board Grid - RESPONSIVE DESIGN */}
           <div
-            className="relative w-[300px] h-[300px] md:w-[340px] md:h-[340px] mx-auto p-4"
+            className="relative w-[min(85vw,400px)] aspect-square md:w-[min(70vw,550px)] lg:w-[min(50vw,600px)] mx-auto p-4 md:p-6"
             style={{
               background: '#D97706',
               border: '6px solid #000',
@@ -682,12 +682,10 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
                 <div
                   key={index}
                   onClick={() => handlePositionClick(index)}
-                  className="absolute cursor-pointer transition-all duration-150 flex items-center justify-center"
+                  className="absolute cursor-pointer transition-all duration-150 flex items-center justify-center w-[10%] h-[10%] md:w-[9%] md:h-[9%]"
                   style={{
-                    width: '36px',
-                    height: '36px',
-                    left: `calc(${leftPercent}% - 18px)`,
-                    top: `calc(${topPercent}% - 18px)`,
+                    left: `calc(${leftPercent}% - 5%)`,
+                    top: `calc(${topPercent}% - 5%)`,
                     background: piece ? 'transparent' : '#FFBE0B',
                     border: piece ? 'none' : '3px solid #000',
                     borderRadius: '50%',
@@ -767,59 +765,59 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
       {showStartModal && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
           <div
-            className="p-8 max-w-md w-full"
+            className="p-6 md:p-8 max-w-md w-full animate-scale-in"
             style={{ 
-              background: '#FFF', 
-              border: '6px solid #000',
+              background: 'var(--color-surface)', 
+              border: '6px solid var(--color-border)',
               boxShadow: '12px 12px 0px #D97706',
               transform: 'rotate(-1deg)'
             }}
           >
             <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="p-4" style={{ background: '#D97706', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}>
-                <Target size={32} className="text-white" />
+              <div className="p-3 md:p-4" style={{ background: '#D97706', border: '4px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}>
+                <Target size={28} className="text-white" />
               </div>
-              <h2 className="text-4xl font-black uppercase tracking-wider" style={{ color: '#000', textShadow: '2px 2px 0px #FFBE0B' }}>MÜHLE</h2>
+              <h2 className="text-3xl md:text-4xl font-black uppercase tracking-wider" style={{ color: 'var(--color-text)', textShadow: '2px 2px 0px #FFBE0B' }}>MÜHLE</h2>
             </div>
 
-            <div className="p-5 mb-6" style={{ background: '#FFF8E7', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}>
-              <h3 className="font-black text-lg mb-3 uppercase inline-block px-3 py-1" style={{ background: '#D97706', color: '#FFF', border: '2px solid #000' }}>Spielregeln</h3>
-              <ul className="text-sm font-bold space-y-2 mt-3" style={{ color: '#000' }}>
-                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Jeder Spieler hat 9 Steine</li>
-                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> 3 Steine in einer Reihe = Mühle</li>
-                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Bei Mühle: Gegnerstein entfernen</li>
-                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Gewonnen bei &lt;3 Gegnersteinen</li>
+            <div className="p-4 md:p-5 mb-6" style={{ background: 'var(--color-bg)', border: '4px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}>
+              <h3 className="font-black text-base md:text-lg mb-3 uppercase inline-block px-3 py-1" style={{ background: '#D97706', color: '#FFF', border: '2px solid var(--color-border)' }}>Spielregeln</h3>
+              <ul className="text-xs md:text-sm font-bold space-y-2 mt-3" style={{ color: 'var(--color-text)' }}>
+                <li className="flex items-center gap-2"><div className="w-2 h-2" style={{ background: 'var(--color-text)' }}></div> Jeder Spieler hat 9 Steine</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2" style={{ background: 'var(--color-text)' }}></div> 3 Steine in einer Reihe = Mühle</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2" style={{ background: 'var(--color-text)' }}></div> Bei Mühle: Gegnerstein entfernen</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2" style={{ background: 'var(--color-text)' }}></div> Gewonnen bei &lt;3 Gegnersteinen</li>
               </ul>
             </div>
 
-            <div className="flex gap-4 mb-6">
-              <div className="flex-1 p-4 text-center" style={{ background: '#FFF', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>
-                <div className="w-12 h-12 rounded-full mx-auto mb-2" style={{ background: 'linear-gradient(135deg, #FFF, #CCC)', border: '3px solid #000', boxShadow: '2px 2px 0px #000' }}></div>
-                <span className="text-sm font-black" style={{ color: '#000' }}>DU (WEISS)</span>
+            <div className="flex gap-3 md:gap-4 mb-6">
+              <div className="flex-1 p-3 md:p-4 text-center" style={{ background: 'var(--color-surface)', border: '3px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}>
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full mx-auto mb-2" style={{ background: 'linear-gradient(135deg, #FFF, #CCC)', border: '3px solid var(--color-border)', boxShadow: '2px 2px 0px var(--color-border)' }}></div>
+                <span className="text-xs md:text-sm font-black" style={{ color: 'var(--color-text)' }}>DU (WEISS)</span>
               </div>
-              <div className="flex-1 p-4 text-center" style={{ background: '#1a1a2e', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>
-                <div className="w-12 h-12 rounded-full mx-auto mb-2" style={{ background: 'linear-gradient(135deg, #4a4a4a, #1a1a1a)', border: '3px solid #000', boxShadow: '2px 2px 0px #000' }}></div>
-                <span className="text-sm font-black text-white">KI (SCHWARZ)</span>
+              <div className="flex-1 p-3 md:p-4 text-center" style={{ background: '#1a1a2e', border: '3px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}>
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full mx-auto mb-2" style={{ background: 'linear-gradient(135deg, #4a4a4a, #1a1a1a)', border: '3px solid var(--color-border)', boxShadow: '2px 2px 0px var(--color-border)' }}></div>
+                <span className="text-xs md:text-sm font-black text-white">KI (SCHWARZ)</span>
               </div>
             </div>
 
             {!isMultiplayer && (
               <div className="text-center mb-6">
-                <span className="px-6 py-2 font-black text-xl text-white" style={{ background: '#8338EC', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>LEVEL {levelId}</span>
+                <span className="px-5 md:px-6 py-2 font-black text-lg md:text-xl text-white" style={{ background: '#8338EC', border: '3px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}>LEVEL {levelId}</span>
               </div>
             )}
 
             <button
               onClick={() => setShowStartModal(false)}
-              className="w-full py-5 font-black uppercase text-2xl flex items-center justify-center gap-3 transition-all hover:-translate-y-1 active:translate-y-0"
+              className="w-full py-4 md:py-5 font-black uppercase text-xl md:text-2xl flex items-center justify-center gap-3 transition-all hover:-translate-y-1 active:translate-y-0 animate-hover-lift"
               style={{ 
                 background: '#06FFA5', 
                 color: '#000',
-                border: '4px solid #000',
-                boxShadow: '6px 6px 0px #000' 
+                border: '4px solid var(--color-border)',
+                boxShadow: '6px 6px 0px var(--color-border)' 
               }}
             >
-              <Play size={32} />
+              <Play size={28} />
               SPIEL STARTEN
             </button>
           </div>
@@ -830,46 +828,46 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
       {gameStatus !== 'playing' && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
           <div
-            className="p-8 max-w-md w-full"
+            className="p-6 md:p-8 max-w-md w-full animate-scale-in"
             style={{ 
-              background: '#FFF', 
-              border: '6px solid #000',
-              boxShadow: '12px 12px 0px #000',
+              background: 'var(--color-surface)', 
+              border: '6px solid var(--color-border)',
+              boxShadow: '12px 12px 0px var(--color-border)',
               transform: 'rotate(1deg)'
             }}
           >
             <div className="text-center">
               <div 
-                className="w-24 h-24 mx-auto mb-6 flex items-center justify-center"
+                className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 flex items-center justify-center animate-bounce-subtle"
                 style={{ 
                   background: gameStatus === 'won' ? '#06FFA5' : '#FF006E', 
-                  border: '4px solid #000',
-                  boxShadow: '6px 6px 0px #000',
+                  border: '4px solid var(--color-border)',
+                  boxShadow: '6px 6px 0px var(--color-border)',
                   transform: 'rotate(-3deg)'
                 }}
               >
-                <Trophy size={48} className={gameStatus === 'won' ? 'text-black' : 'text-white'} />
+                <Trophy size={40} className={gameStatus === 'won' ? 'text-black' : 'text-white'} />
               </div>
-              <h2 className="text-5xl font-black uppercase mb-4" style={{ color: '#000', textShadow: '3px 3px 0px #FFF' }}>
+              <h2 className="text-4xl md:text-5xl font-black uppercase mb-4" style={{ color: 'var(--color-text)', textShadow: '3px 3px 0px var(--color-surface)' }}>
                 {gameStatus === 'won' ? 'GEWONNEN!' : 'VERLOREN!'}
               </h2>
-              <div className="p-4 mb-8 inline-block transform rotate-2" style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}>
-                <p className="font-black text-xl" style={{ color: '#000' }}>
+              <div className="p-3 md:p-4 mb-6 md:mb-8 inline-block transform rotate-2" style={{ background: '#FFBE0B', border: '4px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}>
+                <p className="font-black text-lg md:text-xl" style={{ color: '#000' }}>
                   {gameStatus === 'won'
                     ? `+${50 + levelId * 5} XP • +${20 + levelId * 2} Münzen`
                     : '+10 XP • +5 Münzen'}
                 </p>
               </div>
 
-              <div className="flex gap-4 justify-center flex-col sm:flex-row">
+              <div className="flex gap-3 md:gap-4 justify-center flex-col sm:flex-row">
                 <button
                   onClick={onBack}
-                  className="px-8 py-4 font-black uppercase transition-all hover:-translate-y-1"
+                  className="px-6 md:px-8 py-3 md:py-4 font-black uppercase transition-all hover:-translate-y-1 animate-hover-lift"
                   style={{ 
-                    background: '#FFF', 
-                    color: '#000',
-                    border: '4px solid #000',
-                    boxShadow: '4px 4px 0px #000' 
+                    background: 'var(--color-surface)', 
+                    color: 'var(--color-text)',
+                    border: '4px solid var(--color-border)',
+                    boxShadow: '4px 4px 0px var(--color-border)' 
                   }}
                 >
                   MENÜ
@@ -877,12 +875,12 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
                 {!isMultiplayer && (
                   <button
                     onClick={restartGame}
-                    className="px-8 py-4 font-black uppercase transition-all hover:-translate-y-1"
+                    className="px-6 md:px-8 py-3 md:py-4 font-black uppercase transition-all hover:-translate-y-1 animate-hover-lift"
                     style={{ 
                       background: '#06FFA5', 
                       color: '#000',
-                      border: '4px solid #000',
-                      boxShadow: '4px 4px 0px #000' 
+                      border: '4px solid var(--color-border)',
+                      boxShadow: '4px 4px 0px var(--color-border)' 
                     }}
                   >
                     NOCHMAL
@@ -897,8 +895,8 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
       {/* Ad/Hint Modal */}
       {showHintModal && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
-          <div className="p-6 max-w-sm w-full" style={{ background: '#FFF', border: '6px solid #000', boxShadow: '12px 12px 0px #8338EC', transform: 'rotate(-2deg)' }}>
-            <h3 className="text-2xl font-black uppercase mb-6 text-center py-2" style={{ background: '#FFBE0B', color: '#000', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>HINWEIS FREISCHALTEN</h3>
+          <div className="p-5 md:p-6 max-w-sm w-full animate-scale-in" style={{ background: 'var(--color-surface)', border: '6px solid var(--color-border)', boxShadow: '12px 12px 0px #8338EC', transform: 'rotate(-2deg)' }}>
+            <h3 className="text-xl md:text-2xl font-black uppercase mb-6 text-center py-2" style={{ background: '#FFBE0B', color: '#000', border: '3px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}>HINWEIS FREISCHALTEN</h3>
 
             {/* Ad with Cat Dance GIF */}
             <div className="w-full h-48 flex items-center justify-center relative overflow-hidden mb-6" style={{ background: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}>

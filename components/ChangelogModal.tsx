@@ -62,7 +62,7 @@ export const ChangelogModal: React.FC<Props> = ({
                     >
                         <Sparkles size={32} style={{ color: '#FFF' }} />
                     </div>
-                    <h2 className="text-xl font-black uppercase mb-1" style={{ color: '#000', transform: 'skewX(-2deg)' }}>
+                    <h2 className="text-xl font-black uppercase mb-1" style={{ color: 'var(--color-text)', transform: 'skewX(-2deg)' }}>
                         LexiMix {latest?.version}
                     </h2>
                     <p className="font-black text-xs tracking-widest uppercase" style={{ color: '#8338EC' }}>{t.UPDATES.NOTES}</p>
@@ -109,7 +109,7 @@ export const ChangelogModal: React.FC<Props> = ({
                                     >
                                         v{entry.version}
                                     </span>
-                                    <span className="text-xs font-black uppercase" style={{ color: '#666' }}>{entry.date}</span>
+                                    <span className="text-xs font-black uppercase" style={{ color: 'var(--color-text-muted)' }}>{entry.date}</span>
                                 </div>
                                 
                                 <ul className="space-y-2">
@@ -128,7 +128,7 @@ export const ChangelogModal: React.FC<Props> = ({
                                                 >
                                                     <IconComponent size={14} strokeWidth={3} />
                                                 </div>
-                                                <span className="font-bold leading-tight" style={{ color: '#000' }}>{change}</span>
+                                                <span className="font-bold leading-tight" style={{ color: 'var(--color-text)' }}>{change}</span>
                                             </li>
                                         );
                                     })}
