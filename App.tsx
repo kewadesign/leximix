@@ -4105,22 +4105,86 @@ export default function App() {
         </div>
       </Modal>
 
-      <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title={t.GAME.LEVEL_UP || 'Level Up'}>
+      <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title="">
         <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-lexi-fuchsia/20 to-transparent animate-pulse-slow"></div>
+          {/* Rainbow Background */}
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{
+              background: 'linear-gradient(135deg, #FF006E 0%, #FF7F00 25%, #FFBE0B 50%, #00D9FF 75%, #8338EC 100%)',
+              backgroundSize: '200% 200%',
+              animation: 'rainbow-flow 4s ease infinite'
+            }}
+          ></div>
+          
+          {/* Confetti particles */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(12)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-3 h-3"
+                style={{
+                  background: ['#FF006E', '#FF7F00', '#FFBE0B', '#00D9FF', '#8338EC'][i % 5],
+                  left: `${10 + (i * 8)}%`,
+                  top: '-10px',
+                  animation: `confetti-fall ${1.5 + (i * 0.2)}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.1}s`,
+                  transform: `rotate(${i * 30}deg)`
+                }}
+              ></div>
+            ))}
+          </div>
 
+          {/* Level Circle with Glow */}
           <div className="relative">
-            <div className="absolute inset-0 bg-lexi-fuchsia blur-3xl opacity-50 animate-pulse"></div>
-            <div className="w-32 h-32 bg-gradient-to-br from-lexi-fuchsia to-purple-800 rounded-full flex items-center justify-center border-4 border-white/20 shadow-[0_0_50px_rgba(217,70,239,0.6)] relative z-10 animate-bounce">
-              <span className="text-6xl font-black text-white drop-shadow-lg">{levelUpData.level}</span>
+            <div className="absolute inset-0 blur-3xl opacity-60" style={{ background: '#FFBE0B' }}></div>
+            <div 
+              className="w-36 h-36 flex items-center justify-center relative z-10"
+              style={{
+                background: 'linear-gradient(135deg, #FFBE0B 0%, #FF7F00 100%)',
+                border: '6px solid #000',
+                boxShadow: '8px 8px 0px #000, 0 0 40px rgba(255,190,11,0.6)'
+              }}
+            >
+              <span className="text-7xl font-black" style={{ color: '#000' }}>{levelUpData.level}</span>
             </div>
+            {/* Stars around */}
+            <div className="absolute -top-2 -right-2 text-3xl animate-bounce">⭐</div>
+            <div className="absolute -bottom-2 -left-2 text-2xl animate-bounce" style={{ animationDelay: '0.2s' }}>✨</div>
           </div>
 
-          <div className="relative z-10 space-y-2">
-            <h3 className="text-2xl font-black italic text-white">AGENT PROMOTED</h3>
-            <p className="text-gray-400 font-bold">Total XP: {levelUpData.xp}</p>
+          {/* Text */}
+          <div className="relative z-10 space-y-3">
+            <h3 
+              className="text-3xl font-black uppercase"
+              style={{ 
+                color: '#FFBE0B',
+                textShadow: '3px 3px 0px #000'
+              }}
+            >
+              🎉 {user.language === 'de' ? 'LEVEL UP!' : user.language === 'es' ? '¡SUBISTE DE NIVEL!' : 'LEVEL UP!'} 🎉
+            </h3>
+            <p className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>
+              {user.language === 'de' ? 'Du hast Level' : user.language === 'es' ? 'Alcanzaste el nivel' : 'You reached level'} <span style={{ color: '#FF006E' }}>{levelUpData.level}</span> {user.language === 'de' ? 'erreicht!' : user.language === 'es' ? '!' : '!'}
+            </p>
+            <p className="text-sm font-bold" style={{ color: 'var(--color-text-muted)' }}>
+              {user.language === 'de' ? 'Gesamt XP:' : user.language === 'es' ? 'XP Total:' : 'Total XP:'} {levelUpData.xp.toLocaleString()}
+            </p>
           </div>
-          <Button fullWidth onClick={() => setShowLevelUp(false)}>CONTINUE</Button>
+
+          {/* Continue Button */}
+          <button
+            onClick={() => setShowLevelUp(false)}
+            className="px-8 py-3 text-lg font-black uppercase transition-all hover:-translate-y-1"
+            style={{
+              background: '#00D9FF',
+              color: '#000',
+              border: '4px solid #000',
+              boxShadow: '6px 6px 0px #000'
+            }}
+          >
+            {user.language === 'de' ? 'WEITER' : user.language === 'es' ? 'CONTINUAR' : 'CONTINUE'}
+          </button>
         </div>
       </Modal>
 
