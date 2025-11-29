@@ -1914,12 +1914,28 @@ export const TUTORIALS: Record<GameMode, Record<Language, TutorialContent>> = {
   }
 };
 
-// Avatars List (DiceBear IDs) - Expanded
+// Avatars List (DiceBear Seeds) - 80 unique avatars
 export const AVATARS = [
-  "Felix", "Aneka", "Zack", "Midnight", "Shadow", "Cyber", "Neon", "Glitch",
-  "Viper", "Echo", "Raven", "Blade", "Matrix", "Nova", "Rogue", "Titan",
-  "Luna", "Sol", "Astra", "Orion", "Vega", "Sirius", "Altair", "Draco",
-  "Phoenix", "Griffin", "Dragon", "Hydra", "Chimera", "Sphinx", "Golem", "Wraith"
+  // Classic Names
+  "Felix", "Luna", "Max", "Nova", "Ace", "Blaze", "Storm", "Frost",
+  // Cyber/Tech
+  "Neon", "Cyber", "Pixel", "Glitch", "Matrix", "Binary", "Chrome", "Vector",
+  // Space
+  "Orion", "Nebula", "Cosmos", "Astro", "Pulsar", "Quasar", "Stellar", "Comet",
+  // Nature
+  "Thunder", "Blizzard", "Ember", "Ocean", "Forest", "Desert", "Aurora", "Eclipse",
+  // Animals
+  "Wolf", "Tiger", "Falcon", "Panther", "Viper", "Cobra", "Phoenix", "Dragon",
+  // Colors
+  "Crimson", "Azure", "Jade", "Onyx", "Violet", "Golden", "Silver", "Scarlet",
+  // Mythical
+  "Titan", "Sphinx", "Griffin", "Hydra", "Wraith", "Specter", "Phantom", "Shadow",
+  // Gaming
+  "Rogue", "Knight", "Mage", "Hunter", "Scout", "Tank", "Healer", "Sniper",
+  // Abstract
+  "Zero", "Omega", "Alpha", "Delta", "Sigma", "Zenith", "Apex", "Prime",
+  // Cool Words
+  "Havoc", "Chaos", "Fury", "Rage", "Doom", "Blade", "Edge", "Spark"
 ];
 
 // Season Pass Avatar Rewards - Now using Season System!
@@ -2074,7 +2090,7 @@ export const generateSeasonRewards = (season: Season) => {
       premiumReward = { type: 'sticker_pack', amount: 5, name: 'Epic Pack', icon: '🎁', rarity: 'epic' };
     } else if (level === 33) {
       const avatarReward = season.avatars.find(a => a.level <= 33) || season.avatars[0];
-      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 33', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward?.dicebear || 'agent33'}`, rarity: 'epic' };
+      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 33', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || 'agent33'}`, rarity: 'epic' };
     } else if (level === 34) {
       premiumReward = { type: 'sticker_pack', amount: 5, name: 'Epic Pack', icon: '🎁', rarity: 'epic' };
     } else if (level === 35) {
@@ -2085,7 +2101,7 @@ export const generateSeasonRewards = (season: Season) => {
       premiumReward = { type: 'sticker_pack', amount: 6, name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
     } else if (level === 37) {
       const avatarReward = season.avatars.find(a => a.level <= 40) || season.avatars[1];
-      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 37', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward?.dicebear || 'agent37'}`, rarity: 'epic' };
+      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 37', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || 'agent37'}`, rarity: 'epic' };
     } else if (level === 38) {
       premiumReward = { type: 'sticker_pack', amount: 6, name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
     } else if (level === 39) {
@@ -2098,7 +2114,7 @@ export const generateSeasonRewards = (season: Season) => {
       premiumReward = { type: 'sticker_pack', amount: 6, name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
     } else if (level === 42) {
       const avatarReward = season.avatars.find(a => a.level <= 50) || season.avatars[2];
-      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 42', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward?.dicebear || 'agent42'}`, rarity: 'epic' };
+      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 42', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || 'agent42'}`, rarity: 'epic' };
     } else if (level >= 43 && level <= 49) {
       premiumReward = { type: 'sticker_pack', amount: 6 + Math.floor((level - 43) / 2), name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
     } else if (level === 50) {
@@ -2108,7 +2124,7 @@ export const generateSeasonRewards = (season: Season) => {
     else if (level >= 51 && level <= 59) {
       if (level % 3 === 0) {
         const avatarReward = season.avatars.find(a => a.level <= level) || season.avatars[Math.floor(level / 10)];
-        premiumReward = { type: 'avatar', name: avatarReward?.name || `Agent ${level}`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward?.dicebear || `agent${level}`}`, rarity: 'epic' };
+        premiumReward = { type: 'avatar', name: avatarReward?.name || `Agent ${level}`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || `agent${level}`}`, rarity: 'epic' };
       } else {
         premiumReward = { type: 'sticker_pack', amount: 7, name: 'Ultra Pack', icon: '🎁', rarity: 'epic' };
       }
@@ -2119,7 +2135,7 @@ export const generateSeasonRewards = (season: Season) => {
     else if (level >= 61 && level <= 74) {
       if (level % 5 === 0) {
         const avatarReward = season.avatars.find(a => a.level <= level) || season.avatars[Math.floor(level / 10)];
-        premiumReward = { type: 'avatar', name: avatarReward?.name || `Agent ${level}`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward?.dicebear || `agent${level}`}`, rarity: 'legendary' };
+        premiumReward = { type: 'avatar', name: avatarReward?.name || `Agent ${level}`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || `agent${level}`}`, rarity: 'legendary' };
       } else {
         premiumReward = { type: 'sticker_pack', amount: 8, name: 'Legendary Pack', icon: '🎁', rarity: 'legendary' };
       }
@@ -2130,7 +2146,7 @@ export const generateSeasonRewards = (season: Season) => {
     else if (level >= 76 && level <= 99) {
       if (level % 10 === 0) {
         const avatarReward = season.avatars.find(a => a.level === level) || season.avatars[Math.floor(level / 10) - 1];
-        premiumReward = { type: 'avatar', name: avatarReward?.name || `Legendary Agent`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward?.dicebear || `legend${level}`}`, rarity: 'legendary' };
+        premiumReward = { type: 'avatar', name: avatarReward?.name || `Legendary Agent`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || `legend${level}`}`, rarity: 'legendary' };
       } else if (level % 5 === 0) {
         premiumReward = { type: 'sticker_pack', amount: 10, name: 'Legendary Pack', icon: '🎁', rarity: 'legendary' };
       } else {

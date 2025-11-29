@@ -2505,7 +2505,7 @@ export default function App() {
           }}
         >
           <div className="w-14 h-14 overflow-hidden" style={{ border: '3px solid #000', background: 'var(--color-bg)' }}>
-            <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
+            <img src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
           </div>
           <div>
             <h2 className="font-black text-lg uppercase leading-none" style={{ color: '#000' }}>
@@ -4698,7 +4698,7 @@ export default function App() {
                 className={`w-24 h-24 overflow-hidden bg-[#FFF8E7] ${getAvatarEffect(editFrame)}`}
                 style={{ border: '4px solid #000' }}
               >
-                <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`} alt="Avatar" className="w-full h-full object-cover" />
+                <img src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${editAvatar}`} alt="Avatar" className="w-full h-full object-cover" />
               </div>
             </div>
 
@@ -4717,7 +4717,7 @@ export default function App() {
                     transform: editAvatar === avatar ? 'scale(1.05)' : 'scale(1)'
                   }}
                 >
-                  <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full" />
+                  <img src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full" />
                 </button>
               ))}
             </div>

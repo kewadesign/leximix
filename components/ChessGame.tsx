@@ -639,7 +639,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                     <div className="px-4 py-4 bg-[var(--color-bg)] border-t-4 border-[var(--color-border)] flex justify-between items-end shrink-0">
                         <div className="flex items-center gap-2 md:gap-3">
                             <div className="w-10 h-10 md:w-12 md:h-12 border-3 border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
-                                <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="You" />
+                                <img src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${user.avatarId}`} alt="You" />
                             </div>
                             <div>
                                 <p className="font-black text-xs md:text-sm uppercase">{user.name}</p>

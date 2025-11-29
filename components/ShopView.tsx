@@ -215,7 +215,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                         className="w-20 h-20 mb-3 overflow-hidden group-hover:scale-105 transition-transform"
                                         style={{ border: '3px solid #000', transform: 'skewX(3deg)' }}
                                     >
-                                        <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${item.value}`} alt={item.name} className="w-full h-full" />
+                                        <img src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${item.value}`} alt={item.name} className="w-full h-full" />
                                     </div>
                                     <span
                                         className="text-sm font-black uppercase mb-2 text-center leading-tight"
