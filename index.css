@@ -948,3 +948,28 @@ body {
 .animate-shadow-breathe {
   animation: shadow-breathe 3s ease-in-out infinite;
 }
+
+/* Rainbow Shimmer - Slow moving gradient */
+@keyframes rainbow-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.animate-rainbow-shimmer {
+  background: linear-gradient(
+    90deg,
+    #FF006E 0%,
+    #FF7F00 16.67%,
+    #FFBE0B 33.33%,
+    #06FFA5 50%,
+    #0096FF 66.67%,
+    #8338EC 83.33%,
+    #FF006E 100%
+  );
+  background-size: 200% 100%;
+  animation: rainbow-shimmer 8s linear infinite;
+}

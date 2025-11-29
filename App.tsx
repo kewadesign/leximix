@@ -2132,15 +2132,11 @@ export default function App() {
           e.currentTarget.style.boxShadow = '6px 6px 0px #000';
         }}
       >
-        {/* Rainbow top border */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 flex" style={{ borderRadius: '13px 13px 0 0', overflow: 'hidden' }}>
-          <div className="flex-1" style={{ background: '#FF006E' }}></div>
-          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
-          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
-          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
-          <div className="flex-1" style={{ background: '#0096FF' }}></div>
-          <div className="flex-1" style={{ background: '#8338EC' }}></div>
-        </div>
+        {/* Animated Rainbow top border */}
+        <div 
+          className="absolute top-0 left-0 right-0 h-1.5 animate-rainbow-shimmer" 
+          style={{ borderRadius: '13px 13px 0 0' }}
+        />
 
         {/* Large animated icon - half cut off */}
         <div
