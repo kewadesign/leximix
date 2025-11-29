@@ -2668,14 +2668,14 @@ export default function App() {
         <div
           className="p-6 mb-4 animate-float"
           style={{
-            background: '#FFF',
-            border: '6px solid #000',
-            boxShadow: '12px 12px 0px #8338EC',
+            background: user.theme === 'dark' ? '#1E1E1E' : '#FFF',
+            border: user.theme === 'dark' ? '6px solid #FFF' : '6px solid #000',
+            boxShadow: user.theme === 'dark' ? '12px 12px 0px #8338EC' : '12px 12px 0px #8338EC',
             transform: 'rotate(-2deg)'
           }}
         >
           <img
-            src="/LexiMix_Logo_Dark.png"
+            src={user.theme === 'dark' ? "/LexiMix_Logo_Bright.png" : "/LexiMix_Logo_Dark.png"}
             alt="LexiMix"
             className="h-24 md:h-32 w-auto"
           />

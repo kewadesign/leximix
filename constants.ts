@@ -2067,11 +2067,11 @@ export const generateSeasonRewards = (season: Season) => {
   ];
 
   const FONTS = [
-    { level: 10, name: 'Pixel Font', value: 'font_pixel', rarity: 'rare' },
-    { level: 20, name: 'Elegant Script', value: 'font_script', rarity: 'rare' },
-    { level: 30, name: 'Hacker Mono', value: 'font_mono', rarity: 'epic' },
-    { level: 40, name: 'Comic Sans', value: 'font_comic', rarity: 'epic' },
-    { level: 60, name: 'Ultra Bold', value: 'font_bold', rarity: 'legendary' },
+    { level: 10, name: 'Pixel Font', value: 'font_pixel', rarity: 'rare', preview: "'Press Start 2P', cursive" },
+    { level: 20, name: 'Elegant Script', value: 'font_script', rarity: 'rare', preview: "'Dancing Script', cursive" },
+    { level: 30, name: 'Hacker Mono', value: 'font_mono', rarity: 'epic', preview: "'JetBrains Mono', monospace" },
+    { level: 40, name: 'Comic Style', value: 'font_comic', rarity: 'epic', preview: "'Comic Neue', cursive" },
+    { level: 60, name: 'Ultra Bold', value: 'font_bold', rarity: 'legendary', preview: "'Black Ops One', cursive" },
   ];
 
   const EFFECTS = [
@@ -2210,7 +2210,15 @@ export const generateSeasonRewards = (season: Season) => {
     // Check for Font rewards
     else if (FONTS.find(f => f.level === level)) {
       const fontReward = FONTS.find(f => f.level === level)!;
-      premiumReward = { type: 'font', name: fontReward.name, value: fontReward.value, icon: '🔤', rarity: fontReward.rarity as any };
+      premiumReward = { 
+        type: 'font', 
+        name: fontReward.name, 
+        value: fontReward.value, 
+        icon: '🔤', 
+        rarity: fontReward.rarity as any,
+        preview: fontReward.preview,
+        desc: `Schriftart: ${fontReward.name}`
+      };
     }
     // Check for Effect rewards
     else if (EFFECTS.find(e => e.level === level)) {

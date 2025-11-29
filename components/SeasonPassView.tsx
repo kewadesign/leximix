@@ -168,6 +168,23 @@ const RewardInfoPopup: React.FC<RewardInfoProps> = ({ reward, isPremium, positio
                             <div className={`w-24 h-24 flex items-center justify-center relative ${getEffectPreview()}`} style={{ background: '#FF006E', border: '4px solid #000' }}>
                                 <span className="text-4xl">{reward.icon || '✨'}</span>
                             </div>
+                        ) : reward.type === 'font' ? (
+                            <div 
+                                className="px-6 py-4 flex flex-col items-center justify-center gap-2"
+                                style={{ 
+                                    background: 'linear-gradient(135deg, #8338EC, #FF006E)',
+                                    border: '4px solid #000',
+                                    boxShadow: '4px 4px 0px #000'
+                                }}
+                            >
+                                <span className="text-3xl">🔤</span>
+                                <span 
+                                    className="text-xl text-white"
+                                    style={{ fontFamily: reward.preview || 'inherit' }}
+                                >
+                                    Abc123
+                                </span>
+                            </div>
                         ) : reward.type === 'title' ? (
                             <div 
                                 className="px-6 py-3 flex items-center justify-center"
@@ -614,12 +631,26 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                         </div>
                                                     )}
                                                 </div>
-                                            ) : premiumReward.type === 'frame' || premiumReward.type === 'effect' ? (
+                                            ) : premiumReward.type === 'frame' ? (
                                                 <div 
                                                     className="w-12 h-12 flex items-center justify-center"
                                                     style={{ background: '#8338EC', border: '3px solid #000' }}
                                                 >
                                                     <Sparkles size={24} className="text-white" />
+                                                </div>
+                                            ) : premiumReward.type === 'effect' ? (
+                                                <div 
+                                                    className="w-12 h-12 flex items-center justify-center"
+                                                    style={{ background: '#FF006E', border: '3px solid #000' }}
+                                                >
+                                                    <span className="text-2xl">{premiumReward.icon || '✨'}</span>
+                                                </div>
+                                            ) : premiumReward.type === 'font' ? (
+                                                <div 
+                                                    className="w-12 h-12 flex items-center justify-center"
+                                                    style={{ background: 'linear-gradient(135deg, #8338EC, #FF006E)', border: '3px solid #000' }}
+                                                >
+                                                    <Type size={24} className="text-white" />
                                                 </div>
                                             ) : premiumReward.type === 'title' ? (
                                                 <div 
