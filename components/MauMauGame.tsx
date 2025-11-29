@@ -155,7 +155,7 @@ export const MauMauGameComponent: React.FC<MauMauGameProps> = ({ user, onBack, o
             <div className="flex items-center justify-between mb-4">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 text-white hover:bg-white/20 transition-all"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--color-surface)]/10 backdrop-blur-sm rounded-lg border border-white/20 text-white hover:bg-[var(--color-surface)]/20 transition-all"
                 >
                     <ArrowLeft className="w-5 h-5" />
                     Back
@@ -271,7 +271,7 @@ export const MauMauGameComponent: React.FC<MauMauGameProps> = ({ user, onBack, o
                                 <button
                                     key={category}
                                     onClick={() => handlePlayCard(category)}
-                                    className="px-6 py-4 bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-lg text-white font-bold transition-all hover:scale-105"
+                                    className="px-6 py-4 bg-[var(--color-surface)]/10 hover:bg-[var(--color-surface)]/20 border-2 border-white/30 rounded-lg text-white font-bold transition-all hover:scale-105"
                                 >
                                     {CardCategory[category]}
                                 </button>

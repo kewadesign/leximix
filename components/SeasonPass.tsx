@@ -38,10 +38,10 @@ export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium
         {/* Left Side */}
         <div className="flex items-center gap-4">
           {/* Icon Box */}
-          <div 
+          <div
             className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center shrink-0"
-            style={{ 
-              background: '#000', 
+            style={{
+              background: '#000',
               border: '3px solid #000',
               transform: 'skew(-5deg)'
             }}
@@ -54,19 +54,19 @@ export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium
               <Crown
                 size={20}
                 fill={isPremium ? "currentColor" : "none"}
-                style={{ color: isPremium ? '#000' : '#FFF' }}
+                style={{ color: isPremium ? '#000' : 'var(--color-text)' }}
               />
               <h3
                 className="font-black text-xl md:text-2xl uppercase tracking-wide"
-                style={{ color: isPremium ? '#000' : '#FFF' }}
+                style={{ color: isPremium ? '#000' : 'var(--color-text)' }}
               >
                 {t.TITLE}
               </h3>
             </div>
-            <span 
+            <span
               className="text-xs font-black uppercase tracking-wider px-3 py-1 mt-1"
-              style={{ 
-                background: isPremium ? '#000' : '#FF006E', 
+              style={{
+                background: isPremium ? '#000' : '#FF006E',
                 color: isPremium ? '#FFBE0B' : '#FFF',
                 border: '2px solid #000'
               }}
@@ -78,18 +78,18 @@ export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium
 
         {/* Right Side: Level */}
         <div className="flex items-center gap-3">
-          <div 
+          <div
             className="flex flex-col items-center px-4 py-2"
-            style={{ 
-              background: '#FFF', 
+            style={{
+              background: 'var(--color-surface)',
               border: '3px solid #000',
               boxShadow: '4px 4px 0px #000'
             }}
           >
-            <span className="text-[10px] font-black uppercase" style={{ color: '#4A4A4A' }}>Level</span>
-            <span className="text-2xl md:text-3xl font-black" style={{ color: '#000' }}>{level}</span>
+            <span className="text-[10px] font-black uppercase" style={{ color: 'var(--color-text-muted)' }}>Level</span>
+            <span className="text-2xl md:text-3xl font-black" style={{ color: 'var(--color-text)' }}>{level}</span>
           </div>
-          <ArrowRight size={24} style={{ color: isPremium ? '#000' : '#FFF' }} />
+          <ArrowRight size={24} style={{ color: isPremium ? '#000' : 'var(--color-text)' }} />
         </div>
       </div>
     </button>

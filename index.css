@@ -31,17 +31,30 @@
   /* Text */
   --color-text: #000000;
   --color-text-muted: #4A4A4A;
+  --color-border: #000000;
 
   /* Borders & Shadows */
-  --border-brutal: 4px solid #000;
-  --border-thick: 6px solid #000;
-  --shadow-brutal: 8px 8px 0px #000;
-  --shadow-brutal-sm: 4px 4px 0px #000;
-  --shadow-brutal-lg: 12px 12px 0px #000;
+  --border-brutal: 4px solid var(--color-border);
+  --border-thick: 6px solid var(--color-border);
+  --shadow-brutal: 8px 8px 0px var(--color-border);
+  --shadow-brutal-sm: 4px 4px 0px var(--color-border);
+  --shadow-brutal-lg: 12px 12px 0px var(--color-border);
   --shadow-pink: 8px 8px 0px var(--color-pink);
   --shadow-orange: 8px 8px 0px var(--color-orange);
   --shadow-purple: 8px 8px 0px var(--color-purple);
   --shadow-yellow: 8px 8px 0px var(--color-yellow);
+}
+
+/* Dark Mode Overrides */
+.dark {
+  /* Background - Dark Gray */
+  --color-bg: #121212;
+  --color-surface: #1E1E1E;
+
+  /* Text */
+  --color-text: #FFFFFF;
+  --color-text-muted: #A0A0A0;
+  --color-border: #FFFFFF;
 }
 
 /* REMOVE ALL ROUNDED CORNERS GLOBALLY */
@@ -71,7 +84,7 @@ body {
   z-index: 9999;
   opacity: 0.025;
   /* Halftone dot pattern in darker beige */
-  background-image: 
+  background-image:
     radial-gradient(circle at center, #C4B494 0.8px, transparent 0.8px),
     radial-gradient(circle at center, #C4B494 0.5px, transparent 0.5px);
   background-size: 4px 4px, 6px 6px;
@@ -90,7 +103,7 @@ body {
 }
 
 .geo-pattern {
-  background-color: #FFF8E7;
+  background-color: var(--color-bg);
   background-image:
     /* Soft 3D gradient overlays */
     linear-gradient(160deg, rgba(131, 56, 236, 0.05) 0%, transparent 40%),
@@ -165,8 +178,15 @@ body {
 
 /* Animated 3D floating cubes */
 @keyframes float-3d {
-  0%, 100% { transform: translateY(0) rotateX(0deg); }
-  50% { transform: translateY(-10px) rotateX(5deg); }
+
+  0%,
+  100% {
+    transform: translateY(0) rotateX(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotateX(5deg);
+  }
 }
 
 .bg-3d-animated {

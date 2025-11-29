@@ -51,7 +51,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
 
     const [showStartModal, setShowStartModal] = useState(true);
     const [moveHistory, setMoveHistory] = useState<Move[]>([]);
-    
+
     // Hints
     const [showHintModal, setShowHintModal] = useState(false);
     const [hintMove, setHintMove] = useState<{ from: string, to: string } | null>(null);
@@ -73,7 +73,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
         setBoard(newGame.board());
         setMoveHistory(newGame.history({ verbose: true }));
         setHintMove(null); // Clear hint on move
-        
+
         // Check Game Over
         if (newGame.isGameOver()) {
             if (newGame.isCheckmate()) {
@@ -192,7 +192,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
             const opponentColor = myColor === 'w' ? 'b' : 'w';
             setGameStatus('resigned');
             setWinner(opponentColor);
-            
+
             if (isMultiplayer && multiplayerGameId) {
                 update(ref(database, `games/${multiplayerGameId}`), {
                     status: 'resigned',
@@ -205,7 +205,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
     const getSquareColor = (r: number, c: number) => {
         const isDark = (r + c) % 2 === 1;
         // Brutalist Style: White & Pink/Black grid
-        return isDark ? 'bg-[#FF006E]' : 'bg-white';
+        return isDark ? 'bg-[#FF006E]' : 'bg-[var(--color-surface)]';
     };
 
     const getCoord = (index: number) => {
@@ -214,10 +214,10 @@ export const ChessGame: React.FC<ChessGameProps> = ({
         // Black bottom: r0=1...r7=8, c0=h...c7=a
         // Actually standard loop 0..7 usually maps to visual top-down
         // Row 0 is top (Rank 8 for white)
-        
+
         const row = Math.floor(index / 8);
         const col = index % 8;
-        
+
         let rank = 8 - row; // 8, 7, 6...
         let file = col; // 0, 1, 2... (a, b, c...)
 
@@ -237,7 +237,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
         // Row 0 is Rank 8 (Black pieces start).
         // If orientation is White, we render Row 0 first.
         // If orientation is Black, we should reverse rows and cols.
-        
+
         let actualPiece = null;
         let displayRow = Math.floor(i / 8);
         let displayCol = i % 8;
@@ -266,7 +266,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                 onClick={() => handleSquareClick(square)}
                 className={`
                     w-full h-full flex items-center justify-center relative cursor-pointer
-                    ${isDark ? 'bg-[#FF006E]' : 'bg-white'}
+                    ${isDark ? 'bg-[#FF006E]' : 'bg-[var(--color-surface)]'}
                     ${isSelected ? '!bg-[#FFBE0B]' : ''}
                     ${isLastMove && !isSelected ? '!bg-[#8338EC]/50' : ''}
                     ${isCheck ? '!bg-red-600 animate-pulse' : ''}
@@ -275,12 +275,12 @@ export const ChessGame: React.FC<ChessGameProps> = ({
             >
                 {/* Coordinate Labels (Only on edges) */}
                 {c === 0 && (
-                    <span className={`absolute top-0.5 left-0.5 text-[8px] md:text-[10px] font-bold ${isDark ? 'text-white' : 'text-black'}`}>
+                    <span className={`absolute top-0.5 left-0.5 text-[8px] md:text-[10px] font-bold ${isDark ? 'text-white' : 'text-[var(--color-text)]'}`}>
                         {orientation === 'w' ? 8 - r : r + 1}
                     </span>
                 )}
                 {r === 7 && (
-                    <span className={`absolute bottom-0 right-0.5 text-[8px] md:text-[10px] font-bold ${isDark ? 'text-white' : 'text-black'}`}>
+                    <span className={`absolute bottom-0 right-0.5 text-[8px] md:text-[10px] font-bold ${isDark ? 'text-white' : 'text-[var(--color-text)]'}`}>
                         {String.fromCharCode(97 + (orientation === 'w' ? c : 7 - c)).toUpperCase()}
                     </span>
                 )}
@@ -297,8 +297,8 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                     <div className={`text-3xl md:text-4xl lg:text-5xl drop-shadow-md transition-transform ${isSelected ? '-translate-y-1' : ''}`}>
                         {React.createElement(PIECE_COMPONENTS[actualPiece.type], {
                             color: actualPiece.color === 'w' ? '#FFF' : '#000',
-                            style: { 
-                                stroke: '#000', 
+                            style: {
+                                stroke: '#000',
                                 strokeWidth: '15px', // Thick border for visibility
                                 filter: 'drop-shadow(2px 2px 0 #000)'
                             }
@@ -328,7 +328,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
         'w': { 'p': 'Bauer', 'r': 'Turm', 'n': 'Springer', 'b': 'Läufer', 'q': 'Dame', 'k': 'König' },
         'b': { 'p': 'Pawn', 'r': 'Rook', 'n': 'Knight', 'b': 'Bishop', 'q': 'Queen', 'k': 'King' }
     }; // Simplified, should really use TRANSLATIONS but this works for now (DE defaultish)
-    
+
     const getPieceName = (type: string) => {
         const lang = language === Language.DE ? 'w' : 'b'; // Hacky language check
         const names = {
@@ -345,7 +345,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
     const formatMove = (move: Move) => {
         const pieceName = getPieceName(move.piece);
         const to = move.to;
-        
+
         const toText = language === Language.DE ? 'nach' : 'to';
         const capturesText = language === Language.DE ? 'schlägt' : 'captures';
         const onText = language === Language.DE ? 'auf' : 'on';
@@ -362,23 +362,23 @@ export const ChessGame: React.FC<ChessGameProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full w-full bg-[#FFF8E7] overflow-hidden">
+        <div className="flex flex-col h-full w-full bg-[var(--color-bg)] overflow-hidden">
             {/* Start Info Modal */}
             {showStartModal && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white border-4 border-black p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-[8px_8px_0px_#000] animate-scale-in">
-                        <h2 className="text-2xl font-black uppercase mb-6 text-center border-b-4 border-black pb-2">
+                    <div className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-[8px_8px_0px_#000] animate-scale-in">
+                        <h2 className="text-2xl font-black uppercase mb-6 text-center border-b-4 border-[var(--color-border)] pb-2">
                             {language === Language.DE ? 'Schach: Anleitung' : 'Chess: Guide'}
                         </h2>
 
                         {/* Legend */}
                         <div className="mb-6">
-                            <h3 className="font-black uppercase mb-3 bg-yellow-400 inline-block px-2 border-2 border-black">
+                            <h3 className="font-black uppercase mb-3 bg-yellow-400 inline-block px-2 border-2 border-[var(--color-border)]">
                                 {language === Language.DE ? 'Figuren' : 'Pieces'}
                             </h3>
                             <div className="grid grid-cols-2 gap-3">
                                 {['k', 'q', 'r', 'b', 'n', 'p'].map(type => (
-                                    <div key={type} className="flex items-center gap-3 bg-gray-100 p-2 border-2 border-black rounded-lg">
+                                    <div key={type} className="flex items-center gap-3 bg-gray-100 p-2 border-2 border-[var(--color-border)] rounded-lg">
                                         <div className="text-3xl">
                                             {React.createElement(PIECE_COMPONENTS[type], { color: 'black' })}
                                         </div>
@@ -390,7 +390,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
 
                         {/* Rules */}
                         <div className="mb-6">
-                            <h3 className="font-black uppercase mb-3 bg-[#06FFA5] inline-block px-2 border-2 border-black">
+                            <h3 className="font-black uppercase mb-3 bg-[#06FFA5] inline-block px-2 border-2 border-[var(--color-border)]">
                                 {language === Language.DE ? 'Kurzregeln' : 'Rules'}
                             </h3>
                             <ul className="list-disc list-inside text-sm font-bold space-y-2 text-gray-700">
@@ -402,7 +402,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
 
                         <button
                             onClick={() => setShowStartModal(false)}
-                            className="w-full py-4 bg-[#FF006E] text-white border-4 border-black font-black uppercase text-xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
+                            className="w-full py-4 bg-[#FF006E] text-white border-4 border-[var(--color-border)] font-black uppercase text-xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
                         >
                             {language === Language.DE ? 'Spiel Starten' : 'Start Game'}
                         </button>
@@ -413,11 +413,11 @@ export const ChessGame: React.FC<ChessGameProps> = ({
             {/* Hint Modal */}
             {showHintModal && (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white border-4 border-black p-6 w-full max-w-sm shadow-[8px_8px_0px_#000] animate-scale-in text-center">
-                        <div className="mx-auto w-16 h-16 bg-[#FFBE0B] border-4 border-black flex items-center justify-center mb-4 transform -rotate-3">
-                            <Lightbulb size={32} className="text-black" />
+                    <div className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] p-6 w-full max-w-sm shadow-[8px_8px_0px_#000] animate-scale-in text-center">
+                        <div className="mx-auto w-16 h-16 bg-[#FFBE0B] border-4 border-[var(--color-border)] flex items-center justify-center mb-4 transform -rotate-3">
+                            <Lightbulb size={32} className="text-[var(--color-text)]" />
                         </div>
-                        
+
                         <h2 className="text-2xl font-black uppercase mb-2">{t.GAME.UNLOCK_HINT}</h2>
                         <p className="text-sm font-bold mb-6 text-gray-600">
                             {language === Language.DE ? 'Bekomme den besten Zug vorgeschlagen!' : 'Get the best move suggestion!'}
@@ -433,7 +433,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                                             alert(language === Language.DE ? 'Werbung läuft...' : 'Watching Ad...');
                                             getHint();
                                         }}
-                                        className="w-full py-3 bg-[#06FFA5] border-4 border-black font-black uppercase flex items-center justify-center gap-2 hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
+                                        className="w-full py-3 bg-[#06FFA5] border-4 border-[var(--color-border)] font-black uppercase flex items-center justify-center gap-2 hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
                                     >
                                         <Video size={20} />
                                         {language === Language.DE ? 'Gratis (Werbung)' : 'Free (Watch Ad)'}
@@ -449,7 +449,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                                                 alert(t.SHOP.INSUFFICIENT);
                                             }
                                         }}
-                                        className="w-full py-3 bg-[#FFF] border-4 border-black font-black uppercase flex items-center justify-center gap-2 hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
+                                        className="w-full py-3 bg-[var(--color-surface)] border-4 border-[var(--color-border)] font-black uppercase flex items-center justify-center gap-2 hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
                                     >
                                         <Coins size={20} className="text-[#FFBE0B]" />
                                         50 {t.HOME.COINS}
@@ -466,14 +466,14 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                                             alert(t.SHOP.INSUFFICIENT);
                                         }
                                     }}
-                                    className="w-full py-3 bg-[#8338EC] text-white border-4 border-black font-black uppercase flex items-center justify-center gap-2 hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
+                                    className="w-full py-3 bg-[#8338EC] text-white border-4 border-[var(--color-border)] font-black uppercase flex items-center justify-center gap-2 hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
                                 >
                                     <div className="flex flex-col items-center leading-none">
                                         <span className="flex items-center gap-1"><Coins size={14} /> 100 + <Video size={14} /></span>
                                     </div>
                                 </button>
                             )}
-                            
+
                             <button
                                 onClick={() => setShowHintModal(false)}
                                 className="text-xs font-bold uppercase underline mt-2"
@@ -486,28 +486,28 @@ export const ChessGame: React.FC<ChessGameProps> = ({
             )}
 
             {/* Header */}
-            <div className="p-4 flex justify-between items-center bg-white border-b-4 border-black z-20 shrink-0">
-                <button onClick={onBack} className="p-2 border-2 border-black hover:bg-gray-100 shadow-[2px_2px_0px_#000]">
+            <div className="p-4 flex justify-between items-center bg-[var(--color-surface)] border-b-4 border-[var(--color-border)] z-20 shrink-0">
+                <button onClick={onBack} className="p-2 border-2 border-[var(--color-border)] hover:bg-gray-100 shadow-[2px_2px_0px_#000]">
                     <ArrowLeft size={24} />
                 </button>
 
                 {/* Hint Button (Singleplayer only) */}
                 {!isMultiplayer && gameStatus === 'playing' && (
-                    <button 
+                    <button
                         onClick={() => setShowHintModal(true)}
                         disabled={isCalculatingHint}
-                        className="p-2 bg-[#FFBE0B] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-y-1 transition-all disabled:opacity-50"
+                        className="p-2 bg-[#FFBE0B] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_#000] active:translate-y-1 transition-all disabled:opacity-50"
                     >
                         <Lightbulb size={24} className={isCalculatingHint ? 'animate-pulse' : ''} />
                     </button>
                 )}
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-[#8338EC] border-2 border-black shadow-[2px_2px_0px_#000] text-white">
+                <div className="flex items-center gap-2 px-4 py-2 bg-[#8338EC] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_#000] text-white">
                     {isMultiplayer ? <Users size={20} /> : <Cpu size={20} />}
                     <span className="font-black uppercase hidden md:inline">{isMultiplayer ? 'Multiplayer' : 'Singleplayer'}</span>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-black shadow-[2px_2px_0px_#000]">
+                <div className="flex items-center gap-2 px-4 py-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_#000]">
                     <Coins size={20} className="text-[#FF006E]" />
                     <span className="font-mono font-black text-xl">{user.coins}</span>
                 </div>
@@ -515,10 +515,10 @@ export const ChessGame: React.FC<ChessGameProps> = ({
 
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden">
-                
+
                 {/* Move Log (Sidebar) */}
-                <div className="hidden md:flex flex-col w-64 bg-white border-r-4 border-black overflow-hidden shrink-0">
-                    <div className="p-3 bg-gray-100 border-b-4 border-black font-black uppercase text-center">
+                <div className="hidden md:flex flex-col w-64 bg-[var(--color-surface)] border-r-4 border-[var(--color-border)] overflow-hidden shrink-0">
+                    <div className="p-3 bg-gray-100 border-b-4 border-[var(--color-border)] font-black uppercase text-center">
                         {language === Language.DE ? 'Spielprotokoll' : 'Move Log'}
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-2 text-xs">
@@ -530,13 +530,13 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                             <div key={i} className="flex flex-col border-b border-gray-200 pb-2">
                                 <div className="text-gray-500 font-black mb-1">Runde {i + 1}</div>
                                 <div className="flex items-start gap-2">
-                                    <div className="w-3 h-3 mt-0.5 rounded-full bg-white border border-black shrink-0"></div>
+                                    <div className="w-3 h-3 mt-0.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] shrink-0"></div>
                                     <span className="font-bold text-gray-500 mr-1">{language === Language.DE ? 'Weiß:' : 'White:'}</span>
                                     <span className="font-bold">{formatMove(pair[0])}</span>
                                 </div>
                                 {pair[1] && (
                                     <div className="flex items-start gap-2 mt-1">
-                                        <div className="w-3 h-3 mt-0.5 rounded-full bg-black border border-black shrink-0"></div>
+                                        <div className="w-3 h-3 mt-0.5 rounded-full bg-black border border-[var(--color-border)] shrink-0"></div>
                                         <span className="font-bold text-gray-500 mr-1">{language === Language.DE ? 'Schwarz:' : 'Black:'}</span>
                                         <span className="font-bold">{formatMove(pair[1])}</span>
                                     </div>
@@ -552,9 +552,9 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                     {/* Game Status */}
                     <div className="p-2 md:p-4 flex justify-center shrink-0">
                         <div className={`
-                            px-4 md:px-6 py-2 md:py-3 border-4 border-black font-black text-sm md:text-xl uppercase shadow-[4px_4px_0px_#000] transform -skew-x-3
-                            ${gameStatus === 'playing' 
-                                ? (game.turn() === myColor ? 'bg-[#06FFA5]' : 'bg-white') 
+                            px-4 md:px-6 py-2 md:py-3 border-4 border-[var(--color-border)] font-black text-sm md:text-xl uppercase shadow-[4px_4px_0px_#000] transform -skew-x-3
+                            ${gameStatus === 'playing'
+                                ? (game.turn() === myColor ? 'bg-[#06FFA5]' : 'bg-[var(--color-surface)]')
                                 : 'bg-[#FF006E] text-white'}
                         `}>
                             {gameStatus === 'playing' ? (
@@ -567,40 +567,40 @@ export const ChessGame: React.FC<ChessGameProps> = ({
 
                     {/* Board */}
                     <div className="flex-1 flex items-center justify-center p-2 md:p-4 overflow-hidden">
-                        <div className="w-full max-w-[85vw] md:max-w-md aspect-square border-4 border-black bg-black shadow-[8px_8px_0px_#000]">
+                        <div className="w-full max-w-[85vw] md:max-w-md aspect-square border-4 border-[var(--color-border)] bg-black shadow-[8px_8px_0px_#000]">
                             <div className="grid grid-cols-8 grid-rows-8 h-full w-full">
                                 {Array.from({ length: 64 }).map((_, i) => renderSquare(i))}
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Mobile Move Log (Small strip) */}
-                    <div className="md:hidden h-16 bg-gray-100 border-t-4 border-black flex flex-col justify-center px-4 overflow-y-auto font-mono text-xs">
-                       {moveHistory.length > 0 ? (
-                           <div className="font-bold text-center">
-                               {moveHistory.length % 2 === 0 ? (
-                                   // Black just moved
-                                   <>
-                                     <span className="text-gray-500 mr-2">Schwarz:</span>
-                                     {formatMove(moveHistory[moveHistory.length - 1])}
-                                   </>
-                               ) : (
-                                   // White just moved
-                                   <>
-                                     <span className="text-gray-500 mr-2">Weiß:</span>
-                                     {formatMove(moveHistory[moveHistory.length - 1])}
-                                   </>
-                               )}
-                           </div>
-                       ) : (
-                           <div className="text-gray-400 text-center italic">Keine Züge</div>
-                       )}
+                    <div className="md:hidden h-16 bg-gray-100 border-t-4 border-[var(--color-border)] flex flex-col justify-center px-4 overflow-y-auto font-mono text-xs">
+                        {moveHistory.length > 0 ? (
+                            <div className="font-bold text-center">
+                                {moveHistory.length % 2 === 0 ? (
+                                    // Black just moved
+                                    <>
+                                        <span className="text-gray-500 mr-2">Schwarz:</span>
+                                        {formatMove(moveHistory[moveHistory.length - 1])}
+                                    </>
+                                ) : (
+                                    // White just moved
+                                    <>
+                                        <span className="text-gray-500 mr-2">Weiß:</span>
+                                        {formatMove(moveHistory[moveHistory.length - 1])}
+                                    </>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="text-gray-400 text-center italic">Keine Züge</div>
+                        )}
                     </div>
 
                     {/* Player Info */}
-                    <div className="px-4 py-4 bg-[#FFF8E7] border-t-4 border-black flex justify-between items-end shrink-0">
+                    <div className="px-4 py-4 bg-[var(--color-bg)] border-t-4 border-[var(--color-border)] flex justify-between items-end shrink-0">
                         <div className="flex items-center gap-2 md:gap-3">
-                            <div className="w-10 h-10 md:w-12 md:h-12 border-3 border-black bg-white overflow-hidden">
+                            <div className="w-10 h-10 md:w-12 md:h-12 border-3 border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
                                 <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="You" />
                             </div>
                             <div>
@@ -611,7 +611,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
 
                         {isMultiplayer && (
                             <div className="flex items-center gap-2 md:gap-3 flex-row-reverse text-right">
-                                <div className="w-10 h-10 md:w-12 md:h-12 border-3 border-black bg-white overflow-hidden">
+                                <div className="w-10 h-10 md:w-12 md:h-12 border-3 border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
                                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                                         <User size={20} />
                                     </div>
@@ -629,20 +629,20 @@ export const ChessGame: React.FC<ChessGameProps> = ({
             {/* Game Over Modal */}
             {gameStatus !== 'playing' && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-                    <div className="bg-white border-4 border-black p-8 w-full max-w-sm relative shadow-[8px_8px_0px_#000] animate-in zoom-in duration-200 text-center">
+                    <div className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] p-8 w-full max-w-sm relative shadow-[8px_8px_0px_#000] animate-in zoom-in duration-200 text-center">
                         <h2 className="text-4xl font-black uppercase mb-2 italic transform -skew-x-6">
                             {winner === myColor ? t.CHESS.WIN : (winner === 'draw' ? t.CHESS.DRAW : t.CHESS.LOSS)}
                         </h2>
                         <p className="font-bold mb-8 text-gray-600">
-                            {gameStatus === 'checkmate' ? t.CHESS.CHECKMATE : 
-                             gameStatus === 'stalemate' ? t.CHESS.STALEMATE : 
-                             gameStatus === 'draw' ? t.CHESS.DRAW : t.CHESS.GAME_OVER}
+                            {gameStatus === 'checkmate' ? t.CHESS.CHECKMATE :
+                                gameStatus === 'stalemate' ? t.CHESS.STALEMATE :
+                                    gameStatus === 'draw' ? t.CHESS.DRAW : t.CHESS.GAME_OVER}
                         </p>
 
                         <div className="flex flex-col gap-3">
                             <button
                                 onClick={handleEndGame}
-                                className="w-full py-4 bg-[#06FFA5] border-4 border-black font-black text-xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
+                                className="w-full py-4 bg-[#06FFA5] border-4 border-[var(--color-border)] font-black text-xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
                             >
                                 {t.CHESS.EXIT}
                             </button>

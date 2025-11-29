@@ -204,7 +204,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     // If verification sent, show special view
     if (showVerificationSent) {
         const content = (
-            <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8" style={{ background: '#FFF8E7' }}>
+            <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8" style={{ background: 'var(--color-bg)' }}>
                 <RainbowStripe />
                 <div className="flex flex-col items-center space-y-6 text-center max-w-md">
                     <div
@@ -259,7 +259,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     // If password reset sent, show special view
     if (showPasswordResetSent) {
         const content = (
-            <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8" style={{ background: '#FFF8E7' }}>
+            <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8" style={{ background: 'var(--color-bg)' }}>
                 <RainbowStripe />
                 <div className="flex flex-col items-center space-y-6 text-center max-w-md">
                     <div
@@ -312,7 +312,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     }
 
     const formContent = (
-        <div className="min-h-screen flex flex-col" style={{ background: '#FFF8E7' }}>
+        <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-bg)' }}>
             <RainbowStripe />
 
             <div className="flex-1 flex items-center justify-center p-6">
@@ -382,7 +382,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
                         {mode === 'select_auth_type' && (
                             <div className="space-y-4">
-                                <h2 className="text-3xl font-black uppercase text-center mb-8" style={{ color: '#000' }}>
+                                <h2 className="text-3xl font-black uppercase text-center mb-8" style={{ color: 'var(--color-text)' }}>
                                     Willkommen!
                                 </h2>
                                 <button
@@ -436,7 +436,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
                         {mode === 'language_select' && (
                             <div className="space-y-4">
-                                <h2 className="text-3xl font-black uppercase text-center mb-6" style={{ color: '#000' }}>
+                                <h2 className="text-3xl font-black uppercase text-center mb-6" style={{ color: 'var(--color-text)' }}>
                                     Wähle deine Sprache
                                 </h2>
                                 <button
@@ -516,7 +516,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
                         {mode === 'age_verify' && (
                             <div className="space-y-4">
-                                <h2 className="text-3xl font-black uppercase text-center mb-4" style={{ color: '#000' }}>
+                                <h2 className="text-3xl font-black uppercase text-center mb-4" style={{ color: 'var(--color-text)' }}>
                                     {t.age}
                                 </h2>
                                 <input
@@ -533,8 +533,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                     }}
                                     className="w-full px-6 py-4 text-center font-black text-3xl"
                                     style={{
-                                        background: '#FFF',
-                                        color: '#000',
+                                        background: 'var(--color-surface)',
+                                        color: 'var(--color-text)',
                                         border: '4px solid #000',
                                         boxShadow: '4px 4px 0px #000'
                                     }}
@@ -574,7 +574,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                             <>
                                 {/* Email */}
                                 <div>
-                                    <label className="block text-sm font-black uppercase mb-2" style={{ color: '#000' }}>E-MAIL</label>
+                                    <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>E-MAIL</label>
                                     <div className="relative">
                                         <div
                                             className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
@@ -591,8 +591,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                             onChange={(e) => setEmail(e.target.value)}
                                             className="w-full pl-20 pr-4 py-4 font-bold"
                                             style={{
-                                                background: '#FFF',
-                                                color: '#000',
+                                                background: 'var(--color-surface)',
+                                                color: 'var(--color-text)',
                                                 border: '4px solid #000',
                                                 boxShadow: '4px 4px 0px #000'
                                             }}
@@ -606,7 +606,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 {/* Username - ONLY FOR REGISTER */}
                                 {mode === 'register' && (
                                     <div>
-                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: '#000' }}>{t.username}</label>
+                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.username}</label>
                                         <div className="relative">
                                             <div
                                                 className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
@@ -623,8 +623,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                 onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
                                                 className="w-full pl-20 pr-4 py-4 font-bold"
                                                 style={{
-                                                    background: '#FFF',
-                                                    color: '#000',
+                                                    background: 'var(--color-surface)',
+                                                    color: 'var(--color-text)',
                                                     border: '4px solid #000',
                                                     boxShadow: '4px 4px 0px #000'
                                                 }}
@@ -640,7 +640,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 {/* Password */}
                                 {(mode === 'login' || mode === 'register') && (
                                     <div>
-                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: '#000' }}>{t.password}</label>
+                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.password}</label>
                                         <div className="relative">
                                             <div
                                                 className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
@@ -657,8 +657,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 className="w-full pl-20 pr-4 py-4 font-bold"
                                                 style={{
-                                                    background: '#FFF',
-                                                    color: '#000',
+                                                    background: 'var(--color-surface)',
+                                                    color: 'var(--color-text)',
                                                     border: '4px solid #000',
                                                     boxShadow: '4px 4px 0px #000'
                                                 }}
@@ -673,7 +673,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 {mode === 'register' && (
                                     <>
                                         <div>
-                                            <label className="block text-sm font-black uppercase mb-2" style={{ color: '#000' }}>{t.confirmPassword}</label>
+                                            <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.confirmPassword}</label>
                                             <div className="relative">
                                                 <div
                                                     className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
@@ -690,8 +690,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                                     className="w-full pl-20 pr-4 py-4 font-bold"
                                                     style={{
-                                                        background: '#FFF',
-                                                        color: '#000',
+                                                        background: 'var(--color-surface)',
+                                                        color: 'var(--color-text)',
                                                         border: '4px solid #000',
                                                         boxShadow: '4px 4px 0px #000'
                                                     }}
@@ -721,8 +721,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                 onChange={(e) => setCaptchaInput(e.target.value)}
                                                 className="w-full px-4 py-3 text-center font-black text-2xl"
                                                 style={{
-                                                    background: '#FFF',
-                                                    color: '#000',
+                                                    background: 'var(--color-surface)',
+                                                    color: 'var(--color-text)',
                                                     border: '4px solid #000',
                                                     boxShadow: '2px 2px 0px #000'
                                                 }}

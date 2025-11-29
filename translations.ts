@@ -3,6 +3,10 @@ import { Language } from './types';
 
 export const TRANSLATIONS = {
     EN: {
+        THEME: {
+            DARK: "DARK",
+            LIGHT: "LIGHT"
+        },
         // Home
         seasonRank: "SEASON LVL",
         mastersOfVocab: "Daily Word Training",
@@ -137,6 +141,10 @@ export const TRANSLATIONS = {
         }
     },
     DE: {
+        THEME: {
+            DARK: "DUNKEL",
+            LIGHT: "HELL"
+        },
         // Home
         seasonRank: "SAISON STUFE",
         mastersOfVocab: "Das tägliche Worttraining",
@@ -271,6 +279,10 @@ export const TRANSLATIONS = {
         }
     },
     ES: {
+        THEME: {
+            DARK: "OSCURO",
+            LIGHT: "CLARO"
+        },
         // Home
         seasonRank: "NIVEL DE TEMPORADA",
         mastersOfVocab: "Entrenamiento Diario",

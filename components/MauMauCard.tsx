@@ -62,13 +62,14 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
             whileTap={!disabled ? { scale: 0.95 } : {}}
             onClick={disabled ? undefined : onClick}
             className={`
-        relative w-24 h-36 rounded-xl bg-white border-4 flex flex-col items-center justify-between p-2 cursor-pointer shadow-2xl
+        relative w-24 h-36 rounded-xl border-4 flex flex-col items-center justify-between p-2 cursor-pointer shadow-2xl
         ${selected ? 'ring-4 ring-cyan-400 shadow-cyan-400/50' : ''}
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         ${card.isAction ? 'border-yellow-500 shadow-yellow-500/30' : isRed ? 'border-red-200' : 'border-gray-300'}
       `}
             style={{
                 color: suitColor,
+                background: 'var(--color-surface)',
             }}
             initial={{ opacity: 0, scale: 0.8, rotateY: 180 }}
             animate={{ opacity: 1, scale: 1, rotateY: 0 }}
@@ -151,7 +152,7 @@ export const CardHand: React.FC<CardHandProps> = ({
                             <PlayingCard
                                 card={card}
                                 onClick={() => onCardClick?.(index)}
-                                onDrag Start={() => {
+                                onDragStart={() => {
                                     setDraggingIndex(index);
                                     onCardDrag?.(index);
                                 }}

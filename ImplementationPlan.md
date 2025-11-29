@@ -141,7 +141,7 @@ Before adding new games, we need to upgrade the multiplayer infrastructure to su
     - [ ] Test Random Matchmaking for all supported modes.
 - [ ] **Asset Optimization**
     - [ ] Ensure icons/assets are optimized.
-- [ ] **Deployment**
-    - [ ] Build production version.
-    - [ ] Update changelog.
-    - [ ] Deploy to Ionos.
+- [x] **Deployment**
+    - [x] Build production version.
+    - [x] Update changelog.
+    - [x] Deploy to Ionos.

@@ -172,10 +172,10 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
         return (
             <div className="flex flex-col items-center justify-center h-full p-4 animate-in fade-in zoom-in duration-300">
                 <div
-                    className="bg-white border-4 border-black p-8 max-w-md w-full text-center relative"
-                    style={{ boxShadow: '8px 8px 0px #000' }}
+                    className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] p-8 max-w-md w-full text-center relative"
+                    style={{ boxShadow: '8px 8px 0px var(--color-border)' }}
                 >
-                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#FF006E] text-white border-4 border-black px-6 py-2 font-black text-xl rotate-2 shadow-[4px_4px_0px_#000]">
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#FF006E] text-white border-4 border-[var(--color-border)] px-6 py-2 font-black text-xl rotate-2 shadow-[4px_4px_0px_#000]">
                         {t.CHAIN_GAME.GAME_OVER}
                     </div>
 
@@ -185,11 +185,11 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-8">
-                        <div className="bg-blue-100 p-3 border-2 border-black">
+                        <div className="bg-blue-100 p-3 border-2 border-[var(--color-border)]">
                             <p className="text-xs font-bold uppercase">{t.GAME.XP_GAINED}</p>
                             <p className="text-xl font-black">+{Math.floor(score / 10)}</p>
                         </div>
-                        <div className="bg-yellow-100 p-3 border-2 border-black">
+                        <div className="bg-yellow-100 p-3 border-2 border-[var(--color-border)]">
                             <p className="text-xs font-bold uppercase">{t.GAME.COINS_GAINED}</p>
                             <p className="text-xl font-black">+{Math.floor(score / 20)}</p>
                         </div>
@@ -198,13 +198,13 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
                     <div className="flex flex-col gap-3">
                         <button
                             onClick={startGame}
-                            className="w-full py-4 bg-[#06FFA5] border-4 border-black font-black text-xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
+                            className="w-full py-4 bg-[#06FFA5] border-4 border-[var(--color-border)] font-black text-xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
                         >
                             {t.CHAIN_GAME.PLAY_AGAIN}
                         </button>
                         <button
                             onClick={() => onGameEnd(Math.floor(score / 20), Math.floor(score / 10))}
-                            className="w-full py-4 bg-white border-4 border-black font-black text-xl hover:bg-gray-50 transition-all shadow-[4px_4px_0px_#000]"
+                            className="w-full py-4 bg-[var(--color-surface)] border-4 border-[var(--color-border)] font-black text-xl hover:bg-gray-50 transition-all shadow-[4px_4px_0px_#000]"
                         >
                             {t.CHAIN_GAME.EXIT}
                         </button>
@@ -219,27 +219,27 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
         return (
             <div className="flex flex-col items-center justify-center h-full p-4">
                 <div
-                    className="bg-white border-4 border-black p-8 max-w-md w-full text-center relative"
-                    style={{ boxShadow: '8px 8px 0px #000' }}
+                    className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] p-8 max-w-md w-full text-center relative"
+                    style={{ boxShadow: '8px 8px 0px var(--color-border)' }}
                 >
-                    <h1 className="text-4xl font-black mb-2 uppercase italic">{t.CHAIN_GAME.TITLE}</h1>
-                    <p className="text-lg font-bold mb-8">{t.CHAIN_GAME.INSTRUCTIONS}</p>
+                    <h1 className="text-4xl font-black mb-2 uppercase italic" style={{ color: 'var(--color-text)' }}>{t.CHAIN_GAME.TITLE}</h1>
+                    <p className="text-lg font-bold mb-8" style={{ color: 'var(--color-text)' }}>{t.CHAIN_GAME.INSTRUCTIONS}</p>
 
                     <div className="space-y-4 mb-8 text-left">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-[#FFBE0B] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000]">
-                                <Clock size={24} />
+                            <div className="w-12 h-12 bg-[#FFBE0B] border-2 border-[var(--color-border)] flex items-center justify-center shadow-[2px_2px_0px_var(--color-border)]">
+                                <Clock size={24} className="text-black" />
                             </div>
-                            <div>
+                            <div style={{ color: 'var(--color-text)' }}>
                                 <p className="font-black">{t.CHAIN_GAME.TIME_LABEL}</p>
                                 <p className="text-sm">{t.CHAIN_GAME.TIME_DESC}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-[#FF006E] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000] text-white">
+                            <div className="w-12 h-12 bg-[#FF006E] border-2 border-[var(--color-border)] flex items-center justify-center shadow-[2px_2px_0px_var(--color-border)] text-white">
                                 <Zap size={24} />
                             </div>
-                            <div>
+                            <div style={{ color: 'var(--color-text)' }}>
                                 <p className="font-black">{t.CHAIN_GAME.COMBO_LABEL}</p>
                                 <p className="text-sm">{t.CHAIN_GAME.COMBO_DESC}</p>
                             </div>
@@ -248,7 +248,7 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
 
                     <button
                         onClick={startGame}
-                        className="w-full py-4 bg-[#06FFA5] border-4 border-black font-black text-2xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[6px_6px_0px_#000] uppercase"
+                        className="w-full py-4 bg-[#06FFA5] border-4 border-[var(--color-border)] font-black text-2xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[6px_6px_0px_var(--color-border)] uppercase text-black"
                     >
                         {t.CHAIN_GAME.START_BTN}
                     </button>
@@ -256,6 +256,7 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
                     <button
                         onClick={onBack}
                         className="mt-4 font-bold underline hover:text-[#FF006E]"
+                        style={{ color: 'var(--color-text)' }}
                     >
                         {t.CHAIN_GAME.BACK_BTN}
                     </button>
@@ -268,19 +269,19 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
     return (
         <div className="flex flex-col h-full relative overflow-hidden">
             {/* Header */}
-            <div className="p-4 flex justify-between items-center bg-white border-b-4 border-black">
-                <button onClick={endGame} className="p-2 border-2 border-black hover:bg-gray-100 shadow-[2px_2px_0px_#000]">
+            <div className="p-4 flex justify-between items-center bg-[var(--color-surface)] border-b-4 border-[var(--color-border)]">
+                <button onClick={endGame} className="p-2 border-2 border-[var(--color-border)] hover:bg-gray-100 shadow-[2px_2px_0px_#000]">
                     <ArrowLeft size={24} />
                 </button>
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-[#FFBE0B] border-2 border-black shadow-[2px_2px_0px_#000]">
+                <div className="flex items-center gap-2 px-4 py-2 bg-[#FFBE0B] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_#000]">
                     <Clock size={20} />
                     <span className={`font-mono font-black text-xl ${timeLeft < 10 ? 'text-red-600 animate-pulse' : ''}`}>
                         {timeLeft}s
                     </span>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-black shadow-[2px_2px_0px_#000]">
+                <div className="flex items-center gap-2 px-4 py-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_#000]">
                     <Trophy size={20} className="text-[#FF006E]" />
                     <span className="font-mono font-black text-xl">{score}</span>
                 </div>
@@ -292,7 +293,7 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
                 {/* Combo Indicator */}
                 {combo > 1 && (
                     <div className="absolute top-8 animate-bounce">
-                        <div className="bg-[#FF006E] text-white px-4 py-1 border-2 border-black shadow-[4px_4px_0px_#000] -rotate-3 font-black text-lg">
+                        <div className="bg-[#FF006E] text-white px-4 py-1 border-2 border-[var(--color-border)] shadow-[4px_4px_0px_#000] -rotate-3 font-black text-lg">
                             {combo}x {t.CHAIN_GAME.COMBO_TEXT}
                         </div>
                     </div>
@@ -300,7 +301,7 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
 
                 <div className={`flex flex-col items-center gap-4 transition-all duration-200 ${shake ? 'translate-x-[-10px]' : ''}`}>
                     {/* First Word (Hint) */}
-                    <div className="bg-white border-4 border-black px-8 py-4 shadow-[8px_8px_0px_#000] rotate-1">
+                    <div className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] px-8 py-4 shadow-[8px_8px_0px_#000] rotate-1">
                         <span className="text-4xl md:text-6xl font-black uppercase tracking-wider">
                             {currentPair[0]}
                         </span>
@@ -313,7 +314,7 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
 
                     {/* Target Word (Input) */}
                     <div className="relative">
-                        <div className={`bg-white border-4 border-black px-8 py-4 shadow-[8px_8px_0px_#000] -rotate-1 min-w-[200px] text-center
+                        <div className={`bg-[var(--color-surface)] border-4 border-[var(--color-border)] px-8 py-4 shadow-[8px_8px_0px_#000] -rotate-1 min-w-[200px] text-center
               ${feedback === 'correct' ? 'bg-[#06FFA5]' : ''}
               ${feedback === 'wrong' ? 'bg-red-100' : ''}
             `}>
@@ -345,7 +346,7 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
                 {/* Hint Button */}
                 <button
                     onClick={(e) => { e.stopPropagation(); setShowHintModal(true); }}
-                    className="absolute bottom-8 right-8 w-14 h-14 bg-[#8338EC] text-white border-4 border-black flex items-center justify-center shadow-[4px_4px_0px_#000] hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
+                    className="absolute bottom-8 right-8 w-14 h-14 bg-[#8338EC] text-white border-4 border-[var(--color-border)] flex items-center justify-center shadow-[4px_4px_0px_#000] hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
                 >
                     <HelpCircle size={28} strokeWidth={3} />
                 </button>
@@ -353,17 +354,17 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
             </div>
 
             {/* Keyboard Hint (Mobile) */}
-            <div className="p-4 text-center text-sm font-bold bg-gray-100 border-t-2 border-black">
+            <div className="p-4 text-center text-sm font-bold bg-gray-100 border-t-2 border-[var(--color-border)]">
                 {t.CHAIN_GAME.KEYBOARD_HINT}
             </div>
 
             {/* Hint Modal */}
             {showHintModal && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-                    <div className="bg-white border-4 border-black p-6 w-full max-w-sm relative shadow-[8px_8px_0px_#000] animate-in zoom-in duration-200">
+                    <div className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] p-6 w-full max-w-sm relative shadow-[8px_8px_0px_#000] animate-in zoom-in duration-200">
                         <button
                             onClick={() => setShowHintModal(false)}
-                            className="absolute top-4 right-4 p-1 hover:bg-gray-100 border-2 border-transparent hover:border-black transition-all"
+                            className="absolute top-4 right-4 p-1 hover:bg-gray-100 border-2 border-transparent hover:border-[var(--color-border)] transition-all"
                         >
                             <X size={24} />
                         </button>
@@ -375,18 +376,18 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
                         <div className="space-y-4">
                             <button
                                 onClick={() => useHint('letter')}
-                                className="w-full p-4 bg-white border-4 border-black flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 transition-all shadow-[4px_4px_0px_#000]"
+                                className="w-full p-4 bg-[var(--color-surface)] border-4 border-[var(--color-border)] flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 transition-all shadow-[4px_4px_0px_#000]"
                             >
                                 <span className="font-bold">{t.CHAIN_GAME.REVEAL_LETTER}</span>
-                                <span className="font-black bg-[#FFBE0B] px-2 py-1 border-2 border-black text-sm">20 {t.GAME.COINS_GAINED}</span>
+                                <span className="font-black bg-[#FFBE0B] px-2 py-1 border-2 border-[var(--color-border)] text-sm">20 {t.GAME.COINS_GAINED}</span>
                             </button>
 
                             <button
                                 onClick={() => useHint('word')}
-                                className="w-full p-4 bg-white border-4 border-black flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 transition-all shadow-[4px_4px_0px_#000]"
+                                className="w-full p-4 bg-[var(--color-surface)] border-4 border-[var(--color-border)] flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 transition-all shadow-[4px_4px_0px_#000]"
                             >
                                 <span className="font-bold">{t.CHAIN_GAME.REVEAL_WORD}</span>
-                                <span className="font-black bg-[#FFBE0B] px-2 py-1 border-2 border-black text-sm">50 {t.GAME.COINS_GAINED}</span>
+                                <span className="font-black bg-[#FFBE0B] px-2 py-1 border-2 border-[var(--color-border)] text-sm">50 {t.GAME.COINS_GAINED}</span>
                             </button>
                         </div>
 
