@@ -355,17 +355,7 @@ export default function SkatMauMauGame({
         </div>
 
         <div className="flex gap-2">
-          <button
-            onClick={() => setShowChangelog(true)}
-            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
-            style={{
-              background: 'var(--color-surface)',
-              border: '3px solid var(--color-border)',
-              boxShadow: '4px 4px 0px var(--color-border)'
-            }}
-          >
-            <Info size={20} style={{ color: 'var(--color-text)' }} />
-          </button>
+
           <button
             onClick={() => setShowFriends(true)}
             className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"

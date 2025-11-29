@@ -20,7 +20,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
   const [showOptionalUpdate, setShowOptionalUpdate] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
   const [viewingChangelogFromForce, setViewingChangelogFromForce] = useState(false);
-  
+
   // Maintenance State
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [maintenanceMessage, setMaintenanceMessage] = useState('');
@@ -137,67 +137,165 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
   // Force Update Modal (Blocking)
   if (showForceUpdate) {
     return (
-      <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/95 backdrop-blur-xl animate-in fade-in duration-300">
-        <div className="glass-panel p-8 rounded-3xl max-w-md mx-4 text-center space-y-6 border-orange-500/30 shadow-[0_0_50px_rgba(249,115,22,0.2)]">
-          <div className="w-24 h-24 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center border-2 border-orange-500 animate-pulse-slow">
-            <AlertTriangle size={48} className="text-orange-500" />
-          </div>
+      <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4" style={{ background: 'var(--color-bg)' }}>
+        {/* Rainbow Top Bar */}
+        <div className="absolute top-0 left-0 right-0 flex h-3 w-full z-50">
+          <div className="flex-1" style={{ background: '#FF006E' }}></div>
+          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+          <div className="flex-1" style={{ background: '#0096FF' }}></div>
+          <div className="flex-1" style={{ background: '#8338EC' }}></div>
+        </div>
 
-          <div>
-            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-wider">{t.UPDATES.REQUIRED_TITLE}</h2>
-            <p className="text-gray-300 leading-relaxed">
-              {t.UPDATES.REQUIRED_DESC}
+        <div
+          className="w-full max-w-md relative animate-in fade-in duration-300"
+          style={{
+            background: 'var(--color-surface)',
+            border: '4px solid var(--color-border)',
+            boxShadow: '8px 8px 0px var(--color-border)',
+            transform: 'skewY(-1deg)'
+          }}
+        >
+          <div className="p-8 space-y-6 text-center" style={{ transform: 'skewY(1deg)' }}>
+            {/* Icon */}
+            <div
+              className="w-24 h-24 mx-auto flex items-center justify-center animate-pulse"
+              style={{
+                background: '#FF006E',
+                border: '4px solid var(--color-border)',
+                boxShadow: '6px 6px 0px var(--color-border)',
+                transform: 'rotate(-3deg)'
+              }}
+            >
+              <AlertTriangle size={48} style={{ color: '#FFF' }} />
+            </div>
+
+            {/* Title & Description */}
+            <div>
+              <h2
+                className="text-3xl font-black uppercase tracking-wider mb-3"
+                style={{ color: 'var(--color-text)' }}
+              >
+                {t.UPDATES.REQUIRED_TITLE}
+              </h2>
+              <p
+                className="text-sm font-bold leading-relaxed"
+                style={{ color: 'var(--color-text)', opacity: 0.8 }}
+              >
+                {t.UPDATES.REQUIRED_DESC}
+              </p>
+            </div>
+
+            {/* Version Comparison */}
+            <div
+              className="flex items-center justify-center gap-4 p-4"
+              style={{
+                background: 'var(--color-bg)',
+                border: '3px solid var(--color-border)',
+                boxShadow: '4px 4px 0px var(--color-border)'
+              }}
+            >
+              <div className="flex flex-col items-center">
+                <span
+                  className="uppercase text-[10px] tracking-widest font-black mb-1"
+                  style={{ color: 'var(--color-text)', opacity: 0.6 }}
+                >
+                  {t.UPDATES.INSTALLED}
+                </span>
+                <span
+                  className="font-mono text-lg font-black"
+                  style={{ color: '#FF006E' }}
+                >
+                  v{APP_VERSION}
+                </span>
+              </div>
+              <ArrowLeft size={20} className="rotate-180" style={{ color: '#FFBE0B' }} />
+              <div className="flex flex-col items-center">
+                <span
+                  className="uppercase text-[10px] tracking-widest font-black mb-1"
+                  style={{ color: 'var(--color-text)', opacity: 0.6 }}
+                >
+                  {t.UPDATES.REQUIRED}
+                </span>
+                <span
+                  className="font-mono text-lg font-black"
+                  style={{ color: '#06FFA5' }}
+                >
+                  v{minVersion}
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-3">
+              {isCapacitor ? (
+                <button
+                  onClick={handleDownload}
+                  className="w-full py-4 font-black uppercase text-sm transition-all active:translate-y-1 flex items-center justify-center gap-2"
+                  style={{
+                    background: '#06FFA5',
+                    color: '#000',
+                    border: '3px solid var(--color-border)',
+                    boxShadow: '6px 6px 0px var(--color-border)'
+                  }}
+                >
+                  <Download size={20} />
+                  {t.UPDATES.UPDATE_NOW}
+                </button>
+              ) : (
+                <div
+                  className="p-4 space-y-3"
+                  style={{
+                    background: '#FFBE0B',
+                    border: '3px solid var(--color-border)',
+                    boxShadow: '4px 4px 0px var(--color-border)'
+                  }}
+                >
+                  <p className="text-sm font-bold leading-relaxed" style={{ color: '#000' }}>
+                    Die Website wird gerade aktualisiert. Bitte habe einen Moment Geduld.
+                  </p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="w-full py-3 font-black uppercase text-xs transition-all active:translate-y-1 flex items-center justify-center gap-2"
+                    style={{
+                      background: '#FFF',
+                      color: '#000',
+                      border: '3px solid #000',
+                      boxShadow: '4px 4px 0px #000'
+                    }}
+                  >
+                    <Download size={16} />
+                    Seite neu laden
+                  </button>
+                </div>
+              )}
+
+              <button
+                onClick={() => {
+                  setViewingChangelogFromForce(true);
+                  setShowChangelog(true);
+                }}
+                className="w-full text-sm font-bold underline underline-offset-4 transition-opacity hover:opacity-70 pt-2"
+                style={{ color: 'var(--color-text)', opacity: 0.8 }}
+              >
+                {t.UPDATES.WHATS_NEW}
+              </button>
+            </div>
+
+            {/* Security Badge */}
+            <p
+              className="text-[10px] uppercase tracking-widest font-black px-4 py-2 inline-block"
+              style={{
+                background: '#8338EC',
+                color: '#FFF',
+                border: '2px solid var(--color-border)',
+                transform: 'rotate(-1deg)'
+              }}
+            >
+              {t.UPDATES.SECURITY}
             </p>
           </div>
-
-          <div className="flex items-center justify-center gap-4 text-xs text-gray-400 bg-black/40 p-4 rounded-xl border border-white/5">
-            <div className="flex flex-col items-center">
-              <span className="text-gray-500 uppercase text-[10px] tracking-widest">{t.UPDATES.INSTALLED}</span>
-              <span className="font-mono text-red-400 text-lg">v{APP_VERSION}</span>
-            </div>
-            <ArrowLeft size={20} className="rotate-180 text-orange-500" />
-            <div className="flex flex-col items-center">
-              <span className="text-gray-500 uppercase text-[10px] tracking-widest">{t.UPDATES.REQUIRED}</span>
-              <span className="font-mono text-green-400 font-bold text-lg">v{minVersion}</span>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {isCapacitor ? (
-              <button
-                onClick={handleDownload}
-                className="w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white font-black uppercase rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
-              >
-                <Download size={20} />
-                {t.UPDATES.UPDATE_NOW}
-              </button>
-            ) : (
-              <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-200 text-sm space-y-3">
-                <p className="leading-relaxed">
-                  Die Website wird gerade aktualisiert. Bitte habe einen Moment Geduld.
-                </p>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="w-full py-3 bg-yellow-600/20 hover:bg-yellow-600/40 border border-yellow-500/50 text-yellow-200 rounded-lg text-xs uppercase font-bold transition-all flex items-center justify-center gap-2"
-                >
-                  <Download size={16} />
-                  Seite neu laden
-                </button>
-              </div>
-            )}
-
-            <button
-              onClick={() => {
-                setViewingChangelogFromForce(true);
-                setShowChangelog(true);
-              }}
-              className="w-full text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors pt-2"
-            >
-              {t.UPDATES.WHATS_NEW}
-            </button>
-          </div>
-
-          <p className="text-[10px] text-gray-600 uppercase tracking-widest">{t.UPDATES.SECURITY}</p>
         </div>
 
         {/* Show Changelog on top if requested */}

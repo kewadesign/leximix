@@ -4089,6 +4089,13 @@ export default function App() {
             </div>
 
             <div className="text-left space-y-3 text-sm">
+              <div className="p-4 bg-[var(--color-surface)]/5 rounded-xl border border-white/10">
+                <h4 className="font-bold text-cyan-400 mb-2 uppercase tracking-wide">v3.1.3 - Update</h4>
+                <ul className="space-y-2 text-gray-300">
+                  <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Mau Mau UI Verbesserungen</li>
+                  <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Performance Optimierungen</li>
+                </ul>
+              </div>
               <p className="font-bold text-white">
                 Diese Aktion löscht <span className="text-red-400 underline">UNWIDERRUFLICH</span>:
               </p>
