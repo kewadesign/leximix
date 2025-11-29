@@ -63,7 +63,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                 <div className="absolute top-10 left-10 w-32 h-32 rotate-12 opacity-10" style={{ background: '#FF006E', border: '4px solid #000' }}></div>
                 <div className="absolute top-40 right-20 w-24 h-24 -rotate-6 opacity-10" style={{ background: '#FFBE0B', border: '4px solid #000' }}></div>
                 <div className="absolute bottom-20 left-1/4 w-40 h-40 rotate-45 opacity-10" style={{ background: '#8338EC', border: '4px solid #000' }}></div>
-                <div className="absolute bottom-40 right-10 w-28 h-28 -rotate-12 opacity-10" style={{ background: '#06FFA5', border: '4px solid #000' }}></div>
+                <div className="absolute bottom-40 right-10 w-28 h-28 -rotate-12 opacity-10" style={{ background: '#00D9FF', border: '4px solid #000' }}></div>
                 <div className="absolute top-1/2 left-1/2 w-48 h-48 rotate-6 opacity-5" style={{ background: '#FF7F00', border: '4px solid #000' }}></div>
                 
                 {/* Dotted grid pattern */}
@@ -99,7 +99,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                 <div className="flex-1 animate-pulse" style={{ background: '#FF006E', animationDelay: '0s' }}></div>
                 <div className="flex-1 animate-pulse" style={{ background: '#FF7F00', animationDelay: '0.1s' }}></div>
                 <div className="flex-1 animate-pulse" style={{ background: '#FFBE0B', animationDelay: '0.2s' }}></div>
-                <div className="flex-1 animate-pulse" style={{ background: '#06FFA5', animationDelay: '0.3s' }}></div>
+                <div className="flex-1 animate-pulse" style={{ background: '#00D9FF', animationDelay: '0.3s' }}></div>
                 <div className="flex-1 animate-pulse" style={{ background: '#8338EC', animationDelay: '0.4s' }}></div>
             </div>
 
@@ -133,7 +133,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                             <div className="w-32 h-4" style={{ background: '#000', border: '2px solid #000' }}>
                                 <div
                                     className="h-full transition-all duration-500"
-                                    style={{ width: `${Math.min(100, Math.max(5, user.xp % 100))}%`, background: '#06FFA5' }}
+                                    style={{ width: `${Math.min(100, Math.max(5, user.xp % 100))}%`, background: '#00D9FF' }}
                                 ></div>
                             </div>
                             <span className="text-xs font-black" style={{ color: 'var(--color-text)' }}>{user.xp % 100}/100</span>
@@ -192,7 +192,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     <span style={{ color: 'var(--color-text)' }}>Titel</span>
                 </div>
                 <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#06FFA5', border: '2px solid #000' }}><CreditCard size={12} style={{ color: '#000' }} /></div>
+                    <div className="p-1" style={{ background: '#00D9FF', border: '2px solid #000' }}><CreditCard size={12} style={{ color: '#000' }} /></div>
                     <span style={{ color: 'var(--color-text)' }}>Karten</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -219,11 +219,13 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     className="flex items-center h-full px-[50vw] min-w-max gap-4 py-6"
                     style={{ transform: 'translateZ(0)' }}
                 >
-                    {/* Stylish Track Line with Gradient */}
+                    {/* Animated Rainbow Track Line */}
                     <div
                         className="absolute top-1/2 left-0 right-0 h-4 -translate-y-1/2 z-0"
                         style={{ 
-                            background: 'linear-gradient(90deg, #FF006E 0%, #FF7F00 20%, #FFBE0B 40%, #06FFA5 60%, #0096FF 80%, #8338EC 100%)',
+                            background: 'linear-gradient(90deg, #FF006E, #FF7F00, #FFBE0B, #00D9FF, #8338EC, #FF006E)',
+                            backgroundSize: '200% 100%',
+                            animation: 'rainbow-flow 8s linear infinite',
                             border: '3px solid #000',
                             boxShadow: '0 4px 0px #000'
                         }}
@@ -257,9 +259,11 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                         const premiumReward = item.premium;
                         const freeReward = item.free;
 
-                        // Rotating colors for cards
-                        const colors = ['#FF006E', '#FF7F00', '#FFBE0B', '#06FFA5', '#8338EC', '#0096FF'];
+                        // Rainbow rotating colors for cards
+                        const colors = ['#FF006E', '#FF7F00', '#FFBE0B', '#00D9FF', '#8338EC', '#00FFB3'];
                         const cardColor = colors[index % colors.length];
+                        const isLegendary = premiumReward?.rarity === 'legendary';
+                        const isEpic = premiumReward?.rarity === 'epic';
 
                         return (
                             <div
@@ -291,11 +295,13 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
                                     {premiumReward ? (
                                         <div
-                                            className="relative w-36 p-4 flex flex-col items-center transition-all group-hover:-translate-y-3"
+                                            className={`relative w-36 p-4 flex flex-col items-center transition-all group-hover:-translate-y-3 ${isLegendary ? 'rainbow-card holo-shimmer' : ''} ${isEpic ? 'rarity-epic' : ''}`}
                                             style={{
                                                 background: 'var(--color-surface)',
-                                                border: '4px solid #000',
-                                                boxShadow: `8px 8px 0px ${cardColor}`
+                                                border: isLegendary ? '4px solid #FFBE0B' : '4px solid #000',
+                                                boxShadow: isLegendary 
+                                                    ? '0 0 20px rgba(255,190,11,0.5), 8px 8px 0px #FFBE0B' 
+                                                    : `8px 8px 0px ${cardColor}`
                                             }}
                                         >
                                             {!user.isPremium && (
@@ -303,12 +309,22 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                             )}
 
                                             {premiumReward.type === 'avatar' ? (
-                                                <img
-                                                    src={premiumReward.preview}
-                                                    alt="Avatar"
-                                                    className="w-12 h-12 object-cover"
-                                                    style={{ border: '3px solid #000' }}
-                                                />
+                                                <div className={`relative ${isLegendary ? 'animate-pulse' : ''}`}>
+                                                    <img
+                                                        src={premiumReward.preview}
+                                                        alt="Avatar"
+                                                        className="w-14 h-14 object-cover"
+                                                        style={{ 
+                                                            border: isLegendary ? '3px solid #FFBE0B' : '3px solid #000',
+                                                            boxShadow: isLegendary ? '0 0 15px rgba(255,190,11,0.6)' : 'none'
+                                                        }}
+                                                    />
+                                                    {isLegendary && (
+                                                        <div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center" style={{ background: '#FFBE0B', border: '2px solid #000' }}>
+                                                            <span className="text-xs">⭐</span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             ) : premiumReward.type === 'frame' || premiumReward.type === 'effect' ? (
                                                 <div 
                                                     className="w-12 h-12 flex items-center justify-center"
@@ -326,7 +342,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                             ) : premiumReward.type === 'cardback' ? (
                                                 <div 
                                                     className="w-10 h-14 flex items-center justify-center"
-                                                    style={{ background: '#06FFA5', border: '3px solid #000' }}
+                                                    style={{ background: '#00D9FF', border: '3px solid #000' }}
                                                 >
                                                     <span className="text-xl">🃏</span>
                                                 </div>
@@ -366,14 +382,14 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                 <button
                                                     onClick={() => handleClaim(lvl, true, premiumReward)}
                                                     className={`absolute -bottom-3 px-3 py-1 text-[9px] font-black uppercase flex items-center gap-1 transition-all hover:-translate-y-1 ${recentlyClaimed === lvl ? 'animate-claim-burst' : 'animate-glow-pulse'}`}
-                                                    style={{ background: '#06FFA5', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
+                                                    style={{ background: '#00D9FF', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
                                                 >
                                                     <Check size={10} /> Claim
                                                 </button>
                                             )}
                                             {isPremiumClaimed && (
                                                 <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.9)' }}>
-                                                    <div className="p-2" style={{ background: '#06FFA5', border: '3px solid #000' }}>
+                                                    <div className="p-2" style={{ background: '#00D9FF', border: '3px solid #000' }}>
                                                         <Check size={20} style={{ color: '#000' }} />
                                                     </div>
                                                 </div>
@@ -388,7 +404,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                 <div className={`absolute top-[55%] flex flex-col items-center justify-start h-44 w-full transition-all ${isUnlocked ? 'opacity-100' : 'opacity-50 grayscale'}`}>
                                     <div
                                         className="px-3 py-1 text-[10px] font-black uppercase mt-10 mb-2"
-                                        style={{ background: '#06FFA5', color: '#000', border: '2px solid #000' }}
+                                        style={{ background: '#00D9FF', color: '#000', border: '2px solid #000' }}
                                     >
                                         Free
                                     </div>
@@ -429,14 +445,14 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                 <button
                                                     onClick={() => handleClaim(lvl, false, freeReward)}
                                                     className={`absolute -bottom-4 px-4 py-1.5 text-[10px] font-black uppercase transition-all hover:-translate-y-1 ${recentlyClaimed === lvl ? 'animate-claim-burst' : 'animate-glow-pulse'}`}
-                                                    style={{ background: '#06FFA5', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
+                                                    style={{ background: '#00D9FF', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
                                                 >
                                                     CLAIM
                                                 </button>
                                             )}
                                             {isFreeClaimed && (
                                                 <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.9)' }}>
-                                                    <div className="p-2" style={{ background: '#06FFA5', border: '3px solid #000' }}>
+                                                    <div className="p-2" style={{ background: '#00D9FF', border: '3px solid #000' }}>
                                                         <Check size={20} style={{ color: '#000' }} />
                                                     </div>
                                                 </div>

@@ -4,7 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '3.5.0';
+export const APP_VERSION = '3.6.0';
 
 // ============================================================================
 // PROFILE FRAMES
@@ -12,13 +12,15 @@ export const APP_VERSION = '3.5.0';
 
 export const PROFILE_FRAMES: ProfileFrame[] = [
   { id: 'frame_none', name: 'Kein Rahmen', cssClass: '', unlockLevel: 0, isPremium: false, rarity: 'common' },
-  { id: 'frame_gold', name: 'Goldrand', cssClass: 'ring-4 ring-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]', unlockLevel: 5, isPremium: false, rarity: 'common' },
-  { id: 'frame_neon', name: 'Neon Glow', cssClass: 'ring-4 ring-fuchsia-500 shadow-[0_0_25px_rgba(217,70,239,0.8)] animate-pulse', unlockLevel: 15, isPremium: true, rarity: 'rare' },
-  { id: 'frame_fire', name: 'Flammenrahmen', cssClass: 'ring-4 ring-orange-500 shadow-[0_0_30px_rgba(249,115,22,0.8)] animate-pulse', unlockLevel: 25, isPremium: true, rarity: 'rare' },
-  { id: 'frame_ice', name: 'Eisrahmen', cssClass: 'ring-4 ring-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.7)]', unlockLevel: 35, isPremium: true, rarity: 'epic' },
-  { id: 'frame_rainbow', name: 'Regenbogen', cssClass: 'ring-4 ring-transparent bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 bg-clip-padding animate-spin-slow', unlockLevel: 50, isPremium: true, rarity: 'epic' },
-  { id: 'frame_galaxy', name: 'Galaxie', cssClass: 'ring-4 ring-purple-600 shadow-[0_0_35px_rgba(147,51,234,0.9),0_0_60px_rgba(59,130,246,0.5)]', unlockLevel: 75, isPremium: true, rarity: 'legendary' },
-  { id: 'frame_legendary', name: 'Legendär', cssClass: 'ring-[6px] ring-yellow-300 shadow-[0_0_40px_rgba(253,224,71,1),0_0_80px_rgba(250,204,21,0.6)] animate-pulse', unlockLevel: 100, isPremium: true, rarity: 'legendary' },
+  { id: 'frame_gold', name: 'Goldrand', cssClass: 'frame-gold', unlockLevel: 5, isPremium: false, rarity: 'common' },
+  { id: 'frame_neon', name: 'Neon Glow', cssClass: 'frame-neon', unlockLevel: 15, isPremium: true, rarity: 'rare' },
+  { id: 'frame_fire', name: 'Flammenrahmen', cssClass: 'frame-fire', unlockLevel: 25, isPremium: true, rarity: 'rare' },
+  { id: 'frame_ice', name: 'Eisrahmen', cssClass: 'frame-ice', unlockLevel: 35, isPremium: true, rarity: 'epic' },
+  { id: 'frame_rainbow', name: 'Regenbogen', cssClass: 'frame-rainbow', unlockLevel: 50, isPremium: true, rarity: 'epic' },
+  { id: 'frame_lightning', name: 'Blitz', cssClass: 'frame-lightning', unlockLevel: 65, isPremium: true, rarity: 'epic' },
+  { id: 'frame_galaxy', name: 'Galaxie', cssClass: 'frame-galaxy', unlockLevel: 75, isPremium: true, rarity: 'legendary' },
+  { id: 'frame_dragon', name: 'Drache', cssClass: 'frame-dragon', unlockLevel: 90, isPremium: true, rarity: 'legendary' },
+  { id: 'frame_legendary', name: 'Legendär', cssClass: 'frame-legendary', unlockLevel: 100, isPremium: true, rarity: 'legendary' },
   // Category completion rewards
   { id: 'frame_animals', name: 'Tierfreund', cssClass: 'ring-4 ring-green-500 shadow-[0_0_20px_rgba(34,197,94,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
   { id: 'frame_food', name: 'Gourmet', cssClass: 'ring-4 ring-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
@@ -47,18 +49,18 @@ export const PROFILE_FONTS: ProfileFont[] = [
 export const PROFILE_EFFECTS: ProfileEffect[] = [
   { id: 'effect_none', name: 'Kein Effekt', cssClass: '', icon: '❌', unlockLevel: 0, isPremium: false },
   { id: 'effect_glow', name: 'Leuchtend', cssClass: 'shadow-[0_0_30px_rgba(255,255,255,0.6)] animate-pulse', icon: '✨', unlockLevel: 5, isPremium: false },
-  { id: 'effect_rainbow', name: 'Regenbogen Pulse', cssClass: 'animate-rainbow-bg', icon: '🌈', unlockLevel: 0, isPremium: true },
-  { id: 'effect_fire', name: 'Feuer', cssClass: 'shadow-[0_0_30px_rgba(239,68,68,0.8)] animate-pulse', icon: '🔥', unlockLevel: 0, isPremium: true },
-  { id: 'effect_ice', name: 'Eis', cssClass: 'shadow-[0_0_30px_rgba(6,182,212,0.8)]', icon: '❄️', unlockLevel: 0, isPremium: true },
-  { id: 'effect_gold', name: 'Gold Luxus', cssClass: 'shadow-[0_0_35px_rgba(234,179,8,0.9)]', icon: '👑', unlockLevel: 0, isPremium: true },
-  { id: 'effect_diamond', name: 'Diamant', cssClass: 'shadow-[0_0_30px_rgba(168,85,247,0.8)]', icon: '💎', unlockLevel: 0, isPremium: true },
-  { id: 'effect_matrix', name: 'Matrix Rain', cssClass: 'shadow-[0_0_25px_rgba(34,197,94,0.9)]', icon: '💻', unlockLevel: 0, isPremium: true },
-  { id: 'effect_neon', name: 'Neon', cssClass: 'shadow-[0_0_30px_rgba(217,70,239,0.8)] animate-pulse', icon: '💜', unlockLevel: 0, isPremium: true },
+  { id: 'effect_rainbow', name: 'Regenbogen Pulse', cssClass: 'animate-rainbow-bg holo-shimmer', icon: '🌈', unlockLevel: 0, isPremium: true },
+  { id: 'effect_fire', name: 'Feuer', cssClass: 'effect-fire shadow-[0_0_30px_rgba(255,127,0,0.8)] animate-pulse', icon: '🔥', unlockLevel: 0, isPremium: true },
+  { id: 'effect_ice', name: 'Eis', cssClass: 'effect-ice shadow-[0_0_30px_rgba(0,217,255,0.8)]', icon: '❄️', unlockLevel: 0, isPremium: true },
+  { id: 'effect_gold', name: 'Gold Luxus', cssClass: 'effect-gold shadow-[0_0_35px_rgba(255,215,0,0.9)]', icon: '👑', unlockLevel: 0, isPremium: true },
+  { id: 'effect_diamond', name: 'Diamant', cssClass: 'shadow-[0_0_30px_rgba(168,85,247,0.8)] holo-shimmer', icon: '💎', unlockLevel: 0, isPremium: true },
+  { id: 'effect_matrix', name: 'Matrix Rain', cssClass: 'shadow-[0_0_25px_rgba(0,217,255,0.9)]', icon: '💻', unlockLevel: 0, isPremium: true },
+  { id: 'effect_neon', name: 'Neon', cssClass: 'effect-neon shadow-[0_0_30px_rgba(255,0,110,0.8)]', icon: '💜', unlockLevel: 0, isPremium: true },
   { id: 'effect_sakura', name: 'Sakura', cssClass: 'shadow-[0_0_25px_rgba(244,114,182,0.7)]', icon: '🌸', unlockLevel: 0, isPremium: true },
-  { id: 'effect_lightning', name: 'Blitz', cssClass: 'shadow-[0_0_35px_rgba(250,204,21,1)] animate-pulse', icon: '⚡', unlockLevel: 0, isPremium: true },
-  { id: 'effect_vaporwave', name: 'Vaporwave', cssClass: 'shadow-[0_0_30px_rgba(236,72,153,0.7),0_0_60px_rgba(6,182,212,0.5)]', icon: '🌴', unlockLevel: 0, isPremium: true },
+  { id: 'effect_lightning', name: 'Blitz', cssClass: 'shadow-[0_0_35px_rgba(255,190,11,1)] animate-pulse', icon: '⚡', unlockLevel: 0, isPremium: true },
+  { id: 'effect_vaporwave', name: 'Vaporwave', cssClass: 'shadow-[0_0_30px_rgba(255,0,110,0.7),0_0_60px_rgba(0,217,255,0.5)]', icon: '🌴', unlockLevel: 0, isPremium: true },
   { id: 'effect_glitch', name: 'Glitch', cssClass: 'animate-glitch', icon: '👾', unlockLevel: 0, isPremium: true },
-  { id: 'effect_holo', name: 'Hologramm', cssClass: 'shadow-[0_0_40px_rgba(192,132,252,0.8)]', icon: '💿', unlockLevel: 0, isPremium: true },
+  { id: 'effect_holo', name: 'Hologramm', cssClass: 'holo-shimmer shadow-[0_0_40px_rgba(192,132,252,0.8)]', icon: '💿', unlockLevel: 0, isPremium: true },
   { id: 'effect_quantum', name: 'Quantum', cssClass: 'shadow-[0_0_35px_rgba(99,102,241,0.9)]', icon: '⚛️', unlockLevel: 0, isPremium: true },
 ];
 
@@ -1999,48 +2001,56 @@ export const SEASON_AVATARS = SEASON_1_AVATARS; // Legacy compatibility
  * Each milestone has special, memorable rewards
  */
 export const generateSeasonRewards = (season: Season) => {
-  // 40 Premium Avatars from AVATARS list (every 2-3 levels)
+  // Avatar styles from DiceBear - verschiedene Stile für Abwechslung
+  const AVATAR_STYLES = ['adventurer', 'adventurer-neutral', 'bottts', 'bottts-neutral', 'pixel-art', 'lorelei', 'fun-emoji', 'thumbs', 'micah', 'avataaars'];
+  
+  // 50 Premium Avatars mit verschiedenen Stilen
   const PREMIUM_AVATARS = [
-    { level: 2, name: 'Felix', seed: 'Felix' },
-    { level: 3, name: 'Luna', seed: 'Luna' },
-    { level: 6, name: 'Max', seed: 'Max' },
-    { level: 7, name: 'Nova', seed: 'Nova' },
-    { level: 9, name: 'Ace', seed: 'Ace' },
-    { level: 11, name: 'Blaze', seed: 'Blaze' },
-    { level: 13, name: 'Storm', seed: 'Storm' },
-    { level: 14, name: 'Frost', seed: 'Frost' },
-    { level: 17, name: 'Neon', seed: 'Neon' },
-    { level: 18, name: 'Cyber', seed: 'Cyber' },
-    { level: 19, name: 'Pixel', seed: 'Pixel' },
-    { level: 21, name: 'Glitch', seed: 'Glitch' },
-    { level: 23, name: 'Matrix', seed: 'Matrix' },
-    { level: 24, name: 'Binary', seed: 'Binary' },
-    { level: 26, name: 'Chrome', seed: 'Chrome' },
-    { level: 27, name: 'Vector', seed: 'Vector' },
-    { level: 29, name: 'Orion', seed: 'Orion' },
-    { level: 31, name: 'Nebula', seed: 'Nebula' },
-    { level: 32, name: 'Cosmos', seed: 'Cosmos' },
-    { level: 33, name: 'Astro', seed: 'Astro' },
-    { level: 36, name: 'Pulsar', seed: 'Pulsar' },
-    { level: 37, name: 'Quasar', seed: 'Quasar' },
-    { level: 38, name: 'Stellar', seed: 'Stellar' },
-    { level: 39, name: 'Comet', seed: 'Comet' },
-    { level: 41, name: 'Thunder', seed: 'Thunder' },
-    { level: 42, name: 'Blizzard', seed: 'Blizzard' },
-    { level: 43, name: 'Ember', seed: 'Ember' },
-    { level: 44, name: 'Ocean', seed: 'Ocean' },
-    { level: 46, name: 'Forest', seed: 'Forest' },
-    { level: 47, name: 'Desert', seed: 'Desert' },
-    { level: 48, name: 'Aurora', seed: 'Aurora' },
-    { level: 49, name: 'Eclipse', seed: 'Eclipse' },
-    { level: 51, name: 'Wolf', seed: 'Wolf' },
-    { level: 52, name: 'Tiger', seed: 'Tiger' },
-    { level: 53, name: 'Falcon', seed: 'Falcon' },
-    { level: 54, name: 'Panther', seed: 'Panther' },
-    { level: 56, name: 'Viper', seed: 'Viper' },
-    { level: 57, name: 'Cobra', seed: 'Cobra' },
-    { level: 58, name: 'Phoenix', seed: 'Phoenix' },
-    { level: 59, name: 'Dragon', seed: 'Dragon' },
+    // Adventurer Style (Level 2-15)
+    { level: 2, name: 'Luna', seed: 'Luna', style: 'adventurer' },
+    { level: 3, name: 'Felix', seed: 'Felix', style: 'adventurer' },
+    { level: 6, name: 'Nova', seed: 'Nova', style: 'adventurer' },
+    { level: 7, name: 'Stella', seed: 'Stella', style: 'adventurer' },
+    { level: 9, name: 'Maya', seed: 'Maya', style: 'adventurer' },
+    { level: 11, name: 'Leo', seed: 'Leo', style: 'adventurer' },
+    { level: 13, name: 'Aria', seed: 'Aria', style: 'adventurer' },
+    { level: 14, name: 'Kai', seed: 'Kai', style: 'adventurer' },
+    // Bottts Style - Roboter (Level 17-28)
+    { level: 17, name: 'Robo-X1', seed: 'RoboX1', style: 'bottts' },
+    { level: 18, name: 'Cyber-7', seed: 'Cyber7', style: 'bottts' },
+    { level: 19, name: 'Mecha-9', seed: 'Mecha9', style: 'bottts' },
+    { level: 21, name: 'Droid-K', seed: 'DroidK', style: 'bottts' },
+    { level: 23, name: 'Unit-Z3', seed: 'UnitZ3', style: 'bottts' },
+    { level: 24, name: 'Bot-Prime', seed: 'BotPrime', style: 'bottts' },
+    { level: 26, name: 'Android-X', seed: 'AndroidX', style: 'bottts' },
+    { level: 27, name: 'Synth-One', seed: 'SynthOne', style: 'bottts' },
+    // Pixel Art Style - Retro (Level 29-39)
+    { level: 29, name: 'Pixel Hero', seed: 'PixelHero', style: 'pixel-art' },
+    { level: 31, name: 'Retro Knight', seed: 'RetroKnight', style: 'pixel-art' },
+    { level: 32, name: '8-Bit Mage', seed: '8BitMage', style: 'pixel-art' },
+    { level: 33, name: 'Arcade King', seed: 'ArcadeKing', style: 'pixel-art' },
+    { level: 36, name: 'Pixel Ninja', seed: 'PixelNinja', style: 'pixel-art' },
+    { level: 37, name: 'Game Master', seed: 'GameMaster', style: 'pixel-art' },
+    { level: 38, name: 'Bit Crusher', seed: 'BitCrusher', style: 'pixel-art' },
+    { level: 39, name: 'Retro Star', seed: 'RetroStar', style: 'pixel-art' },
+    // Lorelei Style - Elegant (Level 41-49)
+    { level: 41, name: 'Sage', seed: 'Sage', style: 'lorelei' },
+    { level: 42, name: 'Oracle', seed: 'Oracle', style: 'lorelei' },
+    { level: 43, name: 'Mystic', seed: 'Mystic', style: 'lorelei' },
+    { level: 44, name: 'Seraph', seed: 'Seraph', style: 'lorelei' },
+    { level: 46, name: 'Phantom', seed: 'Phantom', style: 'lorelei' },
+    { level: 47, name: 'Enigma', seed: 'Enigma', style: 'lorelei' },
+    { level: 48, name: 'Aurora', seed: 'Aurora', style: 'lorelei' },
+    { level: 49, name: 'Eclipse', seed: 'Eclipse', style: 'lorelei' },
+    // Fun Emoji Style - Lustig (Level 51-59)
+    { level: 51, name: 'Happy Go', seed: 'HappyGo', style: 'fun-emoji' },
+    { level: 52, name: 'Cool Cat', seed: 'CoolCat', style: 'fun-emoji' },
+    { level: 53, name: 'Star Eyes', seed: 'StarEyes', style: 'fun-emoji' },
+    { level: 54, name: 'Party Face', seed: 'PartyFace', style: 'fun-emoji' },
+    { level: 56, name: 'Chill Vibes', seed: 'ChillVibes', style: 'fun-emoji' },
+    { level: 57, name: 'Fire Mode', seed: 'FireMode', style: 'fun-emoji' },
+    { level: 58, name: 'Super Star', seed: 'SuperStar', style: 'fun-emoji' },
+    { level: 59, name: 'Legend', seed: 'Legend', style: 'fun-emoji' },
   ];
 
   // Pre-define all unique rewards for better organization
@@ -2101,26 +2111,26 @@ export const generateSeasonRewards = (season: Season) => {
     { level: 79, name: 'Prisma', value: 'cardback_rainbow', rarity: 'legendary' },
   ];
 
-  // More avatars for higher levels (80-100)
+  // More avatars for higher levels (80-100) - Micah & Avataaars Style (Legendary)
   const HIGH_LEVEL_AVATARS = [
-    { level: 80, name: 'Crimson', seed: 'Crimson' },
-    { level: 81, name: 'Azure', seed: 'Azure' },
-    { level: 82, name: 'Jade', seed: 'Jade' },
-    { level: 83, name: 'Onyx', seed: 'Onyx' },
-    { level: 84, name: 'Violet', seed: 'Violet' },
-    { level: 86, name: 'Golden', seed: 'Golden' },
-    { level: 87, name: 'Silver', seed: 'Silver' },
-    { level: 88, name: 'Scarlet', seed: 'Scarlet' },
-    { level: 89, name: 'Titan', seed: 'Titan' },
-    { level: 91, name: 'Sphinx', seed: 'Sphinx' },
-    { level: 92, name: 'Griffin', seed: 'Griffin' },
-    { level: 93, name: 'Hydra', seed: 'Hydra' },
-    { level: 94, name: 'Wraith', seed: 'Wraith' },
-    { level: 95, name: 'Specter', seed: 'Specter' },
-    { level: 96, name: 'Phantom', seed: 'Phantom' },
-    { level: 97, name: 'Shadow', seed: 'Shadow' },
-    { level: 98, name: 'Apex', seed: 'Apex' },
-    { level: 99, name: 'Prime', seed: 'Prime' },
+    { level: 80, name: 'Crimson King', seed: 'CrimsonKing', style: 'micah' },
+    { level: 81, name: 'Azure Dragon', seed: 'AzureDragon', style: 'micah' },
+    { level: 82, name: 'Jade Master', seed: 'JadeMaster', style: 'micah' },
+    { level: 83, name: 'Onyx Shadow', seed: 'OnyxShadow', style: 'micah' },
+    { level: 84, name: 'Violet Storm', seed: 'VioletStorm', style: 'micah' },
+    { level: 86, name: 'Golden One', seed: 'GoldenOne', style: 'avataaars' },
+    { level: 87, name: 'Silver Wolf', seed: 'SilverWolf', style: 'avataaars' },
+    { level: 88, name: 'Scarlet Fury', seed: 'ScarletFury', style: 'avataaars' },
+    { level: 89, name: 'Titan Force', seed: 'TitanForce', style: 'avataaars' },
+    { level: 91, name: 'Sphinx Riddle', seed: 'SphinxRiddle', style: 'thumbs' },
+    { level: 92, name: 'Griffin Pride', seed: 'GriffinPride', style: 'thumbs' },
+    { level: 93, name: 'Hydra Beast', seed: 'HydraBeast', style: 'thumbs' },
+    { level: 94, name: 'Wraith Lord', seed: 'WraithLord', style: 'thumbs' },
+    { level: 95, name: 'Specter Soul', seed: 'SpecterSoul', style: 'notionists' },
+    { level: 96, name: 'Phantom Ace', seed: 'PhantomAce', style: 'notionists' },
+    { level: 97, name: 'Shadow King', seed: 'ShadowKing', style: 'notionists' },
+    { level: 98, name: 'Apex Elite', seed: 'ApexElite', style: 'open-peeps' },
+    { level: 99, name: 'Prime Legend', seed: 'PrimeLegend', style: 'open-peeps' },
   ];
 
   return Array.from({ length: 100 }, (_, i) => {
@@ -2163,23 +2173,25 @@ export const generateSeasonRewards = (season: Season) => {
     
     if (avatarReward) {
       const rarity = level > 40 ? 'epic' : level > 20 ? 'rare' : 'common';
+      const avatarStyle = avatarReward.style || 'adventurer';
       premiumReward = { 
         type: 'avatar', 
         name: avatarReward.name, 
-        value: avatarReward.seed, 
-        preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward.seed}`, 
+        value: `${avatarStyle}:${avatarReward.seed}`, 
+        preview: `https://api.dicebear.com/9.x/${avatarStyle}/svg?seed=${avatarReward.seed}`, 
         rarity: rarity as any,
-        desc: `Exklusiver ${avatarReward.name} Avatar`
+        desc: `Exklusiver ${avatarReward.name} Avatar (${avatarStyle})`
       };
     }
     else if (highLevelAvatar) {
+      const avatarStyle = highLevelAvatar.style || 'micah';
       premiumReward = { 
         type: 'avatar', 
         name: highLevelAvatar.name, 
-        value: highLevelAvatar.seed, 
-        preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${highLevelAvatar.seed}`, 
+        value: `${avatarStyle}:${highLevelAvatar.seed}`, 
+        preview: `https://api.dicebear.com/9.x/${avatarStyle}/svg?seed=${highLevelAvatar.seed}`, 
         rarity: 'legendary',
-        desc: `Legendärer ${highLevelAvatar.name} Avatar`
+        desc: `Legendärer ${highLevelAvatar.name} Avatar (${avatarStyle})`
       };
     }
     // Check for Frame rewards
