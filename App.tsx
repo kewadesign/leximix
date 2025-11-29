@@ -33,7 +33,7 @@ import { audio } from './utils/audio';
 import catDanceGif from './assets/cat-dance.gif';
 
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu, Circle, Target, Layers } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu, Circle, Target, Layers, Hash } from 'lucide-react';
 
 // React Icons for brutal design
 import { IoGlobeSharp, IoPersonSharp, IoSettingsSharp } from 'react-icons/io5';
@@ -4406,12 +4406,12 @@ export default function App() {
       >
         <div className="text-center py-6 space-y-6">
           <div className="inline-block p-6 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-            <Sparkles className="text-blue-400 drop-shadow-lg" size={48} />
+            <Hash className="text-blue-400 drop-shadow-lg" size={48} />
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-lg font-bold text-gray-300">{t.HOME.VOUCHER_HEADING}</h3>
-            <p className="text-xs text-gray-500">{t.HOME.VOUCHER_DESC}</p>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>{t.HOME.VOUCHER_HEADING}</h3>
+            <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{t.HOME.VOUCHER_DESC}</p>
           </div>
 
           <div className="w-full">
@@ -4424,12 +4424,13 @@ export default function App() {
                 setVoucherSuccess('');
               }}
               placeholder={t.HOME.VOUCHER_PLACEHOLDER}
-              className={`w-full bg-gray-900 border-2 ${voucherError
+              className={`w-full border-2 ${voucherError
                 ? 'border-red-500 animate-shake'
                 : voucherSuccess
                   ? 'border-green-500'
                   : 'border-gray-700 focus:border-blue-400'
-                } rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors text-white uppercase`}
+                } rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors uppercase`}
+              style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}
               maxLength={20}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -4454,7 +4455,11 @@ export default function App() {
           <div className="flex gap-3">
             <Button
               className="flex-1"
-              variant="secondary"
+              style={{ 
+                background: 'var(--color-surface)', 
+                color: 'var(--color-text)', 
+                border: '3px solid var(--color-border)' 
+              }}
               onClick={() => {
                 setShowRedeemModal(false);
                 setVoucherCode('');
