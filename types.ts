@@ -75,6 +75,11 @@ export interface UserState {
   theme: 'light' | 'dark';
   friendCode?: string; // Unique friend code for multiplayer
   friends?: { code: string; username: string }[]; // List of added friends
+  // New cosmetics
+  ownedTitles?: string[]; // List of owned title IDs
+  activeTitle?: string; // ID of the equipped title
+  ownedCardBacks?: string[]; // List of owned card back IDs
+  activeCardBack?: string; // ID of the equipped card back
 }
 
 export interface GameConfig {
@@ -106,17 +111,19 @@ export interface TutorialContent {
 
 export interface ShopItem {
   id: string;
-  type: 'currency' | 'avatar' | 'frame' | 'booster';
+  type: 'currency' | 'avatar' | 'frame' | 'booster' | 'title' | 'cardback';
   name: string;
   cost: number | string; // Number = Coins, String = Real Money (Display)
   value: number | string; // Amount of coins OR Avatar ID OR Frame ID
   currencyAmount?: number; // For currency packs
   isRealMoney?: boolean;
   paypalLink?: string;
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  preview?: string;
 }
 
 export interface SeasonRewardItem {
-  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker' | 'sticker_pack' | 'effect' | 'frame' | 'font' | 'album_page' | 'title';
+  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker' | 'sticker_pack' | 'effect' | 'frame' | 'font' | 'album_page' | 'title' | 'cardback';
   name: string;
   amount?: number;
   desc?: string;
@@ -135,6 +142,29 @@ export interface ProfileFrame {
   unlockLevel: number;
   isPremium: boolean;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  animationClass?: string; // For animated frames
+}
+
+// Profile Title Definition
+export interface ProfileTitle {
+  id: string;
+  name: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  cssClass: string;
+  icon?: string;
+  unlockLevel: number;
+  isPremium: boolean;
+}
+
+// Card Back Definition
+export interface CardBack {
+  id: string;
+  name: string;
+  preview: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  cssClass?: string;
+  unlockLevel: number;
+  isPremium: boolean;
 }
 
 // Profile Font Definition

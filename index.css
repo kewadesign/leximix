@@ -973,3 +973,304 @@ body {
   background-size: 200% 100%;
   animation: rainbow-shimmer 8s linear infinite;
 }
+
+/* ============================================
+   SEASON PASS v3.5.0 - NEW ANIMATIONS
+   Titles, CardBacks, Claim Effects
+   ============================================ */
+
+/* Slide In Up - Entrance animation for rewards */
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.4s ease-out forwards;
+}
+
+/* Staggered delays for lists */
+.animate-stagger-1 { animation-delay: 0.05s; }
+.animate-stagger-2 { animation-delay: 0.1s; }
+.animate-stagger-3 { animation-delay: 0.15s; }
+.animate-stagger-4 { animation-delay: 0.2s; }
+.animate-stagger-5 { animation-delay: 0.25s; }
+.animate-stagger-6 { animation-delay: 0.3s; }
+
+/* Fade In Scale - Modal/card entrance */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.3s ease-out forwards;
+}
+
+/* Shimmer - For legendary/epic items */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Glow Pulse - For claimable rewards */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 6px 6px 0px #000, 0 0 0px transparent;
+  }
+  50% {
+    box-shadow: 6px 6px 0px #000, 0 0 20px rgba(6, 255, 165, 0.6);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 1.5s ease-in-out infinite;
+}
+
+/* Rainbow Border - For legendary items */
+@keyframes rainbow-border {
+  0% { border-color: #FF006E; box-shadow: 6px 6px 0px #FF006E; }
+  16.67% { border-color: #FF7F00; box-shadow: 6px 6px 0px #FF7F00; }
+  33.33% { border-color: #FFBE0B; box-shadow: 6px 6px 0px #FFBE0B; }
+  50% { border-color: #06FFA5; box-shadow: 6px 6px 0px #06FFA5; }
+  66.67% { border-color: #0096FF; box-shadow: 6px 6px 0px #0096FF; }
+  83.33% { border-color: #8338EC; box-shadow: 6px 6px 0px #8338EC; }
+  100% { border-color: #FF006E; box-shadow: 6px 6px 0px #FF006E; }
+}
+
+.animate-rainbow-border {
+  animation: rainbow-border 3s linear infinite;
+}
+
+/* Fire Flicker - For fire-themed items */
+@keyframes fire-flicker {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 127, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.4);
+  }
+  25% {
+    box-shadow: 0 0 15px rgba(255, 127, 0, 0.8), 0 0 30px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(255, 190, 11, 0.7), 0 0 25px rgba(255, 127, 0, 0.5);
+  }
+  75% {
+    box-shadow: 0 0 12px rgba(255, 0, 110, 0.6), 0 0 35px rgba(255, 127, 0, 0.6);
+  }
+}
+
+.animate-fire-flicker {
+  animation: fire-flicker 0.8s ease-in-out infinite;
+}
+
+/* Particle Rise - For claim celebration */
+@keyframes particle-rise {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.5);
+  }
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--particle-color, #FFBE0B);
+  animation: particle-rise 1s ease-out forwards;
+}
+
+/* Confetti Fall - For big rewards */
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-20px) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100px) rotate(360deg);
+  }
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  animation: confetti-fall 1.5s ease-out forwards;
+}
+
+/* Claim Burst - Quick burst effect */
+@keyframes claim-burst {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-claim-burst {
+  animation: claim-burst 0.3s ease-out;
+}
+
+/* Card Back Hover Effect */
+@keyframes card-back-hover {
+  0%, 100% {
+    transform: perspective(500px) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(500px) rotateY(10deg);
+  }
+}
+
+.animate-card-back-hover:hover {
+  animation: card-back-hover 0.6s ease-in-out;
+}
+
+/* Title Glow - For equipped titles */
+@keyframes title-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 15px currentColor, 0 0 25px currentColor;
+  }
+}
+
+.animate-title-glow {
+  animation: title-glow 2s ease-in-out infinite;
+}
+
+/* Level Node Unlock Animation */
+@keyframes level-unlock {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 5px 5px 0px #000;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.4);
+    box-shadow: 8px 8px 0px #000, 0 0 30px rgba(6, 255, 165, 0.8);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 5px 5px 0px #000;
+  }
+}
+
+.animate-level-unlock {
+  animation: level-unlock 0.5s ease-out;
+}
+
+/* Reward Card Hover */
+.reward-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reward-card-hover:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 10px 10px 0px var(--color-border);
+}
+
+/* Scroll Snap for Season Pass */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+
+.scroll-snap-center {
+  scroll-snap-align: center;
+}
+
+/* Rarity Glow Effects */
+.rarity-common {
+  box-shadow: 4px 4px 0px #06FFA5;
+}
+
+.rarity-rare {
+  box-shadow: 4px 4px 0px #0096FF, 0 0 10px rgba(0, 150, 255, 0.3);
+}
+
+.rarity-epic {
+  box-shadow: 4px 4px 0px #8338EC, 0 0 15px rgba(131, 56, 236, 0.4);
+}
+
+.rarity-legendary {
+  box-shadow: 4px 4px 0px #FFBE0B, 0 0 20px rgba(255, 190, 11, 0.5);
+  animation: rainbow-border 3s linear infinite;
+}
+
+/* Card Back Preview Styles */
+.cardback-preview {
+  width: 60px;
+  height: 84px;
+  border: 3px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 900;
+  position: relative;
+  overflow: hidden;
+}
+
+.cardback-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Title Badge Styles */
+.title-badge {
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid #000;
+}
+
+.title-badge-common { background: #06FFA5; color: #000; }
+.title-badge-rare { background: #0096FF; color: #FFF; }
+.title-badge-epic { background: #8338EC; color: #FFF; }
+.title-badge-legendary { 
+  background: linear-gradient(90deg, #FFBE0B, #FF7F00); 
+  color: #000;
+  animation: shimmer 2s linear infinite;
+}

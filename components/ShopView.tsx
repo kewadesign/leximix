@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard, ChevronLeft, ChevronRight, Crown, Palette } from 'lucide-react';
 import { PayPalButton } from './PayPalButton';
-import { SHOP_ITEMS } from '../constants';
+import { SHOP_ITEMS, PROFILE_TITLES, CARD_BACKS } from '../constants';
 import { audio } from '../utils/audio';
+import { getRarityColor } from '../utils/rewards';
 
 interface ShopViewProps {
     user: any;
@@ -14,6 +15,8 @@ interface ShopViewProps {
     handleBuyItem: (item: any) => void;
 }
 
+type ShopTab = 'avatars' | 'titles' | 'cardbacks' | 'currency';
+
 export const ShopView: React.FC<ShopViewProps> = ({
     user,
     setUser,
@@ -24,10 +27,12 @@ export const ShopView: React.FC<ShopViewProps> = ({
     handleBuyItem
 }) => {
     const [currentBanner, setCurrentBanner] = useState(0);
+    const [activeTab, setActiveTab] = useState<ShopTab>('avatars');
+    
     const BANNERS = [
         { title: "SEASON 2 IS LIVE", subtitle: "Unlock Cyberpunk Skins", color: "from-lexi-primary to-blue-600", icon: <Zap size={64} className="text-white animate-pulse" /> },
-        { title: "NEW AVATARS", subtitle: "Check out the terminal", color: "from-green-500 to-teal-600", icon: <User size={64} className="text-white animate-bounce-slow" /> },
-        { title: "COIN SALE", subtitle: "Get rich quick", color: "from-yellow-400 to-orange-500", icon: <Coins size={64} className="text-white animate-spin-reverse" /> }
+        { title: "NEUE TITEL", subtitle: "Zeige deinen Rang", color: "from-pink-500 to-purple-600", icon: <Crown size={64} className="text-white animate-bounce-slow" /> },
+        { title: "KARTENRÜCKSEITEN", subtitle: "Style deine Karten", color: "from-green-500 to-teal-600", icon: <Palette size={64} className="text-white animate-pulse" /> }
     ];
 
     const handleNext = () => {
@@ -187,8 +192,33 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     </button>
                 </div>
 
-                {/* Avatar Section - Neo Brutal */}
-                <div>
+                {/* Tab Navigation */}
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                    {[
+                        { id: 'avatars' as ShopTab, label: 'Avatare', icon: <User size={14} />, color: '#06FFA5' },
+                        { id: 'titles' as ShopTab, label: 'Titel', icon: <Crown size={14} />, color: '#FF006E' },
+                        { id: 'cardbacks' as ShopTab, label: 'Karten', icon: <Palette size={14} />, color: '#8338EC' },
+                        { id: 'currency' as ShopTab, label: 'Münzen', icon: <Coins size={14} />, color: '#FFBE0B' }
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className="flex-1 min-w-[80px] py-3 font-black text-xs uppercase flex items-center justify-center gap-2 transition-all"
+                            style={{
+                                background: activeTab === tab.id ? tab.color : 'var(--color-surface)',
+                                color: activeTab === tab.id ? '#000' : 'var(--color-text)',
+                                border: '3px solid #000',
+                                boxShadow: activeTab === tab.id ? '4px 4px 0px #000' : 'none',
+                                transform: activeTab === tab.id ? 'translateY(-2px)' : 'translateY(0)'
+                            }}
+                        >
+                            {tab.icon} {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Avatar Section */}
+                {activeTab === 'avatars' && <div className="animate-fade-in-up">
                     <div
                         className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
                         style={{ background: '#000', color: '#06FFA5' }}
@@ -258,10 +288,166 @@ export const ShopView: React.FC<ShopViewProps> = ({
                             );
                         })}
                     </div>
-                </div>
+                </div>}
 
-                {/* Currency Section - Neo Brutal */}
-                <div>
+                {/* Titles Section */}
+                {activeTab === 'titles' && <div className="animate-fade-in-up">
+                    <div
+                        className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
+                        style={{ background: '#000', color: '#FF006E' }}
+                    >
+                        <Crown size={14} className="inline mr-2" /> Titel
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {PROFILE_TITLES.filter(t => t.id !== 'title_none').map((title, idx) => {
+                            const isOwned = (user.ownedTitles || []).includes(title.id);
+                            const isEquipped = user.activeTitle === title.id;
+                            const rarityColor = getRarityColor(title.rarity);
+
+                            return (
+                                <div
+                                    key={title.id}
+                                    className={`p-4 flex items-center justify-between transition-all duration-200 reward-card-hover animate-slide-in-up`}
+                                    style={{
+                                        background: isEquipped ? rarityColor : 'var(--color-surface)',
+                                        border: '4px solid #000',
+                                        boxShadow: `6px 6px 0px ${rarityColor}`,
+                                        animationDelay: `${idx * 0.05}s`
+                                    }}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-2xl">{title.icon}</span>
+                                        <div>
+                                            <span 
+                                                className={`font-black ${title.cssClass}`}
+                                                style={{ color: isEquipped ? '#000' : 'var(--color-text)' }}
+                                            >
+                                                {title.name}
+                                            </span>
+                                            <div 
+                                                className="text-[10px] font-bold uppercase"
+                                                style={{ color: isEquipped ? '#000' : rarityColor }}
+                                            >
+                                                {title.rarity}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {isOwned ? (
+                                        <button
+                                            disabled={isEquipped}
+                                            onClick={() => setUser({ ...user, activeTitle: title.id })}
+                                            className="px-4 py-2 font-black text-xs uppercase transition-all"
+                                            style={{
+                                                background: isEquipped ? '#000' : 'var(--color-surface)',
+                                                color: isEquipped ? rarityColor : 'var(--color-text)',
+                                                border: '3px solid #000',
+                                                boxShadow: '3px 3px 0px #000'
+                                            }}
+                                        >
+                                            {isEquipped ? 'Aktiv' : 'Anlegen'}
+                                        </button>
+                                    ) : (
+                                        <div 
+                                            className="px-3 py-2 font-black text-xs uppercase"
+                                            style={{ background: '#E5E5E5', color: '#999', border: '3px solid #000' }}
+                                        >
+                                            Season Pass
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <p className="text-xs font-bold mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                        Titel werden über den Season Pass freigeschaltet!
+                    </p>
+                </div>}
+
+                {/* Card Backs Section */}
+                {activeTab === 'cardbacks' && <div className="animate-fade-in-up">
+                    <div
+                        className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
+                        style={{ background: '#000', color: '#8338EC' }}
+                    >
+                        <Palette size={14} className="inline mr-2" /> Kartenrückseiten
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {CARD_BACKS.map((cardBack, idx) => {
+                            const isOwned = cardBack.id === 'cardback_default' || (user.ownedCardBacks || []).includes(cardBack.id);
+                            const isEquipped = user.activeCardBack === cardBack.id || (!user.activeCardBack && cardBack.id === 'cardback_default');
+                            const rarityColor = getRarityColor(cardBack.rarity);
+
+                            return (
+                                <div
+                                    key={cardBack.id}
+                                    className={`p-4 flex flex-col items-center transition-all duration-200 animate-card-back-hover animate-slide-in-up ${isOwned ? '' : 'opacity-60'}`}
+                                    style={{
+                                        background: isEquipped ? '#FFBE0B' : 'var(--color-surface)',
+                                        border: '4px solid #000',
+                                        boxShadow: `6px 6px 0px ${rarityColor}`,
+                                        animationDelay: `${idx * 0.05}s`
+                                    }}
+                                >
+                                    {/* Card Preview */}
+                                    <div 
+                                        className={`cardback-preview mb-3 ${cardBack.cssClass || ''}`}
+                                        style={{ 
+                                            background: cardBack.cssClass ? undefined : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
+                                        }}
+                                    >
+                                        <span className="text-xl">🃏</span>
+                                    </div>
+
+                                    <span 
+                                        className="text-sm font-black uppercase text-center mb-2"
+                                        style={{ color: isEquipped ? '#000' : 'var(--color-text)' }}
+                                    >
+                                        {cardBack.name}
+                                    </span>
+
+                                    {/* Rarity badge */}
+                                    {cardBack.rarity !== 'common' && (
+                                        <div 
+                                            className="text-[8px] font-black uppercase px-2 py-0.5 mb-2"
+                                            style={{ background: rarityColor, color: '#000', border: '2px solid #000' }}
+                                        >
+                                            {cardBack.rarity}
+                                        </div>
+                                    )}
+
+                                    {isOwned ? (
+                                        <button
+                                            disabled={isEquipped}
+                                            onClick={() => setUser({ ...user, activeCardBack: cardBack.id })}
+                                            className="w-full py-2 font-black text-xs uppercase transition-all"
+                                            style={{
+                                                background: isEquipped ? '#000' : 'var(--color-surface)',
+                                                color: isEquipped ? '#FFBE0B' : 'var(--color-text)',
+                                                border: '3px solid #000'
+                                            }}
+                                        >
+                                            {isEquipped ? 'Aktiv' : 'Anlegen'}
+                                        </button>
+                                    ) : (
+                                        <div 
+                                            className="w-full py-2 font-black text-xs uppercase text-center"
+                                            style={{ background: '#E5E5E5', color: '#999', border: '3px solid #000' }}
+                                        >
+                                            Season Pass
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <p className="text-xs font-bold mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                        Kartenrückseiten werden über den Season Pass freigeschaltet!
+                    </p>
+                </div>}
+
+                {/* Currency Section */}
+                {activeTab === 'currency' && <div className="animate-fade-in-up">
                     <div
                         className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
                         style={{ background: '#000', color: '#FFBE0B' }}
@@ -331,7 +517,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                             );
                         })}
                     </div>
-                </div>
+                </div>}
             </div>
         </div >
     );

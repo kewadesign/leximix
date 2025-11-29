@@ -143,7 +143,14 @@
         },
         {
           "level": 5,
-          "free": null,
+          "free": {
+            "type": "title",
+            "name": "Wortschmied",
+            "desc": "Titel für fleißige Spieler",
+            "value": "title_wordsmith",
+            "icon": "📝",
+            "rarity": "common"
+          },
           "premium": {
             "type": "avatar",
             "name": "Agent #5",
@@ -185,11 +192,11 @@
           "level": 8,
           "free": null,
           "premium": {
-            "type": "booster",
-            "name": "XP Booster (1h)",
-            "desc": "Double XP for 1 hour",
-            "value": "xp_boost_1h",
-            "icon": "booster_pack",
+            "type": "cardback",
+            "name": "Feuer Karten",
+            "desc": "Flammende Kartenrückseite",
+            "value": "cardback_fire",
+            "icon": "🔥",
             "rarity": "rare"
           }
         },
@@ -277,7 +284,14 @@
         },
         {
           "level": 15,
-          "free": null,
+          "free": {
+            "type": "title",
+            "name": "Champion",
+            "desc": "Titel für wahre Gewinner",
+            "value": "title_champion",
+            "icon": "🏆",
+            "rarity": "rare"
+          },
           "premium": {
             "type": "avatar",
             "name": "Agent #15",
@@ -317,7 +331,14 @@
         },
         {
           "level": 18,
-          "free": null,
+          "free": {
+            "type": "cardback",
+            "name": "Frost Karten",
+            "desc": "Eisige Kartenrückseite",
+            "value": "cardback_ice",
+            "icon": "❄️",
+            "rarity": "rare"
+          },
           "premium": {
             "type": "effect",
             "name": "Flame Burst Frame",
@@ -411,7 +432,14 @@
         },
         {
           "level": 25,
-          "free": null,
+          "free": {
+            "type": "title",
+            "name": "Genie",
+            "desc": "Für die Klügsten",
+            "value": "title_genius",
+            "icon": "🧠",
+            "rarity": "epic"
+          },
           "premium": {
             "type": "avatar",
             "name": "Agent #25",
@@ -451,7 +479,14 @@
         },
         {
           "level": 28,
-          "free": null,
+          "free": {
+            "type": "cardback",
+            "name": "Neon Grid",
+            "desc": "Cyberpunk Kartenrückseite",
+            "value": "cardback_neon",
+            "icon": "🌃",
+            "rarity": "rare"
+          },
           "premium": {
             "type": "booster",
             "name": "XP Booster (1h)",
@@ -1830,7 +1865,14 @@
         },
         {
           "level": 25,
-          "free": null,
+          "free": {
+            "type": "title",
+            "name": "Genie",
+            "desc": "Für die Klügsten",
+            "value": "title_genius",
+            "icon": "🧠",
+            "rarity": "epic"
+          },
           "premium": {
             "type": "avatar",
             "name": "Agent #25",
@@ -1870,7 +1912,14 @@
         },
         {
           "level": 28,
-          "free": null,
+          "free": {
+            "type": "cardback",
+            "name": "Neon Grid",
+            "desc": "Cyberpunk Kartenrückseite",
+            "value": "cardback_neon",
+            "icon": "🌃",
+            "rarity": "rare"
+          },
           "premium": {
             "type": "booster",
             "name": "XP Booster (1h)",

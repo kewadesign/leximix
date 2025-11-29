@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Check, Lock, Sparkles, Crown, Type, Palette } from 'lucide-react';
-import { UserState, ProfileFrame, ProfileFont, ProfileEffect } from '../types';
-import { PROFILE_FRAMES, PROFILE_FONTS, PROFILE_EFFECTS, getFrameById, getFontById, getEffectById, STICKER_CATEGORIES } from '../constants';
+import { Check, Lock, Sparkles, Crown, Type, Palette, CreditCard } from 'lucide-react';
+import { UserState, ProfileFrame, ProfileFont, ProfileEffect, ProfileTitle, CardBack } from '../types';
+import { PROFILE_FRAMES, PROFILE_FONTS, PROFILE_EFFECTS, PROFILE_TITLES, CARD_BACKS, getFrameById, getFontById, getEffectById, getTitleById, getCardBackById, STICKER_CATEGORIES } from '../constants';
 import { getRarityColor } from '../utils/rewards';
 import { audio } from '../utils/audio';
 
@@ -10,9 +10,13 @@ interface Props {
   selectedFrame: string;
   selectedFont: string;
   selectedEffect: string;
+  selectedTitle?: string;
+  selectedCardBack?: string;
   onFrameChange: (frameId: string) => void;
   onFontChange: (fontId: string) => void;
   onEffectChange: (effectId: string) => void;
+  onTitleChange?: (titleId: string) => void;
+  onCardBackChange?: (cardBackId: string) => void;
   onOpenAlbum: () => void;
 }
 
@@ -28,12 +32,16 @@ export const ProfileEditor: React.FC<Props> = ({
   selectedFrame,
   selectedFont,
   selectedEffect,
+  selectedTitle,
+  selectedCardBack,
   onFrameChange,
   onFontChange,
   onEffectChange,
+  onTitleChange,
+  onCardBackChange,
   onOpenAlbum
 }) => {
-  const [activeTab, setActiveTab] = useState<'frames' | 'fonts' | 'effects'>('frames');
+  const [activeTab, setActiveTab] = useState<'frames' | 'fonts' | 'effects' | 'titles' | 'cardbacks'>('frames');
   const isDark = user.theme === 'dark';
   const B = isDark ? '#FFF' : '#000';
   const bgSurface = isDark ? '#2a2a4a' : '#FFF';
@@ -52,6 +60,16 @@ export const ProfileEditor: React.FC<Props> = ({
   const ownsEffect = (effectId: string): boolean => {
     if (effectId === 'effect_none') return true;
     return user.ownedEffects?.includes(effectId) || false;
+  };
+
+  const ownsTitle = (titleId: string): boolean => {
+    if (titleId === 'title_none' || titleId === 'title_newcomer') return true;
+    return user.ownedTitles?.includes(titleId) || false;
+  };
+
+  const ownsCardBack = (cardBackId: string): boolean => {
+    if (cardBackId === 'cardback_default') return true;
+    return user.ownedCardBacks?.includes(cardBackId) || false;
   };
 
   // Calculate album progress
@@ -108,27 +126,41 @@ export const ProfileEditor: React.FC<Props> = ({
       </button>
 
       {/* Tab Navigation */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 overflow-x-auto pb-1">
         <button
           onClick={() => setActiveTab('frames')}
-          className="flex-1 py-3 font-black text-xs uppercase flex items-center justify-center gap-2 transition-all"
+          className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
           style={tabStyle(activeTab === 'frames')}
         >
-          <Sparkles size={14} /> Rahmen
-        </button>
-        <button
-          onClick={() => setActiveTab('fonts')}
-          className="flex-1 py-3 font-black text-xs uppercase flex items-center justify-center gap-2 transition-all"
-          style={tabStyle(activeTab === 'fonts')}
-        >
-          <Type size={14} /> Schriften
+          <Sparkles size={12} /> Rahmen
         </button>
         <button
           onClick={() => setActiveTab('effects')}
-          className="flex-1 py-3 font-black text-xs uppercase flex items-center justify-center gap-2 transition-all"
+          className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
           style={tabStyle(activeTab === 'effects')}
         >
-          <Palette size={14} /> Effekte
+          <Palette size={12} /> Effekte
+        </button>
+        <button
+          onClick={() => setActiveTab('titles')}
+          className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
+          style={tabStyle(activeTab === 'titles')}
+        >
+          <Crown size={12} /> Titel
+        </button>
+        <button
+          onClick={() => setActiveTab('cardbacks')}
+          className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
+          style={tabStyle(activeTab === 'cardbacks')}
+        >
+          <CreditCard size={12} /> Karten
+        </button>
+        <button
+          onClick={() => setActiveTab('fonts')}
+          className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
+          style={tabStyle(activeTab === 'fonts')}
+        >
+          <Type size={12} /> Schrift
         </button>
       </div>
 
@@ -347,6 +379,169 @@ export const ProfileEditor: React.FC<Props> = ({
           {/* Show more hint */}
           <p className="text-[10px] font-bold mt-3 text-center" style={{ color: isDark ? '#AAA' : '#666' }}>
             Schalte neue Effekte über den Season Pass frei! ✨
+          </p>
+        </div>
+      )}
+
+      {/* TITLES TAB */}
+      {activeTab === 'titles' && (
+        <div 
+          className="p-4 animate-fade-in-up"
+          style={{ background: bgSurface, border: `4px solid ${B}`, boxShadow: `6px 6px 0px #FF006E` }}
+        >
+          <div 
+            className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" 
+            style={{ background: '#FF006E', color: '#FFF', border: `2px solid ${B}` }}
+          >
+            Titel wählen
+          </div>
+          
+          <div className="space-y-2">
+            {PROFILE_TITLES.map((title) => {
+              const isOwned = ownsTitle(title.id);
+              const isSelected = selectedTitle === title.id || (!selectedTitle && title.id === 'title_none');
+              const rarityColor = getRarityColor(title.rarity);
+              
+              return (
+                <button
+                  key={title.id}
+                  onClick={() => isOwned && onTitleChange?.(title.id)}
+                  disabled={!isOwned}
+                  className="w-full p-3 flex items-center justify-between transition-all reward-card-hover"
+                  style={{ 
+                    background: isSelected ? '#FFBE0B' : (isOwned ? bgSurface : (isDark ? '#1a1a2e' : '#E5E5E5')),
+                    border: `3px solid ${isSelected ? '#FF006E' : B}`,
+                    boxShadow: isSelected ? `4px 4px 0px ${B}` : 'none',
+                    opacity: isOwned ? 1 : 0.5
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{title.icon}</span>
+                    <div className="text-left">
+                      <span 
+                        className={`font-black ${title.cssClass}`}
+                        style={{ color: isSelected ? '#000' : (isDark ? '#FFF' : '#000') }}
+                      >
+                        {title.name}
+                      </span>
+                      {title.rarity !== 'common' && (
+                        <div 
+                          className="text-[9px] font-bold uppercase"
+                          style={{ color: rarityColor }}
+                        >
+                          {RARITY_LABELS[title.rarity]}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    {!isOwned && <Lock size={14} style={{ color: isDark ? '#666' : '#999' }} />}
+                    {isSelected && isOwned && (
+                      <div 
+                        className="w-5 h-5 flex items-center justify-center"
+                        style={{ background: '#06FFA5', border: `2px solid ${B}` }}
+                      >
+                        <Check size={12} strokeWidth={3} />
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          
+          <p className="text-[10px] font-bold mt-3 text-center" style={{ color: isDark ? '#AAA' : '#666' }}>
+            Schalte neue Titel über den Season Pass frei! 👑
+          </p>
+        </div>
+      )}
+
+      {/* CARD BACKS TAB */}
+      {activeTab === 'cardbacks' && (
+        <div 
+          className="p-4 animate-fade-in-up"
+          style={{ background: bgSurface, border: `4px solid ${B}`, boxShadow: `6px 6px 0px #8338EC` }}
+        >
+          <div 
+            className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" 
+            style={{ background: '#8338EC', color: '#FFF', border: `2px solid ${B}` }}
+          >
+            Kartenrückseite wählen
+          </div>
+          
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {CARD_BACKS.map((cardBack) => {
+              const isOwned = ownsCardBack(cardBack.id);
+              const isSelected = selectedCardBack === cardBack.id || (!selectedCardBack && cardBack.id === 'cardback_default');
+              const rarityColor = getRarityColor(cardBack.rarity);
+              
+              return (
+                <button
+                  key={cardBack.id}
+                  onClick={() => isOwned && onCardBackChange?.(cardBack.id)}
+                  disabled={!isOwned}
+                  className="relative flex flex-col items-center p-3 transition-all animate-card-back-hover"
+                  style={{ 
+                    background: isSelected ? '#FFBE0B' : (isOwned ? bgSurface : (isDark ? '#1a1a2e' : '#E5E5E5')),
+                    border: `3px solid ${isSelected ? '#8338EC' : B}`,
+                    boxShadow: isSelected ? `4px 4px 0px ${B}` : 'none',
+                    opacity: isOwned ? 1 : 0.5,
+                    transform: isSelected ? 'scale(1.05)' : 'scale(1)'
+                  }}
+                >
+                  {/* Card preview */}
+                  <div 
+                    className={`cardback-preview ${cardBack.cssClass || ''}`}
+                    style={{ 
+                      background: cardBack.cssClass ? undefined : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
+                    }}
+                  >
+                    <span className="text-lg">🃏</span>
+                  </div>
+                  
+                  {/* Card back name */}
+                  <span 
+                    className="text-[8px] font-bold mt-2 text-center leading-tight"
+                    style={{ color: isDark ? '#FFF' : '#000' }}
+                  >
+                    {cardBack.name.length > 10 ? cardBack.name.slice(0, 9) + '…' : cardBack.name}
+                  </span>
+
+                  {/* Lock or check indicator */}
+                  {!isOwned && (
+                    <div 
+                      className="absolute top-1 right-1 w-4 h-4 flex items-center justify-center"
+                      style={{ background: '#000', color: '#FFF' }}
+                    >
+                      <Lock size={10} />
+                    </div>
+                  )}
+                  {isSelected && isOwned && (
+                    <div 
+                      className="absolute top-1 right-1 w-4 h-4 flex items-center justify-center"
+                      style={{ background: '#06FFA5', color: '#000', border: `1px solid ${B}` }}
+                    >
+                      <Check size={10} strokeWidth={3} />
+                    </div>
+                  )}
+
+                  {/* Rarity indicator */}
+                  {cardBack.rarity !== 'common' && (
+                    <div 
+                      className="absolute bottom-0 left-0 right-0 text-[6px] font-black uppercase text-center py-0.5"
+                      style={{ background: rarityColor, color: '#000' }}
+                    >
+                      {cardBack.rarity === 'legendary' ? '★' : cardBack.rarity === 'epic' ? '◆' : '●'}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          
+          <p className="text-[10px] font-bold mt-3 text-center" style={{ color: isDark ? '#AAA' : '#666' }}>
+            Schalte neue Kartenrückseiten über den Season Pass frei! 🃏
           </p>
         </div>
       )}

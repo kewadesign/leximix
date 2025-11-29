@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from 'react';
-import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem, Gift, Type, Palette } from 'lucide-react';
-import { UserState, SeasonReward } from '../types';
+import React, { useRef, useEffect, useState } from 'react';
+import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem, Gift, Type, Palette, CreditCard } from 'lucide-react';
+import { UserState, SeasonReward, SeasonRewardItem } from '../types';
 import { SEASON_REWARDS, getCurrentSeason, TRANSLATIONS } from '../constants';
 import { audio } from '../utils/audio';
 import { getRarityColor } from '../utils/rewards';
+import { RewardClaimModal } from './RewardClaimModal';
+import { ClaimBurst } from './ParticleEffect';
 
 interface Props {
     user: UserState;
@@ -15,16 +17,29 @@ interface Props {
 
 export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClaim, onShowPremium }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [claimedReward, setClaimedReward] = useState<{ reward: SeasonRewardItem; isPremium: boolean } | null>(null);
+    const [recentlyClaimed, setRecentlyClaimed] = useState<number | null>(null);
 
     // Auto-scroll to current level on mount
     useEffect(() => {
         if (scrollRef.current) {
-            const levelWidth = 192; // w-48 = 12rem = 192px
+            const levelWidth = 208; // w-52 = 13rem = 208px
             const centerOffset = window.innerWidth / 2 - levelWidth / 2;
             const scrollPos = (user.level - 1) * levelWidth - centerOffset;
             scrollRef.current.scrollLeft = Math.max(0, scrollPos);
         }
     }, []);
+
+    // Handle claim with modal
+    const handleClaim = (level: number, isPremium: boolean, reward: SeasonRewardItem | null) => {
+        if (reward) {
+            setRecentlyClaimed(level);
+            setClaimedReward({ reward, isPremium });
+            onClaim(level, isPremium);
+            // Clear recently claimed after animation
+            setTimeout(() => setRecentlyClaimed(null), 500);
+        }
+    };
 
     const getEffectStyle = (effectId: string) => {
         if (!effectId) return "";
@@ -124,43 +139,39 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
             {/* Reward Legend - Neo Brutal */}
             <div
-                className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-3 text-xs font-black uppercase z-20"
+                className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-2 text-xs font-black uppercase z-20"
                 style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
             >
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><Sparkles size={12} style={{ color: '#FFF' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Frame</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#FF006E', border: '2px solid #000' }}><Type size={12} style={{ color: '#FFF' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Font</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#06FFA5', border: '2px solid #000' }}><Palette size={12} style={{ color: '#000' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Effekt</span>
-                </div>
                 <div className="flex items-center gap-1">
                     <div className="p-1" style={{ background: '#0096FF', border: '2px solid #000' }}><ImageIcon size={12} style={{ color: '#FFF' }} /></div>
                     <span style={{ color: 'var(--color-text)' }}>Avatar</span>
                 </div>
                 <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Gift size={12} style={{ color: '#000' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Sticker</span>
+                    <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><Sparkles size={12} style={{ color: '#FFF' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Effekt</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#FF006E', border: '2px solid #000' }}><Crown size={12} style={{ color: '#FFF' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Titel</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#06FFA5', border: '2px solid #000' }}><CreditCard size={12} style={{ color: '#000' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Karten</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={12} style={{ color: '#000' }} /></div>
                     <span style={{ color: 'var(--color-text)' }}>Münzen</span>
                 </div>
                 <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#06FFA5', border: '2px solid #000' }}><span className="text-[10px]">🏷️</span></div>
-                    <span style={{ color: 'var(--color-text)' }}>Titel</span>
+                    <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Zap size={12} style={{ color: '#000' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Booster</span>
                 </div>
             </div>
 
-            {/* Scroll Track - Neo Brutal Colorful */}
+            {/* Scroll Track - Neo Brutal Colorful with Scroll Snap */}
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-x-auto overflow-y-hidden p-0 scrollbar-hide relative"
+                className="flex-1 overflow-x-auto overflow-y-hidden p-0 scrollbar-hide relative scroll-snap-x"
                 onWheel={(e) => {
                     if (scrollRef.current) {
                         scrollRef.current.scrollLeft += e.deltaY;
@@ -217,7 +228,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                         return (
                             <div
                                 key={lvl}
-                                className="flex flex-col items-center justify-center relative w-52 h-full shrink-0 snap-center group"
+                                className="flex flex-col items-center justify-center relative w-52 h-full shrink-0 scroll-snap-center group"
                             >
                                 {/* Level Node (Center) - Bigger & Colorful */}
                                 <div
@@ -262,29 +273,27 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                     className="w-12 h-12 object-cover"
                                                     style={{ border: '3px solid #000' }}
                                                 />
-                                            ) : premiumReward.type === 'frame' ? (
+                                            ) : premiumReward.type === 'frame' || premiumReward.type === 'effect' ? (
                                                 <div 
                                                     className="w-12 h-12 flex items-center justify-center"
                                                     style={{ background: '#8338EC', border: '3px solid #000' }}
                                                 >
-                                                    <span className="text-2xl">{premiumReward.icon || '🖼️'}</span>
-                                                </div>
-                                            ) : premiumReward.type === 'font' ? (
-                                                <div 
-                                                    className="w-12 h-12 flex items-center justify-center"
-                                                    style={{ background: '#FF006E', border: '3px solid #000' }}
-                                                >
-                                                    <span className="text-2xl">{premiumReward.icon || '🔤'}</span>
+                                                    <Sparkles size={24} className="text-white" />
                                                 </div>
                                             ) : premiumReward.type === 'title' ? (
                                                 <div 
                                                     className="w-12 h-12 flex items-center justify-center"
-                                                    style={{ background: getRarityColor(premiumReward.rarity || 'rare'), border: '3px solid #000' }}
+                                                    style={{ background: '#FF006E', border: '3px solid #000' }}
                                                 >
-                                                    <span className="text-2xl">🏷️</span>
+                                                    <Crown size={24} className="text-white" />
                                                 </div>
-                                            ) : premiumReward.type === 'effect' ? (
-                                                <span className="text-4xl">{premiumReward.icon || '✨'}</span>
+                                            ) : premiumReward.type === 'cardback' ? (
+                                                <div 
+                                                    className="w-10 h-14 flex items-center justify-center"
+                                                    style={{ background: '#06FFA5', border: '3px solid #000' }}
+                                                >
+                                                    <span className="text-xl">🃏</span>
+                                                </div>
                                             ) : premiumReward.type === 'sticker_pack' ? (
                                                 <div 
                                                     className="w-12 h-12 flex items-center justify-center"
@@ -293,7 +302,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                         border: '3px solid #000' 
                                                     }}
                                                 >
-                                                    <span className="text-2xl">🎁</span>
+                                                    <Gift size={24} className="text-white" />
                                                 </div>
                                             ) : premiumReward.type === 'sticker' ? (
                                                 <Star size={36} style={{ color: '#FF006E' }} />
@@ -301,6 +310,8 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                 <Box size={36} style={{ color: '#8338EC' }} />
                                             ) : premiumReward.type === 'booster' ? (
                                                 <Zap size={36} style={{ color: '#FFBE0B' }} />
+                                            ) : premiumReward.type === 'coins' ? (
+                                                <Coins size={28} style={{ color: '#FFBE0B' }} />
                                             ) : (
                                                 <Gem size={28} style={{ color: '#0096FF' }} />
                                             )}
@@ -317,8 +328,8 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
                                             {canClaimPremium && user.isPremium && (
                                                 <button
-                                                    onClick={() => { audio.playWin(); onClaim(lvl, true); }}
-                                                    className="absolute -bottom-3 px-3 py-1 text-[9px] font-black uppercase flex items-center gap-1"
+                                                    onClick={() => handleClaim(lvl, true, premiumReward)}
+                                                    className={`absolute -bottom-3 px-3 py-1 text-[9px] font-black uppercase flex items-center gap-1 transition-all hover:-translate-y-1 ${recentlyClaimed === lvl ? 'animate-claim-burst' : 'animate-glow-pulse'}`}
                                                     style={{ background: '#06FFA5', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
                                                 >
                                                     <Check size={10} /> Claim
@@ -380,8 +391,8 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
                                             {canClaimFree && (
                                                 <button
-                                                    onClick={() => { audio.playWin(); onClaim(lvl, false); }}
-                                                    className="absolute -bottom-4 px-4 py-1.5 text-[10px] font-black uppercase"
+                                                    onClick={() => handleClaim(lvl, false, freeReward)}
+                                                    className={`absolute -bottom-4 px-4 py-1.5 text-[10px] font-black uppercase transition-all hover:-translate-y-1 ${recentlyClaimed === lvl ? 'animate-claim-burst' : 'animate-glow-pulse'}`}
                                                     style={{ background: '#06FFA5', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
                                                 >
                                                     CLAIM
@@ -404,6 +415,15 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     })}
                 </div>
             </div>
+
+            {/* Reward Claim Modal */}
+            {claimedReward && (
+                <RewardClaimModal
+                    reward={claimedReward.reward}
+                    isPremium={claimedReward.isPremium}
+                    onClose={() => setClaimedReward(null)}
+                />
+            )}
         </div >
     );
 };

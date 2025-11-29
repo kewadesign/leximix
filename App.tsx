@@ -661,6 +661,8 @@ export default function App() {
   const [editFrame, setEditFrame] = useState(user.activeFrame || 'frame_none');
   const [editFont, setEditFont] = useState(user.activeFont || 'font_default');
   const [editEffect, setEditEffect] = useState(user.activeEffect || 'effect_none');
+  const [editTitle, setEditTitle] = useState(user.activeTitle || 'title_none');
+  const [editCardBack, setEditCardBack] = useState(user.activeCardBack || 'cardback_default');
   const [showStickerAlbum, setShowStickerAlbum] = useState(false);
   const [editUsername, setEditUsername] = useState('');
   const [usernameError, setUsernameError] = useState('');
@@ -1856,7 +1858,9 @@ export default function App() {
       avatarId: editAvatar,
       activeFrame: editFrame !== 'frame_none' ? editFrame : undefined,
       activeFont: editFont !== 'font_default' ? editFont : undefined,
-      activeEffect: editEffect !== 'effect_none' ? editEffect : undefined
+      activeEffect: editEffect !== 'effect_none' ? editEffect : undefined,
+      activeTitle: editTitle !== 'title_none' ? editTitle : undefined,
+      activeCardBack: editCardBack !== 'cardback_default' ? editCardBack : undefined
     }));
     setShowProfile(false);
   };
@@ -4752,9 +4756,13 @@ export default function App() {
             selectedFrame={editFrame}
             selectedFont={editFont}
             selectedEffect={editEffect}
+            selectedTitle={editTitle}
+            selectedCardBack={editCardBack}
             onFrameChange={setEditFrame}
             onFontChange={setEditFont}
             onEffectChange={setEditEffect}
+            onTitleChange={setEditTitle}
+            onCardBackChange={setEditCardBack}
             onOpenAlbum={() => { setShowProfile(false); setShowStickerAlbum(true); }}
           />
 

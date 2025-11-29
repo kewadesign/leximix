@@ -1,10 +1,10 @@
-import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonReward, ProfileFrame, ProfileFont, ProfileEffect, Sticker, StickerCategory } from './types';
+import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonReward, ProfileFrame, ProfileFont, ProfileEffect, Sticker, StickerCategory, ProfileTitle, CardBack } from './types';
 
 // ============================================================================
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '3.4.1';
+export const APP_VERSION = '3.5.0';
 
 // ============================================================================
 // PROFILE FRAMES
@@ -61,6 +61,55 @@ export const PROFILE_EFFECTS: ProfileEffect[] = [
   { id: 'effect_holo', name: 'Hologramm', cssClass: 'shadow-[0_0_40px_rgba(192,132,252,0.8)]', icon: '💿', unlockLevel: 0, isPremium: true },
   { id: 'effect_quantum', name: 'Quantum', cssClass: 'shadow-[0_0_35px_rgba(99,102,241,0.9)]', icon: '⚛️', unlockLevel: 0, isPremium: true },
 ];
+
+// ============================================================================
+// PROFILE TITLES
+// ============================================================================
+
+export const PROFILE_TITLES: ProfileTitle[] = [
+  { id: 'title_none', name: 'Kein Titel', rarity: 'common', cssClass: '', unlockLevel: 0, isPremium: false },
+  { id: 'title_newcomer', name: 'Neuling', rarity: 'common', cssClass: 'text-gray-400', icon: '🌱', unlockLevel: 0, isPremium: false },
+  { id: 'title_wordsmith', name: 'Wortschmied', rarity: 'common', cssClass: 'text-blue-400', icon: '📝', unlockLevel: 5, isPremium: false },
+  { id: 'title_puzzle_solver', name: 'Rätsellöser', rarity: 'rare', cssClass: 'text-green-400', icon: '🧩', unlockLevel: 10, isPremium: true },
+  { id: 'title_champion', name: 'Champion', rarity: 'rare', cssClass: 'text-yellow-400', icon: '🏆', unlockLevel: 15, isPremium: true },
+  { id: 'title_genius', name: 'Genie', rarity: 'epic', cssClass: 'text-purple-400 animate-pulse', icon: '🧠', unlockLevel: 25, isPremium: true },
+  { id: 'title_legend', name: 'Legende', rarity: 'epic', cssClass: 'text-orange-400 animate-pulse', icon: '⭐', unlockLevel: 35, isPremium: true },
+  { id: 'title_master', name: 'Meister', rarity: 'epic', cssClass: 'text-red-400', icon: '👑', unlockLevel: 50, isPremium: true },
+  { id: 'title_elite', name: 'Elite', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 bg-clip-text text-transparent animate-shimmer', icon: '💎', unlockLevel: 75, isPremium: true },
+  { id: 'title_supreme', name: 'Supreme', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent animate-shimmer', icon: '🔱', unlockLevel: 100, isPremium: true },
+  // Special titles
+  { id: 'title_cyber', name: 'Cyber Agent', rarity: 'epic', cssClass: 'text-cyan-400 animate-pulse', icon: '🤖', unlockLevel: 0, isPremium: true },
+  { id: 'title_neon', name: 'Neon Rider', rarity: 'epic', cssClass: 'text-fuchsia-400 animate-pulse', icon: '🌃', unlockLevel: 0, isPremium: true },
+  { id: 'title_shadow', name: 'Schattenwandler', rarity: 'legendary', cssClass: 'text-gray-300', icon: '🌑', unlockLevel: 0, isPremium: true },
+  { id: 'title_phoenix', name: 'Phoenix', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 bg-clip-text text-transparent', icon: '🔥', unlockLevel: 0, isPremium: true },
+];
+
+// Helper: Get title by ID
+export const getTitleById = (id: string): ProfileTitle | undefined => {
+  return PROFILE_TITLES.find(t => t.id === id);
+};
+
+// ============================================================================
+// CARD BACKS
+// ============================================================================
+
+export const CARD_BACKS: CardBack[] = [
+  { id: 'cardback_default', name: 'Standard', preview: '/assets/cardbacks/default.png', rarity: 'common', unlockLevel: 0, isPremium: false },
+  { id: 'cardback_blue', name: 'Ozean Blau', preview: '/assets/cardbacks/blue.png', rarity: 'common', cssClass: 'bg-gradient-to-br from-blue-600 to-blue-900', unlockLevel: 5, isPremium: false },
+  { id: 'cardback_fire', name: 'Feuer', preview: '/assets/cardbacks/fire.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-orange-500 via-red-600 to-yellow-500', unlockLevel: 10, isPremium: true },
+  { id: 'cardback_ice', name: 'Frost', preview: '/assets/cardbacks/ice.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-cyan-400 to-blue-600', unlockLevel: 18, isPremium: true },
+  { id: 'cardback_neon', name: 'Neon Grid', preview: '/assets/cardbacks/neon.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-fuchsia-600 via-purple-600 to-cyan-500', unlockLevel: 28, isPremium: true },
+  { id: 'cardback_galaxy', name: 'Galaxie', preview: '/assets/cardbacks/galaxy.png', rarity: 'epic', cssClass: 'bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900', unlockLevel: 38, isPremium: true },
+  { id: 'cardback_gold', name: 'Gold Royal', preview: '/assets/cardbacks/gold.png', rarity: 'epic', cssClass: 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600', unlockLevel: 48, isPremium: true },
+  { id: 'cardback_matrix', name: 'Matrix', preview: '/assets/cardbacks/matrix.png', rarity: 'epic', cssClass: 'bg-gradient-to-b from-green-900 to-black', unlockLevel: 58, isPremium: true },
+  { id: 'cardback_rainbow', name: 'Prisma', preview: '/assets/cardbacks/rainbow.png', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500', unlockLevel: 78, isPremium: true },
+  { id: 'cardback_legendary', name: 'Legendär', preview: '/assets/cardbacks/legendary.png', rarity: 'legendary', cssClass: 'bg-gradient-to-br from-yellow-300 via-orange-500 to-red-600 animate-pulse', unlockLevel: 100, isPremium: true },
+];
+
+// Helper: Get card back by ID
+export const getCardBackById = (id: string): CardBack | undefined => {
+  return CARD_BACKS.find(c => c.id === id);
+};
 
 // ============================================================================
 // STICKER ALBUM SYSTEM
