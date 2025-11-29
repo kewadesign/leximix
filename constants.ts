@@ -1944,218 +1944,143 @@ export const SEASON_AVATARS = SEASON_1_AVATARS; // Legacy compatibility
 
 /**
  * Generate Season Rewards dynamically based on season avatars
- * v3.4.0 - Enhanced with Frames, Fonts, Stickers, Effects
+ * v3.5.0 - Optimized reward distribution with clear milestones
+ * 
+ * MILESTONE LEVELS: 10, 25, 50, 75, 100
+ * Each milestone has special, memorable rewards
  */
 export const generateSeasonRewards = (season: Season) => {
+  // Pre-define all unique rewards for better organization
+  const FRAMES = [
+    { level: 5, name: 'Goldrand', value: 'frame_gold', rarity: 'common' },
+    { level: 15, name: 'Neon Glow', value: 'frame_neon', rarity: 'rare' },
+    { level: 25, name: 'Flammenrahmen', value: 'frame_fire', rarity: 'rare' },
+    { level: 35, name: 'Eisrahmen', value: 'frame_ice', rarity: 'epic' },
+    { level: 50, name: 'Regenbogen', value: 'frame_rainbow', rarity: 'epic' },
+    { level: 65, name: 'Blitz', value: 'frame_lightning', rarity: 'epic' },
+    { level: 75, name: 'Galaxie', value: 'frame_galaxy', rarity: 'legendary' },
+    { level: 90, name: 'Drache', value: 'frame_dragon', rarity: 'legendary' },
+    { level: 100, name: 'Legendär', value: 'frame_legendary', rarity: 'legendary' },
+  ];
+
+  const FONTS = [
+    { level: 10, name: 'Pixel Font', value: 'font_pixel', rarity: 'rare' },
+    { level: 20, name: 'Elegant Script', value: 'font_script', rarity: 'rare' },
+    { level: 30, name: 'Hacker Mono', value: 'font_mono', rarity: 'epic' },
+    { level: 40, name: 'Comic Sans', value: 'font_comic', rarity: 'epic' },
+    { level: 60, name: 'Ultra Bold', value: 'font_bold', rarity: 'legendary' },
+  ];
+
+  const EFFECTS = [
+    { level: 2, name: 'Glühen', value: 'effect_glow', icon: '✨', rarity: 'common' },
+    { level: 4, name: 'Feuer', value: 'effect_fire', icon: '🔥', rarity: 'rare' },
+    { level: 8, name: 'Neon', value: 'effect_neon', icon: '💜', rarity: 'rare' },
+    { level: 12, name: 'Eis', value: 'effect_ice', icon: '❄️', rarity: 'rare' },
+    { level: 16, name: 'Gold Luxus', value: 'effect_gold', icon: '👑', rarity: 'epic' },
+    { level: 22, name: 'Matrix', value: 'effect_matrix', icon: '💻', rarity: 'epic' },
+    { level: 28, name: 'Hologramm', value: 'effect_holo', icon: '💿', rarity: 'epic' },
+    { level: 34, name: 'Sakura', value: 'effect_sakura', icon: '🌸', rarity: 'epic' },
+    { level: 45, name: 'Vaporwave', value: 'effect_vaporwave', icon: '🌴', rarity: 'epic' },
+    { level: 55, name: 'Glitch', value: 'effect_glitch', icon: '👾', rarity: 'legendary' },
+    { level: 70, name: 'Quantum', value: 'effect_quantum', icon: '⚛️', rarity: 'legendary' },
+    { level: 85, name: 'Supernova', value: 'effect_supernova', icon: '💥', rarity: 'legendary' },
+  ];
+
+  const TITLES = [
+    { level: 10, name: 'Anfänger', value: 'title_beginner', rarity: 'common' },
+    { level: 25, name: 'Entdecker', value: 'title_explorer', rarity: 'rare' },
+    { level: 50, name: 'Veteran', value: 'title_veteran', rarity: 'epic' },
+    { level: 75, name: 'Meister', value: 'title_master', rarity: 'legendary' },
+    { level: 100, name: 'Legende', value: 'title_legend', rarity: 'legendary' },
+  ];
+
   return Array.from({ length: 100 }, (_, i) => {
     const level = i + 1;
     let freeReward: SeasonRewardItem | null = null;
     let premiumReward: SeasonRewardItem | null = null;
 
     // ============================================================================
-    // FREE TRACK - Coins, Stickers, occasional special items
+    // FREE TRACK - Progressive coins & stickers with milestone bonuses
     // ============================================================================
     
-    // Every level gets something free
-    if (level <= 10) {
-      // Levels 1-10: Coins (50-100)
-      freeReward = { type: 'coins', amount: 50 + (level * 5), name: 'Münzen', icon: '💰' };
-    } else if (level <= 20) {
-      // Levels 11-20: Mix of coins and stickers
-      if (level % 2 === 0) {
-        freeReward = { type: 'sticker', amount: 1, name: 'Zufalls-Sticker', icon: '🎴', rarity: 'common' };
-      } else {
-        freeReward = { type: 'coins', amount: 75 + (level * 3), name: 'Münzen', icon: '💰' };
-      }
-    } else if (level <= 40) {
-      // Levels 21-40: More stickers
-      if (level % 3 === 0) {
-        freeReward = { type: 'sticker_pack', amount: 2, name: 'Sticker Pack', icon: '🎁', rarity: 'common' };
-      } else if (level % 5 === 0) {
-        freeReward = { type: 'coins', amount: 150, name: 'Münzbeutel', icon: '💰' };
-      } else {
-        freeReward = { type: 'sticker', amount: 1, name: 'Zufalls-Sticker', icon: '🎴', rarity: 'common' };
-      }
-    } else if (level <= 60) {
-      // Levels 41-60: Better rewards
-      if (level === 50) {
-        freeReward = { type: 'sticker_pack', amount: 5, name: 'Mega Sticker Pack', icon: '🎁', rarity: 'rare' };
-      } else if (level % 5 === 0) {
-        freeReward = { type: 'coins', amount: 200, name: 'Münzschatz', icon: '💰' };
-      } else if (level % 2 === 0) {
-        freeReward = { type: 'sticker', amount: 1, name: 'Sticker', icon: '🎴', rarity: 'rare' };
-      } else {
-        freeReward = { type: 'coins', amount: 100, name: 'Münzen', icon: '💰' };
-      }
-    } else if (level <= 80) {
-      // Levels 61-80: Rare stickers and good coins
-      if (level % 5 === 0) {
-        freeReward = { type: 'sticker_pack', amount: 3, name: 'Rare Sticker Pack', icon: '🎁', rarity: 'rare' };
-      } else if (level % 3 === 0) {
-        freeReward = { type: 'sticker', amount: 1, name: 'Seltener Sticker', icon: '🎴', rarity: 'rare' };
-      } else {
-        freeReward = { type: 'coins', amount: 150 + (level - 60) * 5, name: 'Münzen', icon: '💰' };
-      }
-    } else {
-      // Levels 81-100: Best free rewards
-      if (level === 100) {
-        freeReward = { type: 'sticker_pack', amount: 10, name: 'Legendäres Pack', icon: '🎁', rarity: 'legendary' };
-      } else if (level % 5 === 0) {
-        freeReward = { type: 'sticker_pack', amount: 4, name: 'Epic Sticker Pack', icon: '🎁', rarity: 'epic' };
-      } else {
-        freeReward = { type: 'coins', amount: 200 + (level - 80) * 10, name: 'Münzschatz', icon: '💰' };
-      }
-    }
-
-    // ============================================================================
-    // PREMIUM TRACK - Frames, Fonts, Effects, Avatars, Stickers
-    // ============================================================================
-
-    // Level 1-5: Intro rewards
-    if (level === 1) {
-      premiumReward = { type: 'sticker_pack', amount: 3, name: 'Starter Pack', icon: '🎁', rarity: 'common' };
-    } else if (level === 2) {
-      premiumReward = { type: 'effect', name: 'Regenbogen Pulse', value: 'effect_rainbow', icon: '🌈', rarity: 'rare' };
-    } else if (level === 3) {
-      premiumReward = { type: 'sticker_pack', amount: 3, name: 'Sticker Pack', icon: '🎁', rarity: 'common' };
-    } else if (level === 4) {
-      premiumReward = { type: 'effect', name: 'Feuer', value: 'effect_fire', icon: '🔥', rarity: 'rare' };
-    } else if (level === 5) {
-      premiumReward = { type: 'frame', name: 'Goldrand', value: 'frame_gold', icon: '🖼️', rarity: 'common' };
-    }
-    // Level 6-10: First font, more effects
-    else if (level === 6) {
-      premiumReward = { type: 'effect', name: 'Gold Luxus', value: 'effect_gold', icon: '👑', rarity: 'epic' };
-    } else if (level === 7) {
-      premiumReward = { type: 'sticker_pack', amount: 3, name: 'Sticker Pack', icon: '🎁', rarity: 'rare' };
-    } else if (level === 8) {
-      premiumReward = { type: 'effect', name: 'Diamant', value: 'effect_diamond', icon: '💎', rarity: 'epic' };
-    } else if (level === 9) {
-      premiumReward = { type: 'sticker_pack', amount: 3, name: 'Sticker Pack', icon: '🎁', rarity: 'rare' };
-    } else if (level === 10) {
-      premiumReward = { type: 'font', name: 'Pixel Font', value: 'font_pixel', icon: '🔤', rarity: 'rare' };
-    }
-    // Level 11-15: Neon Frame
-    else if (level === 11) {
-      premiumReward = { type: 'effect', name: 'Matrix Rain', value: 'effect_matrix', icon: '💻', rarity: 'epic' };
-    } else if (level === 12) {
-      premiumReward = { type: 'sticker_pack', amount: 4, name: 'Rare Pack', icon: '🎁', rarity: 'rare' };
-    } else if (level === 13) {
-      premiumReward = { type: 'effect', name: 'Neon', value: 'effect_neon', icon: '💜', rarity: 'epic' };
-    } else if (level === 14) {
-      premiumReward = { type: 'sticker_pack', amount: 4, name: 'Rare Pack', icon: '🎁', rarity: 'rare' };
-    } else if (level === 15) {
-      premiumReward = { type: 'frame', name: 'Neon Glow', value: 'frame_neon', icon: '🖼️', rarity: 'rare' };
-    }
-    // Level 16-20: Elegant Font
-    else if (level === 16) {
-      premiumReward = { type: 'effect', name: 'Eis', value: 'effect_ice', icon: '❄️', rarity: 'epic' };
-    } else if (level === 17) {
-      premiumReward = { type: 'sticker_pack', amount: 4, name: 'Rare Pack', icon: '🎁', rarity: 'rare' };
-    } else if (level === 18) {
-      premiumReward = { type: 'effect', name: 'Sakura', value: 'effect_sakura', icon: '🌸', rarity: 'epic' };
-    } else if (level === 19) {
-      premiumReward = { type: 'sticker_pack', amount: 4, name: 'Rare Pack', icon: '🎁', rarity: 'rare' };
-    } else if (level === 20) {
-      premiumReward = { type: 'font', name: 'Elegant Script', value: 'font_script', icon: '🔤', rarity: 'rare' };
-    }
-    // Level 21-25: Fire Frame
-    else if (level === 21) {
-      premiumReward = { type: 'effect', name: 'Blitz', value: 'effect_lightning', icon: '⚡', rarity: 'epic' };
-    } else if (level === 22) {
-      premiumReward = { type: 'sticker_pack', amount: 5, name: 'Epic Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 23) {
-      premiumReward = { type: 'effect', name: 'Vaporwave', value: 'effect_vaporwave', icon: '🌴', rarity: 'epic' };
-    } else if (level === 24) {
-      premiumReward = { type: 'sticker_pack', amount: 5, name: 'Epic Pack', icon: '🎁', rarity: 'epic' };
+    // Milestone Free Rewards
+    if (level === 10) {
+      freeReward = { type: 'sticker_pack', amount: 3, name: 'Bronze Pack', icon: '🎁', rarity: 'common' };
     } else if (level === 25) {
-      premiumReward = { type: 'frame', name: 'Flammenrahmen', value: 'frame_fire', icon: '🖼️', rarity: 'rare' };
-    }
-    // Level 26-30: Hacker Font
-    else if (level === 26) {
-      premiumReward = { type: 'effect', name: 'Glitch', value: 'effect_glitch', icon: '👾', rarity: 'epic' };
-    } else if (level === 27) {
-      premiumReward = { type: 'sticker_pack', amount: 5, name: 'Epic Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 28) {
-      premiumReward = { type: 'effect', name: 'Hologramm', value: 'effect_holo', icon: '💿', rarity: 'epic' };
-    } else if (level === 29) {
-      premiumReward = { type: 'sticker_pack', amount: 5, name: 'Epic Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 30) {
-      premiumReward = { type: 'font', name: 'Hacker Font', value: 'font_mono', icon: '🔤', rarity: 'epic' };
-    }
-    // Level 31-35: Ice Frame
-    else if (level === 31) {
-      premiumReward = { type: 'effect', name: 'Quantum', value: 'effect_quantum', icon: '⚛️', rarity: 'legendary' };
-    } else if (level === 32) {
-      premiumReward = { type: 'sticker_pack', amount: 5, name: 'Epic Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 33) {
-      const avatarReward = season.avatars.find(a => a.level <= 33) || season.avatars[0];
-      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 33', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || 'agent33'}`, rarity: 'epic' };
-    } else if (level === 34) {
-      premiumReward = { type: 'sticker_pack', amount: 5, name: 'Epic Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 35) {
-      premiumReward = { type: 'frame', name: 'Eisrahmen', value: 'frame_ice', icon: '🖼️', rarity: 'epic' };
-    }
-    // Level 36-40: Comic Font
-    else if (level === 36) {
-      premiumReward = { type: 'sticker_pack', amount: 6, name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 37) {
-      const avatarReward = season.avatars.find(a => a.level <= 40) || season.avatars[1];
-      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 37', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || 'agent37'}`, rarity: 'epic' };
-    } else if (level === 38) {
-      premiumReward = { type: 'sticker_pack', amount: 6, name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 39) {
-      premiumReward = { type: 'sticker_pack', amount: 6, name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 40) {
-      premiumReward = { type: 'font', name: 'Comic Font', value: 'font_comic', icon: '🔤', rarity: 'epic' };
-    }
-    // Level 41-50: Rainbow Frame (Milestone!)
-    else if (level === 41) {
-      premiumReward = { type: 'sticker_pack', amount: 6, name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
-    } else if (level === 42) {
-      const avatarReward = season.avatars.find(a => a.level <= 50) || season.avatars[2];
-      premiumReward = { type: 'avatar', name: avatarReward?.name || 'Agent 42', value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || 'agent42'}`, rarity: 'epic' };
-    } else if (level >= 43 && level <= 49) {
-      premiumReward = { type: 'sticker_pack', amount: 6 + Math.floor((level - 43) / 2), name: 'Mega Pack', icon: '🎁', rarity: 'epic' };
+      freeReward = { type: 'sticker_pack', amount: 5, name: 'Silber Pack', icon: '🎁', rarity: 'rare' };
     } else if (level === 50) {
-      premiumReward = { type: 'frame', name: 'Regenbogen', value: 'frame_rainbow', icon: '🖼️', rarity: 'epic', desc: 'MEILENSTEIN: Level 50!' };
-    }
-    // Level 51-60: Ultra Bold Font
-    else if (level >= 51 && level <= 59) {
-      if (level % 3 === 0) {
-        const avatarReward = season.avatars.find(a => a.level <= level) || season.avatars[Math.floor(level / 10)];
-        premiumReward = { type: 'avatar', name: avatarReward?.name || `Agent ${level}`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || `agent${level}`}`, rarity: 'epic' };
-      } else {
-        premiumReward = { type: 'sticker_pack', amount: 7, name: 'Ultra Pack', icon: '🎁', rarity: 'epic' };
-      }
-    } else if (level === 60) {
-      premiumReward = { type: 'font', name: 'Ultra Bold', value: 'font_bold', icon: '🔤', rarity: 'legendary' };
-    }
-    // Level 61-75: Galaxy Frame
-    else if (level >= 61 && level <= 74) {
-      if (level % 5 === 0) {
-        const avatarReward = season.avatars.find(a => a.level <= level) || season.avatars[Math.floor(level / 10)];
-        premiumReward = { type: 'avatar', name: avatarReward?.name || `Agent ${level}`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || `agent${level}`}`, rarity: 'legendary' };
-      } else {
-        premiumReward = { type: 'sticker_pack', amount: 8, name: 'Legendary Pack', icon: '🎁', rarity: 'legendary' };
-      }
+      freeReward = { type: 'sticker_pack', amount: 8, name: 'Gold Pack', icon: '🎁', rarity: 'epic' };
     } else if (level === 75) {
-      premiumReward = { type: 'frame', name: 'Galaxie', value: 'frame_galaxy', icon: '🖼️', rarity: 'legendary', desc: 'MEILENSTEIN: Level 75!' };
+      freeReward = { type: 'sticker_pack', amount: 10, name: 'Platin Pack', icon: '🎁', rarity: 'epic' };
+    } else if (level === 100) {
+      freeReward = { type: 'sticker_pack', amount: 15, name: 'Diamant Pack', icon: '🎁', rarity: 'legendary' };
     }
-    // Level 76-99: Building to Legendary
-    else if (level >= 76 && level <= 99) {
-      if (level % 10 === 0) {
-        const avatarReward = season.avatars.find(a => a.level === level) || season.avatars[Math.floor(level / 10) - 1];
-        premiumReward = { type: 'avatar', name: avatarReward?.name || `Legendary Agent`, value: avatarReward?.id, preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || `legend${level}`}`, rarity: 'legendary' };
-      } else if (level % 5 === 0) {
-        premiumReward = { type: 'sticker_pack', amount: 10, name: 'Legendary Pack', icon: '🎁', rarity: 'legendary' };
-      } else {
-        premiumReward = { type: 'sticker_pack', amount: 8 + Math.floor((level - 76) / 5), name: 'Legendary Pack', icon: '🎁', rarity: 'legendary' };
-      }
+    // Regular Free Rewards
+    else if (level % 10 === 0) {
+      freeReward = { type: 'coins', amount: 300 + level * 3, name: 'Münzschatz', icon: '💰' };
+    } else if (level % 5 === 0) {
+      freeReward = { type: 'sticker_pack', amount: Math.min(4, 1 + Math.floor(level / 25)), name: 'Sticker Pack', icon: '🎁', rarity: level > 50 ? 'rare' : 'common' };
+    } else if (level % 3 === 0) {
+      freeReward = { type: 'sticker', amount: 1, name: 'Sticker', icon: '🎴', rarity: level > 60 ? 'rare' : 'common' };
+    } else {
+      freeReward = { type: 'coins', amount: 50 + level * 2, name: 'Münzen', icon: '💰' };
     }
-    // Level 100: LEGENDARY FRAME + TITLE
-    else if (level === 100) {
-      premiumReward = { type: 'frame', name: 'Legendär', value: 'frame_legendary', icon: '🖼️', rarity: 'legendary', desc: 'DAS ULTIMATIVE FRAME! Level 100 Meister!' };
+
+    // ============================================================================
+    // PREMIUM TRACK - Structured progression with clear milestones
+    // ============================================================================
+
+    // Check for Frame rewards
+    const frameReward = FRAMES.find(f => f.level === level);
+    if (frameReward) {
+      const isMilestone = [50, 75, 100].includes(level);
+      premiumReward = { 
+        type: 'frame', 
+        name: frameReward.name, 
+        value: frameReward.value, 
+        icon: '🖼️', 
+        rarity: frameReward.rarity as any,
+        desc: isMilestone ? `🏆 MEILENSTEIN Level ${level}!` : undefined
+      };
+    }
+    // Check for Font rewards
+    else if (FONTS.find(f => f.level === level)) {
+      const fontReward = FONTS.find(f => f.level === level)!;
+      premiumReward = { type: 'font', name: fontReward.name, value: fontReward.value, icon: '🔤', rarity: fontReward.rarity as any };
+    }
+    // Check for Effect rewards
+    else if (EFFECTS.find(e => e.level === level)) {
+      const effectReward = EFFECTS.find(e => e.level === level)!;
+      premiumReward = { type: 'effect', name: effectReward.name, value: effectReward.value, icon: effectReward.icon, rarity: effectReward.rarity as any };
+    }
+    // Check for Title rewards (milestone only)
+    else if (TITLES.find(t => t.level === level)) {
+      const titleReward = TITLES.find(t => t.level === level)!;
+      premiumReward = { type: 'title', name: `"${titleReward.name}"`, value: titleReward.value, icon: '🏷️', rarity: titleReward.rarity as any };
+    }
+    // Avatar rewards at specific levels
+    else if ([18, 33, 42, 58, 68, 78, 88, 95].includes(level)) {
+      const avatarIndex = Math.floor(level / 12);
+      const avatarReward = season.avatars[avatarIndex] || season.avatars[0];
+      premiumReward = { 
+        type: 'avatar', 
+        name: avatarReward?.name || `Avatar ${level}`, 
+        value: avatarReward?.id || `avatar_${level}`, 
+        preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || `season_${level}`}`, 
+        rarity: level > 60 ? 'legendary' : 'epic' 
+      };
+    }
+    // Sticker packs for remaining levels
+    else {
+      const packSize = level < 20 ? 3 : level < 40 ? 4 : level < 60 ? 5 : level < 80 ? 6 : 8;
+      const packRarity = level < 30 ? 'common' : level < 50 ? 'rare' : level < 70 ? 'epic' : 'legendary';
+      premiumReward = { 
+        type: 'sticker_pack', 
+        amount: packSize, 
+        name: `${packRarity === 'legendary' ? 'Legendäres' : packRarity === 'epic' ? 'Episches' : packRarity === 'rare' ? 'Seltenes' : 'Starter'} Pack`, 
+        icon: '🎁', 
+        rarity: packRarity as any 
+      };
     }
 
     return { level, free: freeReward, premium: premiumReward };

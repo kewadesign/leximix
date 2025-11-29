@@ -151,6 +151,10 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={12} style={{ color: '#000' }} /></div>
                     <span style={{ color: 'var(--color-text)' }}>Münzen</span>
                 </div>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#06FFA5', border: '2px solid #000' }}><span className="text-[10px]">🏷️</span></div>
+                    <span style={{ color: 'var(--color-text)' }}>Titel</span>
+                </div>
             </div>
 
             {/* Scroll Track - Neo Brutal Colorful */}
@@ -272,6 +276,13 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                 >
                                                     <span className="text-2xl">{premiumReward.icon || '🔤'}</span>
                                                 </div>
+                                            ) : premiumReward.type === 'title' ? (
+                                                <div 
+                                                    className="w-12 h-12 flex items-center justify-center"
+                                                    style={{ background: getRarityColor(premiumReward.rarity || 'rare'), border: '3px solid #000' }}
+                                                >
+                                                    <span className="text-2xl">🏷️</span>
+                                                </div>
                                             ) : premiumReward.type === 'effect' ? (
                                                 <span className="text-4xl">{premiumReward.icon || '✨'}</span>
                                             ) : premiumReward.type === 'sticker_pack' ? (
@@ -295,8 +306,13 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                             )}
 
                                             <div className="mt-2 text-center">
-                                                <div className="text-[10px] font-black uppercase" style={{ color: 'var(--color-text)' }}>{premiumReward.type}</div>
-                                                <div className="text-[9px] font-bold" style={{ color: '#666' }}>{premiumReward.amount ? `x${premiumReward.amount}` : 'Rare'}</div>
+                                                <div className="text-[10px] font-black uppercase leading-tight" style={{ color: 'var(--color-text)' }}>{premiumReward.name}</div>
+                                                <div className="text-[9px] font-bold" style={{ color: getRarityColor(premiumReward.rarity || 'common') }}>
+                                                    {premiumReward.amount ? `x${premiumReward.amount}` : premiumReward.rarity?.toUpperCase() || ''}
+                                                </div>
+                                                {premiumReward.desc && (
+                                                    <div className="text-[8px] font-bold mt-1" style={{ color: '#FF006E' }}>{premiumReward.desc}</div>
+                                                )}
                                             </div>
 
                                             {canClaimPremium && user.isPremium && (
