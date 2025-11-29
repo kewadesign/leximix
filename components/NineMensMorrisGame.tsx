@@ -541,208 +541,285 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
   const modeColor = '#D97706'; // Amber for Nine Men's Morris
 
   return (
-    <div className="min-h-screen p-4 md:p-6 geo-pattern">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={onBack}
-          className="p-3 border-3 border-[var(--color-border)] transition-all hover:-translate-y-1 hover:scale-105"
-          style={{ background: modeColor, boxShadow: '4px 4px 0px var(--color-border)' }}
-        >
-          <ArrowLeft size={24} className="text-white" />
-        </button>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
-            <Coins size={20} className="text-[var(--color-text)]" />
-            <span className="text-[var(--color-text)] text-lg">{user.coins}</span>
-          </div>
-
-          {!isMultiplayer && (
-            <div className="px-4 py-2 border-3 border-[var(--color-border)] font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
-              LEVEL {levelId}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Neo-Brutalist Game Container */}
-      <div
-        className="max-w-xl mx-auto p-5 md:p-8 mt-4"
-        style={{
-          background: 'var(--color-bg)',
-          border: '4px solid var(--color-border)',
-          boxShadow: '8px 8px 0px var(--color-border)'
-        }}
-      >
-        {/* Title Bar */}
-        <div
-          className="flex items-center justify-between px-4 py-3 mb-6 border-4 border-[var(--color-border)]"
-          style={{ background: modeColor }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-6 h-6 border-2 border-white"></div>
-            <span className="font-black text-white uppercase text-lg">MÜHLE</span>
-          </div>
-          <div
-            className={`px-4 py-2 font-black text-sm uppercase border-2 border-[var(--color-border)] ${currentPlayer === playerColor ? 'bg-[#06FFA5] text-[var(--color-text)]' : 'bg-[var(--color-surface)] text-[var(--color-text)]'
-              }`}
-          >
-            {currentPlayer === playerColor ? 'DEIN ZUG' : (isMultiplayer ? opponentName?.toUpperCase() : 'KI DENKT')}
-          </div>
+    <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: '#FFF8E7' }}>
+      <div className="min-h-full p-4 pb-32">
+        {/* Rainbow Top Bar */}
+        <div className="fixed top-0 left-0 right-0 flex h-3 w-full z-[60]">
+          <div className="flex-1" style={{ background: '#FF006E' }}></div>
+          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+          <div className="flex-1" style={{ background: '#8338EC' }}></div>
         </div>
 
-        {/* Status */}
-        <div className="mb-6 flex flex-wrap gap-4 justify-center">
-          {mustRemove && (
-            <div className="px-5 py-3 bg-[#FF006E] font-black uppercase animate-pulse text-white border-3 border-[var(--color-border)]" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
-              STEIN ENTFERNEN!
-            </div>
-          )}
-
-          {phase === 'placing' && (
-            <div className="px-5 py-3 bg-[#0096FF] font-black text-white border-3 border-[var(--color-border)]" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
-              ⚪ {piecesToPlace.white} | ⚫ {piecesToPlace.black}
-            </div>
-          )}
-        </div>
-
-        {/* Board Grid - Neo-Brutalist */}
-        <div
-          className="relative w-72 h-72 md:w-80 md:h-80 mx-auto"
-          style={{
-            background: 'var(--color-bg)',
-            border: '6px solid transparent',
-            backgroundImage: 'linear-gradient(var(--color-bg), var(--color-bg)), linear-gradient(90deg, #FF006E 0%, #FF7F00 16.66%, #FFBE0B 33.33%, #06FFA5 50%, #0096FF 66.66%, #8338EC 83.33%, #FF006E 100%)',
-            backgroundOrigin: 'border-box',
-            backgroundClip: 'padding-box, border-box',
-            boxShadow: '8px 8px 0px var(--color-border)'
-          }}
-        >
-          {/* Draw lines */}
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
-            {/* Outer square */}
-            <rect x="0" y="0" width="100" height="100" fill="none" stroke="#000" strokeWidth="3" />
-            {/* Middle square */}
-            <rect x="16.67" y="16.67" width="66.67" height="66.67" fill="none" stroke="#000" strokeWidth="3" />
-            {/* Inner square */}
-            <rect x="33.33" y="33.33" width="33.33" height="33.33" fill="none" stroke="#000" strokeWidth="3" />
-            {/* Cross lines */}
-            <line x1="50" y1="0" x2="50" y2="33.33" stroke="#000" strokeWidth="3" />
-            <line x1="50" y1="66.67" x2="50" y2="100" stroke="#000" strokeWidth="3" />
-            <line x1="0" y1="50" x2="33.33" y2="50" stroke="#000" strokeWidth="3" />
-            <line x1="66.67" y1="50" x2="100" y2="50" stroke="#000" strokeWidth="3" />
-          </svg>
-
-          {/* Positions */}
-          {POSITIONS.map((pos, index) => {
-            const piece = board[index];
-            const isSelected = selectedPiece === index;
-            const isHint = hintPosition === index;
-            const pieceCount = currentPlayer ? countPieces(board, currentPlayer) : 0;
-            const canFly = pieceCount === 3;
-            const isValidMove = selectedPiece !== null && getValidMoves(board, selectedPiece, canFly).includes(index);
-            const canRemove = mustRemove && piece !== null && piece !== currentPlayer &&
-              (!checkMill(board, index, piece) || allInMills(board, piece));
-
-            return (
-              <div
-                key={index}
-                onClick={() => handlePositionClick(index)}
-                className={`absolute w-8 h-8 md:w-10 md:h-10 -ml-4 -mt-4 md:-ml-5 md:-mt-5 rounded-full cursor-pointer transition-all flex items-center justify-center
-                    ${!piece ? 'bg-amber-300 hover:bg-amber-400 border-2 border-amber-600' : ''}
-                    ${isSelected ? 'ring-4 ring-yellow-400' : ''}
-                    ${isHint ? 'ring-4 ring-green-400 animate-pulse' : ''}
-                    ${isValidMove ? 'ring-4 ring-green-500 bg-green-200' : ''}
-                    ${canRemove ? 'ring-4 ring-red-500 animate-pulse' : ''}
-                  `}
-                style={{
-                  left: `${(pos.x / 6) * 100}%`,
-                  top: `${(pos.y / 6) * 100}%`
-                }}
-              >
-                {piece && (
-                  <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full border-3 shadow-lg ${piece === 'white'
-                    ? 'bg-gradient-to-br from-gray-100 to-gray-300 border-gray-400'
-                    : 'bg-gradient-to-br from-gray-700 to-gray-900 border-gray-950'
-                    }`} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-4 mt-6 justify-center flex-wrap">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 pt-6">
           <button
-            onClick={getHint}
-            className="flex items-center gap-2 px-5 py-3 bg-[#06FFA5] hover:bg-emerald-400 text-[var(--color-text)] font-black uppercase rounded-lg transition-all hover:scale-105"
-            style={{ boxShadow: '0 4px 12px rgba(6,255,165,0.4)' }}
+            onClick={onBack}
+            className="w-12 h-12 flex items-center justify-center transition-all hover:-translate-y-1 active:translate-y-0"
+            style={{ 
+              background: modeColor, 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0px #000' 
+            }}
           >
-            <Lightbulb size={20} />
-            HINWEIS
+            <ArrowLeft size={24} className="text-white" />
           </button>
 
-          {!isMultiplayer && (
-            <button
-              onClick={restartGame}
-              className="flex items-center gap-2 px-5 py-3 bg-gray-600 hover:bg-gray-500 text-white font-black uppercase rounded-lg transition-all hover:scale-105"
-              style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 font-black" style={{ background: '#FFBE0B', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>
+              <Coins size={20} className="text-black" />
+              <span className="text-black text-lg">{user.coins}</span>
+            </div>
+
+            {!isMultiplayer && (
+              <div className="px-4 py-2 font-black text-white" style={{ background: '#8338EC', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>
+                LEVEL {levelId}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Neo-Brutalist Game Container */}
+        <div
+          className="max-w-lg mx-auto p-6 md:p-8"
+          style={{
+            background: '#FFF',
+            border: '4px solid #000',
+            boxShadow: '8px 8px 0px #000'
+          }}
+        >
+          {/* Title Bar */}
+          <div
+            className="flex items-center justify-between px-4 py-3 mb-6"
+            style={{ background: modeColor, border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
+          >
+            <div className="flex items-center gap-3">
+              <Target size={24} className="text-white" />
+              <span className="font-black text-white uppercase text-xl tracking-wider">MÜHLE</span>
+            </div>
+            <div
+              className="px-4 py-2 font-black text-sm uppercase"
+              style={{ 
+                background: currentPlayer === playerColor ? '#06FFA5' : '#FFF', 
+                color: '#000',
+                border: '3px solid #000',
+                boxShadow: '2px 2px 0px #000'
+              }}
             >
-              <RotateCcw size={20} />
-              NEUSTART
+              {currentPlayer === playerColor ? 'DEIN ZUG' : (isMultiplayer ? opponentName?.toUpperCase() : 'KI DENKT')}
+            </div>
+          </div>
+
+          {/* Status Bar */}
+          <div className="mb-6 flex flex-wrap gap-3 justify-center">
+            {mustRemove && (
+              <div className="px-5 py-3 font-black uppercase animate-pulse text-white" style={{ background: '#FF006E', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>
+                🎯 STEIN ENTFERNEN!
+              </div>
+            )}
+
+            {phase === 'placing' && (
+              <div className="flex gap-4">
+                <div className="px-4 py-3 font-black text-center" style={{ background: '#FFF', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}>
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-300 border-2 border-gray-400 mx-auto mb-1"></div>
+                  <span className="text-black text-lg">{piecesToPlace.white}</span>
+                </div>
+                <div className="px-4 py-3 font-black text-center" style={{ background: '#1a1a2e', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}>
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-600 to-gray-900 border-2 border-gray-950 mx-auto mb-1"></div>
+                  <span className="text-white text-lg">{piecesToPlace.black}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Board Grid - IMPROVED DESIGN */}
+          <div
+            className="relative w-[300px] h-[300px] md:w-[340px] md:h-[340px] mx-auto p-4"
+            style={{
+              background: '#D97706',
+              border: '6px solid #000',
+              boxShadow: '8px 8px 0px #000',
+              borderRadius: '4px'
+            }}
+          >
+            {/* Wood grain pattern overlay */}
+            <div className="absolute inset-0 opacity-20" style={{
+              backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 12px)'
+            }}></div>
+
+            {/* Draw lines - Improved SVG */}
+            <svg className="absolute inset-4 w-[calc(100%-32px)] h-[calc(100%-32px)]" viewBox="0 0 100 100" style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.3))' }}>
+              {/* Outer square */}
+              <rect x="0" y="0" width="100" height="100" fill="none" stroke="#000" strokeWidth="4" strokeLinejoin="round" />
+              {/* Middle square */}
+              <rect x="16.67" y="16.67" width="66.67" height="66.67" fill="none" stroke="#000" strokeWidth="4" strokeLinejoin="round" />
+              {/* Inner square */}
+              <rect x="33.33" y="33.33" width="33.33" height="33.33" fill="none" stroke="#000" strokeWidth="4" strokeLinejoin="round" />
+              {/* Radial lines */}
+              <line x1="50" y1="0" x2="50" y2="33.33" stroke="#000" strokeWidth="4" strokeLinecap="round" />
+              <line x1="50" y1="66.67" x2="50" y2="100" stroke="#000" strokeWidth="4" strokeLinecap="round" />
+              <line x1="0" y1="50" x2="33.33" y2="50" stroke="#000" strokeWidth="4" strokeLinecap="round" />
+              <line x1="66.67" y1="50" x2="100" y2="50" stroke="#000" strokeWidth="4" strokeLinecap="round" />
+            </svg>
+
+            {/* Positions */}
+            {POSITIONS.map((pos, index) => {
+              const piece = board[index];
+              const isSelected = selectedPiece === index;
+              const isHint = hintPosition === index;
+              const pieceCount = currentPlayer ? countPieces(board, currentPlayer) : 0;
+              const canFly = pieceCount === 3;
+              const isValidMove = selectedPiece !== null && getValidMoves(board, selectedPiece, canFly).includes(index);
+              const canRemove = mustRemove && piece !== null && piece !== currentPlayer &&
+                (!checkMill(board, index, piece) || allInMills(board, piece));
+
+              // Calculate position within the padded area
+              const leftPercent = 4 + (pos.x / 6) * 92; // 4% padding on each side
+              const topPercent = 4 + (pos.y / 6) * 92;
+
+              return (
+                <div
+                  key={index}
+                  onClick={() => handlePositionClick(index)}
+                  className="absolute cursor-pointer transition-all duration-150 flex items-center justify-center"
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    left: `calc(${leftPercent}% - 18px)`,
+                    top: `calc(${topPercent}% - 18px)`,
+                    background: piece ? 'transparent' : '#FFBE0B',
+                    border: piece ? 'none' : '3px solid #000',
+                    borderRadius: '50%',
+                    boxShadow: piece ? 'none' : (isValidMove ? '0 0 0 4px #06FFA5, 3px 3px 0px #000' : '3px 3px 0px #000'),
+                    transform: isSelected ? 'scale(1.15)' : (isValidMove ? 'scale(1.1)' : 'scale(1)'),
+                    zIndex: isSelected ? 20 : 10
+                  }}
+                >
+                  {piece && (
+                    <div 
+                      className="w-full h-full rounded-full transition-all duration-150"
+                      style={{
+                        background: piece === 'white' 
+                          ? 'linear-gradient(135deg, #FFF 0%, #E5E5E5 50%, #CCC 100%)' 
+                          : 'linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 50%, #1a1a1a 100%)',
+                        border: '3px solid #000',
+                        boxShadow: isSelected 
+                          ? '0 0 0 4px #FFBE0B, 4px 4px 0px #000' 
+                          : canRemove 
+                            ? '0 0 0 4px #FF006E, 4px 4px 0px #000' 
+                            : '4px 4px 0px #000',
+                        transform: isSelected ? 'translateY(-2px)' : 'none'
+                      }}
+                    />
+                  )}
+                  
+                  {/* Hint indicator */}
+                  {isHint && !piece && (
+                    <div className="absolute inset-0 rounded-full animate-ping" style={{ background: '#06FFA5', opacity: 0.6 }}></div>
+                  )}
+                  
+                  {/* Valid move indicator */}
+                  {isValidMove && !piece && (
+                    <div className="w-4 h-4 rounded-full" style={{ background: '#06FFA5', border: '2px solid #000' }}></div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-4 mt-8 justify-center flex-wrap">
+            <button
+              onClick={getHint}
+              className="flex items-center gap-2 px-6 py-3 font-black uppercase transition-all hover:-translate-y-1 active:translate-y-0"
+              style={{ 
+                background: '#06FFA5', 
+                color: '#000',
+                border: '3px solid #000',
+                boxShadow: '4px 4px 0px #000' 
+              }}
+            >
+              <Lightbulb size={20} />
+              HINWEIS
             </button>
-          )}
+
+            {!isMultiplayer && (
+              <button
+                onClick={restartGame}
+                className="flex items-center gap-2 px-6 py-3 font-black uppercase transition-all hover:-translate-y-1 active:translate-y-0"
+                style={{ 
+                  background: '#FFF', 
+                  color: '#000',
+                  border: '3px solid #000',
+                  boxShadow: '4px 4px 0px #000' 
+                }}
+              >
+                <RotateCcw size={20} />
+                NEUSTART
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Start Modal */}
       {showStartModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
           <div
-            className="bg-[var(--color-bg)] p-6 max-w-md w-full border-4 border-[var(--color-border)]"
-            style={{ boxShadow: '10px 10px 0px #000' }}
+            className="p-8 max-w-md w-full"
+            style={{ 
+              background: '#FFF', 
+              border: '6px solid #000',
+              boxShadow: '12px 12px 0px #D97706',
+              transform: 'rotate(-1deg)'
+            }}
           >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 bg-[#D97706] border-3 border-[var(--color-border)]" style={{ boxShadow: '3px 3px 0px #000' }}>
-                <Target size={28} className="text-white" />
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="p-4" style={{ background: '#D97706', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}>
+                <Target size={32} className="text-white" />
               </div>
-              <h2 className="text-3xl font-black uppercase text-[var(--color-text)]">MÜHLE</h2>
+              <h2 className="text-4xl font-black uppercase tracking-wider" style={{ color: '#000', textShadow: '2px 2px 0px #FFBE0B' }}>MÜHLE</h2>
             </div>
 
-            <div className="bg-[var(--color-surface)] p-4 border-3 border-[var(--color-border)] mb-4" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
-              <h3 className="font-black text-sm mb-2 text-[var(--color-text)] uppercase">Spielregeln</h3>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• Jeder Spieler hat 9 Steine</li>
-                <li>• 3 Steine in einer Reihe = Mühle</li>
-                <li>• Bei Mühle: Gegnerstein entfernen</li>
-                <li>• Gewonnen bei &lt;3 Gegnersteinen</li>
+            <div className="p-5 mb-6" style={{ background: '#FFF8E7', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}>
+              <h3 className="font-black text-lg mb-3 uppercase inline-block px-3 py-1" style={{ background: '#D97706', color: '#FFF', border: '2px solid #000' }}>Spielregeln</h3>
+              <ul className="text-sm font-bold space-y-2 mt-3" style={{ color: '#000' }}>
+                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Jeder Spieler hat 9 Steine</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> 3 Steine in einer Reihe = Mühle</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Bei Mühle: Gegnerstein entfernen</li>
+                <li className="flex items-center gap-2"><div className="w-2 h-2 bg-black"></div> Gewonnen bei &lt;3 Gegnersteinen</li>
               </ul>
             </div>
 
-            <div className="flex gap-3 mb-4">
-              <div className="flex-1 bg-gray-100 p-3 border-3 border-[var(--color-border)] text-center">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-300 border-3 border-gray-400 mx-auto mb-2"></div>
-                <span className="text-xs font-black text-[var(--color-text)]">DU (WEISS)</span>
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 p-4 text-center" style={{ background: '#FFF', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>
+                <div className="w-12 h-12 rounded-full mx-auto mb-2" style={{ background: 'linear-gradient(135deg, #FFF, #CCC)', border: '3px solid #000', boxShadow: '2px 2px 0px #000' }}></div>
+                <span className="text-sm font-black" style={{ color: '#000' }}>DU (WEISS)</span>
               </div>
-              <div className="flex-1 bg-gray-200 p-3 border-3 border-[var(--color-border)] text-center">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 border-3 border-gray-900 mx-auto mb-2"></div>
-                <span className="text-xs font-black text-[var(--color-text)]">KI (SCHWARZ)</span>
+              <div className="flex-1 p-4 text-center" style={{ background: '#1a1a2e', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>
+                <div className="w-12 h-12 rounded-full mx-auto mb-2" style={{ background: 'linear-gradient(135deg, #4a4a4a, #1a1a1a)', border: '3px solid #000', boxShadow: '2px 2px 0px #000' }}></div>
+                <span className="text-sm font-black text-white">KI (SCHWARZ)</span>
               </div>
             </div>
 
             {!isMultiplayer && (
-              <div className="text-center mb-4">
-                <span className="bg-[#8338EC] text-white px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>LEVEL {levelId}</span>
+              <div className="text-center mb-6">
+                <span className="px-6 py-2 font-black text-xl text-white" style={{ background: '#8338EC', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>LEVEL {levelId}</span>
               </div>
             )}
 
             <button
               onClick={() => setShowStartModal(false)}
-              className="w-full py-4 bg-[#06FFA5] hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase text-xl border-4 border-[var(--color-border)] transition-all flex items-center justify-center gap-3"
-              style={{ boxShadow: '6px 6px 0px #000' }}
+              className="w-full py-5 font-black uppercase text-2xl flex items-center justify-center gap-3 transition-all hover:-translate-y-1 active:translate-y-0"
+              style={{ 
+                background: '#06FFA5', 
+                color: '#000',
+                border: '4px solid #000',
+                boxShadow: '6px 6px 0px #000' 
+              }}
             >
-              <Play size={28} />
+              <Play size={32} />
               SPIEL STARTEN
             </button>
           </div>
@@ -751,39 +828,62 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
 
       {/* Game Over Modal */}
       {gameStatus !== 'playing' && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
           <div
-            className="bg-[var(--color-bg)] p-6 max-w-md w-full border-4 border-[var(--color-border)]"
-            style={{ boxShadow: '10px 10px 0px #000' }}
+            className="p-8 max-w-md w-full"
+            style={{ 
+              background: '#FFF', 
+              border: '6px solid #000',
+              boxShadow: '12px 12px 0px #000',
+              transform: 'rotate(1deg)'
+            }}
           >
             <div className="text-center">
-              <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 border-[var(--color-border)] ${gameStatus === 'won' ? 'bg-[#06FFA5]' : 'bg-red-400'}`}>
-                <Trophy size={40} className={gameStatus === 'won' ? 'text-[var(--color-text)]' : 'text-white'} />
+              <div 
+                className="w-24 h-24 mx-auto mb-6 flex items-center justify-center"
+                style={{ 
+                  background: gameStatus === 'won' ? '#06FFA5' : '#FF006E', 
+                  border: '4px solid #000',
+                  boxShadow: '6px 6px 0px #000',
+                  transform: 'rotate(-3deg)'
+                }}
+              >
+                <Trophy size={48} className={gameStatus === 'won' ? 'text-black' : 'text-white'} />
               </div>
-              <h2 className="text-3xl font-black uppercase mb-2 text-[var(--color-text)]">
+              <h2 className="text-5xl font-black uppercase mb-4" style={{ color: '#000', textShadow: '3px 3px 0px #FFF' }}>
                 {gameStatus === 'won' ? 'GEWONNEN!' : 'VERLOREN!'}
               </h2>
-              <div className="bg-[var(--color-surface)] p-3 border-3 border-[var(--color-border)] mb-4 inline-block" style={{ boxShadow: '3px 3px 0px #000' }}>
-                <p className="text-[var(--color-text)] font-bold">
+              <div className="p-4 mb-8 inline-block transform rotate-2" style={{ background: '#FFBE0B', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}>
+                <p className="font-black text-xl" style={{ color: '#000' }}>
                   {gameStatus === 'won'
-                    ? `+${50 + levelId * 5} XP, +${20 + levelId * 2} Münzen`
-                    : '+10 XP, +5 Münzen'}
+                    ? `+${50 + levelId * 5} XP • +${20 + levelId * 2} Münzen`
+                    : '+10 XP • +5 Münzen'}
                 </p>
               </div>
 
-              <div className="flex gap-3 justify-center">
+              <div className="flex gap-4 justify-center flex-col sm:flex-row">
                 <button
                   onClick={onBack}
-                  className="px-6 py-3 bg-[var(--color-surface)] hover:bg-gray-100 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)]"
-                  style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
+                  className="px-8 py-4 font-black uppercase transition-all hover:-translate-y-1"
+                  style={{ 
+                    background: '#FFF', 
+                    color: '#000',
+                    border: '4px solid #000',
+                    boxShadow: '4px 4px 0px #000' 
+                  }}
                 >
                   MENÜ
                 </button>
                 {!isMultiplayer && (
                   <button
                     onClick={restartGame}
-                    className="px-6 py-3 bg-[#06FFA5] hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase border-3 border-[var(--color-border)]"
-                    style={{ boxShadow: '4px 4px 0px var(--color-border)' }}
+                    className="px-8 py-4 font-black uppercase transition-all hover:-translate-y-1"
+                    style={{ 
+                      background: '#06FFA5', 
+                      color: '#000',
+                      border: '4px solid #000',
+                      boxShadow: '4px 4px 0px #000' 
+                    }}
                   >
                     NOCHMAL
                   </button>
@@ -796,24 +896,24 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
 
       {/* Ad/Hint Modal */}
       {showHintModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-[var(--color-surface)] p-6 border-4 border-[var(--color-border)] max-w-sm w-full" style={{ boxShadow: '8px 8px 0px var(--color-border)' }}>
-            <h3 className="text-xl font-black uppercase mb-4 text-[var(--color-text)] text-center">HINWEIS FREISCHALTEN</h3>
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
+          <div className="p-6 max-w-sm w-full" style={{ background: '#FFF', border: '6px solid #000', boxShadow: '12px 12px 0px #8338EC', transform: 'rotate(-2deg)' }}>
+            <h3 className="text-2xl font-black uppercase mb-6 text-center py-2" style={{ background: '#FFBE0B', color: '#000', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}>HINWEIS FREISCHALTEN</h3>
 
             {/* Ad with Cat Dance GIF */}
-            <div className="w-full h-40 bg-black flex items-center justify-center relative overflow-hidden border-4 border-[var(--color-border)] mb-4" style={{ boxShadow: '4px 4px 0px var(--color-border)' }}>
-              <img src={catDanceGif} alt="Ad" className="w-full h-full object-cover opacity-50" />
+            <div className="w-full h-48 flex items-center justify-center relative overflow-hidden mb-6" style={{ background: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}>
+              <img src={catDanceGif} alt="Ad" className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-5xl font-black font-mono text-white drop-shadow-[4px_4px_0px_#000]">
-                  {adTimer > 0 ? `${adTimer}s` : 'FERTIG'}
+                <div className="text-6xl font-black font-mono text-white" style={{ textShadow: '4px 4px 0px #FF006E' }}>
+                  {adTimer > 0 ? `${adTimer}` : 'GO!'}
                 </div>
               </div>
-              <div className="absolute top-2 right-2 bg-[#FF006E] px-2 py-1 text-[10px] font-black text-white border-2 border-[var(--color-border)]">AD</div>
+              <div className="absolute top-2 right-2 px-3 py-1 text-xs font-black text-white rotate-3" style={{ background: '#FF006E', border: '2px solid #000' }}>AD</div>
             </div>
 
             {hintCost > 0 && (
-              <div className="text-center mb-3">
-                <span className="bg-[#FF006E] text-white px-3 py-1 text-xs font-black border-2 border-[var(--color-border)]">+{hintCost}s Wartezeit</span>
+              <div className="text-center mb-4">
+                <span className="px-4 py-2 text-sm font-black text-white transform rotate-1 inline-block" style={{ background: '#FF006E', border: '3px solid #000' }}>+{hintCost}s Wartezeit</span>
               </div>
             )}
 
@@ -826,22 +926,30 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
                     setAdTimer(0);
                   }
                 }}
-                className="w-full py-3 mb-2 font-black uppercase text-sm flex items-center justify-center gap-2 bg-[#FFBE0B] text-[var(--color-text)] border-3 border-[var(--color-border)]"
-                style={{ boxShadow: '4px 4px 0px var(--color-border)', opacity: user.coins >= (30 + hintCost * 2) ? 1 : 0.5 }}
+                className="w-full py-4 mb-3 font-black uppercase text-sm flex items-center justify-center gap-2 transition-transform active:translate-y-1"
+                style={{ 
+                  background: '#FFBE0B', 
+                  color: '#000',
+                  border: '4px solid #000',
+                  boxShadow: '6px 6px 0px #000',
+                  opacity: user.coins >= (30 + hintCost * 2) ? 1 : 0.5 
+                }}
               >
-                <Gem size={16} /> SKIP ({30 + hintCost * 2} Coins)
+                <Gem size={20} /> SKIP ({30 + hintCost * 2} Coins)
               </button>
             )}
 
             <button
               disabled={adTimer > 0}
               onClick={claimHint}
-              className="w-full py-3 font-black uppercase text-sm border-3 border-[var(--color-border)]"
+              className="w-full py-4 font-black uppercase text-lg"
               style={{
                 background: adTimer > 0 ? '#E5E5E5' : '#06FFA5',
                 color: adTimer > 0 ? '#999' : '#000',
-                boxShadow: adTimer > 0 ? 'none' : '4px 4px 0px #000',
-                cursor: adTimer > 0 ? 'not-allowed' : 'pointer'
+                border: '4px solid #000',
+                boxShadow: adTimer > 0 ? 'none' : '6px 6px 0px #000',
+                cursor: adTimer > 0 ? 'not-allowed' : 'pointer',
+                transform: adTimer > 0 ? 'none' : 'translateY(-2px)'
               }}
             >
               {adTimer > 0 ? 'BITTE WARTEN...' : 'HINWEIS ANSEHEN'}

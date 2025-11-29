@@ -453,25 +453,40 @@ export default function SkatMauMauGame({
         <div className="flex-1" style={{ background: '#8338EC' }}></div>
       </div>
 
-      {/* Header */}
-      <div className="w-full max-w-6xl flex justify-between items-center relative z-10 mt-6 px-4">
+      {/* Header - Neo Brutal with Gradient */}
+      <div 
+        className="w-full max-w-6xl flex justify-between items-center relative z-10 mt-6 mx-4 p-3"
+        style={{
+          background: 'linear-gradient(135deg, #FF006E 0%, #FF7F00 100%)',
+          border: '4px solid #000',
+          boxShadow: '6px 6px 0px #000',
+          transform: 'skewX(-2deg)'
+        }}
+      >
         <button
           onClick={onBack}
-          className="w-14 h-14 flex items-center justify-center transition-all active:translate-y-1 hover:-translate-y-1 bg-[#FF006E] border-3 border-black shadow-[4px_4px_0px_#000]"
+          className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1 hover:-translate-y-1"
+          style={{ 
+            background: '#FFF', 
+            border: '3px solid #000', 
+            boxShadow: '4px 4px 0px #000',
+            transform: 'skewX(2deg) rotate(-3deg)'
+          }}
         >
-          <ArrowLeft size={26} style={{ color: '#000' }} />
+          <ArrowLeft size={22} style={{ color: '#000' }} />
         </button>
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center" style={{ transform: 'skewX(2deg)' }}>
           <h2 
-            className="text-3xl md:text-4xl font-black uppercase tracking-widest drop-shadow-[2px_2px_0px_rgba(0,0,0,0.2)]" 
-            style={{ color: '#000', transform: 'skewX(-3deg)' }}
+            className="text-2xl md:text-3xl font-black uppercase tracking-widest text-white" 
+            style={{ textShadow: '2px 2px 0px #000' }}
           >
             Mau Mau
           </h2>
           {isMultiplayer && (
             <div 
-              className="flex items-center gap-2 mt-1 px-3 py-1 border-2 border-black bg-[#06FFA5] shadow-[2px_2px_0px_#000]"
+              className="flex items-center gap-2 mt-1 px-3 py-1"
+              style={{ background: '#06FFA5', border: '2px solid #000', transform: 'rotate(2deg)' }}
             >
               <div className="w-2 h-2 bg-black animate-pulse" />
               <span className="text-[10px] font-bold text-black uppercase tracking-wider">Multiplayer</span>
@@ -479,18 +494,20 @@ export default function SkatMauMauGame({
           )}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2" style={{ transform: 'skewX(2deg)' }}>
           <button 
             onClick={() => setShowChangelog(true)} 
-            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1 bg-white border-3 border-black shadow-[4px_4px_0px_#000]"
+            className="w-10 h-10 flex items-center justify-center transition-all active:translate-y-1 hover:-translate-y-1"
+            style={{ background: '#FFF', border: '3px solid #000', boxShadow: '3px 3px 0px #000', transform: 'rotate(3deg)' }}
           >
-            <Info size={20} style={{ color: '#000' }} />
+            <Info size={18} style={{ color: '#000' }} />
           </button>
           <button 
             onClick={() => setShowFriends(true)} 
-            className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1 bg-[#8338EC] border-3 border-black shadow-[4px_4px_0px_#000]"
+            className="w-10 h-10 flex items-center justify-center transition-all active:translate-y-1 hover:-translate-y-1"
+            style={{ background: '#8338EC', border: '3px solid #000', boxShadow: '3px 3px 0px #000', transform: 'rotate(-3deg)' }}
           >
-            <Users size={20} style={{ color: '#FFF' }} />
+            <Users size={18} style={{ color: '#FFF' }} />
           </button>
         </div>
       </div>

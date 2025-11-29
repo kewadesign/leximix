@@ -1,0 +1,10 @@
+{
+  "system": {
+    "min_version": "2.4.0",
+    "latest_version": "3.2.0",
+    "latest_apk_version": "3.2.0",
+    "download_url": "http://leximix.de/LexiMix-v3.2.0-Release.apk",
+    "force_update": false
+  }
+}
+

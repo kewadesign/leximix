@@ -18,6 +18,8 @@ import { ChessGame } from './components/ChessGame';
 import { CheckersGame } from './components/CheckersGame';
 import { NineMensMorrisGame } from './components/NineMensMorrisGame';
 import { RummyGame } from './components/RummyGame';
+import { ProfileEditor } from './components/ProfileEditor';
+import { StickerAlbumView } from './components/StickerAlbumView';
 
 import SkatMauMauGame from './components/SkatMauMauGame';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
@@ -288,6 +290,8 @@ export default function App() {
   const [tempUser, setTempUser] = useState<{ name: string; age: string | number; language: Language }>({ name: '', age: '', language: Language.EN });
 
   const [user, setUser] = useState<UserState>(() => {
+    const savedLang = localStorage.getItem('leximix_language_pref') as Language;
+
     try {
       const saved = localStorage.getItem('leximix_user'); // FIXED: Was leximix_user_v2
 
@@ -320,7 +324,8 @@ export default function App() {
           ownedFrames: parsed.ownedFrames || [],
           hintBooster: parsed.hintBooster || 0,
           ownedAvatars: parsed.ownedAvatars || [AVATARS[0]],
-          isPremium: parsed.isPremium || false
+          isPremium: parsed.isPremium || false,
+          language: savedLang || parsed.language || Language.DE
         };
       }
 
@@ -328,7 +333,7 @@ export default function App() {
       return {
         name: 'Player',
         age: 0,
-        language: Language.DE,
+        language: savedLang || Language.DE,
         avatarId: AVATARS[0],
         coins: 0, // Start with 0 coins
         xp: 0, // Start with 0 XP
@@ -362,7 +367,7 @@ export default function App() {
       coins: 0,
       isPremium: false,
       completedLevels: fallbackLevelsUnlocked,
-      language: Language.DE,
+      language: savedLang || Language.DE,
       theme: 'dark',
       activeFrame: null,
       ownedFrames: [],
@@ -498,6 +503,13 @@ export default function App() {
 
     console.log(`[Season] Active: ${season.name} (ID: ${season.id})`);
   }, [seasonConfig]);
+
+  // Persist Language Preference
+  useEffect(() => {
+    if (user.language) {
+      localStorage.setItem('leximix_language_pref', user.language);
+    }
+  }, [user.language]);
 
   // Check for saved user on mount to decide initial view
   useEffect(() => {
@@ -646,7 +658,10 @@ export default function App() {
   const [editName, setEditName] = useState(user.name || "Player");
   const [editAge, setEditAge] = useState(user.age || 18);
   const [editAvatar, setEditAvatar] = useState(user.avatarId || AVATARS[0]);
-  const [editFrame, setEditFrame] = useState(user.activeFrame || 'none');
+  const [editFrame, setEditFrame] = useState(user.activeFrame || 'frame_none');
+  const [editFont, setEditFont] = useState(user.activeFont || 'font_default');
+  const [editEffect, setEditEffect] = useState(user.activeEffect || 'effect_none');
+  const [showStickerAlbum, setShowStickerAlbum] = useState(false);
   const [editUsername, setEditUsername] = useState('');
   const [usernameError, setUsernameError] = useState('');
 
@@ -658,6 +673,8 @@ export default function App() {
   // Mau Mau Modal Flow
   const [showMauMauIntro, setShowMauMauIntro] = useState(false);
   const [showMauMauModeSelect, setShowMauMauModeSelect] = useState(false);
+  const [showBoardGameModeSelect, setShowBoardGameModeSelect] = useState(false);
+  const [selectedBoardGame, setSelectedBoardGame] = useState<GameMode | null>(null);
   const [showChessModeSelect, setShowChessModeSelect] = useState(false);
   const [showMultiplayerLobby, setShowMultiplayerLobby] = useState(false);
   const [showFriendsManager, setShowFriendsManager] = useState(false);
@@ -1263,8 +1280,8 @@ export default function App() {
         selectedCell: null,
         history: []
       });
-      setTutorialMode(config.mode);
-      setView('TUTORIAL');
+      setTutorialMode(null);
+      setView('GAME');
     } else if (config.mode === GameMode.CHALLENGE) {
       const data = generateChallenge(user.language, tier, levelId);
       setGameState({
@@ -1278,8 +1295,8 @@ export default function App() {
         isMath: data.type === 'math',
         timeLeft: data.timeLimit
       });
-      setTutorialMode(config.mode);
-      setView('TUTORIAL');
+      setTutorialMode(null);
+      setView('GAME');
     } else if (config.mode === GameMode.CHAIN) {
       setGameConfig(config);
       setView('GAME');
@@ -1297,7 +1314,7 @@ export default function App() {
       setView('RUMMY');
       return;
     } else {
-      // Go directly to game
+      // This block is now handled by the useEffect below
       setTutorialMode(null);
       setView('GAME');
     }
@@ -1501,7 +1518,7 @@ export default function App() {
       isPremium: false,
       completedLevels: initialLevelsUnlocked,
       playedWords: [],
-      language: Language.DE,
+      language: (localStorage.getItem('leximix_language_pref') as Language) || Language.DE,
       theme: 'dark'
     });
 
@@ -1533,9 +1550,10 @@ export default function App() {
       return;
     }
 
-    // Checkers, Nine Men's Morris, Rummy - Go to level selection
+    // Checkers, Nine Men's Morris, Rummy - Show board game mode select
     if (mode === GameMode.CHECKERS || mode === GameMode.NINE_MENS_MORRIS || mode === GameMode.RUMMY) {
-      setView('LEVELS');
+      setSelectedBoardGame(mode);
+      setShowBoardGameModeSelect(true);
       setTutorialMode(null);
       return;
     }
@@ -1836,9 +1854,35 @@ export default function App() {
       name: editName,
       age: ageNum,
       avatarId: editAvatar,
-      activeFrame: editFrame !== 'none' ? editFrame : undefined
+      activeFrame: editFrame !== 'frame_none' ? editFrame : undefined,
+      activeFont: editFont !== 'font_default' ? editFont : undefined,
+      activeEffect: editEffect !== 'effect_none' ? editEffect : undefined
     }));
     setShowProfile(false);
+  };
+
+  // Handle sticker album category completion reward
+  const handleClaimCategoryReward = (categoryId: string) => {
+    const { STICKER_CATEGORIES } = require('./constants');
+    const category = STICKER_CATEGORIES.find((c: any) => c.id === categoryId);
+    if (!category) return;
+
+    setUser(prev => {
+      const newUser = { ...prev };
+      
+      // Add reward frame if exists
+      if (category.rewardFrame) {
+        newUser.ownedFrames = [...(prev.ownedFrames || []), category.rewardFrame];
+      }
+      
+      // Add reward coins
+      newUser.coins = (prev.coins || 0) + category.rewardCoins;
+      
+      // Mark category as completed
+      newUser.completedCategories = [...(prev.completedCategories || []), categoryId];
+      
+      return newUser;
+    });
   };
 
   const deleteProfile = () => {
@@ -1876,7 +1920,9 @@ export default function App() {
     setEditName(user.name || "");
     setEditAge(user.age || 18);
     setEditAvatar(user.avatarId || AVATARS[0]);
-    setEditFrame(user.activeFrame || 'none');
+    setEditFrame(user.activeFrame || 'frame_none');
+    setEditFont(user.activeFont || 'font_default');
+    setEditEffect(user.activeEffect || 'effect_none');
     setEditUsername('');
     setUsernameError('');
     setShowProfile(true);
@@ -2070,10 +2116,10 @@ export default function App() {
         onClick={() => handleModeSelect(mode)}
         className={`relative text-left overflow-hidden transition-all duration-200 group ${comingSoon ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
         style={{
-          background: '#FFF',
-          border: '3px solid #000',
+          background: 'var(--color-surface)',
+          border: '3px solid var(--color-border)',
           borderRadius: '16px',
-          boxShadow: '6px 6px 0px #000'
+          boxShadow: '6px 6px 0px var(--color-border)'
         }}
         onMouseEnter={(e) => {
           if (!comingSoon) {
@@ -2110,9 +2156,9 @@ export default function App() {
               className="p-2.5 transition-all group-hover:scale-110"
               style={{
                 background: colors.bg,
-                border: '3px solid #000',
+                border: '3px solid var(--color-border)',
                 transform: 'rotate(-3deg)',
-                boxShadow: '3px 3px 0px #000'
+                boxShadow: '3px 3px 0px var(--color-border)'
               }}
             >
               <Icon size={24} style={{ color: '#000' }} strokeWidth={2.5} />
@@ -2128,13 +2174,13 @@ export default function App() {
           </div>
           <h3
             className="font-black text-lg sm:text-xl uppercase leading-tight mb-2"
-            style={{ color: '#000', transform: 'skewX(-3deg)' }}
+            style={{ color: 'var(--color-text)', transform: 'skewX(-3deg)' }}
           >
             {title}
           </h3>
           <p
             className="text-xs sm:text-sm font-bold leading-tight mb-4"
-            style={{ color: '#555' }}
+            style={{ color: 'var(--color-text-muted)' }}
           >
             {desc}
           </p>
@@ -2402,6 +2448,16 @@ export default function App() {
     audio.playClick();
   };
 
+  const handleBoardGameSingleplayer = () => {
+    setShowBoardGameModeSelect(false);
+    setView('LEVELS');
+  };
+
+  const handleBoardGameMultiplayer = () => {
+    setShowBoardGameModeSelect(false);
+    setShowMultiplayerLobby(true);
+  };
+
   const toggleLanguage = () => {
     const langs = [Language.DE, Language.EN, Language.ES];
     const currentIndex = langs.indexOf(user.language);
@@ -2422,7 +2478,7 @@ export default function App() {
 
 
   const renderHome = () => (
-    <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-24" style={{ background: '#FFF8E7' }}>
+    <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-24" style={{ background: 'var(--color-bg)' }}>
       {/* Rainbow Top Bar */}
       <div className="flex h-4 w-full">
         <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -2452,7 +2508,7 @@ export default function App() {
             e.currentTarget.style.boxShadow = '6px 6px 0px #000';
           }}
         >
-          <div className="w-14 h-14 overflow-hidden" style={{ border: '3px solid #000', background: '#FFF8E7' }}>
+          <div className="w-14 h-14 overflow-hidden" style={{ border: '3px solid #000', background: 'var(--color-bg)' }}>
             <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
           </div>
           <div>
@@ -2499,6 +2555,23 @@ export default function App() {
           >
             <Globe size={16} />
             <span className="hidden sm:inline">{getLanguageName(user.language)}</span>
+          </button>
+
+          {/* Dark Mode Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-3 sm:py-2 sm:gap-1.5 font-black text-sm transition-all duration-100"
+            style={{
+              background: user.theme === 'dark' ? '#FFBE0B' : '#1a1a2e',
+              color: user.theme === 'dark' ? '#000' : '#FFF',
+              border: '3px solid #000',
+              borderRadius: '10px',
+              boxShadow: '4px 4px 0px #000'
+            }}
+            title={user.theme === 'dark' ? ((t as any).THEME?.LIGHT || 'LIGHT') : ((t as any).THEME?.DARK || 'DARK')}
+          >
+            {user.theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            <span className="hidden sm:inline">{user.theme === 'dark' ? ((t as any).THEME?.LIGHT || 'LIGHT') : ((t as any).THEME?.DARK || 'DARK')}</span>
           </button>
         </div>
       </div>
@@ -2708,7 +2781,7 @@ export default function App() {
     const tierBrutalColors = ['#06FFA5', '#FFBE0B', '#FF7F00', '#FF006E', '#8338EC'];
 
     return (
-      <div className="h-full overflow-y-auto w-full max-w-4xl mx-auto geo-pattern geo-shapes" style={{ background: '#FFF8E7' }}>
+      <div className="h-full overflow-y-auto w-full max-w-4xl mx-auto geo-pattern geo-shapes" style={{ background: 'var(--color-bg)' }}>
         {/* Rainbow Top Bar */}
         <div className="flex h-3 w-full sticky top-0 z-30">
           <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -2722,9 +2795,9 @@ export default function App() {
         <div
           className="sticky top-3 z-20 mx-4 mt-4 p-4 flex items-center justify-between"
           style={{
-            background: '#FFF',
-            border: '4px solid #000',
-            boxShadow: '6px 6px 0px #000'
+            background: 'var(--color-surface)',
+            border: '4px solid var(--color-border)',
+            boxShadow: '6px 6px 0px var(--color-border)'
           }}
         >
           <button
@@ -2732,15 +2805,15 @@ export default function App() {
             className="w-12 h-12 flex items-center justify-center transition-all active:translate-y-1"
             style={{
               background: '#FF006E',
-              border: '3px solid #000',
-              boxShadow: '4px 4px 0px #000'
+              border: '3px solid var(--color-border)',
+              boxShadow: '4px 4px 0px var(--color-border)'
             }}
           >
             <ArrowLeft size={24} style={{ color: '#000' }} />
           </button>
           <h2
             className="text-xl md:text-2xl font-black uppercase tracking-wide"
-            style={{ color: '#000', transform: 'skew(-3deg)' }}
+            style={{ color: 'var(--color-text)', transform: 'skew(-3deg)' }}
           >
             {t.MODES[gameConfig?.mode as keyof typeof t.MODES]?.title}
           </h2>
@@ -2748,8 +2821,8 @@ export default function App() {
             className="px-4 py-2 flex items-center gap-2 font-black text-sm uppercase"
             style={{
               background: '#FFBE0B',
-              border: '3px solid #000',
-              boxShadow: '4px 4px 0px #000',
+              border: '3px solid var(--color-border)',
+              boxShadow: '4px 4px 0px var(--color-border)',
               transform: 'skew(3deg)'
             }}
           >
@@ -2771,8 +2844,8 @@ export default function App() {
                 key={tier}
                 className="mb-8 p-5 md:p-6"
                 style={{
-                  background: '#FFF',
-                  border: '4px solid #000',
+                  background: 'var(--color-surface)',
+                  border: '4px solid var(--color-border)',
                   boxShadow: `8px 8px 0px ${tierColor}`,
                   transform: `skew(${skewDeg}deg)`,
                   animationDelay: `${idx * 100}ms`
@@ -2785,7 +2858,7 @@ export default function App() {
                       style={{
                         background: isLockedTier ? '#CCC' : tierColor,
                         color: '#000',
-                        border: '3px solid #000'
+                        border: '3px solid var(--color-border)'
                       }}
                     >
                       {label}
@@ -2793,7 +2866,7 @@ export default function App() {
                     {!isLockedTier && (
                       <span
                         className="text-xs font-black uppercase flex items-center gap-1 px-3 py-1"
-                        style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
+                        style={{ background: '#FF006E', color: '#FFF', border: '2px solid var(--color-border)' }}
                       >
                         <Sparkles size={12} /> +{xpReward} XP
                       </span>
@@ -2804,7 +2877,7 @@ export default function App() {
                     style={{
                       background: '#000',
                       color: tierColor,
-                      border: '2px solid #000'
+                      border: '2px solid var(--color-border)'
                     }}
                   >
                     LEVEL {(tier - 1) * 50 + 1} — {tier * 50} {isLockedTier && <Lock size={12} className="inline ml-1" />}
@@ -2838,23 +2911,25 @@ export default function App() {
                           disabled={isCompleted}
                           className="aspect-square flex items-center justify-center font-black text-sm md:text-base transition-all duration-100"
                           style={{
-                            background: isCompleted ? '#06FFA5' : '#FFF',
-                            color: '#000',
-                            border: '3px solid #000',
-                            boxShadow: isCompleted ? '4px 4px 0px #000' : '3px 3px 0px #000'
+                            background: isCompleted ? '#06FFA5' : 'var(--color-surface)',
+                            color: isCompleted ? '#000' : 'var(--color-text)',
+                            border: '3px solid var(--color-border)',
+                            boxShadow: isCompleted ? '4px 4px 0px var(--color-border)' : '3px 3px 0px var(--color-border)'
                           }}
                           onMouseEnter={(e) => {
                             if (!isCompleted) {
                               e.currentTarget.style.transform = 'translateY(-3px)';
-                              e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+                              e.currentTarget.style.boxShadow = '6px 6px 0px var(--color-border)';
                               e.currentTarget.style.background = tierColor;
+                              e.currentTarget.style.color = '#000';
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (!isCompleted) {
                               e.currentTarget.style.transform = 'translateY(0)';
-                              e.currentTarget.style.boxShadow = '3px 3px 0px #000';
-                              e.currentTarget.style.background = '#FFF';
+                              e.currentTarget.style.boxShadow = '3px 3px 0px var(--color-border)';
+                              e.currentTarget.style.background = 'var(--color-surface)';
+                              e.currentTarget.style.color = 'var(--color-text)';
                             }
                           }}
                         >
@@ -2869,9 +2944,10 @@ export default function App() {
                         disabled={true}
                         className="aspect-square flex items-center justify-center"
                         style={{
-                          background: '#E5E5E5',
-                          color: '#999',
-                          border: '3px solid #CCC'
+                          background: 'var(--color-bg)',
+                          color: 'var(--color-text-muted)',
+                          border: '3px solid var(--color-border)',
+                          opacity: 0.5
                         }}
                       >
                         <Lock size={12} />
@@ -2892,7 +2968,7 @@ export default function App() {
     if (!content) return null;
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: '#FFF8E7' }}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'var(--color-bg)' }}>
         {/* Rainbow Top Bar */}
         <div className="fixed top-0 left-0 right-0 flex h-3 w-full z-50">
           <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -2905,8 +2981,8 @@ export default function App() {
         <div
           className="w-full max-w-md p-8 relative"
           style={{
-            background: '#FFF',
-            border: '6px solid #000',
+            background: 'var(--color-surface)',
+            border: '6px solid var(--color-border)',
             boxShadow: '12px 12px 0px #8338EC',
             transform: 'rotate(-1deg)'
           }}
@@ -2916,8 +2992,8 @@ export default function App() {
               className="p-4 mb-4"
               style={{
                 background: '#06FFA5',
-                border: '4px solid #000',
-                boxShadow: '6px 6px 0px #000',
+                border: '4px solid var(--color-border)',
+                boxShadow: '6px 6px 0px var(--color-border)',
                 transform: 'skew(-5deg)'
               }}
             >
@@ -2925,13 +3001,13 @@ export default function App() {
             </div>
             <h2
               className="text-2xl font-black uppercase tracking-wide"
-              style={{ color: '#000', transform: 'skew(-3deg)' }}
+              style={{ color: 'var(--color-text)', transform: 'skew(-3deg)' }}
             >
               {content.title}
             </h2>
             <span
               className="text-xs font-black uppercase tracking-widest mt-2 px-4 py-1"
-              style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
+              style={{ background: '#FF006E', color: '#FFF', border: '2px solid var(--color-border)' }}
             >
               {t.TUTORIAL.HEADER}
             </span>
@@ -2939,7 +3015,7 @@ export default function App() {
 
           <p
             className="text-center mb-8 leading-relaxed font-bold"
-            style={{ color: '#4A4A4A' }}
+            style={{ color: 'var(--color-text-muted)' }}
           >
             {content.text}
           </p>
@@ -2949,18 +3025,18 @@ export default function App() {
               onClick={() => setView('LEVELS')}
               className="flex-1 py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all duration-100"
               style={{
-                background: '#FFF',
-                color: '#000',
-                border: '4px solid #000',
-                boxShadow: '4px 4px 0px #000'
+                background: 'var(--color-surface)',
+                color: 'var(--color-text)',
+                border: '4px solid var(--color-border)',
+                boxShadow: '4px 4px 0px var(--color-border)'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+                e.currentTarget.style.boxShadow = '6px 6px 0px var(--color-border)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '4px 4px 0px #000';
+                e.currentTarget.style.boxShadow = '4px 4px 0px var(--color-border)';
               }}
             >
               <ArrowLeft size={16} /> {t.TUTORIAL.BACK}
@@ -2971,17 +3047,17 @@ export default function App() {
               style={{
                 background: '#FF006E',
                 color: '#FFF',
-                border: '4px solid #000',
-                boxShadow: '6px 6px 0px #000',
+                border: '4px solid var(--color-border)',
+                boxShadow: '6px 6px 0px var(--color-border)',
                 transform: 'skew(-3deg)'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'skew(-3deg) translateY(-4px)';
-                e.currentTarget.style.boxShadow = '10px 10px 0px #000';
+                e.currentTarget.style.boxShadow = '10px 10px 0px var(--color-border)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'skew(-3deg)';
-                e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+                e.currentTarget.style.boxShadow = '6px 6px 0px var(--color-border)';
               }}
             >
               <span style={{ transform: 'skew(3deg)' }}>{t.TUTORIAL.START}</span> <Play size={16} fill="currentColor" />
@@ -2995,7 +3071,6 @@ export default function App() {
   const renderGame = () => {
     // Letter Mau Mau - Now uses Skat Cards
     if (gameConfig?.mode === GameMode.LETTER_MAU_MAU) {
-      // The gameConfig must have levelId, otherwise use defaults
       return (
         <SkatMauMauGame
           onBack={() => setView('HOME')}
@@ -3009,26 +3084,6 @@ export default function App() {
             }));
             audio.playWin();
             setView('HOME');
-          }}
-        />
-      );
-    }
-
-    // Skat Mau Mau (Classic)
-    if (gameConfig?.mode === GameMode.SKAT_MAU_MAU) {
-      return (
-        <SkatMauMauGame
-          onBack={() => setView('HOME')}
-          friendCode={user.friendCode}
-          onGameEnd={(coins, xp) => {
-            setUser(prev => ({
-              ...prev,
-              coins: prev.coins + coins,
-              xp: prev.xp + xp,
-              level: Math.floor((prev.xp + xp) / 100) + 1
-            }));
-            setView('HOME');
-            audio.playWin();
           }}
         />
       );
@@ -3108,7 +3163,7 @@ export default function App() {
     const modeColor = brutalColors[gameConfig?.mode || GameMode.CLASSIC]?.bg || '#06FFA5';
 
     return (
-      <div className="flex flex-col h-full max-h-screen relative geo-pattern geo-shapes geo-confetti" style={{ background: '#FFF8E7' }}>
+      <div className="flex flex-col h-full max-h-screen relative geo-pattern geo-shapes geo-confetti" style={{ background: 'var(--color-bg)' }}>
         {/* Rainbow Top Bar */}
         <div className="flex h-3 w-full">
           <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -3327,7 +3382,7 @@ export default function App() {
   );
 
   return (
-    <div className={`${user.theme} h-screen w-full text-brutal-black font-sans overflow-hidden relative selection:bg-brutal-pink selection:text-white transition-colors duration-300 geo-pattern geo-shapes`} style={{ background: '#FFF8E7' }}>
+    <div className={`${user.theme} h-screen w-full text-[var(--color-text)] font-sans overflow-hidden relative selection:bg-brutal-pink selection:text-white transition-colors duration-300 geo-pattern geo-shapes`}>
       {/* Global Grain Overlay */}
       <div className="grain-overlay"></div>
 
@@ -3338,7 +3393,7 @@ export default function App() {
 
       {/* Offline Blocking Overlay - Neo Brutal */}
       {!isOnline && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4" style={{ background: '#FFF8E7' }}>
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4" style={{ background: 'var(--color-bg)' }}>
           {/* Rainbow Top Bar */}
           <div className="fixed top-0 left-0 right-0 flex h-3 w-full">
             <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -3528,12 +3583,13 @@ export default function App() {
             audio.playWin();
           }}
           levelId={gameConfig?.levelId || 1}
+          onThemeToggle={toggleTheme}
         />
       )}
       {/* Navigation Icons */}
 
       {/* Challenge Mode Intro Modal */}
-      <Modal isOpen={showChallengeIntro} onClose={() => setShowChallengeIntro(false)} title={t.MODES.CHALLENGE.title}>
+      <Modal isOpen={showChallengeIntro} onClose={() => { setShowChallengeIntro(false); setView('HOME'); }} title={t.MODES.CHALLENGE.title}>
         <div className="p-6 text-center space-y-6">
           <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg animate-bounce-slow">
             <Brain size={40} className="text-white" />
@@ -3575,7 +3631,7 @@ export default function App() {
       </Modal>
 
       {/* Mau Mau Intro Modal */}
-      <Modal isOpen={showMauMauIntro} onClose={() => setShowMauMauIntro(false)} title="Mau Mau">
+      <Modal isOpen={showMauMauIntro} onClose={() => { setShowMauMauIntro(false); setView('HOME'); }} title="Mau Mau">
         <div className="p-6 text-center space-y-6">
           <div
             className="w-24 h-24 mx-auto flex items-center justify-center relative"
@@ -3653,8 +3709,69 @@ export default function App() {
         </div>
       </Modal>
 
+      {/* Board Game Mode Select Modal (Checkers, Rummy, Nine Men's Morris) */}
+      <Modal isOpen={showBoardGameModeSelect} onClose={() => { setShowBoardGameModeSelect(false); setView('HOME'); }} title="Spielmodus wählen">
+        <div className="p-6 space-y-4">
+          <p className="text-center text-sm font-bold mb-6" style={{ color: '#4A4A4A' }}>
+            Wähle deinen bevorzugten Spielmodus:
+          </p>
+
+          {/* Singleplayer Button */}
+          <button
+            onClick={handleBoardGameSingleplayer}
+            className="w-full p-5 transition-all active:scale-95 group relative overflow-hidden"
+            style={{
+              background: '#FFF',
+              border: '4px solid #000',
+              boxShadow: '6px 6px 0px #8338EC',
+              transform: 'skewX(-2deg)'
+            }}
+          >
+            <div className="flex items-center gap-4" style={{ transform: 'skewX(2deg)' }}>
+              <div
+                className="w-14 h-14 flex items-center justify-center transition-transform group-hover:scale-110"
+                style={{ background: '#8338EC', border: '3px solid #000' }}
+              >
+                <User size={28} style={{ color: '#FFF' }} />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="text-xl font-black uppercase mb-1" style={{ color: '#000' }}>Einzelspieler</h4>
+                <p className="text-xs font-bold" style={{ color: '#666' }}>gegen KI spielen</p>
+              </div>
+              <ArrowLeft size={24} className="rotate-180" style={{ color: '#000' }} />
+            </div>
+          </button>
+
+          {/* Multiplayer Button */}
+          <button
+            onClick={handleBoardGameMultiplayer}
+            className="w-full p-5 transition-all active:scale-95 group relative overflow-hidden"
+            style={{
+              background: '#FFF',
+              border: '4px solid #000',
+              boxShadow: '6px 6px 0px #06FFA5',
+              transform: 'skewX(-2deg)'
+            }}
+          >
+            <div className="flex items-center gap-4" style={{ transform: 'skewX(2deg)' }}>
+              <div
+                className="w-14 h-14 flex items-center justify-center transition-transform group-hover:scale-110"
+                style={{ background: '#06FFA5', border: '3px solid #000' }}
+              >
+                <Users size={28} style={{ color: '#000' }} />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="text-xl font-black uppercase mb-1" style={{ color: '#000' }}>Mehrspieler</h4>
+                <p className="text-xs font-bold" style={{ color: '#666' }}>Gegen Freunde spielen</p>
+              </div>
+              <ArrowLeft size={24} className="rotate-180" style={{ color: '#000' }} />
+            </div>
+          </button>
+        </div>
+      </Modal>
+
       {/* Chess Mode Select Modal */}
-      <Modal isOpen={showChessModeSelect} onClose={() => setShowChessModeSelect(false)} title={t.CHESS.TITLE}>
+      <Modal isOpen={showChessModeSelect} onClose={() => { setShowChessModeSelect(false); setView('HOME'); }} title={t.CHESS.TITLE}>
         <div className="space-y-4">
           <div className="p-4 bg-white border-4 border-black shadow-[6px_6px_0px_#000]">
             <p className="font-bold text-center mb-6">Select Mode</p>
@@ -3688,7 +3805,7 @@ export default function App() {
       </Modal>
 
       {/* Mau Mau Mode Selection Modal */}
-      <Modal isOpen={showMauMauModeSelect} onClose={() => setShowMauMauModeSelect(false)} title="Spielmodus wählen">
+      <Modal isOpen={showMauMauModeSelect} onClose={() => { setShowMauMauModeSelect(false); setView('HOME'); }} title="Spielmodus wählen">
         <div className="p-6 space-y-4">
           <p className="text-center text-sm font-bold mb-6" style={{ color: '#4A4A4A' }}>
             Wähle deinen bevorzugten Spielmodus:
@@ -4348,7 +4465,7 @@ export default function App() {
           {/* Payment Section */}
           <div
             className="p-4 flex flex-col items-center"
-            style={{ background: '#FFF8E7', border: '4px solid #000' }}
+            style={{ background: 'var(--color-bg)', border: '4px solid #000' }}
           >
             <div className="flex items-center gap-2 mb-4 font-black text-sm uppercase" style={{ color: '#000' }}>
               <CreditCard size={16} /> Bezahlen mit PayPal
@@ -4375,7 +4492,7 @@ export default function App() {
                 onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
                 placeholder="CODE EINGEBEN..."
                 className="flex-1 p-3 font-mono font-bold uppercase"
-                style={{ background: '#FFF8E7', border: '3px solid #000', color: '#000' }}
+                style={{ background: 'var(--color-bg)', border: '3px solid #000', color: '#000' }}
               />
               <button
                 onClick={handleVoucherRedeem}
@@ -4498,7 +4615,7 @@ export default function App() {
                 <input
                   type="text"
                   className="w-full p-3 font-bold mb-2"
-                  style={{ background: '#FFF8E7', border: '3px solid #000', color: '#000' }}
+                  style={{ background: 'var(--color-bg)', border: '3px solid #000', color: '#000' }}
                   value={editUsername}
                   onChange={(e) => setEditUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
                   placeholder={t.PROFILE.NEW_USER_PLACEHOLDER}
@@ -4589,7 +4706,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FFF8E7', color: '#000', border: '2px solid #000' }}>
+            <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: 'var(--color-bg)', color: '#000', border: '2px solid #000' }}>
               {t.PROFILE.CHOOSE_AVATAR}
             </div>
             <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
@@ -4633,33 +4750,17 @@ export default function App() {
             </div>
           </div>
 
-          {/* Frames */}
-          {(user.ownedFrames || []).length > 0 && (
-            <div className="p-4" style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #FF7F00' }}>
-              <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FF7F00', color: '#000', border: '2px solid #000' }}>
-                Rahmen & Effekte
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                <button
-                  onClick={() => setEditFrame('none')}
-                  className="aspect-square flex items-center justify-center"
-                  style={{ background: editFrame === 'none' ? '#FFBE0B' : '#FFF', border: '3px solid #000' }}
-                >
-                  <span className="text-xs font-black" style={{ color: '#000' }}>Kein</span>
-                </button>
-                {(user.ownedFrames || []).map((frameId) => (
-                  <button
-                    key={frameId}
-                    onClick={() => setEditFrame(frameId)}
-                    className={`aspect-square flex items-center justify-center relative overflow-hidden ${getAvatarEffect(frameId)}`}
-                    style={{ background: editFrame === frameId ? '#FFBE0B' : '#FFF', border: '3px solid #000' }}
-                  >
-                    <div className="w-8 h-8" style={{ background: '#CCC' }}></div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Profile Customization - Frames, Fonts, Effects, Sticker Album */}
+          <ProfileEditor
+            user={user}
+            selectedFrame={editFrame}
+            selectedFont={editFont}
+            selectedEffect={editEffect}
+            onFrameChange={setEditFrame}
+            onFontChange={setEditFont}
+            onEffectChange={setEditEffect}
+            onOpenAlbum={() => { setShowProfile(false); setShowStickerAlbum(true); }}
+          />
 
           {/* Delete Account */}
           <div className="p-4" style={{ background: '#FFF', border: '3px solid #ccc' }}>
@@ -4696,6 +4797,15 @@ export default function App() {
         </div>
       </Modal>
 
+      {/* Sticker Album View */}
+      {showStickerAlbum && (
+        <StickerAlbumView
+          user={user}
+          onClose={() => setShowStickerAlbum(false)}
+          onClaimCategoryReward={handleClaimCategoryReward}
+        />
+      )}
+
       {/* Delete Confirmation Modal - Neo Brutal */}
       <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title={t.PROFILE.DELETE_ACCOUNT}>
         <div className="space-y-5">
@@ -4720,7 +4830,7 @@ export default function App() {
               onChange={(e) => setDeleteInput(e.target.value)}
               placeholder={t.PROFILE.CONFIRM_PLACEHOLDER}
               className="w-full p-4 font-mono text-center"
-              style={{ background: '#FFF8E7', border: '4px solid #FF006E', color: '#000' }}
+              style={{ background: 'var(--color-bg)', border: '4px solid #FF006E', color: '#000' }}
             />
           </div>
 

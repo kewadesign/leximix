@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem } from 'lucide-react';
+import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem, Gift, Type, Palette } from 'lucide-react';
 import { UserState, SeasonReward } from '../types';
 import { SEASON_REWARDS, getCurrentSeason, TRANSLATIONS } from '../constants';
 import { audio } from '../utils/audio';
+import { getRarityColor } from '../utils/rewards';
 
 interface Props {
     user: UserState;
@@ -123,23 +124,31 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
             {/* Reward Legend - Neo Brutal */}
             <div
-                className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-4 text-xs font-black uppercase z-20"
+                className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-3 text-xs font-black uppercase z-20"
                 style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
             >
-                <div className="flex items-center gap-2">
-                    <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><Sparkles size={14} style={{ color: '#FFF' }} /></div>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><Sparkles size={12} style={{ color: '#FFF' }} /></div>
                     <span style={{ color: 'var(--color-text)' }}>Frame</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="p-1" style={{ background: '#0096FF', border: '2px solid #000' }}><ImageIcon size={14} style={{ color: '#FFF' }} /></div>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#FF006E', border: '2px solid #000' }}><Type size={12} style={{ color: '#FFF' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Font</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#06FFA5', border: '2px solid #000' }}><Palette size={12} style={{ color: '#000' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Effekt</span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#0096FF', border: '2px solid #000' }}><ImageIcon size={12} style={{ color: '#FFF' }} /></div>
                     <span style={{ color: 'var(--color-text)' }}>Avatar</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Zap size={14} style={{ color: '#000' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Booster</span>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Gift size={12} style={{ color: '#000' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Sticker</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={14} style={{ color: '#000' }} /></div>
+                <div className="flex items-center gap-1">
+                    <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={12} style={{ color: '#000' }} /></div>
                     <span style={{ color: 'var(--color-text)' }}>Münzen</span>
                 </div>
             </div>
@@ -249,16 +258,34 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                     className="w-12 h-12 object-cover"
                                                     style={{ border: '3px solid #000' }}
                                                 />
+                                            ) : premiumReward.type === 'frame' ? (
+                                                <div 
+                                                    className="w-12 h-12 flex items-center justify-center"
+                                                    style={{ background: '#8338EC', border: '3px solid #000' }}
+                                                >
+                                                    <span className="text-2xl">{premiumReward.icon || '🖼️'}</span>
+                                                </div>
+                                            ) : premiumReward.type === 'font' ? (
+                                                <div 
+                                                    className="w-12 h-12 flex items-center justify-center"
+                                                    style={{ background: '#FF006E', border: '3px solid #000' }}
+                                                >
+                                                    <span className="text-2xl">{premiumReward.icon || '🔤'}</span>
+                                                </div>
                                             ) : premiumReward.type === 'effect' ? (
-                                                premiumReward.icon && premiumReward.icon.startsWith('/') ? (
-                                                    <img
-                                                        src={premiumReward.icon}
-                                                        alt="Frame"
-                                                        className="w-12 h-12 object-contain"
-                                                    />
-                                                ) : (
-                                                    <span className="text-4xl">{premiumReward.icon || '✨'}</span>
-                                                )
+                                                <span className="text-4xl">{premiumReward.icon || '✨'}</span>
+                                            ) : premiumReward.type === 'sticker_pack' ? (
+                                                <div 
+                                                    className="w-12 h-12 flex items-center justify-center"
+                                                    style={{ 
+                                                        background: getRarityColor(premiumReward.rarity || 'common'), 
+                                                        border: '3px solid #000' 
+                                                    }}
+                                                >
+                                                    <span className="text-2xl">🎁</span>
+                                                </div>
+                                            ) : premiumReward.type === 'sticker' ? (
+                                                <Star size={36} style={{ color: '#FF006E' }} />
                                             ) : premiumReward.type === 'mystery' ? (
                                                 <Box size={36} style={{ color: '#8338EC' }} />
                                             ) : premiumReward.type === 'booster' ? (
@@ -316,6 +343,16 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                 <Coins size={36} style={{ color: '#FFBE0B' }} />
                                             ) : freeReward.type === 'sticker' ? (
                                                 <Star size={36} style={{ color: '#FF006E' }} />
+                                            ) : freeReward.type === 'sticker_pack' ? (
+                                                <div 
+                                                    className="w-10 h-10 flex items-center justify-center"
+                                                    style={{ 
+                                                        background: getRarityColor(freeReward.rarity || 'common'), 
+                                                        border: '2px solid #000' 
+                                                    }}
+                                                >
+                                                    <span className="text-xl">🎁</span>
+                                                </div>
                                             ) : (
                                                 <Coins size={32} style={{ color: '#FFBE0B' }} />
                                             )}

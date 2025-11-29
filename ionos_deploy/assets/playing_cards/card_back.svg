@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 169 245" width="169" height="245">
+  <defs>
+    <pattern id="diagonalStripes" patternUnits="userSpaceOnUse" width="20" height="20">
+      <path d="M-5,5 l10,-10 M0,20 l20,-20 M15,25 l10,-10" stroke="#1E40AF" stroke-width="4"/>
+    </pattern>
+  </defs>
+  <!-- Card background -->
+  <rect x="0" y="0" width="169" height="245" rx="12" fill="#2563EB"/>
+  <!-- Border -->
+  <rect x="4" y="4" width="161" height="237" rx="10" fill="none" stroke="#1E40AF" stroke-width="2"/>
+  <!-- Inner pattern area -->
+  <rect x="12" y="12" width="145" height="221" rx="6" fill="#3B82F6"/>
+  <!-- Diagonal stripe pattern -->
+  <rect x="12" y="12" width="145" height="221" rx="6" fill="url(#diagonalStripes)" opacity="0.3"/>
+  <!-- Center diamond -->
+  <g transform="translate(84.5, 122.5)">
+    <rect x="-25" y="-25" width="50" height="50" fill="#1E40AF" transform="rotate(45)"/>
+    <rect x="-20" y="-20" width="40" height="40" fill="#3B82F6" transform="rotate(45)"/>
+    <text x="0" y="8" font-family="Arial Black, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">L</text>
+  </g>
+  <!-- Corner decorations -->
+  <circle cx="24" cy="24" r="6" fill="#1E40AF"/>
+  <circle cx="145" cy="24" r="6" fill="#1E40AF"/>
+  <circle cx="24" cy="221" r="6" fill="#1E40AF"/>
+  <circle cx="145" cy="221" r="6" fill="#1E40AF"/>
+</svg>

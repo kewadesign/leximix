@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Card, CardSuit, CardRank, getSuitSymbol, getSuitColor, getRankName, getSuitName } from '../utils/maumau';
 import { UserState, Language } from '../types';
+import { getCardAssetPath } from '../utils/skatAssets';
 
 interface PlayingCardProps {
     card?: Card;
@@ -46,9 +47,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
         );
     }
 
-    const suitColor = getSuitColor(card.suit);
-    const suitSymbol = getSuitSymbol(card.suit);
-    const rankName = getRankName(card.rank, lang === Language.EN ? 'en' : lang === Language.ES ? 'es' : 'de');
+    const cardImagePath = getCardAssetPath(card);
     const isRed = card.suit === CardSuit.HEARTS || card.suit === CardSuit.DIAMONDS;
 
     return (
@@ -62,13 +61,12 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
             whileTap={!disabled ? { scale: 0.95 } : {}}
             onClick={disabled ? undefined : onClick}
             className={`
-        relative w-24 h-36 rounded-xl border-4 flex flex-col items-center justify-between p-2 cursor-pointer shadow-2xl
+        relative w-24 h-36 rounded-xl border-4 cursor-pointer shadow-2xl overflow-hidden
         ${selected ? 'ring-4 ring-cyan-400 shadow-cyan-400/50' : ''}
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         ${card.isAction ? 'border-yellow-500 shadow-yellow-500/30' : isRed ? 'border-red-200' : 'border-gray-300'}
       `}
             style={{
-                color: suitColor,
                 background: 'var(--color-surface)',
             }}
             initial={{ opacity: 0, scale: 0.8, rotateY: 180 }}
@@ -76,24 +74,22 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
             exit={{ opacity: 0, scale: 0.8, rotateY: -180 }}
             transition={{ duration: 0.3 }}
         >
-            {/* Top corner */}
-            <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold leading-none">{rankName}</div>
-                <div className="text-3xl leading-none">{suitSymbol}</div>
-            </div>
-
-            {/* Center symbol */}
-            <div className="text-6xl">{suitSymbol}</div>
-
-            {/* Bottom corner (rotated) */}
-            <div className="flex flex-col items-center rotate-180">
-                <div className="text-2xl font-bold leading-none">{rankName}</div>
-                <div className="text-3xl leading-none">{suitSymbol}</div>
-            </div>
+            {/* Card Image */}
+            <img 
+                src={cardImagePath} 
+                alt={`${getRankName(card.rank, 'de')} ${getSuitName(card.suit, 'de')}`}
+                className="w-full h-full object-cover"
+                style={{ pointerEvents: 'none' }}
+            />
 
             {/* Action indicator */}
             {card.isAction && (
-                <div className="absolute inset-0 bg-yellow-400/10 rounded-xl pointer-events-none animate-pulse" />
+                <div className="absolute inset-0 bg-yellow-400/20 rounded-xl pointer-events-none animate-pulse" />
+            )}
+            
+            {/* Selection highlight */}
+            {selected && (
+                <div className="absolute inset-0 bg-cyan-400/20 rounded-xl pointer-events-none" />
             )}
         </motion.div>
     );

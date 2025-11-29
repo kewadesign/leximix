@@ -60,11 +60,18 @@ export interface UserState {
   ownedAvatars: string[];
   activeFrame?: string; // ID of the equipped frame
   ownedFrames?: string[]; // List of owned frame IDs
+  activeFont?: string; // ID of the equipped font for profile name
+  ownedFonts?: string[]; // List of owned font IDs
+  activeEffect?: string; // ID of the equipped profile effect
+  ownedEffects?: string[]; // List of owned effect IDs
   hintBooster?: number; // Level of hint speed booster (0 = none)
   claimedSeasonRewards?: number[]; // Track which FREE season levels have been claimed
   claimedPremiumRewards?: number[]; // Track which PREMIUM season levels have been claimed
   redeemedCodes?: string[]; // Track redeemed gutschein codes
-  stickers?: string[]; // Collected stickers
+  stickers?: string[]; // Collected stickers (legacy)
+  stickerAlbum?: Record<string, string[]>; // Category -> collected sticker IDs
+  albumProgress?: number; // Total album completion percentage
+  completedCategories?: string[]; // Categories with all stickers collected
   theme: 'light' | 'dark';
   friendCode?: string; // Unique friend code for multiplayer
   friends?: { code: string; username: string }[]; // List of added friends
@@ -109,7 +116,7 @@ export interface ShopItem {
 }
 
 export interface SeasonRewardItem {
-  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker' | 'effect';
+  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker' | 'sticker_pack' | 'effect' | 'frame' | 'font' | 'album_page' | 'title';
   name: string;
   amount?: number;
   desc?: string;
@@ -117,6 +124,55 @@ export interface SeasonRewardItem {
   preview?: string;
   icon?: string;
   rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  category?: string; // For stickers: which album category
+}
+
+// Profile Frame Definition
+export interface ProfileFrame {
+  id: string;
+  name: string;
+  cssClass: string;
+  unlockLevel: number;
+  isPremium: boolean;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+}
+
+// Profile Font Definition
+export interface ProfileFont {
+  id: string;
+  name: string;
+  fontFamily: string;
+  unlockLevel: number;
+  isPremium: boolean;
+}
+
+// Profile Effect Definition
+export interface ProfileEffect {
+  id: string;
+  name: string;
+  cssClass: string;
+  icon: string;
+  unlockLevel: number;
+  isPremium: boolean;
+}
+
+// Sticker Definition
+export interface Sticker {
+  id: string;
+  emoji: string;
+  name: string;
+  category: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+}
+
+// Sticker Category Definition
+export interface StickerCategory {
+  id: string;
+  name: string;
+  icon: string;
+  totalStickers: number;
+  rewardFrame?: string; // Frame unlocked when category completed
+  rewardCoins: number;
 }
 
 export interface SeasonReward {

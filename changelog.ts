@@ -12,6 +12,27 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '3.3.0',
+        date: '2025-11-29',
+        changes: {
+            added: [
+                '🎴 Rommé: Komplett neues Bold Neo-Brutalist Design',
+                '✨ Rommé: Dynamische Hover-Animationen für Karten',
+                '📱 Rommé: Vollständig responsive Mobile-Ansicht',
+                '🌙 Dark Mode: Wiederhergestellt und funktioniert global'
+            ],
+            fixed: [
+                '🐞 Dark Mode Toggle Button wiederhergestellt',
+                '🐞 Theme-Variablen in allen Views korrigiert',
+                '🐞 Rommé: Mobile Layout komplett überarbeitet'
+            ],
+            changed: [
+                '🎨 Rommé: Buntere, boldere UI-Elemente',
+                '🎨 Rommé: Schräge Elemente für mehr Dynamik'
+            ]
+        }
+    },
+    {
         version: '3.2.0',
         date: '2025-11-29',
         changes: {

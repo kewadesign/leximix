@@ -485,10 +485,27 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                 </div>
             )}
 
-            {/* Header */}
-            <div className="p-4 flex justify-between items-center bg-[var(--color-surface)] border-b-4 border-[var(--color-border)] z-20 shrink-0">
-                <button onClick={onBack} className="p-2 border-2 border-[var(--color-border)] hover:bg-gray-100 shadow-[2px_2px_0px_#000]">
-                    <ArrowLeft size={24} />
+            {/* Header - Neo Brutal with Gradient */}
+            <div 
+                className="p-3 flex justify-between items-center z-20 shrink-0 mx-2 mt-2"
+                style={{
+                    background: 'linear-gradient(135deg, #8338EC 0%, #FF006E 100%)',
+                    border: '4px solid var(--color-border)',
+                    boxShadow: '6px 6px 0px var(--color-border)',
+                    transform: 'skewX(-2deg)'
+                }}
+            >
+                <button 
+                    onClick={onBack} 
+                    className="p-2 transition-all hover:-translate-y-1"
+                    style={{ 
+                        background: 'var(--color-surface)', 
+                        border: '3px solid var(--color-border)', 
+                        boxShadow: '3px 3px 0px var(--color-border)',
+                        transform: 'skewX(2deg) rotate(-3deg)'
+                    }}
+                >
+                    <ArrowLeft size={22} />
                 </button>
 
                 {/* Hint Button (Singleplayer only) */}
@@ -496,20 +513,41 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                     <button
                         onClick={() => setShowHintModal(true)}
                         disabled={isCalculatingHint}
-                        className="p-2 bg-[#FFBE0B] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_#000] active:translate-y-1 transition-all disabled:opacity-50"
+                        className="p-2 transition-all hover:-translate-y-1 disabled:opacity-50"
+                        style={{ 
+                            background: '#FFBE0B', 
+                            border: '3px solid var(--color-border)', 
+                            boxShadow: '3px 3px 0px var(--color-border)',
+                            transform: 'skewX(2deg) rotate(3deg)'
+                        }}
                     >
-                        <Lightbulb size={24} className={isCalculatingHint ? 'animate-pulse' : ''} />
+                        <Lightbulb size={22} className={isCalculatingHint ? 'animate-pulse' : ''} />
                     </button>
                 )}
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-[#8338EC] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_#000] text-white">
-                    {isMultiplayer ? <Users size={20} /> : <Cpu size={20} />}
-                    <span className="font-black uppercase hidden md:inline">{isMultiplayer ? 'Multiplayer' : 'Singleplayer'}</span>
+                <div 
+                    className="flex items-center gap-2 px-3 py-2 text-white"
+                    style={{ 
+                        background: 'rgba(0,0,0,0.3)', 
+                        border: '3px solid var(--color-border)',
+                        transform: 'skewX(2deg)'
+                    }}
+                >
+                    {isMultiplayer ? <Users size={18} /> : <Cpu size={18} />}
+                    <span className="font-black uppercase text-sm">{isMultiplayer ? 'MP' : `Lvl ${levelId}`}</span>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_#000]">
-                    <Coins size={20} className="text-[#FF006E]" />
-                    <span className="font-mono font-black text-xl">{user.coins}</span>
+                <div 
+                    className="flex items-center gap-2 px-3 py-2"
+                    style={{ 
+                        background: '#FFBE0B', 
+                        border: '3px solid var(--color-border)', 
+                        boxShadow: '3px 3px 0px var(--color-border)',
+                        transform: 'skewX(2deg) rotate(2deg)'
+                    }}
+                >
+                    <Coins size={18} className="text-[#000]" />
+                    <span className="font-mono font-black text-lg text-black">{user.coins}</span>
                 </div>
             </div>
 

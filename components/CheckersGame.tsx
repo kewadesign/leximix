@@ -544,25 +544,51 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
 
   return (
     <div className="min-h-screen p-4 geo-pattern">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Header - Neo Brutal with Gradient */}
+      <div 
+        className="flex items-center justify-between mb-4 p-3"
+        style={{
+          background: 'linear-gradient(135deg, #06FFA5 0%, #0096FF 100%)',
+          border: '4px solid var(--color-border)',
+          boxShadow: '6px 6px 0px var(--color-border)',
+          transform: 'skewX(-2deg)'
+        }}
+      >
         <button
           onClick={onBack}
-          className="p-3 border-3 border-[var(--color-border)] transition-all hover:-translate-y-1 hover:scale-105"
-          style={{ background: modeColor, boxShadow: '4px 4px 0px var(--color-border)' }}
+          className="p-2 transition-all hover:-translate-y-1"
+          style={{ 
+            background: 'var(--color-surface)', 
+            border: '3px solid var(--color-border)', 
+            boxShadow: '3px 3px 0px var(--color-border)',
+            transform: 'skewX(2deg) rotate(-3deg)'
+          }}
         >
-          <ArrowLeft size={24} className="text-white" />
+          <ArrowLeft size={22} />
         </button>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#FFBE0B] px-4 py-2 border-3 border-[var(--color-border)] font-black" style={{ boxShadow: '3px 3px 0px #000' }}>
-            <Coins size={20} className="text-[var(--color-text)]" />
-            <span className="text-[var(--color-text)] text-lg">{user.coins}</span>
+        <h2 
+          className="text-xl font-black uppercase tracking-wider"
+          style={{ color: '#000', textShadow: '1px 1px 0px rgba(255,255,255,0.5)', transform: 'skewX(2deg)' }}
+        >
+          Dame
+        </h2>
+
+        <div className="flex items-center gap-2" style={{ transform: 'skewX(2deg)' }}>
+          <div 
+            className="flex items-center gap-2 px-3 py-2 font-black"
+            style={{ background: '#FFBE0B', border: '3px solid var(--color-border)', boxShadow: '3px 3px 0px var(--color-border)', transform: 'rotate(2deg)' }}
+          >
+            <Coins size={18} className="text-[#000]" />
+            <span className="text-black text-lg">{user.coins}</span>
           </div>
 
           {!isMultiplayer && (
-            <div className="px-4 py-2 border-3 border-[var(--color-border)] font-black text-white" style={{ background: '#8338EC', boxShadow: '3px 3px 0px #000' }}>
-              LEVEL {levelId}
+            <div 
+              className="px-3 py-2 font-black text-white text-sm"
+              style={{ background: '#8338EC', border: '3px solid var(--color-border)', boxShadow: '3px 3px 0px var(--color-border)', transform: 'rotate(-2deg)' }}
+            >
+              LVL {levelId}
             </div>
           )}
         </div>
