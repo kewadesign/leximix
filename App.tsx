@@ -1701,20 +1701,32 @@ export default function App() {
     try {
       console.log('[handleWin] Called with:', { mode, tier, levelId, targetWord });
       console.log('[handleWin] Current showWin state:', showWin);
-      // Scaling Rewards
-      let xpGain = tier * 20;
-      let coinGain = tier * 5;
+      // Scaling Rewards - v3.5.0 Increased rewards
+      let xpGain = tier * 50; // 50, 100, 150, 200, 250 XP
+      let coinGain = tier * 15; // 15, 30, 45, 60, 75 Coins
+
+      // Mode-specific bonuses
+      if (mode === GameMode.SUDOKU) {
+        xpGain += 30; // Sudoku bonus
+        coinGain += 10;
+      } else if (mode === GameMode.CHAIN || mode === GameMode.CATEGORY) {
+        xpGain += 20; // Word chain bonus
+        coinGain += 5;
+      } else if (mode === GameMode.RIDDLE) {
+        xpGain += 40; // Riddle bonus for difficulty
+        coinGain += 15;
+      }
 
       // Grant bonus XP for challenge mode completion
       if (mode === GameMode.CHALLENGE) {
-        const bonusXP = 50 * tier; // 50/100/150 XP for tiers 1/2/3
+        const bonusXP = 75 * tier; // 75/150/225 XP for tiers 1/2/3
         xpGain += bonusXP;
       }
 
       // Challenge Mode Bonus
       if (mode === GameMode.CHALLENGE) {
         xpGain *= 2; // Double XP
-        coinGain = tier * 80; // Net profit 30*Tier
+        coinGain = tier * 100; // 100/200/300 coins
       }
 
       console.log('[handleWin] Setting winStats:', { xp: xpGain, coins: coinGain });

@@ -1993,12 +1993,56 @@ export const SEASON_AVATARS = SEASON_1_AVATARS; // Legacy compatibility
 
 /**
  * Generate Season Rewards dynamically based on season avatars
- * v3.5.0 - Optimized reward distribution with clear milestones
+ * v3.5.1 - 40 New Avatars + Better XP/Coin rewards
  * 
  * MILESTONE LEVELS: 10, 25, 50, 75, 100
  * Each milestone has special, memorable rewards
  */
 export const generateSeasonRewards = (season: Season) => {
+  // 40 Premium Avatars from AVATARS list (every 2-3 levels)
+  const PREMIUM_AVATARS = [
+    { level: 2, name: 'Felix', seed: 'Felix' },
+    { level: 3, name: 'Luna', seed: 'Luna' },
+    { level: 6, name: 'Max', seed: 'Max' },
+    { level: 7, name: 'Nova', seed: 'Nova' },
+    { level: 9, name: 'Ace', seed: 'Ace' },
+    { level: 11, name: 'Blaze', seed: 'Blaze' },
+    { level: 13, name: 'Storm', seed: 'Storm' },
+    { level: 14, name: 'Frost', seed: 'Frost' },
+    { level: 17, name: 'Neon', seed: 'Neon' },
+    { level: 18, name: 'Cyber', seed: 'Cyber' },
+    { level: 19, name: 'Pixel', seed: 'Pixel' },
+    { level: 21, name: 'Glitch', seed: 'Glitch' },
+    { level: 23, name: 'Matrix', seed: 'Matrix' },
+    { level: 24, name: 'Binary', seed: 'Binary' },
+    { level: 26, name: 'Chrome', seed: 'Chrome' },
+    { level: 27, name: 'Vector', seed: 'Vector' },
+    { level: 29, name: 'Orion', seed: 'Orion' },
+    { level: 31, name: 'Nebula', seed: 'Nebula' },
+    { level: 32, name: 'Cosmos', seed: 'Cosmos' },
+    { level: 33, name: 'Astro', seed: 'Astro' },
+    { level: 36, name: 'Pulsar', seed: 'Pulsar' },
+    { level: 37, name: 'Quasar', seed: 'Quasar' },
+    { level: 38, name: 'Stellar', seed: 'Stellar' },
+    { level: 39, name: 'Comet', seed: 'Comet' },
+    { level: 41, name: 'Thunder', seed: 'Thunder' },
+    { level: 42, name: 'Blizzard', seed: 'Blizzard' },
+    { level: 43, name: 'Ember', seed: 'Ember' },
+    { level: 44, name: 'Ocean', seed: 'Ocean' },
+    { level: 46, name: 'Forest', seed: 'Forest' },
+    { level: 47, name: 'Desert', seed: 'Desert' },
+    { level: 48, name: 'Aurora', seed: 'Aurora' },
+    { level: 49, name: 'Eclipse', seed: 'Eclipse' },
+    { level: 51, name: 'Wolf', seed: 'Wolf' },
+    { level: 52, name: 'Tiger', seed: 'Tiger' },
+    { level: 53, name: 'Falcon', seed: 'Falcon' },
+    { level: 54, name: 'Panther', seed: 'Panther' },
+    { level: 56, name: 'Viper', seed: 'Viper' },
+    { level: 57, name: 'Cobra', seed: 'Cobra' },
+    { level: 58, name: 'Phoenix', seed: 'Phoenix' },
+    { level: 59, name: 'Dragon', seed: 'Dragon' },
+  ];
+
   // Pre-define all unique rewards for better organization
   const FRAMES = [
     { level: 5, name: 'Goldrand', value: 'frame_gold', rarity: 'common' },
@@ -2021,7 +2065,6 @@ export const generateSeasonRewards = (season: Season) => {
   ];
 
   const EFFECTS = [
-    { level: 2, name: 'Glühen', value: 'effect_glow', icon: '✨', rarity: 'common' },
     { level: 4, name: 'Feuer', value: 'effect_fire', icon: '🔥', rarity: 'rare' },
     { level: 8, name: 'Neon', value: 'effect_neon', icon: '💜', rarity: 'rare' },
     { level: 12, name: 'Eis', value: 'effect_ice', icon: '❄️', rarity: 'rare' },
@@ -2036,11 +2079,48 @@ export const generateSeasonRewards = (season: Season) => {
   ];
 
   const TITLES = [
-    { level: 10, name: 'Anfänger', value: 'title_beginner', rarity: 'common' },
-    { level: 25, name: 'Entdecker', value: 'title_explorer', rarity: 'rare' },
-    { level: 50, name: 'Veteran', value: 'title_veteran', rarity: 'epic' },
-    { level: 75, name: 'Meister', value: 'title_master', rarity: 'legendary' },
-    { level: 100, name: 'Legende', value: 'title_legend', rarity: 'legendary' },
+    { level: 1, name: 'Neuling', value: 'title_newcomer', icon: '🌱', rarity: 'common' },
+    { level: 61, name: 'Rätsellöser', value: 'title_puzzle_solver', icon: '🧩', rarity: 'rare' },
+    { level: 62, name: 'Champion', value: 'title_champion', icon: '🏆', rarity: 'rare' },
+    { level: 63, name: 'Genie', value: 'title_genius', icon: '🧠', rarity: 'epic' },
+    { level: 64, name: 'Legende', value: 'title_legend', icon: '⭐', rarity: 'epic' },
+    { level: 66, name: 'Meister', value: 'title_master', icon: '👑', rarity: 'epic' },
+    { level: 67, name: 'Elite', value: 'title_elite', icon: '💎', rarity: 'legendary' },
+    { level: 68, name: 'Supreme', value: 'title_supreme', icon: '🔱', rarity: 'legendary' },
+    { level: 69, name: 'Cyber Agent', value: 'title_cyber', icon: '🤖', rarity: 'epic' },
+  ];
+
+  const CARDBACKS = [
+    { level: 71, name: 'Ozean Blau', value: 'cardback_blue', rarity: 'common' },
+    { level: 72, name: 'Feuer', value: 'cardback_fire', rarity: 'rare' },
+    { level: 73, name: 'Frost', value: 'cardback_ice', rarity: 'rare' },
+    { level: 74, name: 'Neon Grid', value: 'cardback_neon', rarity: 'rare' },
+    { level: 76, name: 'Galaxie', value: 'cardback_galaxy', rarity: 'epic' },
+    { level: 77, name: 'Gold Royal', value: 'cardback_gold', rarity: 'epic' },
+    { level: 78, name: 'Matrix', value: 'cardback_matrix', rarity: 'epic' },
+    { level: 79, name: 'Prisma', value: 'cardback_rainbow', rarity: 'legendary' },
+  ];
+
+  // More avatars for higher levels (80-100)
+  const HIGH_LEVEL_AVATARS = [
+    { level: 80, name: 'Crimson', seed: 'Crimson' },
+    { level: 81, name: 'Azure', seed: 'Azure' },
+    { level: 82, name: 'Jade', seed: 'Jade' },
+    { level: 83, name: 'Onyx', seed: 'Onyx' },
+    { level: 84, name: 'Violet', seed: 'Violet' },
+    { level: 86, name: 'Golden', seed: 'Golden' },
+    { level: 87, name: 'Silver', seed: 'Silver' },
+    { level: 88, name: 'Scarlet', seed: 'Scarlet' },
+    { level: 89, name: 'Titan', seed: 'Titan' },
+    { level: 91, name: 'Sphinx', seed: 'Sphinx' },
+    { level: 92, name: 'Griffin', seed: 'Griffin' },
+    { level: 93, name: 'Hydra', seed: 'Hydra' },
+    { level: 94, name: 'Wraith', seed: 'Wraith' },
+    { level: 95, name: 'Specter', seed: 'Specter' },
+    { level: 96, name: 'Phantom', seed: 'Phantom' },
+    { level: 97, name: 'Shadow', seed: 'Shadow' },
+    { level: 98, name: 'Apex', seed: 'Apex' },
+    { level: 99, name: 'Prime', seed: 'Prime' },
   ];
 
   return Array.from({ length: 100 }, (_, i) => {
@@ -2049,39 +2129,62 @@ export const generateSeasonRewards = (season: Season) => {
     let premiumReward: SeasonRewardItem | null = null;
 
     // ============================================================================
-    // FREE TRACK - Progressive coins & stickers with milestone bonuses
+    // FREE TRACK - Better coins & stickers
     // ============================================================================
     
     // Milestone Free Rewards
     if (level === 10) {
-      freeReward = { type: 'sticker_pack', amount: 3, name: 'Bronze Pack', icon: '🎁', rarity: 'common' };
+      freeReward = { type: 'coins', amount: 500, name: 'Münzschatz', icon: '💰' };
     } else if (level === 25) {
-      freeReward = { type: 'sticker_pack', amount: 5, name: 'Silber Pack', icon: '🎁', rarity: 'rare' };
+      freeReward = { type: 'coins', amount: 1000, name: 'Gold Truhe', icon: '💰', rarity: 'rare' };
     } else if (level === 50) {
-      freeReward = { type: 'sticker_pack', amount: 8, name: 'Gold Pack', icon: '🎁', rarity: 'epic' };
+      freeReward = { type: 'coins', amount: 2000, name: 'Platin Schatz', icon: '💰', rarity: 'epic' };
     } else if (level === 75) {
-      freeReward = { type: 'sticker_pack', amount: 10, name: 'Platin Pack', icon: '🎁', rarity: 'epic' };
+      freeReward = { type: 'coins', amount: 3000, name: 'Diamant Hort', icon: '💰', rarity: 'epic' };
     } else if (level === 100) {
-      freeReward = { type: 'sticker_pack', amount: 15, name: 'Diamant Pack', icon: '🎁', rarity: 'legendary' };
+      freeReward = { type: 'coins', amount: 5000, name: 'Legendärer Schatz', icon: '💰', rarity: 'legendary' };
     }
-    // Regular Free Rewards
-    else if (level % 10 === 0) {
-      freeReward = { type: 'coins', amount: 300 + level * 3, name: 'Münzschatz', icon: '💰' };
-    } else if (level % 5 === 0) {
-      freeReward = { type: 'sticker_pack', amount: Math.min(4, 1 + Math.floor(level / 25)), name: 'Sticker Pack', icon: '🎁', rarity: level > 50 ? 'rare' : 'common' };
+    // Regular Free Rewards - More generous
+    else if (level % 5 === 0) {
+      freeReward = { type: 'coins', amount: 200 + level * 5, name: 'Münzschatz', icon: '💰' };
     } else if (level % 3 === 0) {
-      freeReward = { type: 'sticker', amount: 1, name: 'Sticker', icon: '🎴', rarity: level > 60 ? 'rare' : 'common' };
+      freeReward = { type: 'coins', amount: 100 + level * 3, name: 'Münzen', icon: '💰' };
     } else {
-      freeReward = { type: 'coins', amount: 50 + level * 2, name: 'Münzen', icon: '💰' };
+      freeReward = { type: 'coins', amount: 75 + level * 2, name: 'Münzen', icon: '💰' };
     }
 
     // ============================================================================
-    // PREMIUM TRACK - Structured progression with clear milestones
+    // PREMIUM TRACK - 40 Avatars + Frames + Effects + Titles + CardBacks
     // ============================================================================
 
+    // Check for Avatar rewards first (priority)
+    const avatarReward = PREMIUM_AVATARS.find(a => a.level === level);
+    const highLevelAvatar = HIGH_LEVEL_AVATARS.find(a => a.level === level);
+    
+    if (avatarReward) {
+      const rarity = level > 40 ? 'epic' : level > 20 ? 'rare' : 'common';
+      premiumReward = { 
+        type: 'avatar', 
+        name: avatarReward.name, 
+        value: avatarReward.seed, 
+        preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward.seed}`, 
+        rarity: rarity as any,
+        desc: `Exklusiver ${avatarReward.name} Avatar`
+      };
+    }
+    else if (highLevelAvatar) {
+      premiumReward = { 
+        type: 'avatar', 
+        name: highLevelAvatar.name, 
+        value: highLevelAvatar.seed, 
+        preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${highLevelAvatar.seed}`, 
+        rarity: 'legendary',
+        desc: `Legendärer ${highLevelAvatar.name} Avatar`
+      };
+    }
     // Check for Frame rewards
-    const frameReward = FRAMES.find(f => f.level === level);
-    if (frameReward) {
+    else if (FRAMES.find(f => f.level === level)) {
+      const frameReward = FRAMES.find(f => f.level === level)!;
       const isMilestone = [50, 75, 100].includes(level);
       premiumReward = { 
         type: 'frame', 
@@ -2102,33 +2205,25 @@ export const generateSeasonRewards = (season: Season) => {
       const effectReward = EFFECTS.find(e => e.level === level)!;
       premiumReward = { type: 'effect', name: effectReward.name, value: effectReward.value, icon: effectReward.icon, rarity: effectReward.rarity as any };
     }
-    // Check for Title rewards (milestone only)
+    // Check for Title rewards
     else if (TITLES.find(t => t.level === level)) {
       const titleReward = TITLES.find(t => t.level === level)!;
-      premiumReward = { type: 'title', name: `"${titleReward.name}"`, value: titleReward.value, icon: '🏷️', rarity: titleReward.rarity as any };
+      premiumReward = { type: 'title', name: titleReward.name, value: titleReward.value, icon: titleReward.icon, rarity: titleReward.rarity as any };
     }
-    // Avatar rewards at specific levels
-    else if ([18, 33, 42, 58, 68, 78, 88, 95].includes(level)) {
-      const avatarIndex = Math.floor(level / 12);
-      const avatarReward = season.avatars[avatarIndex] || season.avatars[0];
-      premiumReward = { 
-        type: 'avatar', 
-        name: avatarReward?.name || `Avatar ${level}`, 
-        value: avatarReward?.id || `avatar_${level}`, 
-        preview: `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatarReward?.dicebear || `season_${level}`}`, 
-        rarity: level > 60 ? 'legendary' : 'epic' 
-      };
+    // Check for CardBack rewards
+    else if (CARDBACKS.find(c => c.level === level)) {
+      const cardBackReward = CARDBACKS.find(c => c.level === level)!;
+      premiumReward = { type: 'cardback', name: cardBackReward.name, value: cardBackReward.value, icon: '🃏', rarity: cardBackReward.rarity as any };
     }
-    // Sticker packs for remaining levels
+    // Coins for remaining levels
     else {
-      const packSize = level < 20 ? 3 : level < 40 ? 4 : level < 60 ? 5 : level < 80 ? 6 : 8;
-      const packRarity = level < 30 ? 'common' : level < 50 ? 'rare' : level < 70 ? 'epic' : 'legendary';
+      const coinAmount = level < 30 ? 300 : level < 50 ? 500 : level < 70 ? 750 : 1000;
       premiumReward = { 
-        type: 'sticker_pack', 
-        amount: packSize, 
-        name: `${packRarity === 'legendary' ? 'Legendäres' : packRarity === 'epic' ? 'Episches' : packRarity === 'rare' ? 'Seltenes' : 'Starter'} Pack`, 
-        icon: '🎁', 
-        rarity: packRarity as any 
+        type: 'coins', 
+        amount: coinAmount + level * 10, 
+        name: 'Premium Münzen', 
+        icon: '💰',
+        rarity: level > 60 ? 'epic' : level > 30 ? 'rare' : 'common'
       };
     }
 

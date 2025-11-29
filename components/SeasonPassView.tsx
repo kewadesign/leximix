@@ -56,14 +56,51 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
     const t = TRANSLATIONS[user.language];
 
     return (
-        <div className="h-full flex flex-col relative overflow-hidden geo-pattern geo-shapes geo-confetti" style={{ background: 'var(--color-bg)' }}>
-            {/* Rainbow Top Bar */}
-            <div className="flex h-4 w-full">
-                <div className="flex-1" style={{ background: '#FF006E' }}></div>
-                <div className="flex-1" style={{ background: '#FF7F00' }}></div>
-                <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
-                <div className="flex-1" style={{ background: '#06FFA5' }}></div>
-                <div className="flex-1" style={{ background: '#8338EC' }}></div>
+        <div className="h-full flex flex-col relative overflow-hidden" style={{ background: 'var(--color-bg)' }}>
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                {/* Floating geometric shapes */}
+                <div className="absolute top-10 left-10 w-32 h-32 rotate-12 opacity-10" style={{ background: '#FF006E', border: '4px solid #000' }}></div>
+                <div className="absolute top-40 right-20 w-24 h-24 -rotate-6 opacity-10" style={{ background: '#FFBE0B', border: '4px solid #000' }}></div>
+                <div className="absolute bottom-20 left-1/4 w-40 h-40 rotate-45 opacity-10" style={{ background: '#8338EC', border: '4px solid #000' }}></div>
+                <div className="absolute bottom-40 right-10 w-28 h-28 -rotate-12 opacity-10" style={{ background: '#06FFA5', border: '4px solid #000' }}></div>
+                <div className="absolute top-1/2 left-1/2 w-48 h-48 rotate-6 opacity-5" style={{ background: '#FF7F00', border: '4px solid #000' }}></div>
+                
+                {/* Dotted grid pattern */}
+                <div 
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: `
+                            radial-gradient(circle, #8338EC 2px, transparent 2px),
+                            radial-gradient(circle, #FF006E 2px, transparent 2px)
+                        `,
+                        backgroundSize: '40px 40px, 60px 60px',
+                        backgroundPosition: '0 0, 20px 20px'
+                    }}
+                ></div>
+                
+                {/* Diagonal stripes */}
+                <div 
+                    className="absolute inset-0 opacity-[0.02]"
+                    style={{
+                        backgroundImage: `repeating-linear-gradient(
+                            45deg,
+                            #FF006E 0px,
+                            #FF006E 2px,
+                            transparent 2px,
+                            transparent 20px
+                        )`
+                    }}
+                ></div>
+            </div>
+
+            {/* Rainbow Top Bar with Shimmer */}
+            <div className="flex h-3 w-full relative z-10">
+                <div className="flex-1 animate-pulse" style={{ background: '#FF006E', animationDelay: '0s' }}></div>
+                <div className="flex-1 animate-pulse" style={{ background: '#FF7F00', animationDelay: '0.1s' }}></div>
+                <div className="flex-1 animate-pulse" style={{ background: '#FFBE0B', animationDelay: '0.2s' }}></div>
+                <div className="flex-1 animate-pulse" style={{ background: '#06FFA5', animationDelay: '0.3s' }}></div>
+                <div className="flex-1 animate-pulse" style={{ background: '#8338EC', animationDelay: '0.4s' }}></div>
             </div>
 
             {/* Header - Neo Brutal */}
@@ -168,41 +205,40 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                 </div>
             </div>
 
-            {/* Scroll Track - Neo Brutal Colorful with Scroll Snap */}
+            {/* Scroll Track - GPU Optimized */}
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-x-auto overflow-y-hidden p-0 scrollbar-hide relative scroll-snap-x"
-                onWheel={(e) => {
-                    if (scrollRef.current) {
-                        scrollRef.current.scrollLeft += e.deltaY;
-                        e.preventDefault();
-                    }
+                className="flex-1 overflow-x-auto overflow-y-hidden p-0 scrollbar-hide relative z-10"
+                style={{ 
+                    willChange: 'scroll-position',
+                    WebkitOverflowScrolling: 'touch',
+                    scrollBehavior: 'smooth'
                 }}
             >
-                <div className="flex items-center h-full px-[50vw] min-w-max gap-6 py-8">
-                    {/* Rainbow Stepped Track Line */}
+                <div 
+                    className="flex items-center h-full px-[50vw] min-w-max gap-4 py-6"
+                    style={{ transform: 'translateZ(0)' }}
+                >
+                    {/* Stylish Track Line with Gradient */}
                     <div
-                        className="absolute top-1/2 left-0 right-0 h-6 -translate-y-1/2 z-0 flex"
-                        style={{ border: '3px solid #000' }}
-                    >
-                        {/* Rainbow segments */}
-                        <div className="flex-1" style={{ background: '#FF006E' }}></div>
-                        <div className="flex-1" style={{ background: '#FF7F00' }}></div>
-                        <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
-                        <div className="flex-1" style={{ background: '#06FFA5' }}></div>
-                        <div className="flex-1" style={{ background: '#0096FF' }}></div>
-                        <div className="flex-1" style={{ background: '#8338EC' }}></div>
-                    </div>
-                    {/* Progress overlay (gray over unfinished) */}
+                        className="absolute top-1/2 left-0 right-0 h-4 -translate-y-1/2 z-0"
+                        style={{ 
+                            background: 'linear-gradient(90deg, #FF006E 0%, #FF7F00 20%, #FFBE0B 40%, #06FFA5 60%, #0096FF 80%, #8338EC 100%)',
+                            border: '3px solid #000',
+                            boxShadow: '0 4px 0px #000'
+                        }}
+                    ></div>
+                    {/* Progress overlay */}
                     <div
-                        className="absolute top-1/2 h-6 -translate-y-1/2 z-1 transition-all duration-1000"
+                        className="absolute top-1/2 h-4 -translate-y-1/2 z-1"
                         style={{
-                            left: `${(user.level / 100) * 100}%`,
+                            left: `calc(50vw + ${(user.level - 1) * 176}px)`,
                             right: 0,
-                            background: '#E5E5E5',
+                            background: 'rgba(200,200,200,0.8)',
                             borderRight: '3px solid #000',
                             borderTop: '3px solid #000',
-                            borderBottom: '3px solid #000'
+                            borderBottom: '3px solid #000',
+                            backdropFilter: 'blur(2px)'
                         }}
                     ></div>
 
