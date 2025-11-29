@@ -1,11 +1,257 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem, Gift, Type, Palette, CreditCard } from 'lucide-react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem, Gift, Type, Palette, CreditCard, X, Info } from 'lucide-react';
 import { UserState, SeasonReward, SeasonRewardItem } from '../types';
-import { SEASON_REWARDS, getCurrentSeason, TRANSLATIONS } from '../constants';
+import { SEASON_REWARDS, getCurrentSeason, TRANSLATIONS, PROFILE_FRAMES, PROFILE_EFFECTS, PROFILE_FONTS } from '../constants';
 import { audio } from '../utils/audio';
 import { getRarityColor } from '../utils/rewards';
 import { RewardClaimModal } from './RewardClaimModal';
 import { ClaimBurst } from './ParticleEffect';
+
+// Reward Info Popup Component
+interface RewardInfoProps {
+    reward: SeasonRewardItem;
+    isPremium: boolean;
+    position: { x: number; y: number };
+    onClose: () => void;
+    language: string;
+}
+
+const RewardInfoPopup: React.FC<RewardInfoProps> = ({ reward, isPremium, position, onClose, language }) => {
+    const getTypeLabel = () => {
+        const labels: Record<string, Record<string, string>> = {
+            avatar: { de: 'Avatar', en: 'Avatar', es: 'Avatar' },
+            frame: { de: 'Rahmen', en: 'Frame', es: 'Marco' },
+            effect: { de: 'Effekt', en: 'Effect', es: 'Efecto' },
+            font: { de: 'Schriftart', en: 'Font', es: 'Fuente' },
+            title: { de: 'Titel', en: 'Title', es: 'Título' },
+            cardback: { de: 'Kartenrückseite', en: 'Card Back', es: 'Dorso de Carta' },
+            coins: { de: 'Münzen', en: 'Coins', es: 'Monedas' },
+            booster: { de: 'Booster', en: 'Booster', es: 'Potenciador' },
+            sticker: { de: 'Sticker', en: 'Sticker', es: 'Pegatina' },
+            sticker_pack: { de: 'Sticker-Paket', en: 'Sticker Pack', es: 'Paquete de Pegatinas' },
+            mystery: { de: 'Geheimnis', en: 'Mystery', es: 'Misterio' },
+        };
+        return labels[reward.type]?.[language] || reward.type;
+    };
+
+    const getRarityLabel = () => {
+        const labels: Record<string, Record<string, string>> = {
+            common: { de: 'Gewöhnlich', en: 'Common', es: 'Común' },
+            rare: { de: 'Selten', en: 'Rare', es: 'Raro' },
+            epic: { de: 'Episch', en: 'Epic', es: 'Épico' },
+            legendary: { de: 'Legendär', en: 'Legendary', es: 'Legendario' },
+        };
+        return labels[reward.rarity || 'common']?.[language] || reward.rarity || 'Common';
+    };
+
+    const getDescription = () => {
+        const desc: Record<string, Record<string, string>> = {
+            avatar: { 
+                de: 'Ein einzigartiger Avatar für dein Profil', 
+                en: 'A unique avatar for your profile', 
+                es: 'Un avatar único para tu perfil' 
+            },
+            frame: { 
+                de: 'Ein stylischer Rahmen um deinen Avatar', 
+                en: 'A stylish frame around your avatar', 
+                es: 'Un marco elegante alrededor de tu avatar' 
+            },
+            effect: { 
+                de: 'Ein besonderer visueller Effekt', 
+                en: 'A special visual effect', 
+                es: 'Un efecto visual especial' 
+            },
+            font: { 
+                de: 'Eine besondere Schriftart für deinen Namen', 
+                en: 'A special font for your name', 
+                es: 'Una fuente especial para tu nombre' 
+            },
+            title: { 
+                de: 'Ein Titel der unter deinem Namen erscheint', 
+                en: 'A title that appears under your name', 
+                es: 'Un título que aparece bajo tu nombre' 
+            },
+            cardback: { 
+                de: 'Ein Design für die Rückseite deiner Karten', 
+                en: 'A design for the back of your cards', 
+                es: 'Un diseño para el reverso de tus cartas' 
+            },
+            coins: { 
+                de: 'Münzen zum Kaufen im Shop', 
+                en: 'Coins to spend in the shop', 
+                es: 'Monedas para gastar en la tienda' 
+            },
+            booster: { 
+                de: 'Erhalte mehr XP für deine nächsten Spiele', 
+                en: 'Get more XP for your next games', 
+                es: 'Obtén más XP para tus próximos juegos' 
+            },
+        };
+        return reward.desc || desc[reward.type]?.[language] || '';
+    };
+
+    // Get frame/effect preview
+    const getFramePreview = () => {
+        if (reward.type === 'frame') {
+            const frame = PROFILE_FRAMES.find(f => f.id === reward.value);
+            return frame?.cssClass || '';
+        }
+        return '';
+    };
+
+    const getEffectPreview = () => {
+        if (reward.type === 'effect') {
+            const effect = PROFILE_EFFECTS.find(e => e.id === reward.value);
+            return effect?.cssClass || '';
+        }
+        return '';
+    };
+
+    return (
+        <div 
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            onClick={onClose}
+            style={{ background: 'rgba(0,0,0,0.7)' }}
+        >
+            <div 
+                className="relative max-w-sm w-full animate-scale-in"
+                onClick={e => e.stopPropagation()}
+                style={{
+                    background: 'var(--color-surface)',
+                    border: '4px solid #000',
+                    boxShadow: '8px 8px 0px #000'
+                }}
+            >
+                {/* Header */}
+                <div 
+                    className="flex items-center justify-between p-3"
+                    style={{ 
+                        background: isPremium ? '#FFBE0B' : '#00D9FF',
+                        borderBottom: '4px solid #000'
+                    }}
+                >
+                    <div className="flex items-center gap-2">
+                        <span className="text-lg">{reward.icon || '🎁'}</span>
+                        <span className="font-black text-black uppercase text-sm">{getTypeLabel()}</span>
+                    </div>
+                    <button 
+                        onClick={onClose}
+                        className="p-1 hover:bg-black/10 transition-colors"
+                    >
+                        <X size={20} className="text-black" />
+                    </button>
+                </div>
+
+                {/* Content */}
+                <div className="p-4 space-y-4">
+                    {/* Preview */}
+                    <div className="flex justify-center">
+                        {reward.type === 'avatar' && reward.preview ? (
+                            <div className={`relative ${getEffectPreview()}`}>
+                                <img 
+                                    src={reward.preview} 
+                                    alt={reward.name}
+                                    className={`w-24 h-24 object-cover ${getFramePreview()}`}
+                                    style={{ border: '4px solid #000' }}
+                                />
+                            </div>
+                        ) : reward.type === 'frame' ? (
+                            <div className="relative">
+                                <div 
+                                    className={`w-24 h-24 flex items-center justify-center ${getFramePreview()}`}
+                                    style={{ background: '#8338EC', border: '4px solid #000' }}
+                                >
+                                    <Sparkles size={40} className="text-white" />
+                                </div>
+                            </div>
+                        ) : reward.type === 'effect' ? (
+                            <div className={`w-24 h-24 flex items-center justify-center relative ${getEffectPreview()}`} style={{ background: '#FF006E', border: '4px solid #000' }}>
+                                <span className="text-4xl">{reward.icon || '✨'}</span>
+                            </div>
+                        ) : reward.type === 'title' ? (
+                            <div 
+                                className="px-6 py-3 flex items-center justify-center"
+                                style={{ 
+                                    background: getRarityColor(reward.rarity || 'common'),
+                                    border: '3px solid #000'
+                                }}
+                            >
+                                <span className="text-xl font-black text-white">{reward.icon} {reward.name}</span>
+                            </div>
+                        ) : reward.type === 'cardback' ? (
+                            <div 
+                                className="w-20 h-28 flex items-center justify-center"
+                                style={{ 
+                                    background: 'linear-gradient(135deg, #8338EC, #FF006E)',
+                                    border: '4px solid #000',
+                                    boxShadow: '4px 4px 0px #000'
+                                }}
+                            >
+                                <span className="text-3xl">🃏</span>
+                            </div>
+                        ) : reward.type === 'coins' ? (
+                            <div className="flex items-center gap-2">
+                                <Coins size={48} style={{ color: '#FFBE0B' }} />
+                                <span className="text-4xl font-black" style={{ color: '#FFBE0B' }}>
+                                    {reward.amount?.toLocaleString()}
+                                </span>
+                            </div>
+                        ) : reward.type === 'booster' ? (
+                            <div 
+                                className="w-20 h-20 flex items-center justify-center"
+                                style={{ background: '#FFBE0B', border: '4px solid #000' }}
+                            >
+                                <Zap size={40} className="text-black" />
+                            </div>
+                        ) : (
+                            <div 
+                                className="w-20 h-20 flex items-center justify-center"
+                                style={{ background: '#8338EC', border: '4px solid #000' }}
+                            >
+                                <Gift size={40} className="text-white" />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Name & Rarity */}
+                    <div className="text-center space-y-2">
+                        <h3 className="text-xl font-black" style={{ color: 'var(--color-text)' }}>
+                            {reward.name}
+                        </h3>
+                        <div 
+                            className="inline-block px-3 py-1 text-xs font-black uppercase"
+                            style={{ 
+                                background: getRarityColor(reward.rarity || 'common'),
+                                color: reward.rarity === 'common' ? '#000' : '#FFF',
+                                border: '2px solid #000'
+                            }}
+                        >
+                            {getRarityLabel()}
+                        </div>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-center text-sm font-bold" style={{ color: 'var(--color-text-muted)' }}>
+                        {getDescription()}
+                    </p>
+
+                    {/* Premium Badge */}
+                    {isPremium && (
+                        <div className="flex justify-center">
+                            <div 
+                                className="flex items-center gap-2 px-4 py-2"
+                                style={{ background: '#FFBE0B', border: '2px solid #000' }}
+                            >
+                                <Crown size={16} className="text-black" />
+                                <span className="text-xs font-black text-black uppercase">Premium Reward</span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 interface Props {
     user: UserState;
@@ -19,6 +265,37 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
     const scrollRef = useRef<HTMLDivElement>(null);
     const [claimedReward, setClaimedReward] = useState<{ reward: SeasonRewardItem; isPremium: boolean } | null>(null);
     const [recentlyClaimed, setRecentlyClaimed] = useState<number | null>(null);
+    const [activeInfoPopup, setActiveInfoPopup] = useState<{ reward: SeasonRewardItem; isPremium: boolean; position: { x: number; y: number } } | null>(null);
+    const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+
+    // Long press handlers for mobile
+    const handleTouchStart = useCallback((reward: SeasonRewardItem, isPremium: boolean, e: React.TouchEvent) => {
+        const touch = e.touches[0];
+        longPressTimer.current = setTimeout(() => {
+            setActiveInfoPopup({ 
+                reward, 
+                isPremium, 
+                position: { x: touch.clientX, y: touch.clientY } 
+            });
+        }, 500); // 500ms long press
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        if (longPressTimer.current) {
+            clearTimeout(longPressTimer.current);
+            longPressTimer.current = null;
+        }
+    }, []);
+
+    // Click handler for info button
+    const handleInfoClick = useCallback((reward: SeasonRewardItem, isPremium: boolean, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setActiveInfoPopup({ 
+            reward, 
+            isPremium, 
+            position: { x: e.clientX, y: e.clientY } 
+        });
+    }, []);
 
     // Auto-scroll to current level on mount
     useEffect(() => {
@@ -295,7 +572,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
                                     {premiumReward ? (
                                         <div
-                                            className={`relative w-36 p-4 flex flex-col items-center transition-all group-hover:-translate-y-3 ${isLegendary ? 'rainbow-card holo-shimmer' : ''} ${isEpic ? 'rarity-epic' : ''}`}
+                                            className={`relative w-36 p-4 flex flex-col items-center transition-all group-hover:-translate-y-3 cursor-pointer ${isLegendary ? 'rainbow-card holo-shimmer' : ''} ${isEpic ? 'rarity-epic' : ''}`}
                                             style={{
                                                 background: 'var(--color-surface)',
                                                 border: isLegendary ? '4px solid #FFBE0B' : '4px solid #000',
@@ -303,7 +580,19 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                     ? '0 0 20px rgba(255,190,11,0.5), 8px 8px 0px #FFBE0B' 
                                                     : `8px 8px 0px ${cardColor}`
                                             }}
+                                            onTouchStart={(e) => handleTouchStart(premiumReward, true, e)}
+                                            onTouchEnd={handleTouchEnd}
+                                            onTouchCancel={handleTouchEnd}
                                         >
+                                            {/* Info Button */}
+                                            <button
+                                                onClick={(e) => handleInfoClick(premiumReward, true, e)}
+                                                className="absolute top-1 left-1 w-6 h-6 flex items-center justify-center transition-all hover:scale-110 z-20"
+                                                style={{ background: '#00D9FF', border: '2px solid #000' }}
+                                            >
+                                                <Info size={12} className="text-black" />
+                                            </button>
+                                            
                                             {!user.isPremium && (
                                                 <Lock size={12} style={{ color: '#999' }} className="absolute top-2 right-2" />
                                             )}
@@ -411,13 +700,25 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
                                     {freeReward ? (
                                         <div
-                                            className="relative w-32 p-4 flex flex-col items-center transition-all group-hover:translate-y-3"
+                                            className="relative w-32 p-4 flex flex-col items-center transition-all group-hover:translate-y-3 cursor-pointer"
                                             style={{
                                                 background: 'var(--color-surface)',
                                                 border: '4px solid #000',
                                                 boxShadow: '6px 6px 0px #000'
                                             }}
+                                            onTouchStart={(e) => handleTouchStart(freeReward, false, e)}
+                                            onTouchEnd={handleTouchEnd}
+                                            onTouchCancel={handleTouchEnd}
                                         >
+                                            {/* Info Button */}
+                                            <button
+                                                onClick={(e) => handleInfoClick(freeReward, false, e)}
+                                                className="absolute top-1 left-1 w-5 h-5 flex items-center justify-center transition-all hover:scale-110 z-20"
+                                                style={{ background: '#FFBE0B', border: '2px solid #000' }}
+                                            >
+                                                <Info size={10} className="text-black" />
+                                            </button>
+                                            
                                             {freeReward.type === 'coins' ? (
                                                 <Coins size={36} style={{ color: '#FFBE0B' }} />
                                             ) : freeReward.type === 'sticker' ? (
@@ -437,8 +738,8 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                             )}
 
                                             <div className="mt-2 text-center">
-                                                <div className="text-[11px] font-black uppercase" style={{ color: 'var(--color-text)' }}>{freeReward.type}</div>
-                                                {freeReward.amount && <div className="text-[10px] font-bold" style={{ color: '#666' }}>x{freeReward.amount}</div>}
+                                                <div className="text-[11px] font-black uppercase" style={{ color: 'var(--color-text)' }}>{freeReward.name || freeReward.type}</div>
+                                                {freeReward.amount && <div className="text-[10px] font-bold" style={{ color: '#666' }}>x{freeReward.amount?.toLocaleString()}</div>}
                                             </div>
 
                                             {canClaimFree && (
@@ -474,6 +775,17 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     reward={claimedReward.reward}
                     isPremium={claimedReward.isPremium}
                     onClose={() => setClaimedReward(null)}
+                />
+            )}
+
+            {/* Reward Info Popup */}
+            {activeInfoPopup && (
+                <RewardInfoPopup
+                    reward={activeInfoPopup.reward}
+                    isPremium={activeInfoPopup.isPremium}
+                    position={activeInfoPopup.position}
+                    onClose={() => setActiveInfoPopup(null)}
+                    language={user.language}
                 />
             )}
         </div >
