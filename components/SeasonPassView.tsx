@@ -351,7 +351,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
     const t = TRANSLATIONS[user.language];
 
     return (
-        <div className="h-full flex flex-col relative overflow-hidden" style={{ background: 'var(--color-bg)' }}>
+        <div className="h-full flex flex-col relative" style={{ background: 'var(--color-bg)', minHeight: '100vh', maxHeight: '100vh' }}>
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 {/* Floating geometric shapes */}
@@ -503,11 +503,14 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
             {/* Scroll Track - GPU Optimized */}
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-x-auto overflow-y-hidden p-0 scrollbar-hide relative z-10"
+                className="flex-1 overflow-x-scroll overflow-y-hidden p-0 scrollbar-hide relative z-10"
                 style={{ 
                     willChange: 'scroll-position',
                     WebkitOverflowScrolling: 'touch',
-                    scrollBehavior: 'smooth'
+                    scrollBehavior: 'smooth',
+                    touchAction: 'pan-x',
+                    overscrollBehavior: 'contain',
+                    minHeight: 0
                 }}
             >
                 <div 

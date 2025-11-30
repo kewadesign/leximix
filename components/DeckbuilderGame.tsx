@@ -795,7 +795,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="h-screen overflow-hidden" style={{ minHeight: '100vh', maxHeight: '100vh' }}>
       {renderMessage()}
       
       {view === 'menu' && renderMenu()}

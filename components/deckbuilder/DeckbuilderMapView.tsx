@@ -205,7 +205,7 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-900">
+    <div className="h-full flex flex-col bg-gray-900" style={{ minHeight: '100vh', maxHeight: '100vh' }}>
       {/* Header - Neo-Brutalist Style */}
       <div 
         className="sticky top-0 z-20 p-4"
@@ -294,10 +294,13 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
       {/* Map Container - Scrollable */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-y-auto overflow-x-hidden"
+        className="flex-1 overflow-y-scroll overflow-x-hidden"
         style={{ 
           scrollBehavior: 'smooth',
-          WebkitOverflowScrolling: 'touch'
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-y',
+          overscrollBehavior: 'contain',
+          minHeight: 0
         }}
       >
         <div 
