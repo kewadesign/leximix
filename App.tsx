@@ -1744,7 +1744,7 @@ export default function App() {
           setTimeout(() => {
             setLevelUpData({ level: newLevel, xp: newXp });
             setShowLevelUp(true);
-            audio.playWin(); // Extra fanfare
+            audio.playLevelUp(); // Epic level up fanfare
           }, 1000); // Show after Win modal appears
         }
 
@@ -2124,6 +2124,15 @@ export default function App() {
 
   const GameCard = ({ mode, title, desc, icon: Icon, locked = false, comingSoon = false }: any) => {
     const colors = brutalColors[mode] || { bg: '#FF006E', accent: '#000' };
+    const [isHovered, setIsHovered] = useState(false);
+
+    const resetHover = (e: any) => {
+      setIsHovered(false);
+      if (e.currentTarget) {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '6px 6px 0px var(--color-border)';
+      }
+    };
 
     return (
       <button
@@ -2134,18 +2143,20 @@ export default function App() {
           background: 'var(--color-surface)',
           border: '3px solid var(--color-border)',
           borderRadius: '16px',
-          boxShadow: '6px 6px 0px var(--color-border)'
+          boxShadow: isHovered ? '10px 10px 0px #000' : '6px 6px 0px var(--color-border)',
+          transform: isHovered ? 'translateY(-4px)' : 'translateY(0)'
         }}
         onMouseEnter={(e) => {
           if (!comingSoon) {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.boxShadow = '10px 10px 0px #000';
+            setIsHovered(true);
+            audio.playHover();
           }
         }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '6px 6px 0px #000';
-        }}
+        onMouseLeave={resetHover}
+        onMouseUp={resetHover}
+        onTouchEnd={resetHover}
+        onTouchCancel={resetHover}
+        onBlur={resetHover}
       >
         {/* Animated Rainbow top border */}
         <div 

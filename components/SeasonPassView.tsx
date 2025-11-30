@@ -329,6 +329,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
         if (reward) {
             setRecentlyClaimed(level);
             setClaimedReward({ reward, isPremium });
+            audio.playClaim(); // Play claim sound
             onClaim(level, isPremium);
             // Clear recently claimed after animation
             setTimeout(() => setRecentlyClaimed(null), 500);

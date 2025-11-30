@@ -1,13 +1,15 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { audio } from '../utils/audio';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   fullWidth?: boolean;
   size?: 'sm' | 'md' | 'lg';
+  noSound?: boolean;
 }
 
-export const Button: React.FC<ButtonProps> = React.memo(({ children, variant = 'primary', fullWidth, size = 'md', className = '', ...props }) => {
+export const Button: React.FC<ButtonProps> = React.memo(({ children, variant = 'primary', fullWidth, size = 'md', className = '', noSound = false, onClick, ...props }) => {
   const base = "uppercase font-black transition-all border-brutal cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
   const sizes = {
@@ -23,8 +25,22 @@ export const Button: React.FC<ButtonProps> = React.memo(({ children, variant = '
     danger: "bg-brutal-pink text-white shadow-brutal hover:shadow-brutal-lg active:shadow-brutal-sm skew-brutal hover:bg-brutal-orange"
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!noSound) audio.playClick();
+    onClick?.(e);
+  };
+
+  const handleMouseEnter = () => {
+    if (!noSound && !props.disabled) audio.playHover();
+  };
+
   return (
-    <button className={`${base} ${sizes[size]} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`} {...props}>
+    <button 
+      className={`${base} ${sizes[size]} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`} 
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      {...props}
+    >
       {children}
     </button>
   );
