@@ -4990,8 +4990,11 @@ export default function App() {
         </div>
       )}
 
+      {/* Music Player */}
+      <MusicPlayer currentView={view} gameMode={gameConfig?.mode} />
+
       {/* Version Display (Bottom Left) */}
-      <div className="fixed bottom-4 left-4 z-[50] pointer-events-none">
+      <div className="fixed bottom-20 left-4 z-[40] pointer-events-none">
         <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest font-mono">
           v{APP_VERSION}
         </div>

@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.7.1] - 2025-11-30
+### Added
+- Dynamischer Music Player mit 12 verschiedenen Tracks
+- Automatischer Musik-Wechsel je nach Spielmodus
+- Track-Kontrolle: Play/Pause, Skip, Mute, Lautstärke
+- Royalty-free Musik von Pixabay
+
+### Tracks
+- Home: Chill Vibes (Lofi)
+- Wordle/Math: Focus Mode (Ambient)
+- Chain/Riddle: Brain Flow
+- Mau Mau: Card Shuffle (Jazz)
+- Rummy: Casino Night
+- Chess: Grand Master (Epic)
+- Checkers: Tactical Mind
+- Mühle: Ancient Game
+- Sudoku: Zen Garden
+- Season Pass: Level Up (Electronic)
+- Shop: Shopping Spree
+- Multiplayer: Battle Ready
+
 ## [3.7.0] - 2025-11-30
 ### Added
 - 58 neue lokale Avatar-Bilder (8 verschiedene Stile)
