@@ -2436,6 +2436,16 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'shop_time_freeze', type: 'booster', name: 'Zeit Stopp (30s)', cost: 250, value: 'time_freeze', rarity: 'rare' },
 
   // ============================================================================
+  // 🃏 KARTENPAKETE - Deckbuilder (Münzen & Gems)
+  // ============================================================================
+  { id: 'pack_basic', type: 'cardpack', name: 'Basis-Paket', cost: 500, value: 'basic', rarity: 'common' },
+  { id: 'pack_standard', type: 'cardpack', name: 'Standard-Paket', cost: 1000, value: 'standard', rarity: 'rare' },
+  { id: 'pack_fire', type: 'cardpack', name: 'Feuer-Paket', cost: 800, value: 'element_fire', rarity: 'rare' },
+  { id: 'pack_water', type: 'cardpack', name: 'Wasser-Paket', cost: 800, value: 'element_water', rarity: 'rare' },
+  { id: 'pack_earth', type: 'cardpack', name: 'Erde-Paket', cost: 800, value: 'element_earth', rarity: 'rare' },
+  { id: 'pack_air', type: 'cardpack', name: 'Luft-Paket', cost: 800, value: 'element_air', rarity: 'rare' },
+
+  // ============================================================================
   // 🎁 BUNDLES (Echtgeld - Spezialangebote)
   // ============================================================================
   {

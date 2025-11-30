@@ -80,6 +80,34 @@ export interface UserState {
   activeTitle?: string; // ID of the equipped title
   ownedCardBacks?: string[]; // List of owned card back IDs
   activeCardBack?: string; // ID of the equipped card back
+  // Deckbuilder Data
+  deckbuilderData?: DeckbuilderPlayerState;
+}
+
+// Deckbuilder Player State (stored in UserState)
+export interface DeckbuilderPlayerState {
+  collection: Record<string, { count: number; upgraded: boolean; firstObtained: number }>;
+  dust: number;
+  gems: number;
+  unlockedArchetypes: string[];
+  masteryLevel: number;
+  masteryXP: number;
+  pityCounters: {
+    standard: number;
+    fire: number;
+    water: number;
+    earth: number;
+    air: number;
+  };
+  stats: {
+    runsStarted: number;
+    runsCompleted: number;
+    bossesKilled: number;
+    cardsPlayed: number;
+    highestFloor: number;
+    fastestRun: number;
+  };
+  completedDifficulties: Record<string, string[]>; // GameMode -> completed difficulty levels
 }
 
 export interface GameConfig {
@@ -111,10 +139,10 @@ export interface TutorialContent {
 
 export interface ShopItem {
   id: string;
-  type: 'currency' | 'avatar' | 'frame' | 'booster' | 'title' | 'cardback';
+  type: 'currency' | 'avatar' | 'frame' | 'booster' | 'title' | 'cardback' | 'cardpack' | 'font' | 'bundle';
   name: string;
   cost: number | string; // Number = Coins, String = Real Money (Display)
-  value: number | string; // Amount of coins OR Avatar ID OR Frame ID
+  value: number | string; // Amount of coins OR Avatar ID OR Frame ID OR Pack ID
   currencyAmount?: number; // For currency packs
   isRealMoney?: boolean;
   paypalLink?: string;
