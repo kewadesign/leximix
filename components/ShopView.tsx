@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard, ChevronLeft, ChevronRight, Crown, Palette } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard, ChevronLeft, ChevronRight, Crown, Palette, Sword, Package } from 'lucide-react';
 import { PayPalButton } from './PayPalButton';
 import { SHOP_ITEMS, PROFILE_TITLES, CARD_BACKS } from '../constants';
 import { audio } from '../utils/audio';
@@ -15,7 +15,7 @@ interface ShopViewProps {
     handleBuyItem: (item: any) => void;
 }
 
-type ShopTab = 'avatars' | 'titles' | 'cardbacks' | 'currency';
+type ShopTab = 'avatars' | 'titles' | 'cardbacks' | 'cardpacks' | 'currency';
 
 export const ShopView: React.FC<ShopViewProps> = ({
     user,
@@ -198,6 +198,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                         { id: 'avatars' as ShopTab, label: 'Avatare', icon: <User size={14} />, color: '#06FFA5' },
                         { id: 'titles' as ShopTab, label: 'Titel', icon: <Crown size={14} />, color: '#FF006E' },
                         { id: 'cardbacks' as ShopTab, label: 'Karten', icon: <Palette size={14} />, color: '#8338EC' },
+                        { id: 'cardpacks' as ShopTab, label: 'Kartenschmiede', icon: <Sword size={14} />, color: '#8B5CF6' },
                         { id: 'currency' as ShopTab, label: 'Münzen', icon: <Coins size={14} />, color: '#FFBE0B' }
                     ].map((tab) => (
                         <button
@@ -444,6 +445,165 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     <p className="text-xs font-bold mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
                         Kartenrückseiten werden über den Season Pass freigeschaltet!
                     </p>
+                </div>}
+
+                {/* Kartenschmiede Card Packs Section */}
+                {activeTab === 'cardpacks' && <div className="animate-fade-in-up">
+                    <div
+                        className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
+                        style={{ background: '#000', color: '#8B5CF6' }}
+                    >
+                        <Sword size={14} className="inline mr-2" /> Kartenschmiede Packs
+                    </div>
+                    
+                    {/* Info Banner */}
+                    <div 
+                        className="mb-4 p-4"
+                        style={{ 
+                            background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+                            border: '4px solid #000',
+                            boxShadow: '6px 6px 0 #000'
+                        }}
+                    >
+                        <p className="text-white font-bold text-sm">
+                            🃏 Kaufe Kartenpacks um deine Sammlung für den Kartenschmiede-Modus zu erweitern!
+                        </p>
+                        <p className="text-white/80 text-xs mt-1">
+                            Jedes Pack enthält 5 zufällige Karten des gewählten Elements.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {SHOP_ITEMS.filter(i => i.type === 'cardpack').map((item, idx) => {
+                            const packColors: Record<string, string> = {
+                                'basic': '#9CA3AF',
+                                'standard': '#3B82F6',
+                                'element_fire': '#FF006E',
+                                'element_water': '#00D9FF',
+                                'element_earth': '#22C55E',
+                                'element_air': '#A5B4FC',
+                                'element_void': '#8B5CF6',
+                                'premium': '#FFD700',
+                                'legendary': '#F59E0B'
+                            };
+                            const packEmojis: Record<string, string> = {
+                                'basic': '📦',
+                                'standard': '🎁',
+                                'element_fire': '🔥',
+                                'element_water': '💧',
+                                'element_earth': '🌍',
+                                'element_air': '💨',
+                                'element_void': '🌑',
+                                'premium': '👑',
+                                'legendary': '⭐'
+                            };
+                            const color = packColors[item.value as string] || '#8B5CF6';
+                            const emoji = packEmojis[item.value as string] || '🃏';
+                            const rarityColor = getRarityColor(item.rarity);
+                            const isOwned = (user.ownedCardPacks || []).includes(item.id);
+
+                            return (
+                                <div
+                                    key={item.id}
+                                    className="p-4 flex flex-col items-center relative overflow-hidden group transition-all duration-200"
+                                    style={{
+                                        background: 'var(--color-surface)',
+                                        border: '4px solid #000',
+                                        boxShadow: `6px 6px 0px ${color}`,
+                                        transform: 'skewX(-2deg)'
+                                    }}
+                                >
+                                    {/* Pack Icon */}
+                                    <div
+                                        className="w-20 h-20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform relative"
+                                        style={{ 
+                                            background: `linear-gradient(135deg, ${color}44, ${color}88)`,
+                                            border: '4px solid #000',
+                                            transform: 'skewX(2deg)',
+                                            boxShadow: '4px 4px 0 #000'
+                                        }}
+                                    >
+                                        <span className="text-4xl">{emoji}</span>
+                                        {/* Shine effect */}
+                                        <div 
+                                            className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent"
+                                            style={{ pointerEvents: 'none' }}
+                                        />
+                                    </div>
+
+                                    {/* Pack Name */}
+                                    <span 
+                                        className="text-sm font-black uppercase text-center mb-1"
+                                        style={{ color: 'var(--color-text)', transform: 'skewX(2deg)' }}
+                                    >
+                                        {item.name}
+                                    </span>
+
+                                    {/* Card Count */}
+                                    <span 
+                                        className="text-xs font-bold mb-2"
+                                        style={{ color: color, transform: 'skewX(2deg)' }}
+                                    >
+                                        5 Karten
+                                    </span>
+
+                                    {/* Rarity Badge */}
+                                    <div 
+                                        className="text-[8px] font-black uppercase px-2 py-0.5 mb-3"
+                                        style={{ 
+                                            background: rarityColor, 
+                                            color: '#000', 
+                                            border: '2px solid #000',
+                                            transform: 'skewX(2deg)'
+                                        }}
+                                    >
+                                        {item.rarity}
+                                    </div>
+
+                                    {/* Buy Button */}
+                                    <button
+                                        onClick={() => {
+                                            if (user.coins >= (item.cost as number)) {
+                                                handleBuyItem(item);
+                                                audio.playWin();
+                                            } else {
+                                                audio.playError();
+                                            }
+                                        }}
+                                        disabled={user.coins < (item.cost as number)}
+                                        className="w-full py-2 font-black text-sm uppercase transition-all flex items-center justify-center gap-2"
+                                        style={{
+                                            background: user.coins >= (item.cost as number) ? color : '#666',
+                                            color: '#000',
+                                            border: '3px solid #000',
+                                            boxShadow: '3px 3px 0px #000',
+                                            transform: 'skewX(2deg)',
+                                            opacity: user.coins >= (item.cost as number) ? 1 : 0.5
+                                        }}
+                                    >
+                                        <Coins size={14} /> {item.cost}
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* More Packs Coming */}
+                    <div 
+                        className="mt-6 p-4 text-center"
+                        style={{ 
+                            background: 'var(--color-surface)',
+                            border: '3px dashed #8B5CF6'
+                        }}
+                    >
+                        <span className="text-2xl mb-2 block">🚀</span>
+                        <p className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>
+                            Mehr Pakete kommen bald!
+                        </p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                            Void-Pakete, Legendäre Pakete und mehr...
+                        </p>
+                    </div>
                 </div>}
 
                 {/* Currency Section */}

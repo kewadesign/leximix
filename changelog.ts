@@ -12,6 +12,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '3.8.0',
+        date: '2025-11-30',
+        changes: {
+            added: [
+                '⚔️ Kartenschmiede: Neuer Roguelike Deckbuilder Spielmodus',
+                '🃏 188 einzigartige Karten mit 5 Elementen',
+                '👹 70 Gegner (40 Normal, 15 Elite, 15 Bosse)',
+                '🗺️ 250 Floors in 5 thematischen Akten',
+                '☁️ Hybrides Cloud-System: Robustere Datenspeicherung'
+            ],
+            fixed: [
+                '☁️ Cloud Sync: Verbesserte Zuverlässigkeit bei Multi-Device Login',
+                '☁️ Cloud Sync: Konflikt-Handling und Offline-Queue',
+                '💾 Spielstände werden nicht mehr verloren bei Gerätewechsel'
+            ]
+        }
+    },
+    {
         version: '3.4.1',
         date: '2025-11-29',
         changes: {

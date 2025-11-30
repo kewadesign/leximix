@@ -524,12 +524,14 @@ export default function App() {
         setView('HOME'); // Go straight to home
 
         // Background Sync on Startup: Ensure we have the latest cloud data
-        // This fixes issues where local data might be stale or missing
-        import('./utils/firebase').then(async ({ loadFromCloud, normalizeUsername, generateFriendCode }) => {
+        // Uses hybrid system (IONOS + Firebase) for robustness
+        import('./utils/cloudStorage').then(async ({ loadUserData, normalizeUsername }) => {
+          const { generateFriendCode } = await import('./utils/firebase');
           const normalizedUser = normalizeUsername(cloudUser);
           try {
-            const cloudData = await loadFromCloud(normalizedUser);
-            if (cloudData) {
+            const result = await loadUserData(normalizedUser);
+            if (result.success && result.data) {
+              const cloudData = result.data;
               let friendCode = cloudData.friendCode;
               // Generate Friend Code if missing
               if (!friendCode) {
@@ -542,7 +544,8 @@ export default function App() {
                 name: normalizedUser, // Ensure username consistency
                 friendCode: friendCode // Ensure friend code is in state
               }));
-              console.log('[Cloud] Startup sync successful');
+              setLastCloudSync(Date.now());
+              console.log('[Cloud] Startup sync successful from:', result.source);
             } else {
               // If no cloud data but logged in (rare), generate friend code for new user
               // Note: generateFriendCode already saves to Firebase
@@ -563,25 +566,35 @@ export default function App() {
     }
   }, []);
 
-  // Anti-Cheat: Verify premium status with server every 60 seconds
-  // Sync user state to cloud on changes (with debouncing)
+  // Hybrid Cloud Sync: IONOS + Firebase Backup (with debouncing)
   useEffect(() => {
     if (!cloudUsername) return;
 
-    // Debounce: Wait 3 seconds before syncing to avoid too many requests
+    // Debounce: Wait 5 seconds before syncing for better batching
     const syncTimer = setTimeout(async () => {
       try {
-        const { saveToCloud } = await import('./utils/firebase');
-        const success = await saveToCloud(cloudUsername, user);
-        if (success) {
-          console.log('[Sync] User data synced to cloud');
+        const { saveUserData } = await import('./utils/cloudStorage');
+        const result = await saveUserData(cloudUsername, user);
+        if (result.success) {
+          console.log('[Sync] User data synced to cloud (v' + (result.version || '?') + ')');
+          setLastCloudSync(Date.now());
+        } else if (result.error === 'conflict') {
+          console.warn('[Sync] Conflict detected - reloading from server');
+          // Bei Konflikt: Server-Daten laden
+          const { loadUserData } = await import('./utils/cloudStorage');
+          const loadResult = await loadUserData(cloudUsername);
+          if (loadResult.success && loadResult.data) {
+            setUser(prev => ({ ...prev, ...loadResult.data, name: cloudUsername }));
+          }
+        } else if (result.error === 'queued') {
+          console.log('[Sync] Offline - queued for later');
         } else {
-          console.warn('[Sync] Save failed (rate limit or error)');
+          console.warn('[Sync] Save failed:', result.error);
         }
       } catch (e) {
         console.error('[Sync] Failed to sync:', e);
       }
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(syncTimer);
   }, [cloudUsername, user.level, user.coins, user.xp, user.isPremium, JSON.stringify(user.completedLevels), user.language, user.theme, user.name, user.avatarId, user.activeFrame, JSON.stringify(user.ownedAvatars), JSON.stringify(user.claimedSeasonRewards), JSON.stringify(user.claimedPremiumRewards)]);
@@ -590,10 +603,11 @@ export default function App() {
 
     const verifyPremiumStatus = async () => {
       try {
-        const { loadFromCloud } = await import('./utils/firebase');
-        const cloudData = await loadFromCloud(cloudUsername);
+        const { loadUserData } = await import('./utils/cloudStorage');
+        const result = await loadUserData(cloudUsername);
 
-        if (cloudData) {
+        if (result.success && result.data) {
+          const cloudData = result.data;
           // Check if local premium status matches server
           if (user.isPremium !== cloudData.isPremium) {
             console.warn('[Anti-Cheat] Premium status mismatch detected - correcting from server');
@@ -1424,15 +1438,18 @@ export default function App() {
 
   // Cloud Save Handlers
   const handleCloudLogin = async (username: string) => {
-    const { normalizeUsername, loadFromCloud } = await import('./utils/firebase');
+    const { normalizeUsername } = await import('./utils/firebase');
+    const { loadUserData } = await import('./utils/cloudStorage');
     const { getFriendsFromFirebase, generateFriendCode, saveFriendCodeToFirebase } = await import('./utils/multiplayer');
     const normalizedUser = normalizeUsername(username);
 
     setCloudUsername(normalizedUser);
     localStorage.setItem('leximix_cloud_user', normalizedUser);
 
-    // Load from cloud
-    const cloudData = await loadFromCloud(normalizedUser);
+    // Load from hybrid cloud (IONOS + Firebase)
+    const loadResult = await loadUserData(normalizedUser);
+    const cloudData = loadResult.success ? loadResult.data : null;
+    console.log('[Cloud] Loaded from:', loadResult.source || 'none');
 
     if (cloudData) {
       // Load existing data

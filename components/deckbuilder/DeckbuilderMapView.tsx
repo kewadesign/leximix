@@ -1,9 +1,9 @@
 // ============================================
-// KARTENSCHMIEDE - Map View Component
+// KARTENSCHMIEDE - Map View Component (FIXED)
 // ============================================
-// Visualizes the roguelike path with branching nodes
+// Neo-Brutalist roguelike map with proper scrolling
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Coins, Layers, Swords, Skull, ShoppingBag, Coffee, Gift, HelpCircle, Crown } from 'lucide-react';
 import { GameMap, MapNode, MapNodeType } from '../../utils/deckbuilder/types';
@@ -22,16 +22,18 @@ interface DeckbuilderMapViewProps {
   language?: 'EN' | 'DE' | 'ES';
 }
 
-// Node type configuration
+// Node type configuration - Neo-Brutalist colors
 const NODE_CONFIG: Record<MapNodeType, { icon: React.ReactNode; color: string; label: string; labelDE: string }> = {
-  combat: { icon: <Swords className="w-5 h-5" />, color: '#EF4444', label: 'Combat', labelDE: 'Kampf' },
-  elite: { icon: <Skull className="w-5 h-5" />, color: '#F59E0B', label: 'Elite', labelDE: 'Elite' },
-  boss: { icon: <Crown className="w-5 h-5" />, color: '#DC2626', label: 'Boss', labelDE: 'Boss' },
-  shop: { icon: <ShoppingBag className="w-5 h-5" />, color: '#10B981', label: 'Shop', labelDE: 'Shop' },
-  rest: { icon: <Coffee className="w-5 h-5" />, color: '#06B6D4', label: 'Rest', labelDE: 'Rasten' },
-  treasure: { icon: <Gift className="w-5 h-5" />, color: '#FBBF24', label: 'Treasure', labelDE: 'Schatz' },
-  event: { icon: <HelpCircle className="w-5 h-5" />, color: '#8B5CF6', label: 'Event', labelDE: 'Ereignis' },
+  combat: { icon: <Swords className="w-6 h-6" />, color: '#FF006E', label: 'Combat', labelDE: 'Kampf' },
+  elite: { icon: <Skull className="w-6 h-6" />, color: '#FFB800', label: 'Elite', labelDE: 'Elite' },
+  boss: { icon: <Crown className="w-6 h-6" />, color: '#DC2626', label: 'Boss', labelDE: 'Boss' },
+  shop: { icon: <ShoppingBag className="w-6 h-6" />, color: '#06FFA5', label: 'Shop', labelDE: 'Shop' },
+  rest: { icon: <Coffee className="w-6 h-6" />, color: '#00D9FF', label: 'Rest', labelDE: 'Rasten' },
+  treasure: { icon: <Gift className="w-6 h-6" />, color: '#FBBF24', label: 'Treasure', labelDE: 'Schatz' },
+  event: { icon: <HelpCircle className="w-6 h-6" />, color: '#8B5CF6', label: 'Event', labelDE: 'Ereignis' },
 };
+
+const FLOOR_HEIGHT = 100; // px between floors
 
 export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
   map,
@@ -48,34 +50,53 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [availableNodes, setAvailableNodes] = useState<string[]>([]);
   const isDE = language === 'DE';
-
   const act = ACTS[currentAct - 1];
 
-  // Get available nodes
+  // Get available nodes - recalculate on every render for safety
   useEffect(() => {
     const available = getAvailableNodes(map);
-    setAvailableNodes(available.map(n => n.id));
-  }, [map]);
+    const availableIds = available.map(n => n.id);
+    setAvailableNodes(availableIds);
+    console.log('[Map] Current node:', map.currentNodeId);
+    console.log('[Map] Available nodes:', availableIds);
+    console.log('[Map] Total nodes:', map.nodes.length);
+  }, [map, map.currentNodeId]);
 
-  // Auto-scroll to current position
-  useEffect(() => {
-    if (scrollRef.current) {
-      const scrollPosition = Math.max(0, (currentFloor - 5) * 80);
-      scrollRef.current.scrollTop = scrollPosition;
-    }
-  }, [currentFloor]);
-
-  // Group nodes by floor
+  // Group nodes by floor (y value)
   const floorGroups: Map<number, MapNode[]> = new Map();
   map.nodes.forEach(node => {
-    const floor = node.y;
-    if (!floorGroups.has(floor)) {
-      floorGroups.set(floor, []);
+    if (!floorGroups.has(node.y)) {
+      floorGroups.set(node.y, []);
     }
-    floorGroups.get(floor)!.push(node);
+    floorGroups.get(node.y)!.push(node);
   });
 
-  const sortedFloors = Array.from(floorGroups.keys()).sort((a, b) => b - a); // Top to bottom (highest first)
+  // Sort floors ascending (0 at bottom, 49 at top)
+  const sortedFloors = Array.from(floorGroups.keys()).sort((a, b) => a - b);
+  const totalFloors = sortedFloors.length;
+  const mapHeight = totalFloors * FLOOR_HEIGHT + 150;
+
+  // Auto-scroll to bottom (start) on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      // Scroll to bottom to show floor 1
+      setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      }, 100);
+    }
+  }, []);
+
+  // Get visual Y position (inverted: floor 0 at bottom, floor 49 at top)
+  const getVisualY = (floorY: number): number => {
+    return (totalFloors - 1 - floorY) * FLOOR_HEIGHT + 50;
+  };
+
+  const handleNodeClick = (nodeId: string) => {
+    console.log('[Map] Node clicked:', nodeId, 'Available:', availableNodes.includes(nodeId));
+    onNodeSelect(nodeId);
+  };
 
   const renderNode = (node: MapNode) => {
     const config = NODE_CONFIG[node.type];
@@ -84,25 +105,33 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
     const isCurrent = node.id === map.currentNodeId;
 
     return (
-      <motion.button
+      <div
         key={node.id}
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={isAvailable ? { scale: 1.15 } : {}}
-        whileTap={isAvailable ? { scale: 0.95 } : {}}
-        onClick={() => isAvailable && onNodeSelect(node.id)}
-        disabled={!isAvailable}
-        className={`
-          relative w-14 h-14 rounded-lg flex items-center justify-center
-          transition-all duration-200
-          ${isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}
-          ${isCurrent ? 'ring-4 ring-white ring-opacity-80' : ''}
-        `}
+        onClick={() => {
+          if (isAvailable) {
+            handleNodeClick(node.id);
+          }
+        }}
+        className="relative flex items-center justify-center"
         style={{
-          background: isVisited ? '#374151' : isAvailable ? config.color : '#1F2937',
-          border: `3px solid ${isVisited ? '#4B5563' : isAvailable ? '#000' : '#374151'}`,
-          boxShadow: isAvailable ? '4px 4px 0 #000' : 'none',
-          opacity: isVisited ? 0.5 : isAvailable ? 1 : 0.4
+          width: '56px',
+          height: '56px',
+          background: isVisited 
+            ? '#374151' 
+            : isAvailable 
+              ? config.color 
+              : '#1F2937',
+          border: `4px solid ${isVisited ? '#4B5563' : '#000'}`,
+          boxShadow: isAvailable && !isVisited 
+            ? '6px 6px 0 #000' 
+            : isVisited 
+              ? '2px 2px 0 #000' 
+              : 'none',
+          opacity: isVisited ? 0.5 : isAvailable ? 1 : 0.3,
+          cursor: isAvailable ? 'pointer' : 'default',
+          borderRadius: '8px',
+          transition: 'transform 0.2s, box-shadow 0.2s',
+          transform: isCurrent ? 'scale(1.1)' : isAvailable ? 'scale(1)' : 'scale(0.9)',
         }}
       >
         <span className={isVisited ? 'text-gray-500' : 'text-white'}>
@@ -117,193 +146,263 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
           />
         )}
 
-        {/* Node type label */}
-        {isAvailable && (
+        {/* Current indicator */}
+        {isCurrent && (
+          <span className="absolute -inset-1 border-4 border-white rounded-lg animate-pulse" />
+        )}
+        
+        {/* Label for available nodes */}
+        {isAvailable && !isVisited && (
           <span 
-            className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold whitespace-nowrap"
+            className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-black whitespace-nowrap uppercase"
             style={{ color: config.color }}
           >
             {isDE ? config.labelDE : config.label}
           </span>
         )}
-      </motion.button>
+      </div>
     );
   };
 
   const renderConnections = () => {
-    const connections: JSX.Element[] = [];
+    const lines: JSX.Element[] = [];
     
     map.nodes.forEach(node => {
       node.connections.forEach(targetId => {
         const targetNode = map.nodes.find(n => n.id === targetId);
         if (!targetNode) return;
 
-        // Calculate positions
+        // Get x positions (0-1 range converted to percentage)
         const startX = node.x * 100;
-        const startY = node.y * 80;
         const endX = targetNode.x * 100;
-        const endY = targetNode.y * 80;
+        
+        // Get visual y positions
+        const startY = getVisualY(node.y) + 28; // Center of node
+        const endY = getVisualY(targetNode.y) + 28;
 
-        const isActive = availableNodes.includes(targetId) && (node.visited || node.id === map.currentNodeId || !map.currentNodeId);
+        const isActive = availableNodes.includes(targetId) && 
+          (node.visited || node.id === map.currentNodeId || !map.currentNodeId);
 
-        connections.push(
+        lines.push(
           <line
             key={`${node.id}-${targetId}`}
             x1={`${startX}%`}
-            y1={startY + 28}
+            y1={startY}
             x2={`${endX}%`}
-            y2={endY + 28}
+            y2={endY}
             stroke={isActive ? '#8B5CF6' : '#374151'}
-            strokeWidth={isActive ? 3 : 2}
-            strokeDasharray={isActive ? 'none' : '5,5'}
+            strokeWidth={isActive ? 4 : 2}
+            strokeDasharray={isActive ? 'none' : '8,4'}
             style={{
-              filter: isActive ? 'drop-shadow(0 0 6px #8B5CF6)' : 'none'
+              filter: isActive ? 'drop-shadow(0 0 8px #8B5CF6)' : 'none'
             }}
           />
         );
       });
     });
 
-    return connections;
+    return lines;
   };
 
   return (
-    <div 
-      className="min-h-screen flex flex-col"
-      style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
-    >
-      {/* Header */}
+    <div className="min-h-screen flex flex-col bg-gray-900">
+      {/* Header - Neo-Brutalist Style */}
       <div 
         className="sticky top-0 z-20 p-4"
         style={{ 
-          background: 'linear-gradient(180deg, rgba(26,26,46,1) 0%, rgba(26,26,46,0.9) 80%, transparent 100%)',
-          borderBottom: '3px solid #8B5CF6'
+          background: '#1F2937',
+          borderBottom: '4px solid #000',
+          boxShadow: '0 4px 0 #000'
         }}
       >
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={onBack}
-            className="p-2 flex items-center gap-2"
-            style={{ background: '#374151', border: '2px solid #000' }}
+            className="p-2 flex items-center gap-2 font-black uppercase"
+            style={{ 
+              background: '#FF006E', 
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0 #000',
+              color: '#FFF'
+            }}
           >
-            <ArrowLeft className="w-5 h-5 text-white" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
 
-          <div className="text-center">
-            <h2 className="text-lg font-black text-white">
+          <div 
+            className="text-center px-4 py-2"
+            style={{
+              background: '#8B5CF6',
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0 #000'
+            }}
+          >
+            <h2 className="text-lg font-black text-white uppercase">
               {isDE ? act?.nameDE || 'Akt' : act?.name || 'Act'} {currentAct}
             </h2>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs font-bold text-white/80">
               Floor {currentFloor}/50
             </p>
           </div>
 
-          <div className="w-10" /> {/* Spacer for centering */}
+          <div className="w-14" />
         </div>
 
-        {/* Player Stats Bar */}
-        <div className="flex items-center justify-between gap-4">
+        {/* Player Stats Bar - Neo-Brutalist */}
+        <div className="flex items-center justify-between gap-2">
           {/* HP */}
-          <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-red-500" />
-            <div className="flex items-center gap-1">
-              <span className="font-bold text-white">{playerHp}</span>
-              <span className="text-gray-400">/ {playerMaxHp}</span>
-            </div>
+          <div 
+            className="flex items-center gap-2 px-3 py-1"
+            style={{
+              background: '#EF4444',
+              border: '3px solid #000',
+              boxShadow: '3px 3px 0 #000'
+            }}
+          >
+            <Heart className="w-5 h-5 text-white" fill="white" />
+            <span className="font-black text-white">{playerHp}/{playerMaxHp}</span>
           </div>
 
           {/* Gold */}
-          <div className="flex items-center gap-2">
-            <Coins className="w-5 h-5 text-yellow-400" />
-            <span className="font-bold text-yellow-400">{playerGold}</span>
+          <div 
+            className="flex items-center gap-2 px-3 py-1"
+            style={{
+              background: '#FBBF24',
+              border: '3px solid #000',
+              boxShadow: '3px 3px 0 #000'
+            }}
+          >
+            <Coins className="w-5 h-5 text-black" />
+            <span className="font-black text-black">{playerGold}</span>
           </div>
 
           {/* Deck */}
-          <div className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-purple-400" />
-            <span className="font-bold text-white">{deckSize}</span>
-          </div>
-        </div>
-
-        {/* HP Bar */}
-        <div className="mt-2 h-2 bg-gray-700 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${(playerHp / playerMaxHp) * 100}%` }}
-            className="h-full"
-            style={{ 
-              background: playerHp > playerMaxHp * 0.5 
-                ? 'linear-gradient(90deg, #10B981, #34D399)' 
-                : playerHp > playerMaxHp * 0.25 
-                  ? 'linear-gradient(90deg, #F59E0B, #FBBF24)'
-                  : 'linear-gradient(90deg, #EF4444, #F87171)'
+          <div 
+            className="flex items-center gap-2 px-3 py-1"
+            style={{
+              background: '#8B5CF6',
+              border: '3px solid #000',
+              boxShadow: '3px 3px 0 #000'
             }}
-          />
+          >
+            <Layers className="w-5 h-5 text-white" />
+            <span className="font-black text-white">{deckSize}</span>
+          </div>
         </div>
       </div>
 
-      {/* Map Container */}
+      {/* Map Container - Scrollable */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 pb-20"
-        style={{ scrollBehavior: 'smooth' }}
+        className="flex-1 overflow-y-auto overflow-x-hidden"
+        style={{ 
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch'
+        }}
       >
-        <div className="relative max-w-md mx-auto" style={{ minHeight: `${sortedFloors.length * 80 + 100}px` }}>
+        <div 
+          className="relative mx-auto"
+          style={{ 
+            width: '100%',
+            maxWidth: '400px',
+            height: `${mapHeight}px`,
+            padding: '20px'
+          }}
+        >
           {/* SVG for connections */}
           <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ minHeight: `${sortedFloors.length * 80 + 100}px` }}
+            className="absolute inset-0 w-full pointer-events-none"
+            style={{ height: `${mapHeight}px` }}
+            preserveAspectRatio="none"
           >
             {renderConnections()}
           </svg>
 
           {/* Nodes by floor */}
-          {sortedFloors.map(floor => {
-            const nodes = floorGroups.get(floor) || [];
-            const floorIndex = sortedFloors.indexOf(floor);
+          {sortedFloors.map(floorY => {
+            const nodes = floorGroups.get(floorY) || [];
+            const visualY = getVisualY(floorY);
             
             return (
               <div
-                key={floor}
-                className="absolute w-full flex justify-around items-center px-4"
+                key={floorY}
+                className="absolute left-0 right-0 flex justify-around items-center px-8"
                 style={{ 
-                  top: `${floorIndex * 80}px`,
+                  top: `${visualY}px`,
                   height: '56px'
                 }}
               >
                 {/* Floor indicator */}
-                <div className="absolute -left-2 top-1/2 -translate-y-1/2 text-xs text-gray-500 font-mono">
-                  {floor + 1}
+                <div 
+                  className="absolute left-1 top-1/2 -translate-y-1/2 text-xs font-black px-1"
+                  style={{ 
+                    background: '#374151',
+                    color: '#9CA3AF',
+                    border: '1px solid #4B5563'
+                  }}
+                >
+                  {floorY + 1}
                 </div>
 
                 {/* Nodes */}
-                <div className="flex justify-around w-full gap-2">
-                  {nodes.map(node => renderNode(node))}
-                </div>
+                {nodes.map(node => renderNode(node))}
               </div>
             );
           })}
+
+          {/* Start indicator */}
+          <div 
+            className="absolute left-1/2 -translate-x-1/2 font-black text-sm uppercase px-4 py-2"
+            style={{ 
+              bottom: '10px',
+              background: '#06FFA5',
+              color: '#000',
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0 #000'
+            }}
+          >
+            {isDE ? 'START' : 'START'}
+          </div>
+
+          {/* Boss indicator */}
+          <div 
+            className="absolute left-1/2 -translate-x-1/2 font-black text-sm uppercase px-4 py-2"
+            style={{ 
+              top: '10px',
+              background: '#DC2626',
+              color: '#FFF',
+              border: '3px solid #000',
+              boxShadow: '4px 4px 0 #000'
+            }}
+          >
+            {isDE ? 'BOSS' : 'BOSS'}
+          </div>
         </div>
       </div>
 
-      {/* Legend */}
+      {/* Legend - Neo-Brutalist */}
       <div 
-        className="sticky bottom-0 p-3 overflow-x-auto"
+        className="sticky bottom-0 p-3"
         style={{ 
-          background: 'linear-gradient(0deg, rgba(26,26,46,1) 0%, rgba(26,26,46,0.95) 80%, transparent 100%)',
-          borderTop: '2px solid #374151'
+          background: '#1F2937',
+          borderTop: '4px solid #000'
         }}
       >
-        <div className="flex gap-4 justify-center min-w-max">
+        <div className="flex gap-3 justify-center flex-wrap">
           {Object.entries(NODE_CONFIG).map(([type, config]) => (
-            <div key={type} className="flex items-center gap-1.5">
-              <div 
-                className="w-6 h-6 rounded flex items-center justify-center"
-                style={{ background: config.color }}
-              >
-                {React.cloneElement(config.icon as React.ReactElement, { className: 'w-3.5 h-3.5 text-white' })}
-              </div>
-              <span className="text-xs text-gray-400">
+            <div 
+              key={type} 
+              className="flex items-center gap-1.5 px-2 py-1"
+              style={{
+                background: config.color,
+                border: '2px solid #000',
+                boxShadow: '2px 2px 0 #000'
+              }}
+            >
+              {React.cloneElement(config.icon as React.ReactElement, { 
+                className: 'w-4 h-4 text-white' 
+              })}
+              <span className="text-xs font-bold text-white">
                 {isDE ? config.labelDE : config.label}
               </span>
             </div>

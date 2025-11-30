@@ -189,10 +189,23 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
   // ============================================
 
   const handleNodeSelect = (nodeId: string) => {
-    if (!run || isProcessing) return;
+    console.log('[Game] handleNodeSelect called:', nodeId);
+    if (!run) {
+      console.log('[Game] No run active');
+      return;
+    }
+    if (isProcessing) {
+      console.log('[Game] Processing, ignoring click');
+      return;
+    }
 
     const node = run.map.nodes.find(n => n.id === nodeId);
-    if (!node) return;
+    if (!node) {
+      console.log('[Game] Node not found:', nodeId);
+      return;
+    }
+
+    console.log('[Game] Node found:', node.type, 'at floor', node.y);
 
     // Update map
     const updatedMap = visitNode(run.map, nodeId);
