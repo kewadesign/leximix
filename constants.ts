@@ -4,7 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '3.7.1';
+export const APP_VERSION = '3.7.2';
 
 // ============================================================================
 // PROFILE FRAMES
@@ -2003,51 +2003,51 @@ export const SEASON_AVATARS = SEASON_1_AVATARS; // Legacy compatibility
 export const generateSeasonRewards = (season: Season) => {
   // 40 Premium Avatars mit lokalen Dateien
   const PREMIUM_AVATARS = [
-    // Adventurer Style (Level 2-15) - Cartoon Characters
-    { level: 2, name: 'Luna', preview: '/avatars/adventurer-Luna.svg' },
-    { level: 3, name: 'Felix', preview: '/avatars/adventurer-Felix.svg' },
-    { level: 6, name: 'Nova', preview: '/avatars/adventurer-Nova.svg' },
-    { level: 7, name: 'Stella', preview: '/avatars/adventurer-Stella.svg' },
-    { level: 9, name: 'Maya', preview: '/avatars/adventurer-Maya.svg' },
-    { level: 11, name: 'Leo', preview: '/avatars/adventurer-Leo.svg' },
-    { level: 13, name: 'Aria', preview: '/avatars/adventurer-Aria.svg' },
-    { level: 14, name: 'Kai', preview: '/avatars/adventurer-Kai.svg' },
+    // Adventurer Style (Level 2-15) - Cartoon Abenteurer
+    { level: 2, name: 'Abenteurer Luna', preview: '/avatars/adventurer-Luna.svg' },
+    { level: 3, name: 'Wanderer Felix', preview: '/avatars/adventurer-Felix.svg' },
+    { level: 6, name: 'Entdeckerin Nova', preview: '/avatars/adventurer-Nova.svg' },
+    { level: 7, name: 'Reisende Stella', preview: '/avatars/adventurer-Stella.svg' },
+    { level: 9, name: 'Heldin Maya', preview: '/avatars/adventurer-Maya.svg' },
+    { level: 11, name: 'Held Leo', preview: '/avatars/adventurer-Leo.svg' },
+    { level: 13, name: 'Kriegerin Aria', preview: '/avatars/adventurer-Aria.svg' },
+    { level: 14, name: 'Ritter Kai', preview: '/avatars/adventurer-Kai.svg' },
     // Bottts Style - Roboter (Level 17-28)
-    { level: 17, name: 'Robo-X1', preview: '/avatars/bottts-RoboX1.svg' },
-    { level: 18, name: 'Cyber-7', preview: '/avatars/bottts-Cyber7.svg' },
-    { level: 19, name: 'Mecha-9', preview: '/avatars/bottts-Mecha9.svg' },
-    { level: 21, name: 'Droid-K', preview: '/avatars/bottts-DroidK.svg' },
-    { level: 23, name: 'Unit-Z3', preview: '/avatars/bottts-UnitZ3.svg' },
-    { level: 24, name: 'Bot-Prime', preview: '/avatars/bottts-BotPrime.svg' },
-    { level: 26, name: 'Android-X', preview: '/avatars/bottts-AndroidX.svg' },
-    { level: 27, name: 'Synth-One', preview: '/avatars/bottts-SynthOne.svg' },
-    // Pixel Art Style - Retro (Level 29-39)
-    { level: 29, name: 'Pixel Hero', preview: '/avatars/pixel-art-PixelHero.svg' },
-    { level: 31, name: 'Retro Knight', preview: '/avatars/pixel-art-RetroKnight.svg' },
-    { level: 32, name: '8-Bit Mage', preview: '/avatars/pixel-art-8BitMage.svg' },
-    { level: 33, name: 'Arcade King', preview: '/avatars/pixel-art-ArcadeKing.svg' },
+    { level: 17, name: 'Roboter Alpha', preview: '/avatars/bottts-RoboX1.svg' },
+    { level: 18, name: 'Cyborg Beta', preview: '/avatars/bottts-Cyber7.svg' },
+    { level: 19, name: 'Mech Gamma', preview: '/avatars/bottts-Mecha9.svg' },
+    { level: 21, name: 'Droide Delta', preview: '/avatars/bottts-DroidK.svg' },
+    { level: 23, name: 'Android Zeta', preview: '/avatars/bottts-UnitZ3.svg' },
+    { level: 24, name: 'Bot Prime', preview: '/avatars/bottts-BotPrime.svg' },
+    { level: 26, name: 'Maschine X', preview: '/avatars/bottts-AndroidX.svg' },
+    { level: 27, name: 'Synth Omega', preview: '/avatars/bottts-SynthOne.svg' },
+    // Pixel Art Style - Retro Gaming (Level 29-39)
+    { level: 29, name: 'Pixel Held', preview: '/avatars/pixel-art-PixelHero.svg' },
+    { level: 31, name: 'Retro Ritter', preview: '/avatars/pixel-art-RetroKnight.svg' },
+    { level: 32, name: '8-Bit Magier', preview: '/avatars/pixel-art-8BitMage.svg' },
+    { level: 33, name: 'Arcade König', preview: '/avatars/pixel-art-ArcadeKing.svg' },
     { level: 36, name: 'Pixel Ninja', preview: '/avatars/pixel-art-PixelNinja.svg' },
-    { level: 37, name: 'Game Master', preview: '/avatars/pixel-art-GameMaster.svg' },
-    { level: 38, name: 'Bit Crusher', preview: '/avatars/pixel-art-BitCrusher.svg' },
+    { level: 37, name: 'Spielmeister', preview: '/avatars/pixel-art-GameMaster.svg' },
+    { level: 38, name: 'Bit Brecher', preview: '/avatars/pixel-art-BitCrusher.svg' },
     { level: 39, name: 'Retro Star', preview: '/avatars/pixel-art-RetroStar.svg' },
-    // Lorelei Style - Elegant (Level 41-49)
-    { level: 41, name: 'Sage', preview: '/avatars/lorelei-Sage.svg' },
-    { level: 42, name: 'Oracle', preview: '/avatars/lorelei-Oracle.svg' },
-    { level: 43, name: 'Mystic', preview: '/avatars/lorelei-Mystic.svg' },
+    // Lorelei Style - Elegante Portraits (Level 41-49)
+    { level: 41, name: 'Weiser Sage', preview: '/avatars/lorelei-Sage.svg' },
+    { level: 42, name: 'Orakel', preview: '/avatars/lorelei-Oracle.svg' },
+    { level: 43, name: 'Mystiker', preview: '/avatars/lorelei-Mystic.svg' },
     { level: 44, name: 'Seraph', preview: '/avatars/lorelei-Seraph.svg' },
     { level: 46, name: 'Phantom', preview: '/avatars/lorelei-Phantom.svg' },
     { level: 47, name: 'Enigma', preview: '/avatars/lorelei-Enigma.svg' },
     { level: 48, name: 'Aurora', preview: '/avatars/lorelei-Aurora.svg' },
     { level: 49, name: 'Eclipse', preview: '/avatars/lorelei-Eclipse.svg' },
-    // Fun Emoji Style - Lustig (Level 51-59)
-    { level: 51, name: 'Happy Go', preview: '/avatars/fun-emoji-HappyGo.svg' },
-    { level: 52, name: 'Cool Cat', preview: '/avatars/fun-emoji-CoolCat.svg' },
-    { level: 53, name: 'Star Eyes', preview: '/avatars/fun-emoji-StarEyes.svg' },
-    { level: 54, name: 'Party Face', preview: '/avatars/fun-emoji-PartyFace.svg' },
-    { level: 56, name: 'Chill Vibes', preview: '/avatars/fun-emoji-ChillVibes.svg' },
-    { level: 57, name: 'Fire Mode', preview: '/avatars/fun-emoji-FireMode.svg' },
-    { level: 58, name: 'Super Star', preview: '/avatars/fun-emoji-SuperStar.svg' },
-    { level: 59, name: 'Legend', preview: '/avatars/fun-emoji-Legend.svg' },
+    // Fun Emoji Style - Lustige Emojis (Level 51-59)
+    { level: 51, name: 'Fröhlich', preview: '/avatars/fun-emoji-HappyGo.svg' },
+    { level: 52, name: 'Cool Katze', preview: '/avatars/fun-emoji-CoolCat.svg' },
+    { level: 53, name: 'Sternenaugen', preview: '/avatars/fun-emoji-StarEyes.svg' },
+    { level: 54, name: 'Party Emoji', preview: '/avatars/fun-emoji-PartyFace.svg' },
+    { level: 56, name: 'Entspannt', preview: '/avatars/fun-emoji-ChillVibes.svg' },
+    { level: 57, name: 'Feuer Emoji', preview: '/avatars/fun-emoji-FireMode.svg' },
+    { level: 58, name: 'Superstar', preview: '/avatars/fun-emoji-SuperStar.svg' },
+    { level: 59, name: 'Legende', preview: '/avatars/fun-emoji-Legend.svg' },
   ];
 
   // Pre-define all unique rewards for better organization
@@ -2110,29 +2110,29 @@ export const generateSeasonRewards = (season: Season) => {
 
   // More avatars for higher levels (80-100) - Legendary
   const HIGH_LEVEL_AVATARS = [
-    // Micah Style (Level 80-84)
-    { level: 80, name: 'Crimson King', preview: '/avatars/micah-CrimsonKing.svg' },
-    { level: 81, name: 'Azure Dragon', preview: '/avatars/micah-AzureDragon.svg' },
-    { level: 82, name: 'Jade Master', preview: '/avatars/micah-JadeMaster.svg' },
-    { level: 83, name: 'Onyx Shadow', preview: '/avatars/micah-OnyxShadow.svg' },
-    { level: 84, name: 'Violet Storm', preview: '/avatars/micah-VioletStorm.svg' },
-    // Avataaars Style (Level 86-89)
-    { level: 86, name: 'Golden One', preview: '/avatars/avataaars-GoldenOne.svg' },
-    { level: 87, name: 'Silver Wolf', preview: '/avatars/avataaars-SilverWolf.svg' },
-    { level: 88, name: 'Scarlet Fury', preview: '/avatars/avataaars-ScarletFury.svg' },
-    { level: 89, name: 'Titan Force', preview: '/avatars/avataaars-TitanForce.svg' },
-    // Thumbs Style (Level 91-94)
-    { level: 91, name: 'Sphinx Riddle', preview: '/avatars/thumbs-SphinxRiddle.svg' },
-    { level: 92, name: 'Griffin Pride', preview: '/avatars/thumbs-GriffinPride.svg' },
-    { level: 93, name: 'Hydra Beast', preview: '/avatars/thumbs-HydraBeast.svg' },
-    { level: 94, name: 'Wraith Lord', preview: '/avatars/thumbs-WraithLord.svg' },
-    // Notionists Style (Level 95-97)
-    { level: 95, name: 'Specter Soul', preview: '/avatars/notionists-SpecterSoul.svg' },
-    { level: 96, name: 'Phantom Ace', preview: '/avatars/notionists-PhantomAce.svg' },
-    { level: 97, name: 'Shadow King', preview: '/avatars/notionists-ShadowKing.svg' },
-    // Open Peeps Style (Level 98-99)
+    // Micah Style (Level 80-84) - Moderne Charaktere
+    { level: 80, name: 'Purpur König', preview: '/avatars/micah-CrimsonKing.svg' },
+    { level: 81, name: 'Azur Drache', preview: '/avatars/micah-AzureDragon.svg' },
+    { level: 82, name: 'Jade Meister', preview: '/avatars/micah-JadeMaster.svg' },
+    { level: 83, name: 'Onyx Schatten', preview: '/avatars/micah-OnyxShadow.svg' },
+    { level: 84, name: 'Violetter Sturm', preview: '/avatars/micah-VioletStorm.svg' },
+    // Avataaars Style (Level 86-89) - Cartoon Personen
+    { level: 86, name: 'Goldener Held', preview: '/avatars/avataaars-GoldenOne.svg' },
+    { level: 87, name: 'Silber Wolf', preview: '/avatars/avataaars-SilverWolf.svg' },
+    { level: 88, name: 'Scharlach Fury', preview: '/avatars/avataaars-ScarletFury.svg' },
+    { level: 89, name: 'Titan Kraft', preview: '/avatars/avataaars-TitanForce.svg' },
+    // Thumbs Style (Level 91-94) - Daumen-Charaktere
+    { level: 91, name: 'Sphinx', preview: '/avatars/thumbs-SphinxRiddle.svg' },
+    { level: 92, name: 'Greif', preview: '/avatars/thumbs-GriffinPride.svg' },
+    { level: 93, name: 'Hydra', preview: '/avatars/thumbs-HydraBeast.svg' },
+    { level: 94, name: 'Geisterlord', preview: '/avatars/thumbs-WraithLord.svg' },
+    // Notionists Style (Level 95-97) - Abstrakte Kunst
+    { level: 95, name: 'Geisterseele', preview: '/avatars/notionists-SpecterSoul.svg' },
+    { level: 96, name: 'Phantom Ass', preview: '/avatars/notionists-PhantomAce.svg' },
+    { level: 97, name: 'Schattenkönig', preview: '/avatars/notionists-ShadowKing.svg' },
+    // Open Peeps Style (Level 98-99) - Illustration Menschen
     { level: 98, name: 'Apex Elite', preview: '/avatars/open-peeps-ApexElite.svg' },
-    { level: 99, name: 'Prime Legend', preview: '/avatars/open-peeps-PrimeLegend.svg' },
+    { level: 99, name: 'Ultimative Legende', preview: '/avatars/open-peeps-PrimeLegend.svg' },
   ];
 
   return Array.from({ length: 100 }, (_, i) => {
