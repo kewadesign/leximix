@@ -404,6 +404,7 @@ export const TRANSLATIONS = {
       CHECKERS: { title: "CHECKERS", desc: "Classic Board Game" },
       NINE_MENS_MORRIS: { title: "NINE MEN'S MORRIS", desc: "Strategy Mill Game" },
       RUMMY: { title: "RUMMY", desc: "Classic Card Game" },
+      DECKBUILDER: { title: "CARD FORGE", desc: "Roguelike Deckbuilder" },
       LOCKED: { title: "LOCKED", desc: "Coming Soon" }
     },
     MAU_MAU: {
@@ -670,6 +671,7 @@ export const TRANSLATIONS = {
       CHECKERS: { title: "DAME", desc: "Klassisches Brettspiel" },
       NINE_MENS_MORRIS: { title: "MÜHLE", desc: "Strategie-Brettspiel" },
       RUMMY: { title: "ROMMÉ", desc: "Klassisches Kartenspiel" },
+      DECKBUILDER: { title: "KARTENSCHMIEDE", desc: "Roguelike Deckbuilder" },
       LOCKED: { title: "BALD", desc: "Demnächst" }
     },
     MAU_MAU: {
@@ -935,6 +937,7 @@ export const TRANSLATIONS = {
       CHECKERS: { title: "DAMAS", desc: "Juego de Mesa Clásico" },
       NINE_MENS_MORRIS: { title: "MOLINO", desc: "Juego de Estrategia" },
       RUMMY: { title: "RUMMY", desc: "Juego de Cartas Clásico" },
+      DECKBUILDER: { title: "FORJA DE CARTAS", desc: "Roguelike Deckbuilder" },
       LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
     },
     MAU_MAU: {

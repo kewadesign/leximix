@@ -12,7 +12,8 @@ export enum GameMode {
   CHESS = 'CHESS',
   CHECKERS = 'CHECKERS',
   NINE_MENS_MORRIS = 'NINE_MENS_MORRIS',
-  RUMMY = 'RUMMY'
+  RUMMY = 'RUMMY',
+  DECKBUILDER = 'DECKBUILDER'
 }
 
 export enum Tier {

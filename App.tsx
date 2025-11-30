@@ -22,6 +22,7 @@ import { ProfileEditor } from './components/ProfileEditor';
 import { StickerAlbumView } from './components/StickerAlbumView';
 
 import SkatMauMauGame from './components/SkatMauMauGame';
+import { DeckbuilderGame } from './components/DeckbuilderGame';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { FriendsManager } from './components/FriendsManager';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
@@ -33,7 +34,7 @@ import { audio } from './utils/audio';
 import catDanceGif from './assets/cat-dance.gif';
 
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu, Circle, Target, Layers, Hash } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu, Circle, Target, Layers, Hash, Sword } from 'lucide-react';
 
 // React Icons for brutal design
 import { IoGlobeSharp, IoPersonSharp, IoSettingsSharp } from 'react-icons/io5';
@@ -220,7 +221,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS' | 'NINE_MENS_MORRIS' | 'RUMMY';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS' | 'NINE_MENS_MORRIS' | 'RUMMY' | 'DECKBUILDER';
 
 const FALLBACK_SEASON_CONFIG = {
   "activeSeasonId": 1,
@@ -1247,6 +1248,12 @@ export default function App() {
       return;
     }
 
+    // Deckbuilder - Goes directly to game (has its own intro)
+    if (mode === GameMode.DECKBUILDER) {
+      setView('DECKBUILDER');
+      return;
+    }
+
     setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 }); // Default
     setTutorialMode(mode);
     setView('TUTORIAL');
@@ -2120,6 +2127,7 @@ export default function App() {
     [GameMode.CHECKERS]: { bg: '#DC2626', accent: '#000' },     // Rot für Dame
     [GameMode.NINE_MENS_MORRIS]: { bg: '#D97706', accent: '#000' }, // Amber für Mühle
     [GameMode.RUMMY]: { bg: '#059669', accent: '#000' },        // Smaragd für Rommé
+    [GameMode.DECKBUILDER]: { bg: '#8B5CF6', accent: '#000' },  // Lila für Deckbuilder
   };
 
   const GameCard = ({ mode, title, desc, icon: Icon, locked = false, comingSoon = false }: any) => {
@@ -2781,6 +2789,7 @@ export default function App() {
         <GameCard mode={GameMode.CHECKERS} title={t.MODES.CHECKERS.title} desc={t.MODES.CHECKERS.desc} icon={Circle} />
         <GameCard mode={GameMode.NINE_MENS_MORRIS} title={t.MODES.NINE_MENS_MORRIS.title} desc={t.MODES.NINE_MENS_MORRIS.desc} icon={Target} />
         <GameCard mode={GameMode.RUMMY} title={t.MODES.RUMMY.title} desc={t.MODES.RUMMY.desc} icon={Layers} />
+        <GameCard mode={GameMode.DECKBUILDER} title={t.MODES.DECKBUILDER.title} desc={t.MODES.DECKBUILDER.desc} icon={Sword} />
       </div>
 
       {/* Footer */}
@@ -3606,6 +3615,22 @@ export default function App() {
           }}
           levelId={gameConfig?.levelId || 1}
           onThemeToggle={toggleTheme}
+        />
+      )}
+      {view === 'DECKBUILDER' && (
+        <DeckbuilderGame
+          onBack={() => setView('HOME')}
+          onGameEnd={(coins, xp) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+            setView('HOME');
+            audio.playWin();
+          }}
+          language={user.language}
         />
       )}
       {/* Navigation Icons */}
