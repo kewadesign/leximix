@@ -4,7 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '3.7.2';
+export const APP_VERSION = '3.8.0';
 
 // ============================================================================
 // PROFILE FRAMES
@@ -2256,47 +2256,218 @@ export const SEASON_REWARDS: SeasonReward[] = generateSeasonRewards(getCurrentSe
 
 // Shop Items
 export const SHOP_ITEMS: ShopItem[] = [
-  // Currency Packs (Real Money)
+  // ============================================================================
+  // 💰 MÜNZPAKETE (Echtgeld)
+  // ============================================================================
+  {
+    id: 'coins_starter',
+    type: 'currency',
+    name: 'Starter Paket',
+    cost: '1,99€',
+    value: 150,
+    currencyAmount: 150,
+    isRealMoney: true,
+    rarity: 'common',
+    paypalLink: 'https://www.paypal.com/ncp/payment/5FZ6BJ9G8LGML'
+  },
   {
     id: 'coins_small',
     type: 'currency',
-    name: 'Pocket Change',
+    name: 'Kleiner Schatz',
     cost: '4,99€',
     value: 500,
     currencyAmount: 500,
     isRealMoney: true,
+    rarity: 'common',
     paypalLink: 'https://www.paypal.com/ncp/payment/5FZ6BJ9G8LGML'
   },
   {
     id: 'coins_med',
     type: 'currency',
-    name: 'Mercenary Stash',
+    name: 'Gold Truhe',
     cost: '9,99€',
     value: 1500,
     currencyAmount: 1500,
     isRealMoney: true,
+    rarity: 'rare',
     paypalLink: 'https://www.paypal.com/ncp/payment/JRPDA9NBVAV48'
   },
   {
     id: 'coins_large',
     type: 'currency',
-    name: 'Corporate Fund',
+    name: 'Diamant Hort',
     cost: '24,99€',
     value: 6000,
     currencyAmount: 6000,
     isRealMoney: true,
+    rarity: 'epic',
+    paypalLink: 'https://www.paypal.com/ncp/payment/V9GJ535LYLFKU'
+  },
+  {
+    id: 'coins_mega',
+    type: 'currency',
+    name: 'Legendärer Schatz',
+    cost: '49,99€',
+    value: 15000,
+    currencyAmount: 15000,
+    isRealMoney: true,
+    rarity: 'legendary',
     paypalLink: 'https://www.paypal.com/ncp/payment/V9GJ535LYLFKU'
   },
 
-  // Avatars (Costs Coins)
-  { id: 'shop_avatar_1', type: 'avatar', name: 'Cyber Demon', cost: 500, value: 'CyberDemon' },
-  { id: 'shop_avatar_2', type: 'avatar', name: 'Holo Girl', cost: 800, value: 'HoloGirl' },
-  { id: 'shop_avatar_3', type: 'avatar', name: 'Mecha King', cost: 1200, value: 'MechaKing' },
-  { id: 'shop_avatar_4', type: 'avatar', name: 'Void Stalker', cost: 2000, value: 'VoidStalker' },
-  { id: 'shop_avatar_5', type: 'avatar', name: 'Neon Samurai', cost: 3000, value: 'NeonSamurai' },
-  { id: 'shop_avatar_6', type: 'avatar', name: 'Quantum Ghost', cost: 5000, value: 'QuantumGhost' },
-  { id: 'shop_avatar_7', type: 'avatar', name: 'Plasma Knight', cost: 7500, value: 'PlasmaKnight' },
-  { id: 'shop_avatar_8', type: 'avatar', name: 'Nano Swarm', cost: 10000, value: 'NanoSwarm' },
+  // ============================================================================
+  // 👤 AVATARE (Münzen) - Mit lokalen SVGs
+  // ============================================================================
+  // Günstige Avatare (100-500 Münzen)
+  { id: 'shop_avatar_space', type: 'avatar', name: 'Weltraum Forscher', cost: 200, value: '/avatars/space_explorer.png', rarity: 'common', preview: '/avatars/space_explorer.png' },
+  { id: 'shop_avatar_cyber', type: 'avatar', name: 'Cyber Krieger', cost: 300, value: '/avatars/cyberpunk_warrior.png', rarity: 'common', preview: '/avatars/cyberpunk_warrior.png' },
+  { id: 'shop_avatar_wizard', type: 'avatar', name: 'Fantasie Magier', cost: 400, value: '/avatars/fantasy_wizard.png', rarity: 'common', preview: '/avatars/fantasy_wizard.png' },
+  
+  // Mittlere Avatare (500-1500 Münzen)
+  { id: 'shop_avatar_ninja', type: 'avatar', name: 'Schatten Ninja', cost: 600, value: 'ShadowNinja', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=ShadowNinja' },
+  { id: 'shop_avatar_viking', type: 'avatar', name: 'Wikinger Held', cost: 800, value: 'VikingHero', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=VikingHero' },
+  { id: 'shop_avatar_pirate', type: 'avatar', name: 'Piraten Kapitän', cost: 1000, value: 'PirateCaptain', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=PirateCaptain' },
+  { id: 'shop_avatar_samurai', type: 'avatar', name: 'Samurai Meister', cost: 1200, value: 'SamuraiMaster', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/lorelei/svg?seed=SamuraiMaster' },
+  
+  // Teure Avatare (2000-5000 Münzen)
+  { id: 'shop_avatar_dragon', type: 'avatar', name: 'Drachen Reiter', cost: 2000, value: 'DragonRider', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/bottts/svg?seed=DragonRider' },
+  { id: 'shop_avatar_phoenix', type: 'avatar', name: 'Phönix Wächter', cost: 2500, value: 'PhoenixGuard', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/bottts/svg?seed=PhoenixGuard' },
+  { id: 'shop_avatar_titan', type: 'avatar', name: 'Titan Krieger', cost: 3000, value: 'TitanWarrior', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/micah/svg?seed=TitanWarrior' },
+  { id: 'shop_avatar_void', type: 'avatar', name: 'Void Jäger', cost: 4000, value: 'VoidHunter', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/micah/svg?seed=VoidHunter' },
+  
+  // Legendäre Avatare (5000+ Münzen)
+  { id: 'shop_avatar_cosmic', type: 'avatar', name: 'Kosmischer Kaiser', cost: 5000, value: 'CosmicEmperor', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/avataaars/svg?seed=CosmicEmperor' },
+  { id: 'shop_avatar_eternal', type: 'avatar', name: 'Ewiger Champion', cost: 7500, value: 'EternalChampion', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/avataaars/svg?seed=EternalChampion' },
+  { id: 'shop_avatar_supreme', type: 'avatar', name: 'Höchster Meister', cost: 10000, value: 'SupremeMaster', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=SupremeMaster' },
+
+  // ============================================================================
+  // 🖼️ RAHMEN (Münzen)
+  // ============================================================================
+  { id: 'shop_frame_silver', type: 'frame', name: 'Silber Rahmen', cost: 300, value: 'frame_silver', rarity: 'common' },
+  { id: 'shop_frame_bronze', type: 'frame', name: 'Bronze Rahmen', cost: 400, value: 'frame_bronze', rarity: 'common' },
+  { id: 'shop_frame_gold', type: 'frame', name: 'Gold Rahmen', cost: 800, value: 'frame_gold', rarity: 'rare' },
+  { id: 'shop_frame_diamond', type: 'frame', name: 'Diamant Rahmen', cost: 1500, value: 'frame_diamond', rarity: 'rare' },
+  { id: 'shop_frame_neon_blue', type: 'frame', name: 'Neon Blau', cost: 2000, value: 'frame_neon_blue', rarity: 'epic' },
+  { id: 'shop_frame_neon_pink', type: 'frame', name: 'Neon Pink', cost: 2000, value: 'frame_neon_pink', rarity: 'epic' },
+  { id: 'shop_frame_fire', type: 'frame', name: 'Feuer Rahmen', cost: 3000, value: 'frame_fire', rarity: 'epic' },
+  { id: 'shop_frame_ice', type: 'frame', name: 'Eis Rahmen', cost: 3000, value: 'frame_ice', rarity: 'epic' },
+  { id: 'shop_frame_rainbow', type: 'frame', name: 'Regenbogen', cost: 5000, value: 'frame_rainbow', rarity: 'legendary' },
+  { id: 'shop_frame_galaxy', type: 'frame', name: 'Galaxie Rahmen', cost: 7500, value: 'frame_galaxy', rarity: 'legendary' },
+  { id: 'shop_frame_dragon', type: 'frame', name: 'Drachen Rahmen', cost: 10000, value: 'frame_dragon', rarity: 'legendary' },
+
+  // ============================================================================
+  // ✨ EFFEKTE (Münzen)
+  // ============================================================================
+  { id: 'shop_effect_sparkle', type: 'effect', name: 'Funkel Effekt', cost: 400, value: 'effect_sparkle', rarity: 'common' },
+  { id: 'shop_effect_hearts', type: 'effect', name: 'Herzen', cost: 500, value: 'effect_hearts', rarity: 'common' },
+  { id: 'shop_effect_stars', type: 'effect', name: 'Sterne', cost: 600, value: 'effect_stars', rarity: 'common' },
+  { id: 'shop_effect_fire', type: 'effect', name: 'Feuer Aura', cost: 1200, value: 'effect_fire', rarity: 'rare' },
+  { id: 'shop_effect_ice', type: 'effect', name: 'Eis Kristalle', cost: 1200, value: 'effect_ice', rarity: 'rare' },
+  { id: 'shop_effect_electric', type: 'effect', name: 'Blitz Energie', cost: 1500, value: 'effect_electric', rarity: 'rare' },
+  { id: 'shop_effect_neon', type: 'effect', name: 'Neon Glow', cost: 2000, value: 'effect_neon', rarity: 'epic' },
+  { id: 'shop_effect_gold', type: 'effect', name: 'Gold Glitzer', cost: 2500, value: 'effect_gold', rarity: 'epic' },
+  { id: 'shop_effect_matrix', type: 'effect', name: 'Matrix Code', cost: 3000, value: 'effect_matrix', rarity: 'epic' },
+  { id: 'shop_effect_sakura', type: 'effect', name: 'Kirschblüten', cost: 3500, value: 'effect_sakura', rarity: 'epic' },
+  { id: 'shop_effect_rainbow', type: 'effect', name: 'Regenbogen Aura', cost: 5000, value: 'effect_rainbow', rarity: 'legendary' },
+  { id: 'shop_effect_cosmic', type: 'effect', name: 'Kosmische Energie', cost: 7500, value: 'effect_cosmic', rarity: 'legendary' },
+  { id: 'shop_effect_supernova', type: 'effect', name: 'Supernova', cost: 10000, value: 'effect_supernova', rarity: 'legendary' },
+
+  // ============================================================================
+  // 👑 TITEL (Münzen)
+  // ============================================================================
+  { id: 'shop_title_rookie', type: 'title', name: 'Neuling', cost: 100, value: 'title_rookie', rarity: 'common' },
+  { id: 'shop_title_player', type: 'title', name: 'Spieler', cost: 200, value: 'title_player', rarity: 'common' },
+  { id: 'shop_title_gamer', type: 'title', name: 'Gamer', cost: 300, value: 'title_gamer', rarity: 'common' },
+  { id: 'shop_title_pro', type: 'title', name: 'Profi', cost: 500, value: 'title_pro', rarity: 'rare' },
+  { id: 'shop_title_expert', type: 'title', name: 'Experte', cost: 800, value: 'title_expert', rarity: 'rare' },
+  { id: 'shop_title_master', type: 'title', name: 'Meister', cost: 1500, value: 'title_master', rarity: 'rare' },
+  { id: 'shop_title_champion', type: 'title', name: 'Champion', cost: 2500, value: 'title_champion', rarity: 'epic' },
+  { id: 'shop_title_legend', type: 'title', name: 'Legende', cost: 4000, value: 'title_legend', rarity: 'epic' },
+  { id: 'shop_title_hero', type: 'title', name: 'Held', cost: 5000, value: 'title_hero', rarity: 'epic' },
+  { id: 'shop_title_king', type: 'title', name: 'König', cost: 7500, value: 'title_king', rarity: 'legendary' },
+  { id: 'shop_title_emperor', type: 'title', name: 'Kaiser', cost: 10000, value: 'title_emperor', rarity: 'legendary' },
+  { id: 'shop_title_god', type: 'title', name: 'Gott', cost: 15000, value: 'title_god', rarity: 'legendary' },
+
+  // ============================================================================
+  // 🃏 KARTENRÜCKSEITEN (Münzen)
+  // ============================================================================
+  { id: 'shop_card_classic', type: 'cardback', name: 'Klassisch Rot', cost: 200, value: 'cardback_classic', rarity: 'common' },
+  { id: 'shop_card_blue', type: 'cardback', name: 'Ozean Blau', cost: 300, value: 'cardback_blue', rarity: 'common' },
+  { id: 'shop_card_green', type: 'cardback', name: 'Wald Grün', cost: 300, value: 'cardback_green', rarity: 'common' },
+  { id: 'shop_card_purple', type: 'cardback', name: 'Royal Lila', cost: 500, value: 'cardback_purple', rarity: 'rare' },
+  { id: 'shop_card_gold', type: 'cardback', name: 'Gold Edition', cost: 1000, value: 'cardback_gold', rarity: 'rare' },
+  { id: 'shop_card_diamond', type: 'cardback', name: 'Diamant', cost: 1500, value: 'cardback_diamond', rarity: 'rare' },
+  { id: 'shop_card_neon', type: 'cardback', name: 'Neon Cyber', cost: 2000, value: 'cardback_neon', rarity: 'epic' },
+  { id: 'shop_card_fire', type: 'cardback', name: 'Flammen', cost: 2500, value: 'cardback_fire', rarity: 'epic' },
+  { id: 'shop_card_ice', type: 'cardback', name: 'Frost', cost: 2500, value: 'cardback_ice', rarity: 'epic' },
+  { id: 'shop_card_galaxy', type: 'cardback', name: 'Galaxie', cost: 4000, value: 'cardback_galaxy', rarity: 'epic' },
+  { id: 'shop_card_rainbow', type: 'cardback', name: 'Regenbogen', cost: 6000, value: 'cardback_rainbow', rarity: 'legendary' },
+  { id: 'shop_card_dragon', type: 'cardback', name: 'Drachen', cost: 8000, value: 'cardback_dragon', rarity: 'legendary' },
+  { id: 'shop_card_holographic', type: 'cardback', name: 'Holografisch', cost: 12000, value: 'cardback_holo', rarity: 'legendary' },
+
+  // ============================================================================
+  // 🔤 SCHRIFTARTEN (Münzen)
+  // ============================================================================
+  { id: 'shop_font_bold', type: 'font', name: 'Fett', cost: 300, value: 'font_bold', rarity: 'common', preview: "'Arial Black', sans-serif" },
+  { id: 'shop_font_italic', type: 'font', name: 'Kursiv', cost: 300, value: 'font_italic', rarity: 'common', preview: "'Georgia', serif" },
+  { id: 'shop_font_pixel', type: 'font', name: 'Pixel', cost: 600, value: 'font_pixel', rarity: 'rare', preview: "'Press Start 2P', cursive" },
+  { id: 'shop_font_script', type: 'font', name: 'Schreibschrift', cost: 800, value: 'font_script', rarity: 'rare', preview: "'Dancing Script', cursive" },
+  { id: 'shop_font_mono', type: 'font', name: 'Hacker', cost: 1000, value: 'font_mono', rarity: 'rare', preview: "'JetBrains Mono', monospace" },
+  { id: 'shop_font_gothic', type: 'font', name: 'Gotisch', cost: 1500, value: 'font_gothic', rarity: 'epic', preview: "'UnifrakturMaguntia', cursive" },
+  { id: 'shop_font_neon', type: 'font', name: 'Neon', cost: 2000, value: 'font_neon', rarity: 'epic', preview: "'Monoton', cursive" },
+  { id: 'shop_font_royal', type: 'font', name: 'Royal', cost: 3000, value: 'font_royal', rarity: 'epic', preview: "'Cinzel', serif" },
+  { id: 'shop_font_graffiti', type: 'font', name: 'Graffiti', cost: 4000, value: 'font_graffiti', rarity: 'legendary', preview: "'Permanent Marker', cursive" },
+  { id: 'shop_font_matrix', type: 'font', name: 'Matrix', cost: 5000, value: 'font_matrix', rarity: 'legendary', preview: "'Share Tech Mono', monospace" },
+
+  // ============================================================================
+  // ⚡ BOOSTER & POWER-UPS (Münzen)
+  // ============================================================================
+  { id: 'shop_booster_xp_small', type: 'booster', name: 'XP Boost (1h)', cost: 100, value: 'xp_boost_1h', rarity: 'common' },
+  { id: 'shop_booster_xp_med', type: 'booster', name: 'XP Boost (6h)', cost: 400, value: 'xp_boost_6h', rarity: 'rare' },
+  { id: 'shop_booster_xp_large', type: 'booster', name: 'XP Boost (24h)', cost: 1000, value: 'xp_boost_24h', rarity: 'epic' },
+  { id: 'shop_booster_coin_small', type: 'booster', name: 'Münz Boost (1h)', cost: 150, value: 'coin_boost_1h', rarity: 'common' },
+  { id: 'shop_booster_coin_med', type: 'booster', name: 'Münz Boost (6h)', cost: 500, value: 'coin_boost_6h', rarity: 'rare' },
+  { id: 'shop_booster_coin_large', type: 'booster', name: 'Münz Boost (24h)', cost: 1200, value: 'coin_boost_24h', rarity: 'epic' },
+  { id: 'shop_hint_pack_small', type: 'booster', name: '5 Hinweise', cost: 200, value: 'hints_5', rarity: 'common' },
+  { id: 'shop_hint_pack_med', type: 'booster', name: '15 Hinweise', cost: 500, value: 'hints_15', rarity: 'rare' },
+  { id: 'shop_hint_pack_large', type: 'booster', name: '50 Hinweise', cost: 1500, value: 'hints_50', rarity: 'epic' },
+  { id: 'shop_skip_level', type: 'booster', name: 'Level Überspringen', cost: 300, value: 'skip_level', rarity: 'rare' },
+  { id: 'shop_extra_lives', type: 'booster', name: '3 Extra Leben', cost: 400, value: 'extra_lives_3', rarity: 'rare' },
+  { id: 'shop_time_freeze', type: 'booster', name: 'Zeit Stopp (30s)', cost: 250, value: 'time_freeze', rarity: 'rare' },
+
+  // ============================================================================
+  // 🎁 BUNDLES (Echtgeld - Spezialangebote)
+  // ============================================================================
+  {
+    id: 'bundle_starter',
+    type: 'bundle',
+    name: 'Starter Bundle',
+    cost: '2,99€',
+    value: 'bundle_starter',
+    isRealMoney: true,
+    rarity: 'rare',
+    paypalLink: 'https://www.paypal.com/ncp/payment/5FZ6BJ9G8LGML'
+  },
+  {
+    id: 'bundle_premium',
+    type: 'bundle',
+    name: 'Premium Bundle',
+    cost: '9,99€',
+    value: 'bundle_premium',
+    isRealMoney: true,
+    rarity: 'epic',
+    paypalLink: 'https://www.paypal.com/ncp/payment/JRPDA9NBVAV48'
+  },
+  {
+    id: 'bundle_ultimate',
+    type: 'bundle',
+    name: 'Ultimate Bundle',
+    cost: '19,99€',
+    value: 'bundle_ultimate',
+    isRealMoney: true,
+    rarity: 'legendary',
+    paypalLink: 'https://www.paypal.com/ncp/payment/V9GJ535LYLFKU'
+  },
 ];
 
 // Premium Pass Plans (PayPal Subscriptions)
