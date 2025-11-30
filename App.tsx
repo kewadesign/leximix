@@ -458,10 +458,9 @@ export default function App() {
               console.log(`[Season] Loaded Dynamic Season: ${activeSeasonData.name} (ID: ${activeId})`);
               setCurrentSeason(activeSeasonData);
 
-              // Update Rewards
-              if (activeSeasonData.rewards) {
-                setDynamicRewards(activeSeasonData.rewards);
-              }
+              // Use generated rewards instead of JSON rewards (they have local avatars)
+              // The SEASON_REWARDS from constants.ts are always used
+              console.log('[Season] Using generated rewards with local avatars');
 
               // Apply Colors
               const root = document.documentElement;
