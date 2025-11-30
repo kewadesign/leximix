@@ -53,6 +53,79 @@ import { DeckbuilderCombatView } from './deckbuilder/DeckbuilderCombatView';
 import { PlayerStatus } from './deckbuilder/PlayerStatus';
 import { RewardScreen } from './deckbuilder/RewardScreen';
 
+// Audio
+import { audio } from '../utils/audio';
+
+// Shop Item Types
+interface ShopItem {
+  id: string;
+  type: 'card' | 'potion' | 'remove' | 'upgrade';
+  card?: DeckbuilderCard;
+  name: string;
+  description: string;
+  cost: number;
+  icon: React.ReactNode;
+}
+
+// Generate shop items based on floor
+const generateShopItems = (floor: number, element: CardElement): ShopItem[] => {
+  const items: ShopItem[] = [];
+  const baseCost = 50 + Math.floor(floor / 10) * 10;
+  
+  // 3 Random Cards for sale
+  const availableCards = ALL_CARDS.filter(c => 
+    c.element === element || c.element === 'colorless' || Math.random() < 0.3
+  );
+  
+  for (let i = 0; i < 3; i++) {
+    const card = availableCards[Math.floor(Math.random() * availableCards.length)];
+    if (card) {
+      const rarityMultiplier = card.rarity === 'common' ? 1 : card.rarity === 'uncommon' ? 1.5 : card.rarity === 'rare' ? 2.5 : 4;
+      items.push({
+        id: `card-${i}-${card.id}`,
+        type: 'card',
+        card: { ...card },
+        name: card.name,
+        description: card.description,
+        cost: Math.floor(baseCost * rarityMultiplier),
+        icon: <Swords className="w-5 h-5" />
+      });
+    }
+  }
+  
+  // Health Potion
+  items.push({
+    id: 'potion-heal',
+    type: 'potion',
+    name: 'Heiltrank',
+    description: 'Heilt 30% deiner max. HP',
+    cost: baseCost,
+    icon: <Heart className="w-5 h-5" />
+  });
+  
+  // Max HP Upgrade
+  items.push({
+    id: 'potion-maxhp',
+    type: 'potion',
+    name: 'Lebensessenz',
+    description: '+10 Max HP permanent',
+    cost: Math.floor(baseCost * 1.5),
+    icon: <Heart className="w-5 h-5" />
+  });
+  
+  // Remove Card
+  items.push({
+    id: 'remove-card',
+    type: 'remove',
+    name: 'Karte entfernen',
+    description: 'Entferne eine Karte aus deinem Deck',
+    cost: Math.floor(baseCost * 0.75),
+    icon: <Package className="w-5 h-5" />
+  });
+  
+  return items;
+};
+
 // ============================================
 // TYPES
 // ============================================
@@ -130,6 +203,11 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
   const [selectedElement, setSelectedElement] = useState<CardElement>('fire');
   const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState('');
+  
+  // Shop State
+  const [shopItems, setShopItems] = useState<ShopItem[]>([]);
+  const [showRemoveCardModal, setShowRemoveCardModal] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   // Stats for scoring
   const [runStats, setRunStats] = useState({
@@ -226,6 +304,9 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
         handleRest();
         break;
       case 'shop':
+        audio.playOpen();
+        const items = generateShopItems(run.currentFloor, selectedElement);
+        setShopItems(items);
         setView('shop');
         break;
       case 'treasure':
@@ -841,31 +922,285 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
         />
       )}
 
-      {view === 'shop' && (
+      {view === 'shop' && run && (
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="min-h-screen flex flex-col items-center justify-center p-4"
+          className="min-h-screen flex flex-col p-4"
           style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
         >
-          <div className="text-center">
-            <ShoppingBag className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-black text-white mb-4">
-              {isDE ? 'Shop' : 'Shop'}
-            </h2>
-            <p className="text-gray-400 mb-6">{isDE ? 'Bald verfügbar!' : 'Coming soon!'}</p>
+          {/* Shop Header */}
+          <div 
+            className="text-center mb-6 p-4"
+            style={{
+              background: '#FBBF24',
+              border: '4px solid #000',
+              boxShadow: '6px 6px 0 #000'
+            }}
+          >
+            <div className="flex items-center justify-center gap-3">
+              <ShoppingBag className="w-8 h-8 text-black" />
+              <h2 className="text-2xl font-black text-black uppercase">
+                {isDE ? 'Händler' : 'Merchant'}
+              </h2>
+            </div>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <Coins className="w-5 h-5 text-black" />
+              <span className="font-black text-black text-xl">{run.player.gold}</span>
+              <span className="text-black/70 font-bold">Gold</span>
+            </div>
+          </div>
+
+          {/* Shop Items Grid */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+              {shopItems.map((item, idx) => {
+                const canAfford = run.player.gold >= item.cost;
+                const isHovered = hoveredItem === item.id;
+                const rarityColor = item.card?.rarity === 'rare' ? '#FFD700' : 
+                                   item.card?.rarity === 'uncommon' ? '#8B5CF6' : 
+                                   item.type === 'potion' ? '#EF4444' : '#06FFA5';
+                
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    onMouseEnter={() => {
+                      setHoveredItem(item.id);
+                      audio.playHover();
+                    }}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    onClick={() => {
+                      if (!canAfford) {
+                        audio.playError();
+                        setMessage(isDE ? 'Nicht genug Gold!' : 'Not enough gold!');
+                        return;
+                      }
+                      
+                      if (item.type === 'remove') {
+                        audio.playClick();
+                        setShowRemoveCardModal(true);
+                        return;
+                      }
+                      
+                      audio.playPurchase();
+                      
+                      // Process purchase
+                      setRun(prev => {
+                        if (!prev) return prev;
+                        let newRun = { ...prev };
+                        newRun.player = { ...newRun.player, gold: newRun.player.gold - item.cost };
+                        
+                        if (item.type === 'card' && item.card) {
+                          newRun.deck = [...newRun.deck, { ...item.card, id: `${item.card.id}-${Date.now()}` }];
+                          setMessage(isDE ? `${item.card.name} gekauft!` : `Bought ${item.card.name}!`);
+                        } else if (item.type === 'potion') {
+                          if (item.id === 'potion-heal') {
+                            const healAmount = Math.floor(newRun.player.maxHp * 0.3);
+                            newRun.player.hp = Math.min(newRun.player.maxHp, newRun.player.hp + healAmount);
+                            setMessage(isDE ? `+${healAmount} HP geheilt!` : `Healed +${healAmount} HP!`);
+                          } else if (item.id === 'potion-maxhp') {
+                            newRun.player.maxHp += 10;
+                            newRun.player.hp += 10;
+                            setMessage(isDE ? '+10 Max HP!' : '+10 Max HP!');
+                          }
+                        }
+                        
+                        return newRun;
+                      });
+                      
+                      // Remove purchased item
+                      setShopItems(prev => prev.filter(i => i.id !== item.id));
+                    }}
+                    className="p-4 cursor-pointer transition-all duration-200"
+                    style={{
+                      background: canAfford ? '#1F2937' : '#111827',
+                      border: `4px solid ${isHovered && canAfford ? rarityColor : '#374151'}`,
+                      boxShadow: isHovered && canAfford ? `6px 6px 0 ${rarityColor}` : '4px 4px 0 #000',
+                      opacity: canAfford ? 1 : 0.5,
+                      transform: isHovered && canAfford ? 'translateY(-4px)' : 'translateY(0)'
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div 
+                        className="w-12 h-12 flex items-center justify-center shrink-0"
+                        style={{ 
+                          background: rarityColor,
+                          border: '3px solid #000',
+                          boxShadow: '3px 3px 0 #000'
+                        }}
+                      >
+                        {item.type === 'card' ? (
+                          <Swords className="w-6 h-6 text-black" />
+                        ) : item.type === 'potion' ? (
+                          <Heart className="w-6 h-6 text-black" />
+                        ) : (
+                          <Package className="w-6 h-6 text-black" />
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-black text-white text-sm uppercase truncate">
+                          {item.name}
+                        </h3>
+                        <p className="text-gray-400 text-xs mt-1 line-clamp-2">
+                          {item.description}
+                        </p>
+                        {item.card && (
+                          <div 
+                            className="inline-block px-2 py-0.5 mt-2 text-[10px] font-black uppercase"
+                            style={{ 
+                              background: rarityColor, 
+                              color: '#000',
+                              border: '2px solid #000'
+                            }}
+                          >
+                            {item.card.rarity}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div 
+                        className="flex items-center gap-1 px-3 py-1 shrink-0"
+                        style={{ 
+                          background: canAfford ? '#FBBF24' : '#6B7280',
+                          border: '3px solid #000',
+                          boxShadow: '2px 2px 0 #000'
+                        }}
+                      >
+                        <Coins className="w-4 h-4 text-black" />
+                        <span className="font-black text-black">{item.cost}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+            
+            {shopItems.length === 0 && (
+              <div className="text-center py-12">
+                <ShoppingBag className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400 font-bold">
+                  {isDE ? 'Ausverkauft!' : 'Sold out!'}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Leave Shop Button */}
+          <div className="mt-4">
             <button
-              onClick={() => setView('map')}
-              className="py-3 px-6 font-bold"
+              onClick={() => {
+                audio.playClose();
+                setView('map');
+              }}
+              onMouseEnter={() => audio.playHover()}
+              className="w-full py-4 font-black text-lg uppercase transition-all hover:translate-y-[-2px]"
               style={{
                 background: '#8B5CF6',
-                border: '3px solid #000',
+                border: '4px solid #000',
+                boxShadow: '6px 6px 0 #000',
                 color: '#FFF'
               }}
             >
-              {isDE ? 'Weiter' : 'Continue'}
+              {isDE ? 'Verlassen' : 'Leave'}
             </button>
           </div>
+
+          {/* Remove Card Modal */}
+          <AnimatePresence>
+            {showRemoveCardModal && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                style={{ background: 'rgba(0,0,0,0.8)' }}
+                onClick={() => setShowRemoveCardModal(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0.9 }}
+                  onClick={e => e.stopPropagation()}
+                  className="w-full max-w-md max-h-[80vh] overflow-y-auto p-4"
+                  style={{
+                    background: '#1F2937',
+                    border: '4px solid #000',
+                    boxShadow: '8px 8px 0 #000'
+                  }}
+                >
+                  <h3 className="text-xl font-black text-white text-center mb-4 uppercase">
+                    {isDE ? 'Karte entfernen' : 'Remove Card'}
+                  </h3>
+                  <p className="text-gray-400 text-sm text-center mb-4">
+                    {isDE ? 'Wähle eine Karte zum Entfernen:' : 'Choose a card to remove:'}
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    {run.deck.map((card, idx) => (
+                      <motion.button
+                        key={`${card.id}-${idx}`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const removeItem = shopItems.find(i => i.id === 'remove-card');
+                          if (!removeItem || run.player.gold < removeItem.cost) return;
+                          
+                          audio.playPurchase();
+                          
+                          setRun(prev => {
+                            if (!prev) return prev;
+                            const newDeck = [...prev.deck];
+                            newDeck.splice(idx, 1);
+                            return {
+                              ...prev,
+                              deck: newDeck,
+                              player: { ...prev.player, gold: prev.player.gold - removeItem.cost }
+                            };
+                          });
+                          
+                          setShopItems(prev => prev.filter(i => i.id !== 'remove-card'));
+                          setShowRemoveCardModal(false);
+                          setMessage(isDE ? `${card.name} entfernt!` : `Removed ${card.name}!`);
+                        }}
+                        onMouseEnter={() => audio.playHover()}
+                        className="p-2 text-left"
+                        style={{
+                          background: card.element === 'fire' ? '#FF006E22' :
+                                     card.element === 'water' ? '#00D9FF22' :
+                                     card.element === 'earth' ? '#06FFA522' :
+                                     card.element === 'air' ? '#A5B4FC22' :
+                                     card.element === 'void' ? '#8B5CF622' : '#37415122',
+                          border: '3px solid #374151'
+                        }}
+                      >
+                        <div className="font-bold text-white text-xs truncate">{card.name}</div>
+                        <div className="text-gray-500 text-[10px]">{card.type}</div>
+                      </motion.button>
+                    ))}
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      audio.playClose();
+                      setShowRemoveCardModal(false);
+                    }}
+                    className="w-full mt-4 py-2 font-bold uppercase"
+                    style={{
+                      background: '#374151',
+                      border: '3px solid #000',
+                      color: '#FFF'
+                    }}
+                  >
+                    {isDE ? 'Abbrechen' : 'Cancel'}
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </div>

@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Coins, Layers, Swords, Skull, ShoppingBag, Coffee, Gift, HelpCircle, Crown } from 'lucide-react';
 import { GameMap, MapNode, MapNodeType } from '../../utils/deckbuilder/types';
 import { ACTS, getAvailableNodes } from '../../utils/deckbuilder/mapGeneration';
+import { audio } from '../../utils/audio';
 
 interface DeckbuilderMapViewProps {
   map: GameMap;
@@ -95,7 +96,14 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
 
   const handleNodeClick = (nodeId: string) => {
     console.log('[Map] Node clicked:', nodeId, 'Available:', availableNodes.includes(nodeId));
+    audio.playSelect();
     onNodeSelect(nodeId);
+  };
+  
+  const handleNodeHover = (nodeId: string, isAvailable: boolean) => {
+    if (isAvailable) {
+      audio.playHover();
+    }
   };
 
   const renderNode = (node: MapNode) => {
@@ -105,14 +113,17 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
     const isCurrent = node.id === map.currentNodeId;
 
     return (
-      <div
+      <motion.div
         key={node.id}
+        whileHover={isAvailable && !isVisited ? { scale: 1.15 } : {}}
+        whileTap={isAvailable && !isVisited ? { scale: 0.95 } : {}}
         onClick={() => {
           if (isAvailable) {
             handleNodeClick(node.id);
           }
         }}
-        className="relative flex items-center justify-center"
+        onMouseEnter={() => handleNodeHover(node.id, isAvailable && !isVisited)}
+        className="relative flex items-center justify-center cursor-pointer"
         style={{
           width: '56px',
           height: '56px',
@@ -160,7 +171,7 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
             {isDE ? config.labelDE : config.label}
           </span>
         )}
-      </div>
+      </motion.div>
     );
   };
 
@@ -216,8 +227,14 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
         }}
       >
         <div className="flex items-center justify-between mb-3">
-          <button
-            onClick={onBack}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              audio.playClose();
+              onBack();
+            }}
+            onMouseEnter={() => audio.playHover()}
             className="p-2 flex items-center gap-2 font-black uppercase"
             style={{ 
               background: '#FF006E', 
@@ -227,7 +244,7 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
             }}
           >
             <ArrowLeft className="w-5 h-5" />
-          </button>
+          </motion.button>
 
           <div 
             className="text-center px-4 py-2"
