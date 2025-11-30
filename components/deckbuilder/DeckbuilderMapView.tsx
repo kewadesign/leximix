@@ -5,7 +5,7 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart, Coins, Layers, Swords, Skull, ShoppingBag, Coffee, Gift, HelpCircle, Crown } from 'lucide-react';
+import { ArrowLeft, Heart, Coins, Layers, Swords, Skull, ShoppingBag, Coffee, Gift, HelpCircle, Crown, Pause } from 'lucide-react';
 import { GameMap, MapNode, MapNodeType } from '../../utils/deckbuilder/types';
 import { ACTS, getAvailableNodes } from '../../utils/deckbuilder/mapGeneration';
 import { audio } from '../../utils/audio';
@@ -20,6 +20,7 @@ interface DeckbuilderMapViewProps {
   deckSize: number;
   onNodeSelect: (nodeId: string) => void;
   onBack: () => void;
+  onPause?: () => void;
   language?: 'EN' | 'DE' | 'ES';
 }
 
@@ -46,6 +47,7 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
   deckSize,
   onNodeSelect,
   onBack,
+  onPause,
   language = 'DE'
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -131,7 +133,7 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
             ? '#374151' 
             : isAvailable 
               ? config.color 
-              : '#1F2937',
+              : 'var(--color-surface, #1a1a1a)',
           border: `4px solid ${isVisited ? '#4B5563' : '#000'}`,
           boxShadow: isAvailable && !isVisited 
             ? '6px 6px 0 #000' 
@@ -216,12 +218,12 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
   };
 
   return (
-    <div className="h-full flex flex-col bg-gray-900" style={{ minHeight: '100vh', maxHeight: '100vh' }}>
+    <div className="h-full flex flex-col" style={{ minHeight: '100vh', maxHeight: '100vh', background: 'var(--color-bg, #0a0a0a)' }}>
       {/* Header - Neo-Brutalist Style */}
       <div 
         className="sticky top-0 z-20 p-4"
         style={{ 
-          background: '#1F2937',
+          background: 'var(--color-surface, #1a1a1a)',
           borderBottom: '4px solid #000',
           boxShadow: '0 4px 0 #000'
         }}
@@ -262,7 +264,29 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
             </p>
           </div>
 
-          <div className="w-14" />
+          {/* Pause Button */}
+          {onPause ? (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                audio.playClick();
+                onPause();
+              }}
+              onMouseEnter={() => audio.playHover()}
+              className="p-2 flex items-center gap-2 font-black"
+              style={{ 
+                background: '#FFBE0B', 
+                border: '3px solid #000',
+                boxShadow: '4px 4px 0 #000',
+                color: '#000'
+              }}
+            >
+              <Pause className="w-5 h-5" />
+            </motion.button>
+          ) : (
+            <div className="w-14" />
+          )}
         </div>
 
         {/* Player Stats Bar - Neo-Brutalist */}
@@ -404,7 +428,7 @@ export const DeckbuilderMapView: React.FC<DeckbuilderMapViewProps> = ({
       <div 
         className="sticky bottom-0 p-3"
         style={{ 
-          background: '#1F2937',
+          background: 'var(--color-surface, #1a1a1a)',
           borderTop: '4px solid #000'
         }}
       >

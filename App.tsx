@@ -23,6 +23,7 @@ import { StickerAlbumView } from './components/StickerAlbumView';
 
 import SkatMauMauGame from './components/SkatMauMauGame';
 import { DeckbuilderGame } from './components/DeckbuilderGame';
+import { CardCollectionView } from './components/CardCollectionView';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { FriendsManager } from './components/FriendsManager';
 import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
@@ -3645,6 +3646,7 @@ export default function App() {
       {view === 'DECKBUILDER' && (
         <DeckbuilderGame
           onBack={() => setView('HOME')}
+          onOpenCollection={() => setView('CARD_COLLECTION')}
           onGameEnd={(coins, xp) => {
             setUser(prev => ({
               ...prev,
@@ -3655,6 +3657,13 @@ export default function App() {
             setView('HOME');
             audio.playWin();
           }}
+          language={user.language}
+        />
+      )}
+      {view === 'CARD_COLLECTION' && (
+        <CardCollectionView
+          user={user}
+          onBack={() => setView('DECKBUILDER')}
           language={user.language}
         />
       )}

@@ -134,6 +134,7 @@ type GameView = 'menu' | 'element_select' | 'map' | 'combat' | 'reward' | 'shop'
 
 interface DeckbuilderGameProps {
   onBack: () => void;
+  onOpenCollection?: () => void;
   onGameEnd?: (coins: number, xp: number) => void;
   language?: 'EN' | 'DE' | 'ES';
 }
@@ -191,6 +192,7 @@ const ELEMENT_INFO: Record<CardElement, { name: string; nameDE: string; icon: Re
 
 export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({ 
   onBack, 
+  onOpenCollection,
   onGameEnd,
   language = 'DE' 
 }) => {
@@ -209,6 +211,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
   const [showRemoveCardModal, setShowRemoveCardModal] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showPauseMenu, setShowPauseMenu] = useState(false);
 
   // Stats for scoring
   const [runStats, setRunStats] = useState({
@@ -685,6 +688,29 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
           <span style={{ transform: 'skew(2deg)' }}>{isDE ? 'Anleitung' : 'How to Play'}</span>
         </motion.button>
 
+        {onOpenCollection && (
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              audio.playClick();
+              onOpenCollection();
+            }}
+            onMouseEnter={() => audio.playHover()}
+            className="w-full py-4 px-6 font-black text-lg uppercase flex items-center justify-center gap-3"
+            style={{
+              background: '#8338EC',
+              border: '4px solid #000',
+              boxShadow: '5px 5px 0 #000',
+              color: '#FFF',
+              transform: 'skew(-2deg)'
+            }}
+          >
+            <Layers className="w-6 h-6" style={{ transform: 'skew(2deg)' }} />
+            <span style={{ transform: 'skew(2deg)' }}>{isDE ? 'Sammlung' : 'Collection'}</span>
+          </motion.button>
+        )}
+
         <motion.button
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
@@ -880,7 +906,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
+      style={{ background: 'var(--color-bg, #0a0a0a)' }}
     >
       <motion.div
         initial={{ scale: 0 }}
@@ -942,7 +968,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
+      style={{ background: 'var(--color-bg, #0a0a0a)' }}
     >
       <motion.div
         initial={{ scale: 0 }}
@@ -1037,6 +1063,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
           deckSize={run.deck.length}
           onNodeSelect={handleNodeSelect}
           onBack={() => setView('menu')}
+          onPause={() => setShowPauseMenu(true)}
           language={language}
         />
       )}
@@ -1069,7 +1096,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="min-h-screen flex flex-col p-4"
-          style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
+          style={{ background: 'var(--color-bg, #0a0a0a)' }}
         >
           {/* Shop Header */}
           <div 
@@ -1158,7 +1185,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
                     }}
                     className="p-4 cursor-pointer transition-all duration-200"
                     style={{
-                      background: canAfford ? '#1F2937' : '#111827',
+                      background: canAfford ? 'var(--color-surface, #1a1a1a)' : 'var(--color-bg, #0a0a0a)',
                       border: `4px solid ${isHovered && canAfford ? rarityColor : '#374151'}`,
                       boxShadow: isHovered && canAfford ? `6px 6px 0 ${rarityColor}` : '4px 4px 0 #000',
                       opacity: canAfford ? 1 : 0.5,
@@ -1269,7 +1296,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
                   onClick={e => e.stopPropagation()}
                   className="w-full max-w-md max-h-[80vh] overflow-y-auto p-4"
                   style={{
-                    background: '#1F2937',
+                    background: 'var(--color-surface, #1a1a1a)',
                     border: '4px solid #000',
                     boxShadow: '8px 8px 0 #000'
                   }}
@@ -1364,7 +1391,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
               onClick={e => e.stopPropagation()}
               className="w-full max-w-2xl max-h-[90vh] overflow-y-auto"
               style={{
-                background: 'linear-gradient(135deg, #1F2937 0%, #111827 100%)',
+                background: 'var(--color-surface, #1a1a1a)',
                 border: '4px solid #8B5CF6',
                 boxShadow: '8px 8px 0 #000'
               }}
@@ -1577,6 +1604,138 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
                 >
                   {isDE ? 'Verstanden!' : 'Got it!'}
                 </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Pause Menu Modal */}
+      <AnimatePresence>
+        {showPauseMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.9)' }}
+            onClick={() => setShowPauseMenu(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-md"
+              style={{
+                background: 'var(--color-surface, #1a1a1a)',
+                border: '5px solid #000',
+                boxShadow: '10px 10px 0 #FF006E'
+              }}
+            >
+              {/* Header */}
+              <div 
+                className="p-5 text-center"
+                style={{ 
+                  background: '#FF006E',
+                  borderBottom: '5px solid #000'
+                }}
+              >
+                <h2 className="text-2xl font-black text-black uppercase">
+                  ⏸️ {isDE ? 'PAUSE' : 'PAUSED'}
+                </h2>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-4">
+                {/* Current Run Info */}
+                {run && (
+                  <div 
+                    className="p-4 text-center"
+                    style={{ 
+                      background: 'var(--color-bg, #121212)',
+                      border: '3px solid #000'
+                    }}
+                  >
+                    <div className="text-sm font-bold" style={{ color: 'var(--color-text-muted, #aaa)' }}>
+                      {isDE ? 'Aktueller Fortschritt' : 'Current Progress'}
+                    </div>
+                    <div className="flex justify-center gap-6 mt-2">
+                      <div>
+                        <div className="text-2xl font-black" style={{ color: 'var(--color-text, #fff)' }}>
+                          {run.currentFloor}
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--color-text-muted, #aaa)' }}>Floor</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-black text-red-500">
+                          {run.player.currentHp}/{run.player.maxHp}
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--color-text-muted, #aaa)' }}>HP</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-black text-yellow-500">
+                          {run.player.gold}
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--color-text-muted, #aaa)' }}>Gold</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Continue Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    audio.playClick();
+                    setShowPauseMenu(false);
+                  }}
+                  onMouseEnter={() => audio.playHover()}
+                  className="w-full py-4 font-black text-xl uppercase flex items-center justify-center gap-3"
+                  style={{
+                    background: '#06FFA5',
+                    border: '4px solid #000',
+                    boxShadow: '6px 6px 0 #000',
+                    color: '#000'
+                  }}
+                >
+                  <Play className="w-6 h-6" />
+                  {isDE ? 'Weiterspielen' : 'Continue'}
+                </motion.button>
+
+                {/* Quit Run Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    audio.playClose();
+                    setShowPauseMenu(false);
+                    setRun(null);
+                    setView('menu');
+                  }}
+                  onMouseEnter={() => audio.playHover()}
+                  className="w-full py-3 font-bold uppercase flex items-center justify-center gap-3"
+                  style={{
+                    background: '#FF006E',
+                    border: '4px solid #000',
+                    boxShadow: '4px 4px 0 #000',
+                    color: '#FFF'
+                  }}
+                >
+                  <X className="w-5 h-5" />
+                  {isDE ? 'Run Abbrechen' : 'Quit Run'}
+                </motion.button>
+
+                {/* Warning */}
+                <p 
+                  className="text-center text-xs"
+                  style={{ color: 'var(--color-text-muted, #888)' }}
+                >
+                  ⚠️ {isDE 
+                    ? 'Bei Abbruch geht dein Fortschritt verloren!' 
+                    : 'Quitting will lose all progress!'}
+                </p>
               </div>
             </motion.div>
           </motion.div>

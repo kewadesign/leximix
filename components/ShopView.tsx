@@ -4,6 +4,9 @@ import { PayPalButton } from './PayPalButton';
 import { SHOP_ITEMS, PROFILE_TITLES, CARD_BACKS } from '../constants';
 import { audio } from '../utils/audio';
 import { getRarityColor } from '../utils/rewards';
+import { PackOpeningModal } from './PackOpeningModal';
+import { DeckbuilderCard, CardElement } from '../utils/deckbuilder/types';
+import { ALL_CARDS, getRandomCard } from '../utils/deckbuilder/cards';
 
 interface ShopViewProps {
     user: any;
@@ -17,6 +20,71 @@ interface ShopViewProps {
 
 type ShopTab = 'avatars' | 'titles' | 'cardbacks' | 'cardpacks' | 'currency';
 
+// Generate random cards from a pack
+const generatePackCards = (packType: string, count: number = 5): DeckbuilderCard[] => {
+    const cards: DeckbuilderCard[] = [];
+    
+    // Determine element filter based on pack type
+    let elementFilter: CardElement | undefined;
+    if (packType.startsWith('element_')) {
+        elementFilter = packType.replace('element_', '') as CardElement;
+    }
+    
+    // Rarity weights based on pack type
+    const rarityWeights = packType === 'legendary' 
+        ? { common: 20, uncommon: 30, rare: 35, legendary: 15 }
+        : packType === 'premium'
+        ? { common: 30, uncommon: 35, rare: 25, legendary: 10 }
+        : { common: 50, uncommon: 30, rare: 15, legendary: 5 };
+    
+    for (let i = 0; i < count; i++) {
+        // Roll for rarity
+        const roll = Math.random() * 100;
+        let rarity: string;
+        if (roll < rarityWeights.legendary) {
+            rarity = 'legendary';
+        } else if (roll < rarityWeights.legendary + rarityWeights.rare) {
+            rarity = 'rare';
+        } else if (roll < rarityWeights.legendary + rarityWeights.rare + rarityWeights.uncommon) {
+            rarity = 'uncommon';
+        } else {
+            rarity = 'common';
+        }
+        
+        // Filter cards
+        let pool = ALL_CARDS.filter(c => 
+            c.rarity === rarity && 
+            c.type !== 'curse' && 
+            c.type !== 'status'
+        );
+        
+        if (elementFilter) {
+            pool = pool.filter(c => c.element === elementFilter);
+        }
+        
+        // If pool is empty, fall back to any card of that rarity
+        if (pool.length === 0) {
+            pool = ALL_CARDS.filter(c => 
+                c.rarity === rarity && 
+                c.type !== 'curse' && 
+                c.type !== 'status'
+            );
+        }
+        
+        // Still empty? Get any playable card
+        if (pool.length === 0) {
+            pool = ALL_CARDS.filter(c => c.type !== 'curse' && c.type !== 'status');
+        }
+        
+        const card = pool[Math.floor(Math.random() * pool.length)];
+        if (card) {
+            cards.push({ ...card }); // Clone to avoid mutations
+        }
+    }
+    
+    return cards;
+};
+
 export const ShopView: React.FC<ShopViewProps> = ({
     user,
     setUser,
@@ -28,6 +96,12 @@ export const ShopView: React.FC<ShopViewProps> = ({
 }) => {
     const [currentBanner, setCurrentBanner] = useState(0);
     const [activeTab, setActiveTab] = useState<ShopTab>('avatars');
+    
+    // Pack Opening State
+    const [isPackOpen, setIsPackOpen] = useState(false);
+    const [openedCards, setOpenedCards] = useState<DeckbuilderCard[]>([]);
+    const [currentPackName, setCurrentPackName] = useState('');
+    const [currentPackColor, setCurrentPackColor] = useState('#8B5CF6');
     
     const BANNERS = [
         { title: "SEASON 2 IS LIVE", subtitle: "Unlock Cyberpunk Skins", color: "from-lexi-primary to-blue-600", icon: <Zap size={64} className="text-white animate-pulse" /> },
@@ -564,8 +638,45 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                     <button
                                         onClick={() => {
                                             if (user.coins >= (item.cost as number)) {
-                                                handleBuyItem(item);
-                                                audio.playWin();
+                                                // Generate cards for this pack
+                                                const packType = item.value as string;
+                                                const cards = generatePackCards(packType, 5);
+                                                
+                                                // Set pack opening state
+                                                setOpenedCards(cards);
+                                                setCurrentPackName(item.name);
+                                                setCurrentPackColor(color);
+                                                
+                                                // Deduct coins
+                                                const newCoins = user.coins - (item.cost as number);
+                                                
+                                                // Save cards to user's collection
+                                                const newCollection = { ...(user.deckbuilderData?.collection || {}) };
+                                                cards.forEach((card: DeckbuilderCard) => {
+                                                    if (newCollection[card.id]) {
+                                                        newCollection[card.id].count += 1;
+                                                    } else {
+                                                        newCollection[card.id] = {
+                                                            count: 1,
+                                                            upgraded: false,
+                                                            firstObtained: Date.now()
+                                                        };
+                                                    }
+                                                });
+                                                
+                                                // Update user
+                                                setUser({
+                                                    ...user,
+                                                    coins: newCoins,
+                                                    deckbuilderData: {
+                                                        ...user.deckbuilderData,
+                                                        collection: newCollection
+                                                    }
+                                                });
+                                                
+                                                // Open the modal
+                                                setIsPackOpen(true);
+                                                audio.playClick();
                                             } else {
                                                 audio.playError();
                                             }
@@ -679,6 +790,16 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     </div>
                 </div>}
             </div>
+            
+            {/* Pack Opening Modal */}
+            <PackOpeningModal
+                isOpen={isPackOpen}
+                onClose={() => setIsPackOpen(false)}
+                cards={openedCards}
+                packName={currentPackName}
+                packColor={currentPackColor}
+                language={user.language || 'DE'}
+            />
         </div >
     );
 };

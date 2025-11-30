@@ -106,13 +106,27 @@ export const DeckbuilderCombatView: React.FC<DeckbuilderCombatViewProps> = ({
     }
   };
 
+  // Get theme accent color for subtle overlay
+  const themeAccent = act?.theme === 'fire' ? '#FF006E' : 
+                      act?.theme === 'water' ? '#00D9FF' : 
+                      act?.theme === 'earth' ? '#06FFA5' : 
+                      act?.theme === 'air' ? '#A5B4FC' : '#8B5CF6';
+
   return (
     <div 
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative"
       style={{ 
-        background: `linear-gradient(135deg, ${act?.theme === 'fire' ? '#2d1f1f' : act?.theme === 'water' ? '#1f2d3d' : act?.theme === 'earth' ? '#2d2f1f' : act?.theme === 'air' ? '#2d2d3d' : '#1f1f2d'} 0%, #1a1a2e 50%, #0f0f1a 100%)` 
+        background: 'var(--color-bg, #0a0a0a)'
       }}
     >
+      {/* Theme Accent Overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at 50% 0%, ${themeAccent}15 0%, transparent 50%)`,
+          opacity: 0.5
+        }}
+      />
       {/* Header - Floor Info */}
       <div 
         className="p-3 flex items-center justify-between"
