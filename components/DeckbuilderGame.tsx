@@ -603,107 +603,154 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
+      className="min-h-screen flex flex-col p-4"
+      style={{ background: 'var(--color-bg, #0a0a0a)' }}
     >
+      {/* Rainbow Top Bar */}
+      <div className="flex h-3 w-full mb-6">
+        <div className="flex-1" style={{ background: '#FF006E' }}></div>
+        <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+        <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+        <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+        <div className="flex-1" style={{ background: '#8338EC' }}></div>
+      </div>
+
+      {/* Header Card */}
       <motion.div
-        initial={{ y: -50, opacity: 0 }}
+        initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="text-center mb-8"
+        className="mx-auto mb-8 p-6 text-center"
+        style={{ 
+          background: '#FF006E',
+          border: '4px solid #000',
+          boxShadow: '8px 8px 0 #000',
+          transform: 'skew(-2deg)'
+        }}
       >
-        <h1 className="text-4xl md:text-6xl font-black text-white mb-2" style={{ textShadow: '4px 4px 0 #8B5CF6' }}>
+        <h1 
+          className="text-4xl md:text-5xl font-black text-black uppercase tracking-tight"
+          style={{ transform: 'skew(2deg)' }}
+        >
           {isDE ? 'KARTENSCHMIEDE' : 'CARD FORGE'}
         </h1>
-        <p className="text-gray-400 text-lg">Roguelike Deckbuilder</p>
+        <p 
+          className="text-black/70 font-bold mt-2 uppercase tracking-widest text-sm"
+          style={{ transform: 'skew(2deg)' }}
+        >
+          Roguelike Deckbuilder
+        </p>
       </motion.div>
 
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="w-full max-w-md space-y-4"
-      >
+      {/* Main Buttons */}
+      <div className="flex-1 flex flex-col items-center justify-center max-w-lg mx-auto w-full space-y-5">
         <motion.button
-          whileHover={{ scale: 1.02, y: -2 }}
+          whileHover={{ scale: 1.02, y: -4 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => {
             audio.playClick();
             setView('element_select');
           }}
           onMouseEnter={() => audio.playHover()}
-          className="w-full py-4 px-6 font-black text-xl uppercase flex items-center justify-center gap-3"
+          className="w-full py-6 px-8 font-black text-2xl uppercase flex items-center justify-center gap-4"
           style={{
-            background: '#8B5CF6',
-            border: '4px solid #000',
-            boxShadow: '6px 6px 0 #000',
-            color: '#FFF'
+            background: '#06FFA5',
+            border: '5px solid #000',
+            boxShadow: '8px 8px 0 #000',
+            color: '#000',
+            transform: 'skew(-2deg)'
           }}
         >
-          <Play className="w-6 h-6" />
-          {isDE ? 'Neuer Durchlauf' : 'New Run'}
+          <Play className="w-8 h-8" style={{ transform: 'skew(2deg)' }} />
+          <span style={{ transform: 'skew(2deg)' }}>{isDE ? 'Neuer Durchlauf' : 'New Run'}</span>
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: 1.02, y: -3 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => {
             audio.playClick();
             setShowTutorial(true);
           }}
           onMouseEnter={() => audio.playHover()}
-          className="w-full py-3 px-6 font-bold uppercase flex items-center justify-center gap-3"
+          className="w-full py-5 px-6 font-black text-xl uppercase flex items-center justify-center gap-3"
           style={{
-            background: '#06FFA5',
+            background: '#FFBE0B',
             border: '4px solid #000',
-            boxShadow: '4px 4px 0 #000',
-            color: '#000'
+            boxShadow: '6px 6px 0 #000',
+            color: '#000',
+            transform: 'skew(-2deg)'
           }}
         >
-          <BookOpen className="w-5 h-5" />
-          {isDE ? 'Anleitung' : 'How to Play'}
+          <BookOpen className="w-7 h-7" style={{ transform: 'skew(2deg)' }} />
+          <span style={{ transform: 'skew(2deg)' }}>{isDE ? 'Anleitung' : 'How to Play'}</span>
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => {
             audio.playClose();
             onBack();
           }}
           onMouseEnter={() => audio.playHover()}
-          className="w-full py-3 px-6 font-bold uppercase flex items-center justify-center gap-3"
+          className="w-full py-4 px-6 font-black text-lg uppercase flex items-center justify-center gap-3"
           style={{
-            background: '#374151',
+            background: 'var(--color-surface, #1a1a1a)',
             border: '4px solid #000',
-            boxShadow: '4px 4px 0 #000',
-            color: '#FFF'
+            boxShadow: '5px 5px 0 #000',
+            color: 'var(--color-text, #fff)'
           }}
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-6 h-6" />
           {isDE ? 'Zurück' : 'Back'}
         </motion.button>
+      </div>
+
+      {/* Stats Cards - Neo Brutalist */}
+      <motion.div
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-3 gap-3 mt-8 max-w-lg mx-auto w-full"
+      >
+        <div 
+          className="p-4 text-center"
+          style={{ 
+            background: '#FF006E', 
+            border: '3px solid #000',
+            boxShadow: '4px 4px 0 #000'
+          }}
+        >
+          <div className="text-3xl font-black text-black">250</div>
+          <div className="text-xs font-bold text-black/70 uppercase">Floors</div>
+        </div>
+        <div 
+          className="p-4 text-center"
+          style={{ 
+            background: '#8338EC', 
+            border: '3px solid #000',
+            boxShadow: '4px 4px 0 #000'
+          }}
+        >
+          <div className="text-3xl font-black text-white">200+</div>
+          <div className="text-xs font-bold text-white/70 uppercase">{isDE ? 'Karten' : 'Cards'}</div>
+        </div>
+        <div 
+          className="p-4 text-center"
+          style={{ 
+            background: '#FFBE0B', 
+            border: '3px solid #000',
+            boxShadow: '4px 4px 0 #000'
+          }}
+        >
+          <div className="text-3xl font-black text-black">70</div>
+          <div className="text-xs font-bold text-black/70 uppercase">{isDE ? 'Gegner' : 'Enemies'}</div>
+        </div>
       </motion.div>
 
-      {/* Stats Preview */}
-      <motion.div
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="mt-8 grid grid-cols-3 gap-4 text-center"
-      >
-        <div className="p-3" style={{ background: 'rgba(139, 92, 246, 0.2)', border: '2px solid #8B5CF6' }}>
-          <div className="text-2xl font-black text-white">250</div>
-          <div className="text-xs text-gray-400">{isDE ? 'Floors' : 'Floors'}</div>
-        </div>
-        <div className="p-3" style={{ background: 'rgba(139, 92, 246, 0.2)', border: '2px solid #8B5CF6' }}>
-          <div className="text-2xl font-black text-white">200+</div>
-          <div className="text-xs text-gray-400">{isDE ? 'Karten' : 'Cards'}</div>
-        </div>
-        <div className="p-3" style={{ background: 'rgba(139, 92, 246, 0.2)', border: '2px solid #8B5CF6' }}>
-          <div className="text-2xl font-black text-white">55</div>
-          <div className="text-xs text-gray-400">{isDE ? 'Gegner' : 'Enemies'}</div>
-        </div>
-      </motion.div>
+      {/* Decorative Elements */}
+      <div className="absolute top-20 right-10 w-16 h-16 opacity-20" style={{ background: '#FF006E', border: '3px solid #000', transform: 'rotate(12deg)' }}></div>
+      <div className="absolute bottom-32 left-8 w-12 h-12 opacity-20" style={{ background: '#06FFA5', border: '3px solid #000', transform: 'rotate(-8deg)' }}></div>
     </motion.div>
   );
 
@@ -712,53 +759,115 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen flex flex-col p-4"
-      style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
+      style={{ background: 'var(--color-bg, #0a0a0a)' }}
     >
-      <div className="flex items-center gap-4 mb-6">
-        <button
-          onClick={() => setView('menu')}
-          className="p-2"
-          style={{ background: '#374151', border: '3px solid #000' }}
-        >
-          <ArrowLeft className="w-6 h-6 text-white" />
-        </button>
-        <h2 className="text-2xl font-black text-white">
-          {isDE ? 'Wähle dein Element' : 'Choose your Element'}
-        </h2>
+      {/* Rainbow Top Bar */}
+      <div className="flex h-3 w-full mb-4">
+        <div className="flex-1" style={{ background: '#FF006E' }}></div>
+        <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+        <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+        <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+        <div className="flex-1" style={{ background: '#8338EC' }}></div>
       </div>
 
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-6">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            audio.playClose();
+            setView('menu');
+          }}
+          onMouseEnter={() => audio.playHover()}
+          className="p-3"
+          style={{ 
+            background: '#FF006E', 
+            border: '4px solid #000',
+            boxShadow: '4px 4px 0 #000'
+          }}
+        >
+          <ArrowLeft className="w-6 h-6 text-black" />
+        </motion.button>
+        <div 
+          className="px-6 py-3"
+          style={{
+            background: '#FFBE0B',
+            border: '4px solid #000',
+            boxShadow: '4px 4px 0 #000',
+            transform: 'skew(-2deg)'
+          }}
+        >
+          <h2 
+            className="text-xl font-black text-black uppercase"
+            style={{ transform: 'skew(2deg)' }}
+          >
+            {isDE ? 'Wähle dein Element' : 'Choose Element'}
+          </h2>
+        </div>
+      </div>
+
+      {/* Element Cards - Bigger and Bolder */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl mx-auto w-full">
         {(Object.entries(ELEMENT_INFO) as [CardElement, typeof ELEMENT_INFO['fire']][])
-          .filter(([key]) => key !== 'void') // Void unlocked later
-          .map(([element, info]) => (
+          .filter(([key]) => key !== 'void')
+          .map(([element, info], idx) => (
           <motion.button
             key={element}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            whileHover={{ scale: 1.03, y: -4 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => {
+              audio.playSelect();
               setSelectedElement(element);
               startNewRun(element);
             }}
-            className="p-6 text-left flex items-start gap-4"
+            onMouseEnter={() => audio.playHover()}
+            className="p-6 text-left relative overflow-hidden"
             style={{
-              background: `linear-gradient(135deg, ${info.color}22, ${info.color}44)`,
-              border: `4px solid ${info.color}`,
-              boxShadow: `6px 6px 0 #000`
+              background: info.color,
+              border: '5px solid #000',
+              boxShadow: '8px 8px 0 #000',
+              transform: 'skew(-1deg)'
             }}
           >
+            {/* Background Pattern */}
             <div 
-              className="p-3 rounded-lg"
-              style={{ background: info.color, color: '#FFF' }}
-            >
-              {info.icon}
+              className="absolute inset-0 opacity-20"
+              style={{
+                background: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)`
+              }}
+            />
+            
+            <div className="relative flex items-start gap-4" style={{ transform: 'skew(1deg)' }}>
+              <div 
+                className="p-4 shrink-0"
+                style={{ 
+                  background: '#000',
+                  border: '3px solid #000',
+                  boxShadow: '3px 3px 0 rgba(255,255,255,0.3)'
+                }}
+              >
+                {React.cloneElement(info.icon as React.ReactElement, { 
+                  className: 'w-10 h-10',
+                  style: { color: info.color }
+                })}
+              </div>
+              <div>
+                <h3 className="text-2xl font-black text-black mb-2 uppercase">
+                  {isDE ? info.nameDE : info.name}
+                </h3>
+                <p className="text-sm text-black/80 font-bold">
+                  {isDE ? info.descriptionDE : info.description}
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-xl font-black text-white mb-1">
-                {isDE ? info.nameDE : info.name}
-              </h3>
-              <p className="text-sm text-gray-300">
-                {isDE ? info.descriptionDE : info.description}
-              </p>
+
+            {/* Play indicator */}
+            <div className="absolute bottom-3 right-3" style={{ transform: 'skew(1deg)' }}>
+              <Play className="w-8 h-8 text-black/50" />
             </div>
           </motion.button>
         ))}
