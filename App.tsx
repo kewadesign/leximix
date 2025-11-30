@@ -2525,7 +2525,15 @@ export default function App() {
 
 
   const renderHome = () => (
-    <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-24" style={{ background: 'var(--color-bg)' }}>
+    <div 
+      className="flex flex-col relative z-10 overflow-y-scroll pb-24" 
+      style={{ 
+        background: 'var(--color-bg)', 
+        height: '100vh',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y'
+      }}
+    >
       {/* Rainbow Top Bar */}
       <div className="flex h-4 w-full">
         <div className="flex-1" style={{ background: '#FF006E' }}></div>
