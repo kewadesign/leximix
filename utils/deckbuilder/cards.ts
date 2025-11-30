@@ -5,6 +5,7 @@
 // Each card has a unique ID and all properties defined
 
 import { DeckbuilderCard, CardElement, CardType, CardRarity, CardEffect } from './types';
+import { ALL_EXPANDED_CARDS, EXPANDED_CARD_COUNT } from './cards_expanded';
 
 // ===================
 // HELPER: Create Card
@@ -865,7 +866,7 @@ export const CURSE_CARDS: DeckbuilderCard[] = [
 ];
 
 // =============================================
-// ALL CARDS COMBINED
+// ALL CARDS COMBINED (Base + Expanded = 200+)
 // =============================================
 export const ALL_CARDS: DeckbuilderCard[] = [
   ...FIRE_CARDS,
@@ -874,6 +875,7 @@ export const ALL_CARDS: DeckbuilderCard[] = [
   ...AIR_CARDS,
   ...VOID_CARDS,
   ...CURSE_CARDS,
+  ...ALL_EXPANDED_CARDS,
 ];
 
 // =============================================
@@ -935,13 +937,18 @@ export const getRandomCardWithWeights = (excludeIds: string[] = []): Deckbuilder
 };
 
 // Get card count for pack opening
+const BASE_CARD_COUNT = FIRE_CARDS.length + WATER_CARDS.length + EARTH_CARDS.length + AIR_CARDS.length + VOID_CARDS.length;
 export const TOTAL_CARD_COUNT = ALL_CARDS.filter(c => c.type !== 'curse' && c.type !== 'status').length;
 
-console.log(`[Deckbuilder] Loaded ${TOTAL_CARD_COUNT} cards:
+console.log(`[Deckbuilder] Loaded ${TOTAL_CARD_COUNT} cards total:
+  === BASE CARDS (${BASE_CARD_COUNT}) ===
   - Fire: ${FIRE_CARDS.length}
   - Water: ${WATER_CARDS.length}
   - Earth: ${EARTH_CARDS.length}
   - Air: ${AIR_CARDS.length}
   - Void: ${VOID_CARDS.length}
   - Curse/Status: ${CURSE_CARDS.length}
+  
+  === EXPANDED CARDS (${EXPANDED_CARD_COUNT}) ===
+  (Fire, Water, Earth, Air, Void, Hybrid, Colorless)
 `);
