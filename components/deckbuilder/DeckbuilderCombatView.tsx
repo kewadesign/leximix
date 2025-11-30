@@ -3,14 +3,15 @@
 // ============================================
 // Full combat screen with enemies, player stats, and card hand
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Heart, Shield, Layers, RotateCcw, Swords, ArrowRight } from 'lucide-react';
+import { Zap, Heart, Shield, Layers, RotateCcw, Swords, ArrowRight, Target, Crosshair } from 'lucide-react';
 import { CombatState, Enemy, DeckbuilderCard } from '../../utils/deckbuilder/types';
 import { ACTS } from '../../utils/deckbuilder/mapGeneration';
 import { DeckbuilderHand } from './DeckbuilderHand';
 import { EnemyDisplay } from './EnemyDisplay';
 import { PlayerStatus } from './PlayerStatus';
+import { audio } from '../../utils/audio';
 
 interface DeckbuilderCombatViewProps {
   combatState: CombatState;
@@ -35,16 +36,39 @@ export const DeckbuilderCombatView: React.FC<DeckbuilderCombatViewProps> = ({
 }) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null);
   const [selectedTargetIndex, setSelectedTargetIndex] = useState<number>(0);
+  const [targetLineCoords, setTargetLineCoords] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
+  const enemyRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isDE = language === 'DE';
 
   const act = ACTS[currentAct - 1];
   const aliveEnemies = enemies.filter(e => e.currentHp > 0);
+
+  // Update target line when selection changes
+  useEffect(() => {
+    if (selectedCardIndex !== null && playerRef.current && enemyRefs.current[selectedTargetIndex]) {
+      const playerRect = playerRef.current.getBoundingClientRect();
+      const enemyRect = enemyRefs.current[selectedTargetIndex]?.getBoundingClientRect();
+      
+      if (enemyRect) {
+        setTargetLineCoords({
+          x1: playerRect.left + playerRect.width / 2,
+          y1: playerRect.top,
+          x2: enemyRect.left + enemyRect.width / 2,
+          y2: enemyRect.bottom
+        });
+      }
+    } else {
+      setTargetLineCoords(null);
+    }
+  }, [selectedCardIndex, selectedTargetIndex]);
 
   const handleCardClick = (index: number) => {
     if (isProcessing) return;
 
     if (selectedCardIndex === index) {
       // Double tap - play card
+      audio.playSelect();
       if (aliveEnemies.length === 1) {
         onPlayCard(index, 0);
         setSelectedCardIndex(null);
@@ -53,6 +77,7 @@ export const DeckbuilderCombatView: React.FC<DeckbuilderCombatViewProps> = ({
         setSelectedCardIndex(null);
       }
     } else {
+      audio.playClick();
       setSelectedCardIndex(index);
       // Auto-select first alive enemy
       const firstAliveIndex = enemies.findIndex(e => e.currentHp > 0);
@@ -61,16 +86,21 @@ export const DeckbuilderCombatView: React.FC<DeckbuilderCombatViewProps> = ({
   };
 
   const handleEnemyClick = (index: number) => {
-    if (selectedCardIndex !== null && enemies[index].currentHp > 0) {
+    if (enemies[index].currentHp > 0) {
+      audio.playSelect();
       setSelectedTargetIndex(index);
-      // Play the card
-      onPlayCard(selectedCardIndex, index);
-      setSelectedCardIndex(null);
+      
+      if (selectedCardIndex !== null) {
+        // Play the card
+        onPlayCard(selectedCardIndex, index);
+        setSelectedCardIndex(null);
+      }
     }
   };
 
   const handlePlaySelected = () => {
     if (selectedCardIndex !== null) {
+      audio.playSelect();
       onPlayCard(selectedCardIndex, selectedTargetIndex);
       setSelectedCardIndex(null);
     }
@@ -99,24 +129,121 @@ export const DeckbuilderCombatView: React.FC<DeckbuilderCombatViewProps> = ({
         </div>
       </div>
 
+      {/* Target Line SVG Overlay */}
+      <AnimatePresence>
+        {targetLineCoords && selectedCardIndex !== null && (
+          <svg 
+            className="fixed inset-0 pointer-events-none z-30"
+            style={{ width: '100vw', height: '100vh' }}
+          >
+            <defs>
+              <marker
+                id="arrowhead"
+                markerWidth="10"
+                markerHeight="7"
+                refX="9"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon 
+                  points="0 0, 10 3.5, 0 7" 
+                  fill="#FF006E"
+                />
+              </marker>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <motion.line
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              exit={{ opacity: 0 }}
+              x1={targetLineCoords.x1}
+              y1={targetLineCoords.y1}
+              x2={targetLineCoords.x2}
+              y2={targetLineCoords.y2}
+              stroke="#FF006E"
+              strokeWidth="4"
+              strokeDasharray="10,5"
+              markerEnd="url(#arrowhead)"
+              filter="url(#glow)"
+              style={{ 
+                animation: 'dash 0.5s linear infinite'
+              }}
+            />
+            {/* Target Crosshair */}
+            <motion.circle
+              initial={{ scale: 0 }}
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+              cx={targetLineCoords.x2}
+              cy={targetLineCoords.y2 - 20}
+              r="15"
+              fill="none"
+              stroke="#FF006E"
+              strokeWidth="3"
+              filter="url(#glow)"
+            />
+            <motion.circle
+              cx={targetLineCoords.x2}
+              cy={targetLineCoords.y2 - 20}
+              r="5"
+              fill="#FF006E"
+            />
+          </svg>
+        )}
+      </AnimatePresence>
+
       {/* Enemy Area */}
       <div className="flex-shrink-0 p-4">
         <div className="flex justify-center gap-4 flex-wrap">
           {enemies.map((enemy, index) => (
-            <EnemyDisplay
+            <div 
               key={enemy.id}
-              enemy={enemy}
-              isSelected={selectedCardIndex !== null && selectedTargetIndex === index}
-              isTargetable={selectedCardIndex !== null && enemy.currentHp > 0}
-              onClick={() => handleEnemyClick(index)}
-              language={language}
-            />
+              ref={el => enemyRefs.current[index] = el}
+              className="relative"
+            >
+              {/* Selection Ring */}
+              {selectedTargetIndex === index && selectedCardIndex !== null && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: [1, 1.1, 1], opacity: 1 }}
+                  transition={{ duration: 0.6, repeat: Infinity }}
+                  className="absolute -inset-2 rounded-xl pointer-events-none z-10"
+                  style={{
+                    border: '3px solid #FF006E',
+                    boxShadow: '0 0 20px #FF006E, inset 0 0 20px rgba(255, 0, 110, 0.3)'
+                  }}
+                />
+              )}
+              <EnemyDisplay
+                enemy={enemy}
+                isSelected={selectedCardIndex !== null && selectedTargetIndex === index}
+                isTargetable={selectedCardIndex !== null && enemy.currentHp > 0}
+                onClick={() => handleEnemyClick(index)}
+                language={language}
+              />
+              {/* Target Icon */}
+              {selectedTargetIndex === index && selectedCardIndex !== null && (
+                <motion.div
+                  initial={{ y: -10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className="absolute -top-8 left-1/2 -translate-x-1/2"
+                >
+                  <Crosshair className="w-6 h-6 text-pink-500" />
+                </motion.div>
+              )}
+            </div>
           ))}
         </div>
       </div>
 
       {/* Middle Section - Player Stats */}
-      <div className="flex-1 flex flex-col justify-center items-center p-4">
+      <div className="flex-1 flex flex-col justify-center items-center p-4" ref={playerRef}>
         <PlayerStatus
           hp={combatState.player.currentHp}
           maxHp={combatState.player.maxHp}

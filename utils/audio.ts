@@ -1,10 +1,44 @@
 class SoundManager {
   private context: AudioContext | null = null;
   private enabled: boolean = true;
+  private initialized: boolean = false;
+
+  constructor() {
+    // Auto-initialize on first user interaction
+    if (typeof window !== 'undefined') {
+      const initAudio = () => {
+        this.init();
+        document.removeEventListener('click', initAudio);
+        document.removeEventListener('touchstart', initAudio);
+        document.removeEventListener('keydown', initAudio);
+      };
+      document.addEventListener('click', initAudio);
+      document.addEventListener('touchstart', initAudio);
+      document.addEventListener('keydown', initAudio);
+    }
+  }
+
+  init() {
+    if (this.initialized) return;
+    try {
+      this.context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (this.context.state === 'suspended') {
+        this.context.resume();
+      }
+      this.initialized = true;
+      console.log('[Audio] Initialized successfully');
+    } catch (e) {
+      console.warn('[Audio] Failed to initialize:', e);
+    }
+  }
 
   private getContext() {
     if (!this.context) {
-      this.context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.init();
+    }
+    // Always try to resume if suspended
+    if (this.context && this.context.state === 'suspended') {
+      this.context.resume();
     }
     return this.context;
   }
@@ -13,10 +47,12 @@ class SoundManager {
     this.enabled = enabled;
   }
 
-  playTone(freq: number, type: OscillatorType, duration: number, volume: number = 0.1) {
+  playTone(freq: number, type: OscillatorType, duration: number, volume: number = 0.15) {
     if (!this.enabled) return;
     try {
       const ctx = this.getContext();
+      if (!ctx) return;
+      
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
@@ -65,18 +101,18 @@ class SoundManager {
 
   // Soft click for buttons
   playClick() {
-    this.playTone(800, 'sine', 0.05, 0.08);
+    this.playTone(800, 'sine', 0.08, 0.2);
   }
 
-  // Hover sound - very soft and subtle
+  // Hover sound - audible but not annoying
   playHover() {
-    this.playTone(1200, 'sine', 0.03, 0.03);
+    this.playTone(1200, 'sine', 0.04, 0.1);
   }
 
-  // Select sound - slightly more pronounced than hover
+  // Select sound - more pronounced than hover
   playSelect() {
-    this.playTone(900, 'sine', 0.06, 0.06);
-    setTimeout(() => this.playTone(1100, 'sine', 0.04, 0.04), 30);
+    this.playTone(900, 'sine', 0.08, 0.15);
+    setTimeout(() => this.playTone(1100, 'sine', 0.06, 0.12), 30);
   }
 
   // Navigation between views

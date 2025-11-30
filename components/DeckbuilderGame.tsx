@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Map, Swords, Package, ShoppingBag, Coffee, HelpCircle, Flame, Droplets, Mountain, Wind, Moon, Trophy, Zap, Heart, Shield, Coins, Star, Play, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Map, Swords, Package, ShoppingBag, Coffee, HelpCircle, Flame, Droplets, Mountain, Wind, Moon, Trophy, Zap, Heart, Shield, Coins, Star, Play, RotateCcw, BookOpen, X, Target, Layers, Gift, Skull } from 'lucide-react';
 
 // Types
 import { 
@@ -208,6 +208,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const [showRemoveCardModal, setShowRemoveCardModal] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   // Stats for scoring
   const [runStats, setRunStats] = useState({
@@ -622,8 +623,14 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
         transition={{ delay: 0.2 }}
         className="w-full max-w-md space-y-4"
       >
-        <button
-          onClick={() => setView('element_select')}
+        <motion.button
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            audio.playClick();
+            setView('element_select');
+          }}
+          onMouseEnter={() => audio.playHover()}
           className="w-full py-4 px-6 font-black text-xl uppercase flex items-center justify-center gap-3"
           style={{
             background: '#8B5CF6',
@@ -634,10 +641,36 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
         >
           <Play className="w-6 h-6" />
           {isDE ? 'Neuer Durchlauf' : 'New Run'}
-        </button>
+        </motion.button>
 
-        <button
-          onClick={onBack}
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            audio.playClick();
+            setShowTutorial(true);
+          }}
+          onMouseEnter={() => audio.playHover()}
+          className="w-full py-3 px-6 font-bold uppercase flex items-center justify-center gap-3"
+          style={{
+            background: '#06FFA5',
+            border: '4px solid #000',
+            boxShadow: '4px 4px 0 #000',
+            color: '#000'
+          }}
+        >
+          <BookOpen className="w-5 h-5" />
+          {isDE ? 'Anleitung' : 'How to Play'}
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            audio.playClose();
+            onBack();
+          }}
+          onMouseEnter={() => audio.playHover()}
           className="w-full py-3 px-6 font-bold uppercase flex items-center justify-center gap-3"
           style={{
             background: '#374151',
@@ -648,7 +681,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
         >
           <ArrowLeft className="w-5 h-5" />
           {isDE ? 'Zurück' : 'Back'}
-        </button>
+        </motion.button>
       </motion.div>
 
       {/* Stats Preview */}
@@ -1203,6 +1236,243 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
           </AnimatePresence>
         </motion.div>
       )}
+
+      {/* Tutorial Modal */}
+      <AnimatePresence>
+        {showTutorial && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.9)' }}
+            onClick={() => setShowTutorial(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              style={{
+                background: 'linear-gradient(135deg, #1F2937 0%, #111827 100%)',
+                border: '4px solid #8B5CF6',
+                boxShadow: '8px 8px 0 #000'
+              }}
+            >
+              {/* Header */}
+              <div 
+                className="sticky top-0 p-4 flex items-center justify-between z-10"
+                style={{ 
+                  background: '#8B5CF6',
+                  borderBottom: '4px solid #000'
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-6 h-6 text-white" />
+                  <h2 className="text-xl font-black text-white uppercase">
+                    {isDE ? 'Spielanleitung' : 'How to Play'}
+                  </h2>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    audio.playClose();
+                    setShowTutorial(false);
+                  }}
+                  className="p-2"
+                  style={{ background: '#000' }}
+                >
+                  <X className="w-5 h-5 text-white" />
+                </motion.button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-6">
+                {/* Intro */}
+                <div className="text-center pb-4 border-b border-gray-700">
+                  <h3 className="text-2xl font-black text-white mb-2">
+                    ⚔️ {isDE ? 'KARTENSCHMIEDE' : 'CARD FORGE'} ⚔️
+                  </h3>
+                  <p className="text-gray-400">
+                    {isDE 
+                      ? 'Ein strategisches Roguelike-Deckbuilder-Abenteuer mit 250 Floors und über 200 Karten!'
+                      : 'A strategic roguelike deckbuilder adventure with 250 floors and over 200 cards!'
+                    }
+                  </p>
+                </div>
+
+                {/* Section: Goal */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-5 h-5 text-pink-500" />
+                    <h4 className="font-black text-white uppercase">{isDE ? 'Ziel' : 'Goal'}</h4>
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {isDE 
+                      ? 'Besiege alle 5 Akte mit je 50 Floors. Kämpfe gegen Gegner, sammle Karten und verbessere dein Deck. Jeder Run ist einzigartig!'
+                      : 'Defeat all 5 acts with 50 floors each. Fight enemies, collect cards, and improve your deck. Every run is unique!'
+                    }
+                  </p>
+                </div>
+
+                {/* Section: Map */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Map className="w-5 h-5 text-purple-500" />
+                    <h4 className="font-black text-white uppercase">{isDE ? 'Die Karte' : 'The Map'}</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex items-center gap-2 p-2 rounded" style={{ background: '#FF006E22' }}>
+                      <Swords className="w-4 h-4 text-pink-500" />
+                      <span className="text-gray-300">{isDE ? 'Kampf - Gegner bekämpfen' : 'Combat - Fight enemies'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded" style={{ background: '#FFB80022' }}>
+                      <Skull className="w-4 h-4 text-yellow-500" />
+                      <span className="text-gray-300">{isDE ? 'Elite - Starke Gegner, bessere Beute' : 'Elite - Strong enemies, better loot'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded" style={{ background: '#06FFA522' }}>
+                      <ShoppingBag className="w-4 h-4 text-green-500" />
+                      <span className="text-gray-300">{isDE ? 'Shop - Karten kaufen/verkaufen' : 'Shop - Buy/sell cards'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded" style={{ background: '#00D9FF22' }}>
+                      <Coffee className="w-4 h-4 text-cyan-500" />
+                      <span className="text-gray-300">{isDE ? 'Rasten - HP heilen' : 'Rest - Heal HP'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded" style={{ background: '#FBBF2422' }}>
+                      <Gift className="w-4 h-4 text-yellow-400" />
+                      <span className="text-gray-300">{isDE ? 'Schatz - Belohnung!' : 'Treasure - Reward!'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded" style={{ background: '#8B5CF622' }}>
+                      <HelpCircle className="w-4 h-4 text-purple-400" />
+                      <span className="text-gray-300">{isDE ? 'Ereignis - Zufälliges Event' : 'Event - Random event'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section: Combat */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Swords className="w-5 h-5 text-red-500" />
+                    <h4 className="font-black text-white uppercase">{isDE ? 'Kampfsystem' : 'Combat System'}</h4>
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-300">
+                    <p>
+                      <span className="text-yellow-400 font-bold">⚡ Energie:</span>{' '}
+                      {isDE 
+                        ? 'Du hast 3 Energie pro Zug. Karten kosten Energie zum Spielen.'
+                        : 'You have 3 energy per turn. Cards cost energy to play.'
+                      }
+                    </p>
+                    <p>
+                      <span className="text-red-400 font-bold">❤️ HP:</span>{' '}
+                      {isDE 
+                        ? 'Erreicht deine HP 0, ist der Run vorbei!'
+                        : 'If your HP reaches 0, the run is over!'
+                      }
+                    </p>
+                    <p>
+                      <span className="text-blue-400 font-bold">🛡️ Block:</span>{' '}
+                      {isDE 
+                        ? 'Block absorbiert Schaden. Verschwindet am Zugende.'
+                        : 'Block absorbs damage. Disappears at end of turn.'
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* Section: Cards */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-blue-500" />
+                    <h4 className="font-black text-white uppercase">{isDE ? 'Karten' : 'Cards'}</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="p-3 rounded" style={{ background: '#FF006E22', border: '2px solid #FF006E' }}>
+                      <Flame className="w-5 h-5 text-pink-500 mb-1" />
+                      <div className="font-bold text-white">{isDE ? 'Feuer' : 'Fire'}</div>
+                      <div className="text-gray-400 text-xs">{isDE ? 'Hoher Schaden, Burn-Effekte' : 'High damage, burn effects'}</div>
+                    </div>
+                    <div className="p-3 rounded" style={{ background: '#00D9FF22', border: '2px solid #00D9FF' }}>
+                      <Droplets className="w-5 h-5 text-cyan-500 mb-1" />
+                      <div className="font-bold text-white">{isDE ? 'Wasser' : 'Water'}</div>
+                      <div className="text-gray-400 text-xs">{isDE ? 'Heilung, Kartenzug' : 'Healing, card draw'}</div>
+                    </div>
+                    <div className="p-3 rounded" style={{ background: '#06FFA522', border: '2px solid #06FFA5' }}>
+                      <Mountain className="w-5 h-5 text-green-500 mb-1" />
+                      <div className="font-bold text-white">{isDE ? 'Erde' : 'Earth'}</div>
+                      <div className="text-gray-400 text-xs">{isDE ? 'Block, Ausdauer' : 'Block, endurance'}</div>
+                    </div>
+                    <div className="p-3 rounded" style={{ background: '#A5B4FC22', border: '2px solid #A5B4FC' }}>
+                      <Wind className="w-5 h-5 text-indigo-400 mb-1" />
+                      <div className="font-bold text-white">{isDE ? 'Luft' : 'Air'}</div>
+                      <div className="text-gray-400 text-xs">{isDE ? 'Schnell, Combo-Karten' : 'Fast, combo cards'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section: Tips */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    <h4 className="font-black text-white uppercase">{isDE ? 'Tipps' : 'Tips'}</h4>
+                  </div>
+                  <ul className="space-y-2 text-sm text-gray-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400">✓</span>
+                      {isDE 
+                        ? 'Entferne schwache Karten im Shop - ein kleines Deck ist oft besser!'
+                        : 'Remove weak cards at the shop - a smaller deck is often better!'
+                      }
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400">✓</span>
+                      {isDE 
+                        ? 'Raste nicht zu oft - Elite-Kämpfe geben bessere Belohnungen!'
+                        : "Don't rest too often - elite fights give better rewards!"
+                      }
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400">✓</span>
+                      {isDE 
+                        ? 'Behalte die Gegner-Absichten im Auge (Symbole über ihnen).'
+                        : 'Watch enemy intents (symbols above them).'
+                      }
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400">✓</span>
+                      {isDE 
+                        ? 'Block vor dem Angriff aufbauen, wenn Gegner viel Schaden machen!'
+                        : 'Build block before attacking when enemies deal high damage!'
+                      }
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Start Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    audio.playClick();
+                    setShowTutorial(false);
+                  }}
+                  className="w-full py-4 font-black text-lg uppercase"
+                  style={{
+                    background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
+                    border: '4px solid #000',
+                    boxShadow: '6px 6px 0 #000',
+                    color: '#FFF'
+                  }}
+                >
+                  {isDE ? 'Verstanden!' : 'Got it!'}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
