@@ -7,10 +7,10 @@
 // ============================================
 // DATABASE CONFIGURATION
 // ============================================
-define('DB_HOST', 'db1234567890.hosting-data.io'); // Your IONOS MySQL host
-define('DB_NAME', 'dbs12345678');                  // Your database name
-define('DB_USER', 'dbu1234567');                   // Your database user
-define('DB_PASS', 'YOUR_DB_PASSWORD_HERE');        // Your database password
+define('DB_HOST', 'db5019112648.hosting-data.io'); // IONOS MySQL host
+define('DB_NAME', 'dbs15023407');                  // Database name
+define('DB_USER', 'dbu725871');                    // Database user
+define('DB_PASS', 'Kewadesign1998');               // DB Passwort
 define('DB_CHARSET', 'utf8mb4');
 
 // ============================================
@@ -18,8 +18,8 @@ define('DB_CHARSET', 'utf8mb4');
 // ============================================
 define('SMTP_HOST', 'smtp.ionos.de');
 define('SMTP_PORT', 587);
-define('SMTP_USER', 'noreply@leximix.de');         // Your IONOS email
-define('SMTP_PASS', 'YOUR_EMAIL_PASSWORD_HERE');   // Your email password
+define('SMTP_USER', 'noreply@leximix.de');         // IONOS E-Mail
+define('SMTP_PASS', 'Kewadesign1998');             // E-Mail Passwort
 define('SMTP_FROM_NAME', 'LexiMix');
 define('SMTP_FROM_EMAIL', 'noreply@leximix.de');
 
