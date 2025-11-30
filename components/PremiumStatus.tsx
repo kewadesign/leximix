@@ -5,9 +5,17 @@ interface Props {
     isPremium: boolean;
     premiumActivatedAt?: number;
     theme: 'dark' | 'light';
+    language?: 'EN' | 'DE' | 'ES';
 }
 
-export const PremiumStatus: React.FC<Props> = ({ isPremium, premiumActivatedAt, theme }) => {
+// Translations for PremiumStatus
+const PREMIUM_TRANSLATIONS = {
+    EN: { active: 'Premium active', day: 'day', days: 'days', remaining: 'remaining' },
+    DE: { active: 'Premium aktiv', day: 'Tag', days: 'Tage', remaining: 'übrig' },
+    ES: { active: 'Premium activo', day: 'día', days: 'días', remaining: 'restante' }
+};
+
+export const PremiumStatus: React.FC<Props> = ({ isPremium, premiumActivatedAt, theme, language = 'DE' }) => {
     if (!isPremium || !premiumActivatedAt) return null;
 
     const daysSinceActivation = Math.floor((Date.now() - premiumActivatedAt) / (1000 * 60 * 60 * 24));
@@ -15,6 +23,7 @@ export const PremiumStatus: React.FC<Props> = ({ isPremium, premiumActivatedAt, 
 
     const isExpiringSoon = daysRemaining <= 7;
     const isDark = theme === 'dark';
+    const t = PREMIUM_TRANSLATIONS[language] || PREMIUM_TRANSLATIONS.EN;
 
     // Dark Mode Styles (Original)
     const darkStyles = {
@@ -39,11 +48,11 @@ export const PremiumStatus: React.FC<Props> = ({ isPremium, premiumActivatedAt, 
             <Crown size={16} className={styles.icon} fill="currentColor" />
             <div className="text-xs">
                 <span className={`font-bold ${styles.textTitle}`}>
-                    Premium aktiv
+                    {t.active}
                 </span>
                 <span className="text-gray-400 ml-2">
                     <span className={styles.textSub}>
-                        {daysRemaining} {daysRemaining === 1 ? 'Tag' : 'Tage'} übrig
+                        {daysRemaining} {daysRemaining === 1 ? t.day : t.days} {t.remaining}
                     </span>
                 </span>
             </div>

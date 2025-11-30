@@ -298,7 +298,7 @@ export const SEASON_2_AVATARS: SeasonAvatar[] = [
 export const SEASONS: Season[] = [
   {
     id: 1,
-    name: 'Genesis',
+    name: 'Season I',
     theme: 'space',
     startDate: Date.parse('2025-11-24T00:00:00Z'),
     endDate: Date.parse('2025-12-31T00:00:00Z'),
@@ -390,6 +390,8 @@ export const TRANSLATIONS = {
       VOUCHER_REDEEM: "Redeem",
       VOUCHER_REDEEMED: "✓ Redeemed"
     },
+    seasonEnds: "Season Ends",
+    days: "days",
     MODES: {
       CLASSIC: { title: "CLASSIC", desc: "The Standard" },
       SPEEDRUN: { title: "SPEEDRUN", desc: "Race against time" },
@@ -405,6 +407,7 @@ export const TRANSLATIONS = {
       NINE_MENS_MORRIS: { title: "NINE MEN'S MORRIS", desc: "Strategy Mill Game" },
       RUMMY: { title: "RUMMY", desc: "Classic Card Game" },
       DECKBUILDER: { title: "CARD FORGE", desc: "Roguelike Deckbuilder" },
+      SOLITAIRE: { title: "SOLITAIRE", desc: "Classic Card Game" },
       LOCKED: { title: "LOCKED", desc: "Coming Soon" }
     },
     MAU_MAU: {
@@ -493,7 +496,7 @@ export const TRANSLATIONS = {
       RUN: "Run"
     },
     SEASON: {
-      TITLE: "SEASON I: GENESIS",
+      TITLE: "SEASON I",
       SUBTITLE: "BATTLE PASS",
       PREMIUM_ACTIVE: "PREMIUM ACTIVE",
       FREE_ACTIVE: "FREE PASS ACTIVE",
@@ -657,6 +660,8 @@ export const TRANSLATIONS = {
       VOUCHER_REDEEM: "Einlösen",
       VOUCHER_REDEEMED: "✓ Eingelöst"
     },
+    seasonEnds: "Season Ende",
+    days: "Tage",
     MODES: {
       CLASSIC: { title: "KLASSISCH", desc: "Der Standard" },
       SPEEDRUN: { title: "ZEITRENNEN", desc: "Gegen die Zeit" },
@@ -672,6 +677,7 @@ export const TRANSLATIONS = {
       NINE_MENS_MORRIS: { title: "MÜHLE", desc: "Strategie-Brettspiel" },
       RUMMY: { title: "ROMMÉ", desc: "Klassisches Kartenspiel" },
       DECKBUILDER: { title: "KARTENSCHMIEDE", desc: "Roguelike Deckbuilder" },
+      SOLITAIRE: { title: "SOLITÄR", desc: "Klassisches Kartenspiel" },
       LOCKED: { title: "BALD", desc: "Demnächst" }
     },
     MAU_MAU: {
@@ -759,7 +765,7 @@ export const TRANSLATIONS = {
       RUN: "Reihe"
     },
     SEASON: {
-      TITLE: "SAISON I: GENESIS",
+      TITLE: "SAISON I",
       SUBTITLE: "BATTLE PASS",
       PREMIUM_ACTIVE: "PREMIUM AKTIV",
       FREE_ACTIVE: "GRATIS PASS AKTIV",
@@ -923,6 +929,8 @@ export const TRANSLATIONS = {
       VOUCHER_REDEEM: "Canjear",
       VOUCHER_REDEEMED: "✓ Canjeado"
     },
+    seasonEnds: "Temporada Termina",
+    days: "días",
     MODES: {
       CLASSIC: { title: "CLÁSICO", desc: "El Estándar" },
       SPEEDRUN: { title: "CONTRARRELOJ", desc: "Carrera contra el tiempo" },
@@ -938,6 +946,7 @@ export const TRANSLATIONS = {
       NINE_MENS_MORRIS: { title: "MOLINO", desc: "Juego de Estrategia" },
       RUMMY: { title: "RUMMY", desc: "Juego de Cartas Clásico" },
       DECKBUILDER: { title: "FORJA DE CARTAS", desc: "Roguelike Deckbuilder" },
+      SOLITAIRE: { title: "SOLITARIO", desc: "Juego de Cartas Clásico" },
       LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
     },
     MAU_MAU: {
@@ -1024,7 +1033,7 @@ export const TRANSLATIONS = {
       RUN: "Escalera"
     },
     SEASON: {
-      TITLE: "TEMPORADA I: GÉNESIS",
+      TITLE: "TEMPORADA I",
       SUBTITLE: "PASE DE BATALLA",
       PREMIUM_ACTIVE: "PREMIUM ACTIVO",
       FREE_ACTIVE: "PASE GRATIS ACTIVO",

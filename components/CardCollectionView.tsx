@@ -102,7 +102,7 @@ export const CardCollectionView: React.FC<CardCollectionViewProps> = ({
 
   return (
     <div 
-      className="min-h-screen flex flex-col"
+      className="h-screen flex flex-col overflow-hidden"
       style={{ background: 'var(--color-bg, #0a0a0a)' }}
     >
       {/* Rainbow Top Bar */}
@@ -345,6 +345,25 @@ export const CardCollectionView: React.FC<CardCollectionViewProps> = ({
                   >
                     {isDE ? card.nameDE : card.name}
                   </span>
+
+                  {/* PLACEHOLDER Watermark */}
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+                    style={{ 
+                      transform: 'rotate(-35deg)',
+                      zIndex: 5
+                    }}
+                  >
+                    <span 
+                      className="text-[10px] font-black uppercase tracking-wider whitespace-nowrap"
+                      style={{ 
+                        color: 'rgba(255, 255, 255, 0.25)',
+                        textShadow: '0 0 2px rgba(0,0,0,0.5)'
+                      }}
+                    >
+                      PLACEHOLDER
+                    </span>
+                  </div>
 
                   {/* Count Badge */}
                   {count > 0 && (

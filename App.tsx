@@ -23,6 +23,7 @@ import { StickerAlbumView } from './components/StickerAlbumView';
 
 import SkatMauMauGame from './components/SkatMauMauGame';
 import { DeckbuilderGame } from './components/DeckbuilderGame';
+import { SolitaireGame } from './components/SolitaireGame';
 import { CardCollectionView } from './components/CardCollectionView';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { FriendsManager } from './components/FriendsManager';
@@ -222,7 +223,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS' | 'NINE_MENS_MORRIS' | 'RUMMY' | 'DECKBUILDER';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS' | 'NINE_MENS_MORRIS' | 'RUMMY' | 'DECKBUILDER' | 'SOLITAIRE';
 
 const FALLBACK_SEASON_CONFIG = {
   "activeSeasonId": 1,
@@ -1269,6 +1270,12 @@ export default function App() {
       return;
     }
 
+    // Solitaire - Goes directly to game (has its own level select)
+    if (mode === GameMode.SOLITAIRE) {
+      setView('SOLITAIRE');
+      return;
+    }
+
     setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 }); // Default
     setTutorialMode(mode);
     setView('TUTORIAL');
@@ -2146,6 +2153,7 @@ export default function App() {
     [GameMode.NINE_MENS_MORRIS]: { bg: '#D97706', accent: '#000' }, // Amber für Mühle
     [GameMode.RUMMY]: { bg: '#059669', accent: '#000' },        // Smaragd für Rommé
     [GameMode.DECKBUILDER]: { bg: '#8B5CF6', accent: '#000' },  // Lila für Deckbuilder
+    [GameMode.SOLITAIRE]: { bg: '#06FFA5', accent: '#000' },    // Grün für Solitaire
   };
 
   const GameCard = ({ mode, title, desc, icon: Icon, locked = false, comingSoon = false }: any) => {
@@ -2760,10 +2768,10 @@ export default function App() {
               transform: 'skew(-2deg)'
             }}
           >
-            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)', transform: 'skew(2deg)' }}>Season Ende</span>
+            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)', transform: 'skew(2deg)' }}>{t.seasonEnds}</span>
             <div className="flex items-center gap-2 font-black" style={{ color: 'var(--color-text)', transform: 'skew(2deg)' }}>
               <Clock size={16} />
-              {Math.max(0, Math.ceil((getCurrentSeason().endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage
+              {Math.max(0, Math.ceil((getCurrentSeason().endDate - Date.now()) / (1000 * 60 * 60 * 24)))} {t.days}
             </div>
           </div>
 
@@ -2816,6 +2824,7 @@ export default function App() {
         <GameCard mode={GameMode.NINE_MENS_MORRIS} title={t.MODES.NINE_MENS_MORRIS.title} desc={t.MODES.NINE_MENS_MORRIS.desc} icon={Target} />
         <GameCard mode={GameMode.RUMMY} title={t.MODES.RUMMY.title} desc={t.MODES.RUMMY.desc} icon={Layers} />
         <GameCard mode={GameMode.DECKBUILDER} title={t.MODES.DECKBUILDER.title} desc={t.MODES.DECKBUILDER.desc} icon={Sword} />
+        <GameCard mode={GameMode.SOLITAIRE} title={t.MODES.SOLITAIRE.title} desc={t.MODES.SOLITAIRE.desc} icon={Layers} />
       </div>
 
       {/* Footer */}
@@ -3652,12 +3661,18 @@ export default function App() {
               ...prev,
               coins: prev.coins + coins,
               xp: prev.xp + xp,
-              level: Math.floor((prev.xp + xp) / 100) + 1
+              level: Math.floor((prev.xp + xp) / 100) + 1,
+              deckbuilderData: {
+                ...prev.deckbuilderData,
+                savedRun: null // Clear saved run on game end
+              }
             }));
             setView('HOME');
             audio.playWin();
           }}
           language={user.language}
+          user={user}
+          onUpdateUser={setUser}
         />
       )}
       {view === 'CARD_COLLECTION' && (
@@ -3665,6 +3680,22 @@ export default function App() {
           user={user}
           onBack={() => setView('DECKBUILDER')}
           language={user.language}
+        />
+      )}
+      {view === 'SOLITAIRE' && (
+        <SolitaireGame
+          onBack={() => setView('HOME')}
+          onGameEnd={(coins, xp) => {
+            setUser(prev => ({
+              ...prev,
+              coins: prev.coins + coins,
+              xp: prev.xp + xp,
+              level: Math.floor((prev.xp + xp) / 100) + 1
+            }));
+          }}
+          language={user.language}
+          user={user}
+          onUpdateUser={setUser}
         />
       )}
       {/* Navigation Icons */}
@@ -4176,9 +4207,9 @@ export default function App() {
 
       <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title="">
         <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center relative overflow-hidden">
-          {/* Rainbow Background */}
+          {/* Rainbow Background - pointer-events-none to allow clicking through */}
           <div 
-            className="absolute inset-0 opacity-30"
+            className="absolute inset-0 opacity-30 pointer-events-none"
             style={{
               background: 'linear-gradient(135deg, #FF006E 0%, #FF7F00 25%, #FFBE0B 50%, #00D9FF 75%, #8338EC 100%)',
               backgroundSize: '200% 200%',
@@ -4205,8 +4236,8 @@ export default function App() {
           </div>
 
           {/* Level Circle with Glow */}
-          <div className="relative">
-            <div className="absolute inset-0 blur-3xl opacity-60" style={{ background: '#FFBE0B' }}></div>
+          <div className="relative z-10">
+            <div className="absolute inset-0 blur-3xl opacity-60 pointer-events-none" style={{ background: '#FFBE0B' }}></div>
             <div 
               className="w-36 h-36 flex items-center justify-center relative z-10"
               style={{
@@ -4218,8 +4249,8 @@ export default function App() {
               <span className="text-7xl font-black" style={{ color: '#000' }}>{levelUpData.level}</span>
             </div>
             {/* Stars around */}
-            <div className="absolute -top-2 -right-2 text-3xl animate-bounce">⭐</div>
-            <div className="absolute -bottom-2 -left-2 text-2xl animate-bounce" style={{ animationDelay: '0.2s' }}>✨</div>
+            <div className="absolute -top-2 -right-2 text-3xl animate-bounce pointer-events-none">⭐</div>
+            <div className="absolute -bottom-2 -left-2 text-2xl animate-bounce pointer-events-none" style={{ animationDelay: '0.2s' }}>✨</div>
           </div>
 
           {/* Text */}
@@ -4244,7 +4275,7 @@ export default function App() {
           {/* Continue Button */}
           <button
             onClick={() => setShowLevelUp(false)}
-            className="px-8 py-3 text-lg font-black uppercase transition-all hover:-translate-y-1"
+            className="px-8 py-3 text-lg font-black uppercase transition-all hover:-translate-y-1 relative z-20"
             style={{
               background: '#00D9FF',
               color: '#000',
@@ -4330,7 +4361,18 @@ export default function App() {
           >
             <Trophy size={64} style={{ color: '#000' }} />
           </div>
-          <div className="text-2xl font-black uppercase tracking-wide" style={{ color: '#000' }}>{t.GAME.WIN_DESC}</div>
+          {/* Rainbow Text for Level Cleared */}
+          <div 
+            className="text-2xl font-black uppercase tracking-wide"
+            style={{ 
+              background: 'linear-gradient(90deg, #FF006E, #FF7F00, #FFBE0B, #06FFA5, #00D9FF, #8338EC)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}
+          >
+            {t.GAME.WIN_DESC}
+          </div>
 
           {/* Stats */}
           <div className="flex justify-center gap-4">
@@ -4352,31 +4394,40 @@ export default function App() {
             </div>
           </div>
 
-          {/* Level Progress */}
+          {/* Level Progress - Segmented Bar */}
           <div className="px-4">
-            <div className="flex justify-between text-xs font-black mb-2" style={{ color: '#4A4A4A' }}>
+            <div className="flex justify-between text-xs font-black mb-2" style={{ color: 'var(--color-text-muted)' }}>
               <span>LVL {user.level}</span>
               <span>{(user.xp % 100)} / 100 XP</span>
             </div>
-            <div className="h-4" style={{ background: '#000', border: '3px solid #000' }}>
-              <div className="h-full transition-all duration-1000" style={{ width: `${user.xp % 100}%`, background: '#06FFA5' }}></div>
+            <div className="h-4 flex gap-[2px]" style={{ background: 'var(--color-border)', border: '3px solid var(--color-border)' }}>
+              {[...Array(10)].map((_, i) => (
+                <div 
+                  key={i}
+                  className="flex-1 h-full transition-all duration-300"
+                  style={{ 
+                    background: i < Math.floor((user.xp % 100) / 10) ? '#06FFA5' : 'var(--color-surface)',
+                    transitionDelay: `${i * 50}ms`
+                  }}
+                />
+              ))}
             </div>
           </div>
 
           <div className="flex gap-4 pt-4">
             <button
               className="flex-1 py-4 font-black uppercase text-sm transition-all"
-              style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
+              style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '4px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}
               onClick={() => { setShowWin(false); setView('LEVELS'); }}
             >
-              Übersicht
+              {user.language === 'de' ? 'Übersicht' : user.language === 'es' ? 'Vista General' : 'Overview'}
             </button>
             <button
               className="flex-1 py-4 font-black uppercase text-sm transition-all"
               style={{ background: '#06FFA5', color: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
               onClick={() => { setShowWin(false); handleNextLevel(); }}
             >
-              Weiter
+              {t.ONBOARDING.CONTINUE}
             </button>
           </div>
         </div>
@@ -4787,11 +4838,11 @@ export default function App() {
                 style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #8338EC' }}
               >
                 <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#8338EC', color: '#FFF', border: '2px solid #000' }}>
-                  ACCOUNT SICHERHEIT
+                  {t.PROFILE.ACCOUNT_SECURITY}
                 </div>
                 {auth.currentUser?.email && (
                   <div className="mb-3">
-                    <p className="text-xs font-bold uppercase" style={{ color: '#4A4A4A' }}>E-MAIL</p>
+                    <p className="text-xs font-bold uppercase" style={{ color: '#4A4A4A' }}>{t.PROFILE.EMAIL}</p>
                     <p className="font-black" style={{ color: '#000' }}>{auth.currentUser.email}</p>
                   </div>
                 )}
@@ -4914,6 +4965,7 @@ export default function App() {
             onTitleChange={setEditTitle}
             onCardBackChange={setEditCardBack}
             onOpenAlbum={() => { setShowProfile(false); setShowStickerAlbum(true); }}
+            t={t}
           />
 
           {/* Delete Account */}

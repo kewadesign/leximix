@@ -180,18 +180,18 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
                     </div>
 
                     <div className="mt-8 mb-6">
-                        <p className="text-sm font-bold uppercase text-gray-500 mb-1">{t.CHAIN_GAME.FINAL_SCORE}</p>
-                        <p className="text-6xl font-black">{score}</p>
+                        <p className="text-sm font-bold uppercase mb-1" style={{ color: 'var(--color-text-muted)' }}>{t.CHAIN_GAME.FINAL_SCORE}</p>
+                        <p className="text-6xl font-black" style={{ color: 'var(--color-text)' }}>{score}</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-8">
                         <div className="bg-blue-100 p-3 border-2 border-[var(--color-border)]">
-                            <p className="text-xs font-bold uppercase">{t.GAME.XP_GAINED}</p>
-                            <p className="text-xl font-black">+{Math.floor(score / 10)}</p>
+                            <p className="text-xs font-bold uppercase" style={{ color: '#333' }}>{t.GAME.XP_GAINED}</p>
+                            <p className="text-xl font-black" style={{ color: '#000' }}>+{Math.floor(score / 10)}</p>
                         </div>
                         <div className="bg-yellow-100 p-3 border-2 border-[var(--color-border)]">
-                            <p className="text-xs font-bold uppercase">{t.GAME.COINS_GAINED}</p>
-                            <p className="text-xl font-black">+{Math.floor(score / 20)}</p>
+                            <p className="text-xs font-bold uppercase" style={{ color: '#333' }}>{t.GAME.COINS_GAINED}</p>
+                            <p className="text-xl font-black" style={{ color: '#000' }}>+{Math.floor(score / 20)}</p>
                         </div>
                     </div>
 
@@ -199,12 +199,14 @@ export const ChainGame: React.FC<ChainGameProps> = ({ language, user, onUpdateUs
                         <button
                             onClick={startGame}
                             className="w-full py-4 bg-[#06FFA5] border-4 border-[var(--color-border)] font-black text-xl hover:translate-y-1 active:translate-y-2 transition-all shadow-[4px_4px_0px_#000]"
+                            style={{ color: '#000' }}
                         >
                             {t.CHAIN_GAME.PLAY_AGAIN}
                         </button>
                         <button
                             onClick={() => onGameEnd(Math.floor(score / 20), Math.floor(score / 10))}
-                            className="w-full py-4 bg-[var(--color-surface)] border-4 border-[var(--color-border)] font-black text-xl hover:bg-gray-50 transition-all shadow-[4px_4px_0px_#000]"
+                            className="w-full py-4 bg-[var(--color-surface)] border-4 border-[var(--color-border)] font-black text-xl transition-all shadow-[4px_4px_0px_#000]"
+                            style={{ color: 'var(--color-text)' }}
                         >
                             {t.CHAIN_GAME.EXIT}
                         </button>

@@ -18,14 +18,8 @@ interface Props {
   onTitleChange?: (titleId: string) => void;
   onCardBackChange?: (cardBackId: string) => void;
   onOpenAlbum: () => void;
+  t?: any; // Translations
 }
-
-const RARITY_LABELS: Record<string, string> = {
-  common: 'Gewöhnlich',
-  rare: 'Selten',
-  epic: 'Episch',
-  legendary: 'Legendär'
-};
 
 export const ProfileEditor: React.FC<Props> = ({
   user,
@@ -39,12 +33,25 @@ export const ProfileEditor: React.FC<Props> = ({
   onEffectChange,
   onTitleChange,
   onCardBackChange,
-  onOpenAlbum
+  onOpenAlbum,
+  t
 }) => {
   const [activeTab, setActiveTab] = useState<'frames' | 'fonts' | 'effects' | 'titles' | 'cardbacks'>('frames');
   const isDark = user.theme === 'dark';
   const B = isDark ? '#FFF' : '#000';
   const bgSurface = isDark ? '#2a2a4a' : '#FFF';
+  
+  // Translations with fallbacks
+  const p = t?.PROFILE || {};
+  const getRarityLabel = (rarity: string) => {
+    const labels: Record<string, string> = {
+      common: p.RARITY_COMMON || 'Common',
+      rare: p.RARITY_RARE || 'Rare',
+      epic: p.RARITY_EPIC || 'Epic',
+      legendary: p.RARITY_LEGENDARY || 'Legendary'
+    };
+    return labels[rarity] || rarity;
+  };
 
   // Check if user owns a cosmetic
   const ownsFrame = (frameId: string): boolean => {
@@ -102,8 +109,8 @@ export const ProfileEditor: React.FC<Props> = ({
           <div className="flex items-center gap-3">
             <span className="text-3xl">🎴</span>
             <div className="text-left">
-              <h3 className="font-black text-white uppercase tracking-wide">Sticker Album</h3>
-              <p className="text-xs font-bold text-white/80">Sammle 72 einzigartige Sticker!</p>
+              <h3 className="font-black text-white uppercase tracking-wide">{p.STICKER_ALBUM || 'Sticker Album'}</h3>
+              <p className="text-xs font-bold text-white/80">{p.COLLECT_STICKERS || 'Collect 72 unique stickers!'}</p>
             </div>
           </div>
           <div 
@@ -132,35 +139,35 @@ export const ProfileEditor: React.FC<Props> = ({
           className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
           style={tabStyle(activeTab === 'frames')}
         >
-          <Sparkles size={12} /> Rahmen
+          <Sparkles size={12} /> {p.FRAMES || 'Frames'}
         </button>
         <button
           onClick={() => setActiveTab('effects')}
           className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
           style={tabStyle(activeTab === 'effects')}
         >
-          <Palette size={12} /> Effekte
+          <Palette size={12} /> {p.EFFECTS || 'Effects'}
         </button>
         <button
           onClick={() => setActiveTab('titles')}
           className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
           style={tabStyle(activeTab === 'titles')}
         >
-          <Crown size={12} /> Titel
+          <Crown size={12} /> {p.TITLES || 'Titles'}
         </button>
         <button
           onClick={() => setActiveTab('cardbacks')}
           className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
           style={tabStyle(activeTab === 'cardbacks')}
         >
-          <CreditCard size={12} /> Karten
+          <CreditCard size={12} /> {p.CARDS || 'Cards'}
         </button>
         <button
           onClick={() => setActiveTab('fonts')}
           className="flex-1 min-w-[70px] py-3 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
           style={tabStyle(activeTab === 'fonts')}
         >
-          <Type size={12} /> Schrift
+          <Type size={12} /> {p.FONTS || 'Font'}
         </button>
       </div>
 
@@ -174,7 +181,7 @@ export const ProfileEditor: React.FC<Props> = ({
             className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" 
             style={{ background: '#FF7F00', color: '#FFF', border: `2px solid ${B}` }}
           >
-            Profilrahmen wählen
+            {p.CHOOSE_FRAME || 'Choose Profile Frame'}
           </div>
           
           <div className="grid grid-cols-4 gap-2">
@@ -244,7 +251,7 @@ export const ProfileEditor: React.FC<Props> = ({
           
           {/* Hint for unlocking */}
           <p className="text-[10px] font-bold mt-3 text-center" style={{ color: isDark ? '#AAA' : '#666' }}>
-            Schalte neue Rahmen über den Season Pass frei! 🎁
+            {p.UNLOCK_FRAMES || 'Unlock new frames via Season Pass!'} 🎁
           </p>
         </div>
       )}
@@ -259,7 +266,7 @@ export const ProfileEditor: React.FC<Props> = ({
             className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" 
             style={{ background: '#8338EC', color: '#FFF', border: `2px solid ${B}` }}
           >
-            Profilname-Schrift
+            {p.PROFILE_FONT || 'Profile Name Font'}
           </div>
           
           <div className="space-y-2">
@@ -286,7 +293,7 @@ export const ProfileEditor: React.FC<Props> = ({
                       className="text-lg"
                       style={{ fontFamily: font.fontFamily, color: isDark ? '#FFF' : '#000' }}
                     >
-                      {user.name || 'Spieler'}
+                      {user.name || p.PLAYER || 'Player'}
                     </span>
                   </div>
                   
@@ -321,7 +328,7 @@ export const ProfileEditor: React.FC<Props> = ({
             className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" 
             style={{ background: '#06FFA5', color: '#000', border: `2px solid ${B}` }}
           >
-            Profil-Effekte
+            {p.PROFILE_EFFECTS || 'Profile Effects'}
           </div>
           
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -378,7 +385,7 @@ export const ProfileEditor: React.FC<Props> = ({
           
           {/* Show more hint */}
           <p className="text-[10px] font-bold mt-3 text-center" style={{ color: isDark ? '#AAA' : '#666' }}>
-            Schalte neue Effekte über den Season Pass frei! ✨
+            {p.UNLOCK_EFFECTS || 'Unlock new effects via Season Pass!'} ✨
           </p>
         </div>
       )}
@@ -393,7 +400,7 @@ export const ProfileEditor: React.FC<Props> = ({
             className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" 
             style={{ background: '#FF006E', color: '#FFF', border: `2px solid ${B}` }}
           >
-            Titel wählen
+            {p.CHOOSE_TITLE || 'Choose Title'}
           </div>
           
           <div className="space-y-2">
@@ -429,7 +436,7 @@ export const ProfileEditor: React.FC<Props> = ({
                           className="text-[9px] font-bold uppercase"
                           style={{ color: rarityColor }}
                         >
-                          {RARITY_LABELS[title.rarity]}
+                          {getRarityLabel(title.rarity)}
                         </div>
                       )}
                     </div>
@@ -452,7 +459,7 @@ export const ProfileEditor: React.FC<Props> = ({
           </div>
           
           <p className="text-[10px] font-bold mt-3 text-center" style={{ color: isDark ? '#AAA' : '#666' }}>
-            Schalte neue Titel über den Season Pass frei! 👑
+            {p.UNLOCK_TITLES || 'Unlock new titles via Season Pass!'} 👑
           </p>
         </div>
       )}
@@ -467,7 +474,7 @@ export const ProfileEditor: React.FC<Props> = ({
             className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" 
             style={{ background: '#8338EC', color: '#FFF', border: `2px solid ${B}` }}
           >
-            Kartenrückseite wählen
+            {p.CHOOSE_CARDBACK || 'Choose Card Back'}
           </div>
           
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
@@ -541,7 +548,7 @@ export const ProfileEditor: React.FC<Props> = ({
           </div>
           
           <p className="text-[10px] font-bold mt-3 text-center" style={{ color: isDark ? '#AAA' : '#666' }}>
-            Schalte neue Kartenrückseiten über den Season Pass frei! 🃏
+            {p.UNLOCK_CARDBACKS || 'Unlock new card backs via Season Pass!'} 🃏
           </p>
         </div>
       )}

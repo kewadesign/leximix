@@ -71,7 +71,7 @@ export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium
                 border: '2px solid #000'
               }}
             >
-              {isPremium ? 'Premium Aktiv' : 'Kostenlos'}
+              {isPremium ? t.PREMIUM_ACTIVE : t.FREE_ACTIVE}
             </span>
           </div>
         </div>
@@ -86,7 +86,7 @@ export const SeasonPass: React.FC<Props> = ({ xp, level, isPremium, onBuyPremium
               boxShadow: '4px 4px 0px #000'
             }}
           >
-            <span className="text-[10px] font-black uppercase" style={{ color: 'var(--color-text-muted)' }}>Level</span>
+            <span className="text-[10px] font-black uppercase" style={{ color: 'var(--color-text-muted)' }}>{t.LEVEL}</span>
             <span className="text-2xl md:text-3xl font-black" style={{ color: 'var(--color-text)' }}>{level}</span>
           </div>
           <ArrowRight size={24} style={{ color: isPremium ? '#000' : 'var(--color-text)' }} />

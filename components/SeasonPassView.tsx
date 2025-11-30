@@ -436,7 +436,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     </div>
 
                     <div className="mt-2 text-xs font-black uppercase" style={{ color: '#FF7F00' }}>
-                        {Math.max(0, Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage übrig
+                        {Math.max(0, Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24)))} {t.daysRemaining}
                     </div>
                 </div>
                 <div className="w-12"></div>
@@ -464,41 +464,54 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                         }}
                     >
                         <Crown size={24} fill="currentColor" />
-                        Premium Aktivieren
+                        {t.unlockPremium}
                     </button>
                 </div>
             )}
 
             {/* Reward Legend - Neo Brutal */}
-            <div
-                className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-2 text-xs font-black uppercase z-20"
-                style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
-            >
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#0096FF', border: '2px solid #000' }}><ImageIcon size={12} style={{ color: '#FFF' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Avatar</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><span style={{ fontSize: '10px' }}>🖼️</span></div>
-                    <span style={{ color: 'var(--color-text)' }}>Effekt</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#FF006E', border: '2px solid #000' }}><Crown size={12} style={{ color: '#FFF' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Titel</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#00D9FF', border: '2px solid #000' }}><CreditCard size={12} style={{ color: '#000' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Karten</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={12} style={{ color: '#000' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Münzen</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Zap size={12} style={{ color: '#000' }} /></div>
-                    <span style={{ color: 'var(--color-text)' }}>Booster</span>
-                </div>
-            </div>
+            {(() => {
+                const lang = user.language?.toLowerCase() || 'de';
+                const legendLabels: Record<string, Record<string, string>> = {
+                    avatar: { de: 'Avatar', en: 'Avatar', es: 'Avatar' },
+                    effect: { de: 'Effekt', en: 'Effect', es: 'Efecto' },
+                    title: { de: 'Titel', en: 'Title', es: 'Título' },
+                    cards: { de: 'Karten', en: 'Cards', es: 'Cartas' },
+                    coins: { de: 'Münzen', en: 'Coins', es: 'Monedas' },
+                    booster: { de: 'Booster', en: 'Booster', es: 'Potenciador' }
+                };
+                return (
+                    <div
+                        className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-2 text-xs font-black uppercase z-20"
+                        style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
+                    >
+                        <div className="flex items-center gap-1">
+                            <div className="p-1" style={{ background: '#0096FF', border: '2px solid #000' }}><ImageIcon size={12} style={{ color: '#FFF' }} /></div>
+                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.avatar[lang] || legendLabels.avatar.en}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><span style={{ fontSize: '10px' }}>🖼️</span></div>
+                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.effect[lang] || legendLabels.effect.en}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className="p-1" style={{ background: '#FF006E', border: '2px solid #000' }}><Crown size={12} style={{ color: '#FFF' }} /></div>
+                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.title[lang] || legendLabels.title.en}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className="p-1" style={{ background: '#00D9FF', border: '2px solid #000' }}><CreditCard size={12} style={{ color: '#000' }} /></div>
+                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.cards[lang] || legendLabels.cards.en}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={12} style={{ color: '#000' }} /></div>
+                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.coins[lang] || legendLabels.coins.en}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Zap size={12} style={{ color: '#000' }} /></div>
+                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.booster[lang] || legendLabels.booster.en}</span>
+                        </div>
+                    </div>
+                );
+            })()}
 
             {/* Scroll Track - GPU Optimized */}
             <div

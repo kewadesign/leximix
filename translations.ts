@@ -10,7 +10,7 @@ export const TRANSLATIONS = {
         // Home
         seasonRank: "SEASON LVL",
         mastersOfVocab: "Daily Word Training",
-        seasonPass: "Season I: Genesis",
+        seasonPass: "Season I",
         seasonDesc: "Claim Exclusive Rewards & Skins",
         play: "PLAY",
         settings: "SETTINGS",
@@ -77,6 +77,11 @@ export const TRANSLATIONS = {
         premium: "Premium",
         buy: "Buy Pass",
         lvl: "Lvl",
+        seasonEnds: "Season Ends",
+        days: "days",
+        day: "day",
+        daysRemaining: "days remaining",
+        dayRemaining: "day remaining",
 
         // Ad Overlay
         adMessage: "(Ad Space Placeholder)",
@@ -137,7 +142,30 @@ export const TRANSLATIONS = {
             CANCEL: "CANCEL",
             CONFIRM_DELETE: "PERMANENTLY DELETE",
             CONFIRM_MSG: "Please type 'delete' to confirm.",
-            CONFIRM_PLACEHOLDER: "Type 'delete'"
+            CONFIRM_PLACEHOLDER: "Type 'delete'",
+            STICKER_ALBUM: "Sticker Album",
+            COLLECT_STICKERS: "Collect 72 unique stickers!",
+            FRAMES: "Frames",
+            EFFECTS: "Effects",
+            TITLES: "Titles",
+            CARDS: "Cards",
+            FONTS: "Font",
+            CHOOSE_FRAME: "Choose Profile Frame",
+            UNLOCK_FRAMES: "Unlock new frames via Season Pass!",
+            PROFILE_FONT: "Profile Name Font",
+            PLAYER: "Player",
+            PROFILE_EFFECTS: "Profile Effects",
+            UNLOCK_EFFECTS: "Unlock new effects via Season Pass!",
+            CHOOSE_TITLE: "Choose Title",
+            UNLOCK_TITLES: "Unlock new titles via Season Pass!",
+            CHOOSE_CARDBACK: "Choose Card Back",
+            UNLOCK_CARDBACKS: "Unlock new card backs via Season Pass!",
+            ACCOUNT_SECURITY: "ACCOUNT SECURITY",
+            EMAIL: "EMAIL",
+            RARITY_COMMON: "Common",
+            RARITY_RARE: "Rare",
+            RARITY_EPIC: "Epic",
+            RARITY_LEGENDARY: "Legendary"
         }
     },
     DE: {
@@ -148,7 +176,7 @@ export const TRANSLATIONS = {
         // Home
         seasonRank: "SAISON STUFE",
         mastersOfVocab: "Das tägliche Worttraining",
-        seasonPass: "Saison I: Genesis",
+        seasonPass: "Saison I",
         seasonDesc: "Exklusive Skins & Belohnungen",
         play: "SPIELEN",
         settings: "EINSTELLUNGEN",
@@ -215,6 +243,11 @@ export const TRANSLATIONS = {
         premium: "Premium",
         buy: "Werde Premiummitglied!",
         lvl: "Stufe",
+        seasonEnds: "Season Ende",
+        days: "Tage",
+        day: "Tag",
+        daysRemaining: "Tage übrig",
+        dayRemaining: "Tag übrig",
 
         // Ad Overlay
         adMessage: "(Hier wäre Werbung)",
@@ -275,7 +308,30 @@ export const TRANSLATIONS = {
             CANCEL: "ABBRECHEN",
             CONFIRM_DELETE: "ENDGÜLTIG LÖSCHEN",
             CONFIRM_MSG: "Bitte tippe 'delete' um zu bestätigen.",
-            CONFIRM_PLACEHOLDER: "Tippe 'delete'"
+            CONFIRM_PLACEHOLDER: "Tippe 'delete'",
+            STICKER_ALBUM: "Sticker Album",
+            COLLECT_STICKERS: "Sammle 72 einzigartige Sticker!",
+            FRAMES: "Rahmen",
+            EFFECTS: "Effekte",
+            TITLES: "Titel",
+            CARDS: "Karten",
+            FONTS: "Schrift",
+            CHOOSE_FRAME: "Profilrahmen wählen",
+            UNLOCK_FRAMES: "Schalte neue Rahmen über den Season Pass frei!",
+            PROFILE_FONT: "Profilname-Schrift",
+            PLAYER: "Spieler",
+            PROFILE_EFFECTS: "Profil-Effekte",
+            UNLOCK_EFFECTS: "Schalte neue Effekte über den Season Pass frei!",
+            CHOOSE_TITLE: "Titel wählen",
+            UNLOCK_TITLES: "Schalte neue Titel über den Season Pass frei!",
+            CHOOSE_CARDBACK: "Kartenrückseite wählen",
+            UNLOCK_CARDBACKS: "Schalte neue Kartenrückseiten über den Season Pass frei!",
+            ACCOUNT_SECURITY: "ACCOUNT SICHERHEIT",
+            EMAIL: "E-MAIL",
+            RARITY_COMMON: "Gewöhnlich",
+            RARITY_RARE: "Selten",
+            RARITY_EPIC: "Episch",
+            RARITY_LEGENDARY: "Legendär"
         }
     },
     ES: {
@@ -286,7 +342,7 @@ export const TRANSLATIONS = {
         // Home
         seasonRank: "NIVEL DE TEMPORADA",
         mastersOfVocab: "Entrenamiento Diario",
-        seasonPass: "Temporada I: Génesis",
+        seasonPass: "Temporada I",
         seasonDesc: "Recompensas Exclusivas",
         play: "JUGAR",
         settings: "AJUSTES",
@@ -353,6 +409,11 @@ export const TRANSLATIONS = {
         premium: "Premium",
         buy: "Comprar Pase",
         lvl: "Nvl",
+        seasonEnds: "Temporada Termina",
+        days: "días",
+        day: "día",
+        daysRemaining: "días restantes",
+        dayRemaining: "día restante",
 
         // Ad Overlay
         adMessage: "(Espacio Publicitario)",
@@ -413,7 +474,30 @@ export const TRANSLATIONS = {
             CANCEL: "CANCELAR",
             CONFIRM_DELETE: "BORRAR PERMANENTEMENTE",
             CONFIRM_MSG: "Escribe 'delete' para confirmar.",
-            CONFIRM_PLACEHOLDER: "Escribe 'delete'"
+            CONFIRM_PLACEHOLDER: "Escribe 'delete'",
+            STICKER_ALBUM: "Álbum de Pegatinas",
+            COLLECT_STICKERS: "¡Colecciona 72 pegatinas únicas!",
+            FRAMES: "Marcos",
+            EFFECTS: "Efectos",
+            TITLES: "Títulos",
+            CARDS: "Cartas",
+            FONTS: "Fuente",
+            CHOOSE_FRAME: "Elegir Marco de Perfil",
+            UNLOCK_FRAMES: "¡Desbloquea nuevos marcos con el Pase de Temporada!",
+            PROFILE_FONT: "Fuente del Nombre",
+            PLAYER: "Jugador",
+            PROFILE_EFFECTS: "Efectos de Perfil",
+            UNLOCK_EFFECTS: "¡Desbloquea nuevos efectos con el Pase de Temporada!",
+            CHOOSE_TITLE: "Elegir Título",
+            UNLOCK_TITLES: "¡Desbloquea nuevos títulos con el Pase de Temporada!",
+            CHOOSE_CARDBACK: "Elegir Reverso de Carta",
+            UNLOCK_CARDBACKS: "¡Desbloquea nuevos reversos con el Pase de Temporada!",
+            ACCOUNT_SECURITY: "SEGURIDAD DE CUENTA",
+            EMAIL: "CORREO",
+            RARITY_COMMON: "Común",
+            RARITY_RARE: "Raro",
+            RARITY_EPIC: "Épico",
+            RARITY_LEGENDARY: "Legendario"
         }
     }
 };

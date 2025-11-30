@@ -59,11 +59,12 @@ import { audio } from '../utils/audio';
 // Shop Item Types
 interface ShopItem {
   id: string;
-  type: 'card' | 'potion' | 'remove' | 'upgrade';
+  type: 'card' | 'potion' | 'remove' | 'upgrade' | 'sell';
   card?: DeckbuilderCard;
   name: string;
   description: string;
   cost: number;
+  sellValue?: number;  // For sell items, this shows how much gold you get
   icon: React.ReactNode;
 }
 
@@ -123,6 +124,16 @@ const generateShopItems = (floor: number, element: CardElement): ShopItem[] => {
     icon: <Package className="w-5 h-5" />
   });
   
+  // Sell Card
+  items.push({
+    id: 'sell-card',
+    type: 'sell',
+    name: 'Karte verkaufen',
+    description: 'Verkaufe eine Karte für Gold',
+    cost: 0, // Free to access
+    icon: <Coins className="w-5 h-5" />
+  });
+  
   return items;
 };
 
@@ -137,6 +148,8 @@ interface DeckbuilderGameProps {
   onOpenCollection?: () => void;
   onGameEnd?: (coins: number, xp: number) => void;
   language?: 'EN' | 'DE' | 'ES';
+  user?: any;
+  onUpdateUser?: (updater: (prev: any) => any) => void;
 }
 
 // ============================================
@@ -194,11 +207,45 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
   onBack, 
   onOpenCollection,
   onGameEnd,
-  language = 'DE' 
+  language = 'DE',
+  user,
+  onUpdateUser
 }) => {
   // Game State
   const [view, setView] = useState<GameView>('menu');
   const [run, setRun] = useState<DeckbuilderRun | null>(null);
+  
+  // Check for saved run on mount
+  const savedRun = user?.deckbuilderData?.savedRun || null;
+  
+  // Save run function
+  const saveRun = useCallback((runToSave: DeckbuilderRun | null) => {
+    if (onUpdateUser) {
+      onUpdateUser(prev => ({
+        ...prev,
+        deckbuilderData: {
+          ...prev.deckbuilderData,
+          savedRun: runToSave
+        }
+      }));
+    }
+  }, [onUpdateUser]);
+  
+  // Auto-save when run changes (debounced)
+  useEffect(() => {
+    if (run && view !== 'menu' && view !== 'game_over' && view !== 'victory') {
+      const saveTimer = setTimeout(() => {
+        saveRun(run);
+      }, 1000);
+      return () => clearTimeout(saveTimer);
+    }
+  }, [run, view, saveRun]);
+  
+  // Clear saved run when game ends
+  const clearSavedRun = useCallback(() => {
+    saveRun(null);
+  }, [saveRun]);
+  
   const [combatState, setCombatState] = useState<CombatState | null>(null);
   const [currentEnemies, setCurrentEnemies] = useState<Enemy[]>([]);
   const [pendingRewards, setPendingRewards] = useState<{ gold: number; cardChoices: DeckbuilderCard[]; relicChance: number } | null>(null);
@@ -209,6 +256,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
   // Shop State
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const [showRemoveCardModal, setShowRemoveCardModal] = useState(false);
+  const [showSellCardModal, setShowSellCardModal] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showPauseMenu, setShowPauseMenu] = useState(false);
@@ -225,6 +273,16 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
   });
 
   const isDE = language === 'DE';
+  
+  // Resume saved run
+  const resumeRun = useCallback(() => {
+    if (savedRun) {
+      setRun(savedRun);
+      setView('map');
+      setMessage(isDE ? 'Durchlauf fortgesetzt!' : 'Run resumed!');
+      audio.playClick();
+    }
+  }, [savedRun, isDE]);
 
   // ============================================
   // GAME INITIALIZATION
@@ -646,12 +704,43 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
 
       {/* Main Buttons */}
       <div className="flex-1 flex flex-col items-center justify-center max-w-lg mx-auto w-full space-y-5">
+        {/* Resume Button - only if saved run exists */}
+        {savedRun && (
+          <motion.button
+            whileHover={{ scale: 1.02, y: -4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={resumeRun}
+            onMouseEnter={() => audio.playHover()}
+            className="w-full py-6 px-8 font-black text-2xl uppercase flex items-center justify-center gap-4"
+            style={{
+              background: '#FFBE0B',
+              border: '5px solid #000',
+              boxShadow: '8px 8px 0 #000',
+              color: '#000',
+              transform: 'skew(-2deg)'
+            }}
+          >
+            <RotateCcw className="w-8 h-8" style={{ transform: 'skew(2deg)' }} />
+            <span style={{ transform: 'skew(2deg)' }}>
+              {isDE ? `Fortsetzen (Etage ${savedRun.currentFloor})` : `Continue (Floor ${savedRun.currentFloor})`}
+            </span>
+          </motion.button>
+        )}
+
         <motion.button
           whileHover={{ scale: 1.02, y: -4 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => {
             audio.playClick();
-            setView('element_select');
+            if (savedRun) {
+              // Confirm overwriting saved run
+              if (window.confirm(isDE ? 'Gespeicherten Durchlauf überschreiben?' : 'Overwrite saved run?')) {
+                clearSavedRun();
+                setView('element_select');
+              }
+            } else {
+              setView('element_select');
+            }
           }}
           onMouseEnter={() => audio.playHover()}
           className="w-full py-6 px-8 font-black text-2xl uppercase flex items-center justify-center gap-4"
@@ -1124,7 +1213,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
           <div className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
               {shopItems.map((item, idx) => {
-                const canAfford = run.player.gold >= item.cost;
+                const canAfford = item.type === 'sell' ? true : run.player.gold >= item.cost;
                 const isHovered = hoveredItem === item.id;
                 const rarityColor = item.card?.rarity === 'rare' ? '#FFD700' : 
                                    item.card?.rarity === 'uncommon' ? '#8B5CF6' : 
@@ -1151,6 +1240,12 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
                       if (item.type === 'remove') {
                         audio.playClick();
                         setShowRemoveCardModal(true);
+                        return;
+                      }
+                      
+                      if (item.type === 'sell') {
+                        audio.playClick();
+                        setShowSellCardModal(true);
                         return;
                       }
                       
@@ -1196,7 +1291,7 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
                       <div 
                         className="w-12 h-12 flex items-center justify-center shrink-0"
                         style={{ 
-                          background: rarityColor,
+                          background: item.type === 'sell' ? '#06FFA5' : rarityColor,
                           border: '3px solid #000',
                           boxShadow: '3px 3px 0 #000'
                         }}
@@ -1205,6 +1300,8 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
                           <Swords className="w-6 h-6 text-black" />
                         ) : item.type === 'potion' ? (
                           <Heart className="w-6 h-6 text-black" />
+                        ) : item.type === 'sell' ? (
+                          <Coins className="w-6 h-6 text-black" />
                         ) : (
                           <Package className="w-6 h-6 text-black" />
                         )}
@@ -1234,13 +1331,19 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
                       <div 
                         className="flex items-center gap-1 px-3 py-1 shrink-0"
                         style={{ 
-                          background: canAfford ? '#FBBF24' : '#6B7280',
+                          background: item.type === 'sell' ? '#06FFA5' : (canAfford ? '#FBBF24' : '#6B7280'),
                           border: '3px solid #000',
                           boxShadow: '2px 2px 0 #000'
                         }}
                       >
-                        <Coins className="w-4 h-4 text-black" />
-                        <span className="font-black text-black">{item.cost}</span>
+                        {item.type === 'sell' ? (
+                          <span className="font-black text-black">GRATIS</span>
+                        ) : (
+                          <>
+                            <Coins className="w-4 h-4 text-black" />
+                            <span className="font-black text-black">{item.cost}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -1356,6 +1459,134 @@ export const DeckbuilderGame: React.FC<DeckbuilderGameProps> = ({
                     onClick={() => {
                       audio.playClose();
                       setShowRemoveCardModal(false);
+                    }}
+                    className="w-full mt-4 py-2 font-bold uppercase"
+                    style={{
+                      background: '#374151',
+                      border: '3px solid #000',
+                      color: '#FFF'
+                    }}
+                  >
+                    {isDE ? 'Abbrechen' : 'Cancel'}
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Sell Card Modal */}
+          <AnimatePresence>
+            {showSellCardModal && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                style={{ background: 'rgba(0,0,0,0.8)' }}
+                onClick={() => setShowSellCardModal(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0.9 }}
+                  onClick={e => e.stopPropagation()}
+                  className="w-full max-w-md max-h-[80vh] overflow-y-auto p-4"
+                  style={{
+                    background: 'var(--color-surface, #1a1a1a)',
+                    border: '4px solid #000',
+                    boxShadow: '8px 8px 0 #06FFA5'
+                  }}
+                >
+                  <h3 className="text-xl font-black text-white text-center mb-4 uppercase">
+                    {isDE ? 'Karte verkaufen' : 'Sell Card'}
+                  </h3>
+                  <p className="text-gray-400 text-sm text-center mb-4">
+                    {isDE ? 'Wähle eine Karte zum Verkaufen:' : 'Choose a card to sell:'}
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    {run.deck.filter(card => card.type !== 'starter').map((card, idx) => {
+                      // Calculate sell price based on rarity
+                      const sellPrice = card.rarity === 'legendary' ? 120 :
+                                       card.rarity === 'rare' ? 75 :
+                                       card.rarity === 'uncommon' ? 40 : 25;
+                      const rarityColor = card.rarity === 'legendary' ? '#FFD700' :
+                                         card.rarity === 'rare' ? '#FF006E' :
+                                         card.rarity === 'uncommon' ? '#8B5CF6' : '#06FFA5';
+                      
+                      return (
+                        <motion.button
+                          key={`sell-${card.id}-${idx}`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            audio.playPurchase();
+                            
+                            // Find the actual index in the full deck
+                            const fullDeckIndex = run.deck.findIndex((c, i) => 
+                              c.id === card.id && 
+                              run.deck.slice(0, i).filter(x => x.id === card.id).length === 
+                              run.deck.filter(x => x.type !== 'starter').slice(0, idx).filter(x => x.id === card.id).length
+                            );
+                            
+                            setRun(prev => {
+                              if (!prev) return prev;
+                              const newDeck = [...prev.deck];
+                              // Find and remove this specific card
+                              const removeIdx = newDeck.findIndex((c, i) => c.id === card.id && c.type !== 'starter');
+                              if (removeIdx !== -1) {
+                                newDeck.splice(removeIdx, 1);
+                              }
+                              return {
+                                ...prev,
+                                deck: newDeck,
+                                player: { ...prev.player, gold: prev.player.gold + sellPrice }
+                              };
+                            });
+                            
+                            setShowSellCardModal(false);
+                            setMessage(isDE ? `${card.name} für ${sellPrice} Gold verkauft!` : `Sold ${card.name} for ${sellPrice} gold!`);
+                          }}
+                          onMouseEnter={() => audio.playHover()}
+                          className="p-2 text-left relative"
+                          style={{
+                            background: card.element === 'fire' ? '#FF006E22' :
+                                       card.element === 'water' ? '#00D9FF22' :
+                                       card.element === 'earth' ? '#06FFA522' :
+                                       card.element === 'air' ? '#A5B4FC22' :
+                                       card.element === 'void' ? '#8B5CF622' : '#37415122',
+                            border: `3px solid ${rarityColor}`
+                          }}
+                        >
+                          <div className="font-bold text-white text-xs truncate">{card.name}</div>
+                          <div className="text-gray-500 text-[10px]">{card.rarity}</div>
+                          <div 
+                            className="absolute top-1 right-1 flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-black"
+                            style={{ background: '#FBBF24', color: '#000', border: '2px solid #000' }}
+                          >
+                            <Coins className="w-3 h-3" />
+                            +{sellPrice}
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                  
+                  {run.deck.filter(card => card.type !== 'starter').length === 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-gray-400 font-bold">
+                        {isDE ? 'Keine verkaufbaren Karten!' : 'No sellable cards!'}
+                      </p>
+                      <p className="text-gray-500 text-xs mt-2">
+                        {isDE ? 'Starter-Karten können nicht verkauft werden.' : "Starter cards can't be sold."}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <button
+                    onClick={() => {
+                      audio.playClose();
+                      setShowSellCardModal(false);
                     }}
                     className="w-full mt-4 py-2 font-bold uppercase"
                     style={{
