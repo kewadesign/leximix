@@ -451,7 +451,7 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
     if (!card) {
       return (
         <div 
-          className="w-12 h-16 md:w-14 md:h-20 rounded-lg border-2 border-dashed"
+          className="w-14 h-20 md:w-20 md:h-28 lg:w-24 lg:h-32 rounded-lg border-2 border-dashed"
           style={{ 
             borderColor: 'var(--color-border)',
             background: 'var(--color-surface)'
@@ -468,28 +468,28 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
         whileHover={onClick ? { y: -4 } : undefined}
         whileTap={onClick ? { scale: 0.95 } : undefined}
         onClick={onClick}
-        className={`w-12 h-16 md:w-14 md:h-20 rounded-lg cursor-pointer select-none ${isSelected ? 'ring-4 ring-yellow-400' : ''}`}
+        className={`w-14 h-20 md:w-20 md:h-28 lg:w-24 lg:h-32 rounded-lg cursor-pointer select-none ${isSelected ? 'ring-4 ring-yellow-400' : ''}`}
         style={{
           background: card.faceUp ? '#FFF' : 'linear-gradient(135deg, #8338EC 0%, #FF006E 100%)',
-          border: '3px solid #000',
-          boxShadow: isSelected ? '0 0 20px rgba(255,190,11,0.6)' : '3px 3px 0 #000',
+          border: '4px solid #000',
+          boxShadow: isSelected ? '0 0 20px rgba(255,190,11,0.6)' : '4px 4px 0 #000',
           marginTop: stackOffset > 0 ? `-${stackOffset}px` : 0,
           zIndex: stackOffset
         }}
       >
         {card.faceUp ? (
-          <div className="w-full h-full flex flex-col justify-between p-1">
+          <div className="w-full h-full flex flex-col justify-between p-1 md:p-2">
             <div className="text-left">
-              <div className="text-xs md:text-sm font-black" style={{ color }}>{card.rank}</div>
-              <div className="text-sm md:text-base" style={{ color }}>{SUIT_SYMBOLS[card.suit]}</div>
+              <div className="text-sm md:text-lg lg:text-xl font-black" style={{ color }}>{card.rank}</div>
+              <div className="text-base md:text-xl lg:text-2xl" style={{ color }}>{SUIT_SYMBOLS[card.suit]}</div>
             </div>
-            <div className="text-center text-lg md:text-xl" style={{ color }}>
+            <div className="text-center text-xl md:text-3xl lg:text-4xl" style={{ color }}>
               {SUIT_SYMBOLS[card.suit]}
             </div>
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="text-white text-xl font-black">♠</div>
+            <div className="text-white text-2xl md:text-3xl lg:text-4xl font-black">♠</div>
           </div>
         )}
       </motion.div>
@@ -606,42 +606,69 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
         className="h-screen flex flex-col overflow-hidden"
         style={{ background: 'var(--color-bg)' }}
       >
+        {/* Rainbow Top Bar */}
+        <div className="flex h-2 w-full">
+          <div className="flex-1" style={{ background: '#FF006E' }}></div>
+          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+          <div className="flex-1" style={{ background: '#8338EC' }}></div>
+        </div>
+
         {/* Header */}
         <div className="p-4 flex items-center gap-4" style={{ borderBottom: '4px solid #000', background: 'var(--color-surface)' }}>
           <motion.button
             whileTap={{ scale: 0.95 }}
+            whileHover={{ y: -2 }}
             onClick={() => { setView('menu'); audio.playClose(); }}
-            className="p-2"
-            style={{ background: '#FF006E', border: '3px solid #000', boxShadow: '4px 4px 0 #000' }}
+            className="p-3"
+            style={{ background: '#FF006E', border: '4px solid #000', boxShadow: '4px 4px 0 #000', transform: 'skew(-2deg)' }}
           >
-            <ArrowLeft className="w-5 h-5 text-white" />
+            <ArrowLeft className="w-5 h-5 text-white" style={{ transform: 'skew(2deg)' }} />
           </motion.button>
-          <h2 className="text-xl font-black uppercase" style={{ color: 'var(--color-text)' }}>
-            {isDE ? 'Level wählen' : isES ? 'Elegir Nivel' : 'Select Level'}
+          <h2 
+            className="text-xl md:text-2xl font-black uppercase px-4 py-2" 
+            style={{ 
+              color: '#000', 
+              background: '#06FFA5',
+              border: '4px solid #000',
+              boxShadow: '4px 4px 0 #000',
+              transform: 'skew(-2deg)'
+            }}
+          >
+            <span style={{ transform: 'skew(2deg)', display: 'inline-block' }}>
+              {isDE ? 'Level wählen' : isES ? 'Elegir Nivel' : 'Select Level'}
+            </span>
           </h2>
         </div>
 
         {/* Tier Tabs */}
-        <div className="flex p-2 gap-2 overflow-x-auto" style={{ background: 'var(--color-surface)' }}>
+        <div className="flex p-3 gap-3 overflow-x-auto" style={{ background: 'var(--color-surface)', borderBottom: '3px solid #000' }}>
           {[1, 2, 3, 4, 5].map(tier => (
-            <button
+            <motion.button
               key={tier}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => { setCurrentTier(tier); audio.playClick(); }}
-              className="px-4 py-2 font-black text-sm uppercase whitespace-nowrap"
+              className="px-5 py-3 font-black text-sm uppercase whitespace-nowrap"
               style={{
                 background: currentTier === tier ? '#FFBE0B' : 'var(--color-bg)',
-                border: '3px solid #000',
-                color: currentTier === tier ? '#000' : 'var(--color-text)'
+                border: '4px solid #000',
+                boxShadow: currentTier === tier ? '4px 4px 0 #000' : '2px 2px 0 #000',
+                color: currentTier === tier ? '#000' : 'var(--color-text)',
+                transform: 'skew(-2deg)'
               }}
             >
-              {(tier - 1) * 50 + 1}-{tier * 50}
-            </button>
+              <span style={{ transform: 'skew(2deg)', display: 'inline-block' }}>
+                {(tier - 1) * 50 + 1}-{tier * 50}
+              </span>
+            </motion.button>
           ))}
         </div>
 
         {/* Level Grid */}
         <div className="flex-1 p-4 overflow-y-auto">
-          <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
+          <div className="grid grid-cols-5 md:grid-cols-10 gap-3">
             {Array.from({ length: 50 }, (_, i) => {
               const level = (currentTier - 1) * 50 + i + 1;
               const isCompleted = completedLevels.includes(level);
@@ -650,21 +677,24 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
               return (
                 <motion.button
                   key={level}
-                  whileHover={!isLocked ? { scale: 1.1 } : undefined}
+                  whileHover={!isLocked ? { scale: 1.05, y: -3 } : undefined}
                   whileTap={!isLocked ? { scale: 0.95 } : undefined}
                   onClick={() => !isLocked && startGame(level)}
                   disabled={isLocked}
-                  className="aspect-square flex flex-col items-center justify-center font-black text-sm"
+                  className="aspect-square flex flex-col items-center justify-center font-black text-sm md:text-base"
                   style={{
                     background: isCompleted ? '#06FFA5' : isLocked ? 'var(--color-surface)' : '#FFBE0B',
-                    border: '3px solid #000',
-                    boxShadow: isLocked ? 'none' : '3px 3px 0 #000',
+                    border: '4px solid #000',
+                    boxShadow: isLocked ? 'none' : '4px 4px 0 #000',
                     color: isLocked ? 'var(--color-text-muted)' : '#000',
-                    opacity: isLocked ? 0.5 : 1
+                    opacity: isLocked ? 0.5 : 1,
+                    transform: 'skew(-1deg)'
                   }}
                 >
-                  {isCompleted && <Star className="w-3 h-3 mb-0.5" />}
-                  {level}
+                  <span style={{ transform: 'skew(1deg)' }}>
+                    {isCompleted && <Star className="w-4 h-4 mb-0.5 mx-auto" />}
+                    {level}
+                  </span>
                 </motion.button>
               );
             })}
@@ -750,11 +780,11 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
                   renderCard({ ...stock[stock.length - 1], faceUp: false }, false, drawFromStock)
                 ) : (
                   <div 
-                    className="w-12 h-16 md:w-14 md:h-20 rounded-lg border-2 border-dashed flex items-center justify-center cursor-pointer"
-                    style={{ borderColor: '#06FFA5', background: 'var(--color-surface)' }}
+                    className="w-14 h-20 md:w-20 md:h-28 lg:w-24 lg:h-32 rounded-lg border-3 border-dashed flex items-center justify-center cursor-pointer"
+                    style={{ borderColor: '#06FFA5', background: 'var(--color-surface)', boxShadow: '4px 4px 0 #000' }}
                     onClick={drawFromStock}
                   >
-                    <RotateCcw className="w-5 h-5" style={{ color: '#06FFA5' }} />
+                    <RotateCcw className="w-6 h-6 md:w-8 md:h-8" style={{ color: '#06FFA5' }} />
                   </div>
                 )}
               </div>
@@ -788,11 +818,11 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
                     )
                   ) : (
                     <div 
-                      className="w-12 h-16 md:w-14 md:h-20 rounded-lg border-2 border-dashed flex items-center justify-center cursor-pointer"
-                      style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}
+                      className="w-14 h-20 md:w-20 md:h-28 lg:w-24 lg:h-32 rounded-lg border-3 border-dashed flex items-center justify-center cursor-pointer"
+                      style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)', boxShadow: '4px 4px 0 #000' }}
                       onClick={() => handleCardClick('foundation', i)}
                     >
-                      <span className="text-xl opacity-30">{SUIT_SYMBOLS[SUITS[i]]}</span>
+                      <span className="text-2xl md:text-3xl lg:text-4xl opacity-30">{SUIT_SYMBOLS[SUITS[i]]}</span>
                     </div>
                   )}
                 </div>
@@ -801,17 +831,17 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
           </div>
 
           {/* Tableau */}
-          <div className="flex gap-1 justify-center">
+          <div className="flex gap-1 md:gap-2 justify-center">
             {tableau.map((column, colIndex) => (
               <div 
                 key={colIndex} 
-                className="flex flex-col min-h-[200px]"
+                className="flex flex-col min-h-[200px] md:min-h-[300px]"
                 onClick={() => column.length === 0 && handleCardClick('tableau', colIndex)}
               >
                 {column.length === 0 ? (
                   <div 
-                    className="w-12 h-16 md:w-14 md:h-20 rounded-lg border-2 border-dashed cursor-pointer"
-                    style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}
+                    className="w-14 h-20 md:w-20 md:h-28 lg:w-24 lg:h-32 rounded-lg border-3 border-dashed cursor-pointer"
+                    style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)', boxShadow: '4px 4px 0 #000' }}
                   />
                 ) : (
                   column.map((card, cardIndex) => {
@@ -819,7 +849,7 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
                                       selectedCards.sourceIndex === colIndex &&
                                       cardIndex >= (column.length - selectedCards.cards.length);
                     return (
-                      <div key={card.id} style={{ marginTop: cardIndex > 0 ? '-48px' : 0, zIndex: cardIndex }}>
+                      <div key={card.id} style={{ marginTop: cardIndex > 0 ? '-56px' : 0, zIndex: cardIndex }} className="md:[&]:mt-[-72px] first:mt-0">
                         {renderCard(
                           card,
                           isSelected,
@@ -834,16 +864,24 @@ export const SolitaireGame: React.FC<SolitaireGameProps> = ({
           </div>
         </div>
 
-        {/* Auto-move Button */}
-        <div className="p-2" style={{ borderTop: '3px solid #000', background: 'var(--color-surface)' }}>
+        {/* Auto-move Button - with extra bottom padding to avoid MusicPlayer */}
+        <div className="p-2 pb-16" style={{ borderTop: '3px solid #000', background: 'var(--color-surface)' }}>
           <motion.button
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
             onClick={autoMoveToFoundation}
-            className="w-full py-3 font-black uppercase"
-            style={{ background: '#06FFA5', border: '3px solid #000', color: '#000' }}
+            className="w-full py-4 font-black uppercase text-lg"
+            style={{ 
+              background: '#06FFA5', 
+              border: '4px solid #000', 
+              boxShadow: '4px 4px 0 #000',
+              color: '#000',
+              transform: 'skew(-2deg)'
+            }}
           >
-            {isDE ? 'Auto Ablegen' : isES ? 'Auto Colocar' : 'Auto Place'}
+            <span style={{ transform: 'skew(2deg)', display: 'inline-block' }}>
+              {isDE ? 'Auto Ablegen' : isES ? 'Auto Colocar' : 'Auto Place'}
+            </span>
           </motion.button>
         </div>
       </motion.div>

@@ -5080,8 +5080,8 @@ export default function App() {
         onLanguageChange={(lang) => setUser(prev => ({ ...prev, language: lang }))}
       />
 
-      {/* Web Version: APK Download Button */}
-      {(window as any).Capacitor === undefined && (
+      {/* Web Version: APK Download Button - Only show on HOME, MODES, LEVELS, SEASON, SHOP */}
+      {(window as any).Capacitor === undefined && ['HOME', 'MODES', 'LEVELS', 'SEASON', 'SHOP'].includes(view) && (
         <div className="fixed bottom-4 right-4 z-[50]">
           <a
             href={apkDownloadUrl}
