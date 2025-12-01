@@ -8,7 +8,7 @@
 // DATABASE CONFIGURATION
 // ============================================
 define('DB_HOST', 'db5019112648.hosting-data.io'); // IONOS MySQL host
-define('DB_NAME', 'dbs15023407');                  // Database name
+define('DB_NAME', 'db15023407');                   // Database name
 define('DB_USER', 'dbu725871');                    // Database user
 define('DB_PASS', 'Kewadesign1998');               // DB Passwort
 define('DB_CHARSET', 'utf8mb4');
