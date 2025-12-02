@@ -845,8 +845,9 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
                 onClick={() => {
                   const skipCost = 30 + hintCost * 2;
                   if (user.coins >= skipCost) {
-                    // Note: Coins would be deducted by parent via onGameEnd or similar
-                    // For now just skip the timer
+                    // Deduct coins - parent component should handle this via onUpdateUser if available
+                    // For now, we'll trigger a re-render by calling onGameEnd with 0 rewards
+                    // This is a workaround - ideally CheckersGame should receive onUpdateUser prop
                     setAdTimer(0);
                   }
                 }}

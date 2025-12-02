@@ -262,7 +262,7 @@ const FALLBACK_SEASON_CONFIG = {
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
   const [isInitialized, setIsInitialized] = useState(false);
-  const [apkDownloadUrl, setApkDownloadUrl] = useState('https://leximix.de/LexiMix-v3.0.2-Release.apk');
+  const [apkDownloadUrl, setApkDownloadUrl] = useState('https://leximix.de/app-release.apk');
   
   // Password Reset State
   const [showPasswordReset, setShowPasswordReset] = useState(false);
@@ -2518,6 +2518,7 @@ export default function App() {
           {/* Coins Button */}
           <button
             onClick={() => setView('SHOP')}
+            key={`coins-${user.coins}`}
             className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 font-black text-sm transition-all duration-100 animate-shadow-breathe"
             style={{
               background: '#FFBE0B',
@@ -2527,7 +2528,7 @@ export default function App() {
             }}
           >
             <Gem size={16} style={{ color: '#000' }} className="animate-sparkle" />
-            <span style={{ color: '#000' }}>{user.coins}</span>
+            <span style={{ color: '#000' }}>{Math.max(0, user.coins || 0)}</span>
           </button>
 
           {/* Language Button */}
@@ -4144,8 +4145,15 @@ export default function App() {
               onClick={() => {
                 const skipCost = 30 + (hintCostMultiplier * 10);
                 if (user.coins >= skipCost) {
-                  setUser(prev => ({ ...prev, coins: prev.coins - skipCost }));
+                  setUser(prev => {
+                    const newCoins = Math.max(0, prev.coins - skipCost);
+                    return { ...prev, coins: newCoins };
+                  });
                   setAdTimer(0);
+                  // Force re-render by updating a dummy state
+                  setTimeout(() => {
+                    setUser(prev => ({ ...prev }));
+                  }, 100);
                 } else {
                   alert('Nicht genügend Coins!');
                 }
