@@ -5,7 +5,6 @@ import { Button, Modal } from './components/UI';
 import { VersionManager } from './components/VersionManager';
 import { SeasonPass } from './components/SeasonPass';
 import { SeasonPassView } from './components/SeasonPassView';
-import { PayPalButton } from './components/PayPalButton';
 import { AuthModal } from './components/AuthModal';
 import { PremiumStatus } from './components/PremiumStatus';
 import { ShopView } from './components/ShopView';
@@ -2082,15 +2081,8 @@ export default function App() {
 
   const handleBuyItem = (item: ShopItem) => {
     if (item.type === 'currency') {
-      if (item.paypalLink) {
-        // Open PayPal Link
-        window.open(item.paypalLink, '_blank');
-      } else {
-        // Simulate In-App Purchase (Fallback)
-        audio.playWin(); // "Ca-ching"
-        setUser(u => ({ ...u, coins: u.coins + (item.currencyAmount || 0) }));
-        alert(`${t.SHOP.SUCCESS}: ${item.name} `);
-      }
+      // Real money purchases coming soon
+      alert(t.SHOP?.COMING_SOON || 'Bald verfügbar');
     } else {
       // Buy Avatar
       if (user.coins >= (item.cost as number)) {
@@ -2424,48 +2416,6 @@ export default function App() {
     )
   }
 
-  const handlePayPalSuccess = async (details: any, planType: 'monthly' | '30days') => {
-    console.log('PayPal Success:', details);
-    audio.playWin();
-
-    // Update User State
-    setUser(prev => {
-      const newState = {
-        ...prev,
-        isPremium: true,
-        premiumActivatedAt: Date.now()
-      };
-
-      // Bonus for Monthly Plan (7.99)
-      if (planType === 'monthly') {
-        newState.level = (newState.level || 1) + 10; // +10 Levels
-      }
-
-      return newState;
-    });
-
-    // Save to Cloud
-    if (cloudUsername) {
-      try {
-        const { saveUserData } = await import('./utils/cloudStorage');
-        // We need to save the new state. 
-        // Since we can't easily access the *new* state from setUser here without a ref or waiting,
-        // we'll construct a temporary object for saving.
-        const tempState = {
-          ...user,
-          isPremium: true,
-          premiumActivatedAt: Date.now(),
-          level: planType === 'monthly' ? (user.level || 1) + 10 : user.level
-        };
-        await saveUserData(cloudUsername, tempState);
-      } catch (e) {
-        console.error("Failed to save premium status", e);
-      }
-    }
-
-    alert(`Premium erfolgreich aktiviert!(${planType === 'monthly' ? '+10 Level Boost' : '30 Tage'})`);
-    setShowPremiumInfo(false);
-  };
 
 
   const toggleTheme = () => {
@@ -4660,15 +4610,21 @@ export default function App() {
             style={{ background: 'var(--color-bg)', border: '4px solid #000' }}
           >
             <div className="flex items-center gap-2 mb-4 font-black text-sm uppercase" style={{ color: '#000' }}>
-              <CreditCard size={16} /> Bezahlen mit PayPal
+              <CreditCard size={16} /> {t.SHOP?.PAYMENT || 'Zahlung'}
             </div>
             <div className="w-full max-w-[250px]">
-              {selectedPlan === 'monthly' && (
-                <PayPalButton amount="7.99" onSuccess={(d: any) => handlePayPalSuccess(d, 'monthly')} />
-              )}
-              {selectedPlan === '30days' && (
-                <PayPalButton amount="4.99" onSuccess={(d: any) => handlePayPalSuccess(d, '30days')} />
-              )}
+              <button
+                disabled
+                className="w-full py-3 font-black text-sm uppercase opacity-60 cursor-not-allowed"
+                style={{
+                  background: '#666',
+                  color: '#fff',
+                  border: '3px solid #000',
+                  boxShadow: '3px 3px 0px #000'
+                }}
+              >
+                {t.SHOP?.COMING_SOON || 'Bald verfügbar'}
+              </button>
             </div>
           </div>
 

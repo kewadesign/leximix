@@ -607,7 +607,9 @@ export const TRANSLATIONS = {
       EQUIP: "EQUIP",
       EQUIPPED: "EQUIPPED",
       INSUFFICIENT: "NOT ENOUGH COINS",
-      SUCCESS: "PURCHASED"
+      SUCCESS: "PURCHASED",
+      COMING_SOON: "Coming soon",
+      PAYMENT: "Payment"
     },
     UPDATES: {
       REQUIRED_TITLE: "UPDATE REQUIRED",
@@ -876,7 +878,9 @@ export const TRANSLATIONS = {
       EQUIP: "AUSRÜSTEN",
       EQUIPPED: "AUSGERÜSTET",
       INSUFFICIENT: "NICHT GENUG MÜNZEN",
-      SUCCESS: "GEKAUFT"
+      SUCCESS: "GEKAUFT",
+      COMING_SOON: "Bald verfügbar",
+      PAYMENT: "Zahlung"
     },
     UPDATES: {
       REQUIRED_TITLE: "Update Erforderlich",
@@ -1144,7 +1148,9 @@ export const TRANSLATIONS = {
       EQUIP: "EQUIPAR",
       EQUIPPED: "EQUIPADO",
       INSUFFICIENT: "MONEDAS INSUFICIENTES",
-      SUCCESS: "COMPRADO"
+      SUCCESS: "COMPRADO",
+      COMING_SOON: "Próximamente",
+      PAYMENT: "Pago"
     },
     UPDATES: {
       REQUIRED_TITLE: "ACTUALIZACIÓN REQUERIDA",
@@ -2279,8 +2285,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     value: 150,
     currencyAmount: 150,
     isRealMoney: true,
-    rarity: 'common',
-    paypalLink: 'https://www.paypal.com/ncp/payment/5FZ6BJ9G8LGML'
+    rarity: 'common'
   },
   {
     id: 'coins_small',
@@ -2290,8 +2295,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     value: 500,
     currencyAmount: 500,
     isRealMoney: true,
-    rarity: 'common',
-    paypalLink: 'https://www.paypal.com/ncp/payment/5FZ6BJ9G8LGML'
+    rarity: 'common'
   },
   {
     id: 'coins_med',
@@ -2301,8 +2305,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     value: 1500,
     currencyAmount: 1500,
     isRealMoney: true,
-    rarity: 'rare',
-    paypalLink: 'https://www.paypal.com/ncp/payment/JRPDA9NBVAV48'
+    rarity: 'rare'
   },
   {
     id: 'coins_large',
@@ -2312,8 +2315,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     value: 6000,
     currencyAmount: 6000,
     isRealMoney: true,
-    rarity: 'epic',
-    paypalLink: 'https://www.paypal.com/ncp/payment/V9GJ535LYLFKU'
+    rarity: 'epic'
   },
   {
     id: 'coins_mega',
@@ -2323,8 +2325,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     value: 15000,
     currencyAmount: 15000,
     isRealMoney: true,
-    rarity: 'legendary',
-    paypalLink: 'https://www.paypal.com/ncp/payment/V9GJ535LYLFKU'
+    rarity: 'legendary'
   },
 
   // ============================================================================
@@ -2475,8 +2476,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     cost: '2,99€',
     value: 'bundle_starter',
     isRealMoney: true,
-    rarity: 'rare',
-    paypalLink: 'https://www.paypal.com/ncp/payment/5FZ6BJ9G8LGML'
+    rarity: 'rare'
   },
   {
     id: 'bundle_premium',
@@ -2485,8 +2485,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     cost: '9,99€',
     value: 'bundle_premium',
     isRealMoney: true,
-    rarity: 'epic',
-    paypalLink: 'https://www.paypal.com/ncp/payment/JRPDA9NBVAV48'
+    rarity: 'epic'
   },
   {
     id: 'bundle_ultimate',
@@ -2495,8 +2494,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     cost: '19,99€',
     value: 'bundle_ultimate',
     isRealMoney: true,
-    rarity: 'legendary',
-    paypalLink: 'https://www.paypal.com/ncp/payment/V9GJ535LYLFKU'
+    rarity: 'legendary'
   },
 ];
 

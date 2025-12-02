@@ -147,7 +147,6 @@ export interface ShopItem {
   value: number | string; // Amount of coins OR Avatar ID OR Frame ID OR Pack ID
   currencyAmount?: number; // For currency packs
   isRealMoney?: boolean;
-  paypalLink?: string;
   rarity?: 'common' | 'rare' | 'epic' | 'legendary';
   preview?: string;
 }

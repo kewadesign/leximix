@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard, ChevronLeft, ChevronRight, Crown, Palette, Sword, Package } from 'lucide-react';
-import { PayPalButton } from './PayPalButton';
 import { SHOP_ITEMS, PROFILE_TITLES, CARD_BACKS } from '../constants';
 import { audio } from '../utils/audio';
 import { getRarityColor } from '../utils/rewards';
@@ -760,14 +759,18 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                     <div className="w-full mt-auto" style={{ transform: 'skewX(3deg)' }}>
                                         {item.isRealMoney ? (
                                             <div className="w-full">
-                                                <PayPalButton
-                                                    amount={String(item.cost).replace('€', '').replace(',', '.').trim()}
-                                                    onSuccess={(details: any) => {
-                                                        audio.playWin();
-                                                        setUser((u: any) => ({ ...u, coins: u.coins + (item.currencyAmount || 0) }));
-                                                        alert(`${t.SHOP.SUCCESS}: ${item.name}`);
+                                                <button
+                                                    disabled
+                                                    className="w-full py-2 font-black text-sm uppercase opacity-60 cursor-not-allowed"
+                                                    style={{
+                                                        background: '#666',
+                                                        color: '#fff',
+                                                        border: '3px solid #000',
+                                                        boxShadow: '3px 3px 0px #000'
                                                     }}
-                                                />
+                                                >
+                                                    {t.SHOP?.COMING_SOON || 'Bald verfügbar'}
+                                                </button>
                                             </div>
                                         ) : (
                                             <button
