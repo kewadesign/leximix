@@ -391,8 +391,8 @@ type MusicTrack = 'menu' | 'game' | 'puzzle' | 'victory' | 'none';
 class MusicManager {
   private currentTrack: MusicTrack = 'none';
   private audioElement: HTMLAudioElement | null = null;
-  private enabled: boolean = true;
-  private volume: number = 0.3;
+  private enabled: boolean = false; // Default: aus
+  private volume: number = 0.08; // Deutlich leiser (8%)
   private fadeInterval: NodeJS.Timeout | null = null;
 
   constructor() {
