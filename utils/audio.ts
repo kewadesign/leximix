@@ -411,10 +411,10 @@ class MusicManager {
 
   private getTrackUrl(track: MusicTrack): string | null {
     const tracks: Record<MusicTrack, string | null> = {
-      menu: './music/menu.mp3',      // Energy - upbeat for main menu
-      game: './music/game.mp3',       // Happy Rock - for card games
-      puzzle: './music/puzzle.mp3',   // Cute - for puzzle/word games
-      victory: './music/victory.mp3', // Retro Soul - for wins
+      menu: '/music/menu.mp3',      // Meditating Beat - entspannt für Hauptmenü
+      game: '/music/game.mp3',       // Happy Rock - for card games
+      puzzle: '/music/puzzle.mp3',   // Cute - for puzzle/word games
+      victory: '/music/victory.mp3', // Retro Soul - for wins
       none: null
     };
     return tracks[track];
