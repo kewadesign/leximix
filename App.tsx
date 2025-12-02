@@ -31,7 +31,7 @@ import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES
 import { startGamePolling, startInvitePolling } from './utils/gamePolling';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
-import { audio } from './utils/audio';
+import { audio, music } from './utils/audio';
 import catDanceGif from './assets/cat-dance.gif';
 
 
@@ -284,6 +284,11 @@ export default function App() {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
+
+  // Background music based on current view
+  useEffect(() => {
+    music.playForMode(view);
+  }, [view]);
 
   useEffect(() => {
     // Fetch system config from IONOS API
@@ -3641,8 +3646,8 @@ export default function App() {
       )}
       {/* Navigation Icons */}
 
-      {/* Challenge Mode Intro Modal */}
-      <Modal isOpen={showChallengeIntro} onClose={() => { setShowChallengeIntro(false); setView('HOME'); }} title={t.MODES.CHALLENGE.title}>
+      {/* Challenge Mode Intro Modal - nicht schließbar */}
+      <Modal isOpen={showChallengeIntro} title={t.MODES.CHALLENGE.title}>
         <div className="p-6 text-center space-y-6">
           <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg animate-bounce-slow">
             <Brain size={40} className="text-white" />
@@ -3680,11 +3685,17 @@ export default function App() {
           >
             <Play size={20} fill="currentColor" /> Challenge Starten
           </button>
+          <button
+            onClick={() => { setShowChallengeIntro(false); setView('HOME'); }}
+            className="w-full py-3 font-bold text-sm uppercase text-gray-400 hover:text-white transition-colors"
+          >
+            ← Zurück zum Menü
+          </button>
         </div>
       </Modal>
 
-      {/* Mau Mau Intro Modal */}
-      <Modal isOpen={showMauMauIntro} onClose={() => { setShowMauMauIntro(false); setView('HOME'); }} title="Mau Mau">
+      {/* Mau Mau Intro Modal - nicht schließbar */}
+      <Modal isOpen={showMauMauIntro} title="Mau Mau">
         <div className="p-6 text-center space-y-6">
           <div
             className="w-24 h-24 mx-auto flex items-center justify-center relative"
@@ -3759,11 +3770,18 @@ export default function App() {
           >
             <Play size={20} fill="currentColor" /> Weiter
           </button>
+          <button
+            onClick={() => { setShowMauMauIntro(false); setView('HOME'); }}
+            className="w-full py-3 font-bold text-sm uppercase transition-all"
+            style={{ color: '#666' }}
+          >
+            ← Zurück zum Menü
+          </button>
         </div>
       </Modal>
 
-      {/* Board Game Mode Select Modal (Checkers, Rummy, Nine Men's Morris) */}
-      <Modal isOpen={showBoardGameModeSelect} onClose={() => { setShowBoardGameModeSelect(false); setView('HOME'); }} title="Spielmodus wählen">
+      {/* Board Game Mode Select Modal (Checkers, Rummy, Nine Men's Morris) - nicht schließbar */}
+      <Modal isOpen={showBoardGameModeSelect} title="Spielmodus wählen">
         <div className="p-6 space-y-4">
           <p className="text-center text-sm font-bold mb-6" style={{ color: '#4A4A4A' }}>
             Wähle deinen bevorzugten Spielmodus:
@@ -3820,11 +3838,20 @@ export default function App() {
               <ArrowLeft size={24} className="rotate-180" style={{ color: '#000' }} />
             </div>
           </button>
+
+          {/* Zurück Button */}
+          <button
+            onClick={() => { setShowBoardGameModeSelect(false); setView('HOME'); }}
+            className="w-full py-3 mt-4 font-black text-sm uppercase"
+            style={{ background: '#EEE', border: '3px solid #000', color: '#666' }}
+          >
+            ← Zurück
+          </button>
         </div>
       </Modal>
 
-      {/* Chess Mode Select Modal */}
-      <Modal isOpen={showChessModeSelect} onClose={() => { setShowChessModeSelect(false); setView('HOME'); }} title={t.CHESS.TITLE}>
+      {/* Chess Mode Select Modal - nicht schließbar */}
+      <Modal isOpen={showChessModeSelect} title={t.CHESS.TITLE}>
         <div className="space-y-4">
           <div className="p-4 bg-white border-4 border-black shadow-[6px_6px_0px_#000]">
             <p className="font-bold text-center mb-6">Select Mode</p>
@@ -3852,13 +3879,20 @@ export default function App() {
               >
                 <Users size={24} /> Multiplayer
               </button>
+
+              <button
+                onClick={() => { setShowChessModeSelect(false); setView('HOME'); }}
+                className="p-3 bg-gray-100 border-3 border-black font-black text-sm uppercase transition-all shadow-[3px_3px_0px_#000]"
+              >
+                ← Zurück
+              </button>
             </div>
           </div>
         </div>
       </Modal>
 
-      {/* Mau Mau Mode Selection Modal */}
-      <Modal isOpen={showMauMauModeSelect} onClose={() => { setShowMauMauModeSelect(false); setView('HOME'); }} title="Spielmodus wählen">
+      {/* Mau Mau Mode Selection Modal - nicht schließbar */}
+      <Modal isOpen={showMauMauModeSelect} title="Spielmodus wählen">
         <div className="p-6 space-y-4">
           <p className="text-center text-sm font-bold mb-6" style={{ color: '#4A4A4A' }}>
             Wähle deinen bevorzugten Spielmodus:
@@ -3923,7 +3957,7 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => setShowMauMauModeSelect(false)}
+            onClick={() => { setShowMauMauModeSelect(false); setView('HOME'); }}
             className="w-full py-3 font-black uppercase text-sm transition-all active:translate-y-1 mt-4"
             style={{
               background: '#F5F5F5',
@@ -3932,7 +3966,7 @@ export default function App() {
               boxShadow: '4px 4px 0px #000'
             }}
           >
-            Zurück
+            ← Zurück
           </button>
         </div>
       </Modal>

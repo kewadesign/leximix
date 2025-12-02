@@ -381,3 +381,231 @@ class SoundManager {
 
 export const audio = new SoundManager();
 export const sfx = audio; // Alias for backwards compatibility
+
+// ============================================================================
+// 🎵 BACKGROUND MUSIC MANAGER
+// ============================================================================
+
+type MusicTrack = 'menu' | 'game' | 'puzzle' | 'victory' | 'none';
+
+class MusicManager {
+  private currentTrack: MusicTrack = 'none';
+  private audioElement: HTMLAudioElement | null = null;
+  private enabled: boolean = true;
+  private volume: number = 0.3;
+  private fadeInterval: NodeJS.Timeout | null = null;
+
+  constructor() {
+    // Load music preference from localStorage
+    if (typeof window !== 'undefined') {
+      const savedEnabled = localStorage.getItem('leximix_music_enabled');
+      const savedVolume = localStorage.getItem('leximix_music_volume');
+      if (savedEnabled !== null) {
+        this.enabled = savedEnabled === 'true';
+      }
+      if (savedVolume !== null) {
+        this.volume = parseFloat(savedVolume);
+      }
+    }
+  }
+
+  private getTrackUrl(track: MusicTrack): string | null {
+    const tracks: Record<MusicTrack, string | null> = {
+      menu: './music/menu.mp3',      // Energy - upbeat for main menu
+      game: './music/game.mp3',       // Happy Rock - for card games
+      puzzle: './music/puzzle.mp3',   // Cute - for puzzle/word games
+      victory: './music/victory.mp3', // Retro Soul - for wins
+      none: null
+    };
+    return tracks[track];
+  }
+
+  setEnabled(enabled: boolean) {
+    this.enabled = enabled;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('leximix_music_enabled', String(enabled));
+    }
+    if (!enabled) {
+      this.stop();
+    } else if (this.currentTrack !== 'none') {
+      this.play(this.currentTrack);
+    }
+  }
+
+  isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  setVolume(volume: number) {
+    this.volume = Math.max(0, Math.min(1, volume));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('leximix_music_volume', String(this.volume));
+    }
+    if (this.audioElement) {
+      this.audioElement.volume = this.volume;
+    }
+  }
+
+  getVolume(): number {
+    return this.volume;
+  }
+
+  private fadeOut(duration: number = 500): Promise<void> {
+    return new Promise((resolve) => {
+      if (!this.audioElement || this.audioElement.paused) {
+        resolve();
+        return;
+      }
+
+      const startVolume = this.audioElement.volume;
+      const steps = 20;
+      const stepTime = duration / steps;
+      const volumeStep = startVolume / steps;
+      let currentStep = 0;
+
+      if (this.fadeInterval) {
+        clearInterval(this.fadeInterval);
+      }
+
+      this.fadeInterval = setInterval(() => {
+        currentStep++;
+        if (this.audioElement) {
+          this.audioElement.volume = Math.max(0, startVolume - (volumeStep * currentStep));
+        }
+        if (currentStep >= steps) {
+          if (this.fadeInterval) {
+            clearInterval(this.fadeInterval);
+            this.fadeInterval = null;
+          }
+          if (this.audioElement) {
+            this.audioElement.pause();
+            this.audioElement.volume = this.volume;
+          }
+          resolve();
+        }
+      }, stepTime);
+    });
+  }
+
+  private fadeIn(duration: number = 500) {
+    if (!this.audioElement) return;
+
+    const targetVolume = this.volume;
+    this.audioElement.volume = 0;
+    this.audioElement.play().catch(() => {});
+
+    const steps = 20;
+    const stepTime = duration / steps;
+    const volumeStep = targetVolume / steps;
+    let currentStep = 0;
+
+    if (this.fadeInterval) {
+      clearInterval(this.fadeInterval);
+    }
+
+    this.fadeInterval = setInterval(() => {
+      currentStep++;
+      if (this.audioElement) {
+        this.audioElement.volume = Math.min(targetVolume, volumeStep * currentStep);
+      }
+      if (currentStep >= steps) {
+        if (this.fadeInterval) {
+          clearInterval(this.fadeInterval);
+          this.fadeInterval = null;
+        }
+      }
+    }, stepTime);
+  }
+
+  async play(track: MusicTrack) {
+    if (!this.enabled || track === 'none') {
+      this.currentTrack = track;
+      return;
+    }
+
+    // If same track is already playing, don't restart
+    if (track === this.currentTrack && this.audioElement && !this.audioElement.paused) {
+      return;
+    }
+
+    // Fade out current track if different
+    if (this.currentTrack !== track && this.audioElement && !this.audioElement.paused) {
+      await this.fadeOut(300);
+    }
+
+    this.currentTrack = track;
+    const url = this.getTrackUrl(track);
+    
+    if (!url) return;
+
+    // Create new audio element
+    if (this.audioElement) {
+      this.audioElement.pause();
+      this.audioElement.src = '';
+    }
+
+    this.audioElement = new Audio(url);
+    this.audioElement.loop = true;
+    this.audioElement.volume = 0;
+
+    // Start playing with fade in
+    try {
+      await this.audioElement.play();
+      this.fadeIn(500);
+    } catch (e) {
+      console.log('[Music] Autoplay blocked, waiting for user interaction');
+      // Wait for user interaction
+      const playOnInteraction = () => {
+        if (this.audioElement && this.currentTrack === track) {
+          this.audioElement.play().then(() => this.fadeIn(500)).catch(() => {});
+        }
+        document.removeEventListener('click', playOnInteraction);
+        document.removeEventListener('touchstart', playOnInteraction);
+      };
+      document.addEventListener('click', playOnInteraction);
+      document.addEventListener('touchstart', playOnInteraction);
+    }
+  }
+
+  async stop() {
+    if (this.audioElement && !this.audioElement.paused) {
+      await this.fadeOut(300);
+    }
+    this.currentTrack = 'none';
+  }
+
+  getCurrentTrack(): MusicTrack {
+    return this.currentTrack;
+  }
+
+  // Helper to play appropriate music for game modes
+  playForMode(mode: string) {
+    switch (mode) {
+      case 'HOME':
+      case 'MENU':
+        this.play('menu');
+        break;
+      case 'MAU_MAU':
+      case 'SKAT_MAU_MAU':
+      case 'CHECKERS':
+      case 'CHESS':
+      case 'RUMMY':
+      case 'NINE_MENS_MORRIS':
+        this.play('game');
+        break;
+      case 'GAME':
+      case 'LEVELS':
+      case 'CHALLENGE':
+        this.play('puzzle');
+        break;
+      case 'WIN':
+      case 'VICTORY':
+        this.play('victory');
+        break;
+      default:
+        this.play('menu');
+    }
+  }
+}
+
+export const music = new MusicManager();
