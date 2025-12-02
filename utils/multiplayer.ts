@@ -5,7 +5,7 @@
 
 import { getFriends, addFriend, respondToFriendRequest } from './api';
 
-const API_BASE = 'http://leximix.de/api';
+const API_BASE = 'https://leximix.de/api';
 
 // Session token helper
 const getSessionToken = (): string | null => {

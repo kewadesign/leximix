@@ -263,7 +263,7 @@ const FALLBACK_SEASON_CONFIG = {
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
   const [isInitialized, setIsInitialized] = useState(false);
-  const [apkDownloadUrl, setApkDownloadUrl] = useState('http://leximix.de/LexiMix-v3.0.2-Release.apk');
+  const [apkDownloadUrl, setApkDownloadUrl] = useState('https://leximix.de/LexiMix-v3.0.2-Release.apk');
   
   // Password Reset State
   const [showPasswordReset, setShowPasswordReset] = useState(false);
@@ -290,7 +290,7 @@ export default function App() {
     // Fetch system config from IONOS API
     const fetchSystemConfig = async () => {
       try {
-        const response = await fetch('http://leximix.de/api/config/system.php');
+        const response = await fetch('https://leximix.de/api/config/system.php');
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.config?.download_url) {
@@ -429,7 +429,7 @@ export default function App() {
         let settings = null;
         let response;
         try {
-          response = await fetch('http://leximix.de/season_settings.json');
+          response = await fetch('https://leximix.de/season_settings.json');
           if (!response.ok) throw new Error('Network response was not ok');
         } catch (e) {
           console.warn('[Season] Remote fetch failed, trying local fallback');

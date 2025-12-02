@@ -433,7 +433,7 @@ async function fetchGameState(gameId: string): Promise<any | null> {
         const token = localStorage.getItem('leximix_session_token');
         if (!token) return null;
 
-        const response = await fetch(`http://leximix.de/api/games/state.php?id=${encodeURIComponent(gameId)}`, {
+        const response = await fetch(`https://leximix.de/api/games/state.php?id=${encodeURIComponent(gameId)}`, {
             headers: {
                 'X-Session-Token': token
             }

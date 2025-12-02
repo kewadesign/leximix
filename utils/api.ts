@@ -8,7 +8,7 @@ import { UserState } from '../types';
 
 // API Configuration
 // Using HTTP as HTTPS has SSL certificate issues on the server
-const API_BASE = 'http://leximix.de/api';
+const API_BASE = 'https://leximix.de/api';
 
 // Session storage
 let sessionToken: string | null = null;

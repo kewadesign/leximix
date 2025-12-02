@@ -42,7 +42,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
           const config = data.config;
           const latest = isCapacitor ? (config.latest_apk_version || config.latest_version || APP_VERSION) : (config.latest_version || APP_VERSION);
           const minimum = config.min_version || '0.0.0';
-          const url = config.download_url || (isCapacitor ? 'http://leximix.de/app-release.apk' : '/app-release.apk');
+          const url = config.download_url || (isCapacitor ? 'https://leximix.de/app-release.apk' : '/app-release.apk');
 
           // Check Maintenance Mode
           if (config.maintenance_mode === 'true' || config.maintenance_active === 'true') {

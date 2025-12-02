@@ -3,7 +3,7 @@
  * Polling-basiertes System für Echtzeit-Game-Updates ohne Firebase
  */
 
-const API_BASE = 'http://leximix.de/api';
+const API_BASE = 'https://leximix.de/api';
 const POLL_INTERVAL = 1500; // 1.5 Sekunden
 
 // Session token helper

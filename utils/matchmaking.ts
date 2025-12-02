@@ -5,7 +5,7 @@
 
 import { GameMode } from '../types';
 
-const API_BASE = 'http://leximix.de/api';
+const API_BASE = 'https://leximix.de/api';
 const MATCH_CHECK_INTERVAL = 2000; // 2 seconds
 
 // Session token helper

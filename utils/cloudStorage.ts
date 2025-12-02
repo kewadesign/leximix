@@ -6,7 +6,7 @@
 import { UserState } from '../types';
 
 // API Endpoints
-const IONOS_API = 'http://leximix.de/api';
+const IONOS_API = 'https://leximix.de/api';
 const IONOS_SAVE = `${IONOS_API}/save.php`;
 const IONOS_LOAD = `${IONOS_API}/load.php`;
 
