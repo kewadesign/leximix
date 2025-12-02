@@ -345,7 +345,8 @@ export async function playCardMultiplayer(
             updates.wishedSuit = null;
         } else if (card.rank === CardRank.JACK) {
             // Jack: Wish a suit, turn switches
-            updates.wishedSuit = wishedSuit || null;
+            // IMPORTANT: Use !== undefined instead of || because 0 (SPADES) is a valid value
+            updates.wishedSuit = wishedSuit !== undefined ? wishedSuit : null;
             updates.currentTurn = nextPlayer;
             updates.drawCount = 0;
         } else if (card.rank === CardRank.EIGHT) {

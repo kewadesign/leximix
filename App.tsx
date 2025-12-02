@@ -4543,7 +4543,7 @@ export default function App() {
 
       {/* Premium Info Modal - Neo Brutal */}
       <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="PREMIUM STORE">
-        <div className="space-y-5">
+        <div className="space-y-5 p-2 rounded-lg" style={{ background: '#FFF8E7' }}>
           {/* Header */}
           <div className="text-center">
             <div
@@ -4558,7 +4558,7 @@ export default function App() {
 
           {/* Plans Grid */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Plan 1: Monthly */}
+            {/* Plan 1: Monthly Abo */}
             <button
               className="relative p-4 text-left transition-all"
               style={{
@@ -4573,18 +4573,18 @@ export default function App() {
                 className="absolute -top-3 right-2 px-2 py-1 text-[10px] font-black uppercase"
                 style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
               >
-                BEST VALUE
+                BELIEBT
               </div>
-              <h4 className="font-black text-lg uppercase" style={{ color: '#000' }}>Monatlich</h4>
-              <div className="text-3xl font-black my-2" style={{ color: '#000' }}>7,99€</div>
+              <h4 className="font-black text-lg uppercase" style={{ color: '#000' }}>Monats-Abo</h4>
+              <div className="text-3xl font-black my-2" style={{ color: '#000' }}>2,99€<span className="text-sm">/Monat</span></div>
               <ul className="text-xs font-bold space-y-1" style={{ color: '#4A4A4A' }}>
-                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Premium Features</li>
-                <li className="flex items-center gap-2" style={{ color: '#FF006E' }}><Sparkles size={12} /> +10 Level Boost</li>
-                <li className="flex items-center gap-2"><Clock size={12} /> Auto-Verlängerung</li>
+                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Alle Premium Features</li>
+                <li className="flex items-center gap-2" style={{ color: '#FF006E' }}><Sparkles size={12} /> +5 Level Boost</li>
+                <li className="flex items-center gap-2"><Clock size={12} /> Monatlich kündbar</li>
               </ul>
             </button>
 
-            {/* Plan 2: 30 Days */}
+            {/* Plan 2: Lifetime / Einmal */}
             <button
               className="relative p-4 text-left transition-all"
               style={{
@@ -4595,10 +4595,11 @@ export default function App() {
               }}
               onClick={() => setSelectedPlan('30days')}
             >
-              <h4 className="font-black text-lg uppercase" style={{ color: selectedPlan === '30days' ? '#FFF' : '#000' }}>30 Tage Pass</h4>
-              <div className="text-3xl font-black my-2" style={{ color: selectedPlan === '30days' ? '#FFF' : '#8338EC' }}>4,99€</div>
-              <ul className="text-xs font-bold space-y-1" style={{ color: selectedPlan === '30days' ? 'rgba(255,255,255,0.8)' : '#4A4A4A' }}>
-                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Premium Features</li>
+              <h4 className="font-black text-lg uppercase" style={{ color: selectedPlan === '30days' ? '#FFF' : '#000' }}>Lifetime</h4>
+              <div className="text-3xl font-black my-2" style={{ color: selectedPlan === '30days' ? '#FFF' : '#8338EC' }}>9,99€</div>
+              <ul className="text-xs font-bold space-y-1" style={{ color: selectedPlan === '30days' ? 'rgba(255,255,255,0.9)' : '#4A4A4A' }}>
+                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Alle Premium Features</li>
+                <li className="flex items-center gap-2"><Crown size={12} style={{ color: selectedPlan === '30days' ? '#FFBE0B' : '#FFBE0B' }} /> Für immer!</li>
                 <li className="flex items-center gap-2"><CreditCard size={12} /> Einmalzahlung</li>
               </ul>
             </button>
@@ -4606,8 +4607,8 @@ export default function App() {
 
           {/* Payment Section */}
           <div
-            className="p-4 flex flex-col items-center"
-            style={{ background: 'var(--color-bg)', border: '4px solid #000' }}
+            className="p-4 flex flex-col items-center rounded-lg"
+            style={{ background: '#FFF', border: '4px solid #000' }}
           >
             <div className="flex items-center gap-2 mb-4 font-black text-sm uppercase" style={{ color: '#000' }}>
               <CreditCard size={16} /> {t.SHOP?.PAYMENT || 'Zahlung'}
@@ -4617,7 +4618,7 @@ export default function App() {
                 disabled
                 className="w-full py-3 font-black text-sm uppercase opacity-60 cursor-not-allowed"
                 style={{
-                  background: '#666',
+                  background: '#8338EC',
                   color: '#fff',
                   border: '3px solid #000',
                   boxShadow: '3px 3px 0px #000'
@@ -4640,7 +4641,7 @@ export default function App() {
                 onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
                 placeholder="CODE EINGEBEN..."
                 className="flex-1 p-3 font-mono font-bold uppercase"
-                style={{ background: 'var(--color-bg)', border: '3px solid #000', color: '#000' }}
+                style={{ background: '#FFF', border: '3px solid #000', color: '#000' }}
               />
               <button
                 onClick={handleVoucherRedeem}
