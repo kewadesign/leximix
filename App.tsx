@@ -27,9 +27,9 @@ import { SolitaireGame } from './components/SolitaireGame';
 import { CardCollectionView } from './components/CardCollectionView';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { FriendsManager } from './components/FriendsManager';
-import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
-import { auth, database } from './utils/firebase';
-import { ref, onValue } from 'firebase/database';
+import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION, STICKER_CATEGORIES } from './constants';
+// Firebase removed - using IONOS API now
+import { startGamePolling, startInvitePolling } from './utils/gamePolling';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
 import { audio } from './utils/audio';
@@ -262,19 +262,46 @@ const FALLBACK_SEASON_CONFIG = {
 
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
+  const [isInitialized, setIsInitialized] = useState(false);
   const [apkDownloadUrl, setApkDownloadUrl] = useState('http://leximix.de/LexiMix-v3.0.2-Release.apk');
+  
+  // Password Reset State
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [resetToken, setResetToken] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [resetError, setResetError] = useState('');
+  const [resetSuccess, setResetSuccess] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+
+  // Check for password reset token in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token) {
+      setResetToken(token);
+      setShowPasswordReset(true);
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   useEffect(() => {
-    const systemRef = ref(database, 'system');
-    const unsubscribe = onValue(systemRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data.download_url) {
-          setApkDownloadUrl(data.download_url);
+    // Fetch system config from IONOS API
+    const fetchSystemConfig = async () => {
+      try {
+        const response = await fetch('http://leximix.de/api/config/system.php');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.config?.download_url) {
+            setApkDownloadUrl(data.config.download_url);
+          }
         }
+      } catch (error) {
+        console.log('Failed to fetch system config');
       }
-    });
-    return () => unsubscribe();
+    };
+    fetchSystemConfig();
   }, []);
 
   // Navigation
@@ -394,33 +421,12 @@ export default function App() {
   const [currentSeason, setCurrentSeason] = useState(() => getCurrentSeason());
   const [dynamicRewards, setDynamicRewards] = useState(SEASON_REWARDS);
 
-  // Fetch Season Settings from Ionos & Firebase
+  // Fetch Season Settings from IONOS
   useEffect(() => {
-    let unsubscribeSeasonId: (() => void) | undefined;
-
     const fetchSeasonSettings = async () => {
       try {
-        // 1. Setup Real-time Listener for Active Season ID from Firebase
-        // Import the initialized database instance to avoid initialization errors
-        let db;
-        let seasonRef;
-
-        try {
-          const { database } = await import('./utils/firebase');
-          const { ref } = await import('firebase/database');
-          db = database;
-          seasonRef = ref(db, 'system/active_season_id');
-        } catch (initError) {
-          console.warn('[Season] Failed to import initialized database, falling back to getDatabase:', initError);
-          const { getDatabase, ref } = await import('firebase/database');
-          db = getDatabase();
-          seasonRef = ref(db, 'system/active_season_id');
-        }
-
-        const { onValue } = await import('firebase/database');
-
-        // 2. Fetch Season Data from Ionos (static config)
-        let settings = null; // Declare settings here
+        // Fetch Season Data from IONOS (static config)
+        let settings = null;
         let response;
         try {
           response = await fetch('http://leximix.de/season_settings.json');
@@ -434,8 +440,8 @@ export default function App() {
           }
         }
 
-        if (response.ok) {
-          settings = await response.json(); // Assign to settings
+        if (response && response.ok) {
+          settings = await response.json();
           setSeasonConfig(settings);
         } else {
           console.warn('[Season] Fetch failed, using hardcoded fallback');
@@ -443,27 +449,20 @@ export default function App() {
           setSeasonConfig(settings);
         }
 
-        // 3. Listen for ID changes (Moved outside try/catch of fetch to ensure it runs)
-        unsubscribeSeasonId = onValue(seasonRef, (snapshot) => {
-          const firebaseActiveId = snapshot.exists() ? snapshot.val() : null;
-
-          // Priority: Firebase ID > JSON activeSeasonId > Date-based fallback
-          // Use currentSeasonId which is the correct key from the JSON
-          // Use local 'settings' variable if available, otherwise fallback to state (which might be null initially but we are inside the function where we try to fetch it)
-          // Actually, we should use the 'settings' object we just fetched/derived.
-
+        // Get active season ID from system config (polling-based)
+        try {
+          const configResponse = await fetch('https://leximix.de/api/config/system.php');
+          const configData = await configResponse.json();
+          const activeSeasonId = configData.config?.active_season_id;
+          
           const currentSettings = settings || seasonConfig;
-          const activeId = firebaseActiveId || (currentSettings ? ((currentSettings as any).currentSeasonId || currentSettings.activeId) : null);
+          const activeId = activeSeasonId || (currentSettings ? ((currentSettings as any).currentSeasonId || currentSettings.activeId) : null);
 
           if (activeId && currentSettings) {
             const activeSeasonData = currentSettings.seasons.find((s: any) => s.id === activeId);
             if (activeSeasonData) {
               console.log(`[Season] Loaded Dynamic Season: ${activeSeasonData.name} (ID: ${activeId})`);
               setCurrentSeason(activeSeasonData);
-
-              // Use generated rewards instead of JSON rewards (they have local avatars)
-              // The SEASON_REWARDS from constants.ts are always used
-              console.log('[Season] Using generated rewards with local avatars');
 
               // Apply Colors
               const root = document.documentElement;
@@ -474,7 +473,9 @@ export default function App() {
               root.style.setProperty('--season-bg-card', activeSeasonData.colors.bgCard);
             }
           }
-        });
+        } catch (configError) {
+          console.warn('[Season] Failed to load system config:', configError);
+        }
 
       } catch (error) {
         console.error('[Season] Failed to load dynamic settings:', error);
@@ -482,10 +483,6 @@ export default function App() {
     };
 
     fetchSeasonSettings();
-
-    return () => {
-      if (unsubscribeSeasonId) unsubscribeSeasonId();
-    };
   }, []); // Removed dependency on seasonConfig to prevent infinite loop
 
   // Apply Season Colors to CSS Variables (Initial / Fallback)
@@ -522,13 +519,14 @@ export default function App() {
       // Must be logged in to use app
       if (!cloudUser) {
         setView('AUTH');
+        setIsInitialized(true);
       } else {
         setView('HOME'); // Go straight to home
+        setIsInitialized(true);
 
         // Background Sync on Startup: Ensure we have the latest cloud data
-        // Uses hybrid system (IONOS + Firebase) for robustness
         import('./utils/cloudStorage').then(async ({ loadUserData, normalizeUsername }) => {
-          const { generateFriendCode } = await import('./utils/firebase');
+          const { generateFriendCode } = await import('./utils/multiplayer');
           const normalizedUser = normalizeUsername(cloudUser);
           try {
             const result = await loadUserData(normalizedUser);
@@ -537,7 +535,7 @@ export default function App() {
               let friendCode = cloudData.friendCode;
               // Generate Friend Code if missing
               if (!friendCode) {
-                friendCode = await generateFriendCode(normalizedUser);
+                friendCode = generateFriendCode();
               }
 
               setUser(prev => ({
@@ -550,8 +548,8 @@ export default function App() {
               console.log('[Cloud] Startup sync successful from:', result.source);
             } else {
               // If no cloud data but logged in (rare), generate friend code for new user
-              // Note: generateFriendCode already saves to Firebase
-              const friendCode = await generateFriendCode(normalizedUser);
+              const { generateFriendCode } = await import('./utils/multiplayer');
+              const friendCode = generateFriendCode();
 
               setUser(prev => ({
                 ...prev, friendCode: friendCode || undefined
@@ -565,6 +563,7 @@ export default function App() {
     } catch (error) {
       console.error('[LexiMix] Init error:', error);
       setView('AUTH');
+      setIsInitialized(true);
     }
   }, []);
 
@@ -634,7 +633,16 @@ export default function App() {
     return () => clearInterval(interval);
   }, [cloudUsername]);
 
-  const t = TRANSLATIONS[view === 'ONBOARDING' ? tempUser.language : user.language]; // Handle lang during onboarding
+  // Normalize language to uppercase and provide fallback
+  const normalizeLanguage = (lang: Language | string | undefined): Language => {
+    if (!lang) return Language.DE;
+    const upper = String(lang).toUpperCase() as Language;
+    if (upper === 'EN' || upper === 'DE' || upper === 'ES') return upper;
+    return Language.DE;
+  };
+  
+  const currentLang = normalizeLanguage(view === 'ONBOARDING' ? tempUser.language : user.language);
+  const t = TRANSLATIONS[currentLang] || TRANSLATIONS[Language.DE]; // Handle lang during onboarding with fallback
 
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
   const [gameState, setGameState] = useState<any>(null);
@@ -702,94 +710,55 @@ export default function App() {
   const [globalGameInvite, setGlobalGameInvite] = useState<{ from: string; gameId: string; mode?: GameMode } | null>(null);
   const [pendingSentInvite, setPendingSentInvite] = useState<{ to: string; gameId: string } | null>(null);
 
-  // Global listener for sent invite acceptance (host side)
+  // Global listener for sent invite acceptance (host side) - using polling
   useEffect(() => {
     if (!cloudUsername || !pendingSentInvite) {
       console.log('[App] Listener skipped - cloudUsername:', cloudUsername, 'pendingInvite:', pendingSentInvite);
       return;
     }
 
-    console.log('[App] Setting up listener for game:', pendingSentInvite.gameId);
-    let unsubscribe: (() => void) | undefined;
+    console.log('[App] Setting up polling for game:', pendingSentInvite.gameId);
+    
+    const cleanup = startGamePolling(pendingSentInvite.gameId, (gameData) => {
+      console.log('[App] Game update received:', gameData.status, gameData.players);
 
-    const setupListener = async () => {
-      const { ref, onValue, off } = await import('firebase/database');
-      const { database } = await import('./utils/firebase');
-
-      const gameRef = ref(database, `games/${pendingSentInvite.gameId}`);
-
-      const listener = onValue(gameRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const gameData = snapshot.val();
-          console.log('[App] Game update received:', gameData.status, gameData.players);
-
-          // Game is playing and we're the host - guest accepted!
-          if (gameData.status === 'playing' && gameData.players?.host === cloudUsername) {
-            console.log('[App] Game accepted by guest, starting game for host');
-            setMultiplayerOpponent(pendingSentInvite.to);
-            setMultiplayerGameId(pendingSentInvite.gameId);
-            setIsMultiplayerHost(true);
-            setPendingSentInvite(null);
-            setShowMultiplayerLobby(false);
-            setView('MAU_MAU');
-          }
-        } else {
-          console.log('[App] Game snapshot does not exist yet');
-        }
-      });
-
-      unsubscribe = () => off(gameRef);
-    };
-
-    setupListener();
+      // Game is playing and we're the host - guest accepted!
+      if (gameData.status === 'playing' && gameData.players?.host === cloudUsername) {
+        console.log('[App] Game accepted by guest, starting game for host');
+        setMultiplayerOpponent(pendingSentInvite.to);
+        setMultiplayerGameId(pendingSentInvite.gameId);
+        setIsMultiplayerHost(true);
+        setPendingSentInvite(null);
+        setShowMultiplayerLobby(false);
+        setView('MAU_MAU');
+      }
+    });
 
     return () => {
-      console.log('[App] Cleaning up listener');
-      if (unsubscribe) unsubscribe();
+      console.log('[App] Cleaning up polling');
+      cleanup();
     };
   }, [cloudUsername, pendingSentInvite]);
 
-  // Global listener for game invitations (shows popup anywhere in app)
+  // Global listener for game invitations (shows popup anywhere in app) - using polling
   useEffect(() => {
     if (!cloudUsername) return;
+    
+    const cleanup = startInvitePolling((invites) => {
+      const pendingInvite = invites.find((inv: any) => inv.status === 'pending');
 
-    let unsubscribe: (() => void) | undefined;
-
-    const setupListener = async () => {
-      const { ref, onValue, off } = await import('firebase/database');
-      const { database } = await import('./utils/firebase');
-
-      const invitesRef = ref(database, `gameInvites/${cloudUsername}`);
-
-      unsubscribe = onValue(invitesRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const invitesData = snapshot.val();
-          const invites = Object.values(invitesData) as any[];
-          const pendingInvite = invites.find((inv: any) => inv.status === 'pending');
-
-          if (pendingInvite && !showMultiplayerLobby) {
-            // Show global popup only if not already in lobby
-            setGlobalGameInvite({
-              from: pendingInvite.from,
-              gameId: pendingInvite.gameId,
-              mode: pendingInvite.mode
-            });
-          }
-        }
-      });
-    };
-
-    setupListener();
-
-    return () => {
-      if (unsubscribe) {
-        import('firebase/database').then(({ ref, off }) => {
-          import('./utils/firebase').then(({ database }) => {
-            off(ref(database, `gameInvites/${cloudUsername}`));
-          });
+      if (pendingInvite && !showMultiplayerLobby) {
+        // Show global popup only if not already in lobby
+        setGlobalGameInvite({
+          from: pendingInvite.fromUsername,
+          gameId: pendingInvite.gameId,
+          mode: pendingInvite.gameType,
+          inviteId: pendingInvite.id
         });
       }
-    };
+    });
+
+    return cleanup;
   }, [cloudUsername, showMultiplayerLobby]);
 
   const handleAcceptGlobalInvite = async () => {
@@ -801,13 +770,27 @@ export default function App() {
     console.log('[App] Accepting invite...', globalGameInvite);
 
     try {
-      const { ref, set } = await import('firebase/database');
-      const { database } = await import('./utils/firebase');
+      const { respondToInvite, joinGame } = await import('./utils/gamePolling');
       const { initializeMultiplayerGame, initializeChessGame } = await import('./utils/multiplayerGame');
 
-      // Update invite status
-      console.log('[App] Updating invite status to accepted...');
-      await set(ref(database, `gameInvites/${cloudUsername}/${globalGameInvite.gameId}/status`), 'accepted');
+      // Find invite ID first (we need to get it from the invite list)
+      // For now, we'll use the gameId to find the invite
+      const inviteId = (globalGameInvite as any).inviteId;
+      
+      if (inviteId) {
+        // Update invite status via API
+        console.log('[App] Updating invite status to accepted...');
+        const respondResult = await respondToInvite(inviteId, 'accept');
+        if (!respondResult.success) {
+          throw new Error(respondResult.error || 'Failed to accept invite');
+        }
+      }
+      
+      // Join the game
+      const joinResult = await joinGame(globalGameInvite.gameId);
+      if (!joinResult.success) {
+        throw new Error(joinResult.error || 'Failed to join game');
+      }
 
       const inviteMode = globalGameInvite.mode || GameMode.SKAT_MAU_MAU;
 
@@ -887,10 +870,12 @@ export default function App() {
     if (!globalGameInvite || !cloudUsername) return;
 
     try {
-      const { ref, set } = await import('firebase/database');
-      const { database } = await import('./utils/firebase');
-
-      await set(ref(database, `gameInvites/${cloudUsername}/${globalGameInvite.gameId}/status`), 'declined');
+      const { respondToInvite } = await import('./utils/gamePolling');
+      const inviteId = (globalGameInvite as any).inviteId;
+      
+      if (inviteId) {
+        await respondToInvite(inviteId, 'decline');
+      }
       setGlobalGameInvite(null);
     } catch (error) {
       console.error('[Global Invite] Decline error:', error);
@@ -955,9 +940,6 @@ export default function App() {
           const errorCode = err?.code || 'unknown';
           const errorMessage = err?.message || String(err);
           console.error(`[Fix] Failed to generate friend code. Code: ${errorCode}, Message: ${errorMessage}`);
-          if (errorCode === 'PERMISSION_DENIED') {
-            console.error('[Fix] Firebase rules are blocking write to friendCodes. Update database.rules.json');
-          }
         }
       }
     };
@@ -1445,8 +1427,8 @@ export default function App() {
   }, [view, gameConfig, user.language]);
 
   // Cloud Save Handlers
-  const handleCloudLogin = async (username: string) => {
-    const { normalizeUsername } = await import('./utils/firebase');
+  const handleCloudLogin = async (username: string, userData?: UserState) => {
+    const { normalizeUsername } = await import('./utils/cloudStorage');
     const { loadUserData } = await import('./utils/cloudStorage');
     const { getFriendsFromFirebase, generateFriendCode, saveFriendCodeToFirebase } = await import('./utils/multiplayer');
     const normalizedUser = normalizeUsername(username);
@@ -1454,10 +1436,17 @@ export default function App() {
     setCloudUsername(normalizedUser);
     localStorage.setItem('leximix_cloud_user', normalizedUser);
 
-    // Load from hybrid cloud (IONOS + Firebase)
-    const loadResult = await loadUserData(normalizedUser);
-    const cloudData = loadResult.success ? loadResult.data : null;
-    console.log('[Cloud] Loaded from:', loadResult.source || 'none');
+    // If userData provided from new API auth, use it directly
+    // Otherwise load from IONOS cloud storage
+    let cloudData: any = null;
+    if (userData) {
+      cloudData = userData;
+      console.log('[Cloud] Using userData from API auth');
+    } else {
+      const loadResult = await loadUserData(normalizedUser);
+      cloudData = loadResult.success ? loadResult.data : null;
+      console.log('[Cloud] Loaded from:', loadResult.source || 'none');
+    }
 
     if (cloudData) {
       // Load existing data
@@ -1910,7 +1899,6 @@ export default function App() {
 
   // Handle sticker album category completion reward
   const handleClaimCategoryReward = (categoryId: string) => {
-    const { STICKER_CATEGORIES } = require('./constants');
     const category = STICKER_CATEGORIES.find((c: any) => c.id === categoryId);
     if (!category) return;
 
@@ -1939,14 +1927,9 @@ export default function App() {
   const confirmDelete = async () => {
     try {
       if (cloudUsername) {
-        const { deleteUserAccount } = await import('./utils/firebase');
-        const success = await deleteUserAccount(cloudUsername);
-        if (success) {
-          console.log('[LexiMix] Account deleted from cloud');
-        } else {
-          alert("Fehler beim Löschen des Accounts. Bitte versuche es später erneut.");
-          return;
-        }
+        // Account deletion via API would be implemented here
+        // For now, just clear local data
+        console.log('[LexiMix] Account deletion requested - local data cleared');
       }
 
       // Use the existing logout handler to ensure clean state and redirection
@@ -2002,20 +1985,7 @@ export default function App() {
     }
 
     try {
-      // Check if username is taken
-      const { normalizeUsername, database } = await import('./utils/firebase');
-      const { ref, get } = await import('firebase/database');
-      const normalizedNew = normalizeUsername(editUsername);
-
-      const userRef = ref(database, `users/${normalizedNew}`);
-      const snapshot = await get(userRef);
-
-      if (snapshot.exists() && normalizedNew !== normalizeUsername(cloudUsername || '')) {
-        setUsernameError('Benutzername bereits vergeben');
-        audio.playError();
-        return;
-      }
-
+      // Username validation is done on the server side
       // Show confirmation modal
       setShowUsernameConfirm(true);
     } catch (error) {
@@ -2027,7 +1997,7 @@ export default function App() {
 
   const confirmUsernameChange = async () => {
     try {
-      const { normalizeUsername } = await import('./utils/firebase');
+      const { normalizeUsername } = await import('./utils/cloudStorage');
       const normalizedNew = normalizeUsername(editUsername);
 
       // Deduct coins and update
@@ -2064,8 +2034,8 @@ export default function App() {
     }
 
     try {
-      const { redeemVoucher } = await import('./utils/firebase');
-      const result = await redeemVoucher(cloudUsername, voucherCode);
+      const { redeemVoucher } = await import('./utils/api');
+      const result = await redeemVoucher(voucherCode);
 
       if (result.success) {
         // Award coins to user if applicable
@@ -2477,7 +2447,7 @@ export default function App() {
     // Save to Cloud
     if (cloudUsername) {
       try {
-        const { saveToCloud } = await import('./utils/firebase');
+        const { saveUserData } = await import('./utils/cloudStorage');
         // We need to save the new state. 
         // Since we can't easily access the *new* state from setUser here without a ref or waiting,
         // we'll construct a temporary object for saving.
@@ -2487,7 +2457,7 @@ export default function App() {
           premiumActivatedAt: Date.now(),
           level: planType === 'monthly' ? (user.level || 1) + 10 : user.level
         };
-        await saveToCloud(cloudUsername, tempState);
+        await saveUserData(cloudUsername, tempState);
       } catch (e) {
         console.error("Failed to save premium status", e);
       }
@@ -3447,6 +3417,27 @@ export default function App() {
     </svg>
   );
 
+  // Loading screen while initializing - prevents flash of wrong content
+  if (!isInitialized) {
+    return (
+      <div 
+        className="h-screen w-full flex items-center justify-center"
+        style={{ background: '#FFF8E7' }}
+      >
+        <div className="text-center">
+          <div 
+            className="w-16 h-16 mx-auto mb-4 animate-pulse"
+            style={{ 
+              background: 'linear-gradient(135deg, #FF006E, #8338EC)',
+              border: '4px solid #000',
+              boxShadow: '6px 6px 0px #000'
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`${user.theme} h-screen w-full text-[var(--color-text)] font-sans overflow-hidden relative selection:bg-brutal-pink selection:text-white transition-colors duration-300 geo-pattern geo-shapes`}>
       {/* Global Grain Overlay */}
@@ -3497,7 +3488,7 @@ export default function App() {
                 Keine Verbindung
               </h2>
               <p className="text-sm font-bold leading-relaxed" style={{ color: '#4A4A4A' }}>
-                LexiMix benötigt eine aktive Internetverbindung, um deine Fortschritte mit Firebase zu synchronisieren.
+                LexiMix benötigt eine aktive Internetverbindung, um deine Fortschritte zu synchronisieren.
               </p>
             </div>
             <div className="flex flex-col gap-3">
@@ -3513,7 +3504,7 @@ export default function App() {
                 style={{ background: '#FFBE0B', color: '#000', border: '2px solid #000' }}
               >
                 <Database size={14} />
-                <span>Firebase-Synchronisation erforderlich</span>
+                <span>Cloud-Synchronisation erforderlich</span>
               </div>
             </div>
             <button
@@ -4111,8 +4102,8 @@ export default function App() {
               <AuthModal
                 isOpen={true}
                 onClose={() => { }}
-                onSuccess={(username) => {
-                  handleCloudLogin(username);
+                onSuccess={(username, userData) => {
+                  handleCloudLogin(username, userData);
                 }}
                 lang={user.language}
                 onLanguageChange={(lang) => {
@@ -4840,20 +4831,15 @@ export default function App() {
                 <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#8338EC', color: '#FFF', border: '2px solid #000' }}>
                   {t.PROFILE.ACCOUNT_SECURITY}
                 </div>
-                {auth.currentUser?.email && (
+                {cloudUsername && (
                   <div className="mb-3">
-                    <p className="text-xs font-bold uppercase" style={{ color: '#4A4A4A' }}>{t.PROFILE.EMAIL}</p>
-                    <p className="font-black" style={{ color: '#000' }}>{auth.currentUser.email}</p>
+                    <p className="text-xs font-bold uppercase" style={{ color: '#4A4A4A' }}>Benutzername</p>
+                    <p className="font-black" style={{ color: '#000' }}>{cloudUsername}</p>
                   </div>
                 )}
                 <button
-                  onClick={async () => {
-                    if (!auth.currentUser?.email) return;
-                    if (confirm(`Passwort-Reset E-Mail an ${auth.currentUser.email} senden?`)) {
-                      const { resetPassword } = await import('./utils/firebase');
-                      const result = await resetPassword(auth.currentUser.email);
-                      alert(result.success ? 'E-Mail gesendet!' : 'Fehler: ' + result.error);
-                    }
+                  onClick={() => {
+                    alert('Passwort-Reset: Bitte kontaktiere support@leximix.de');
                   }}
                   className="w-full py-3 font-black uppercase text-xs flex items-center justify-center gap-2 transition-all"
                   style={{ background: '#FFF', color: '#000', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}
@@ -5029,12 +5015,14 @@ export default function App() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-black uppercase" style={{ color: '#4A4A4A' }}>{t.PROFILE.CONFIRM_MSG}</label>
+            <label className="text-xs font-black uppercase" style={{ color: '#4A4A4A' }}>
+              {user.language === 'DE' ? 'Passwort zur Bestätigung eingeben:' : user.language === 'ES' ? 'Ingresa tu contraseña para confirmar:' : 'Enter your password to confirm:'}
+            </label>
             <input
-              type="text"
+              type="password"
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
-              placeholder={t.PROFILE.CONFIRM_PLACEHOLDER}
+              placeholder="••••••••"
               className="w-full p-4 font-mono text-center"
               style={{ background: 'var(--color-bg)', border: '4px solid #FF006E', color: '#000' }}
             />
@@ -5049,16 +5037,23 @@ export default function App() {
               {t.PROFILE.CANCEL}
             </button>
             <button
-              onClick={() => {
-                if (deleteInput.toUpperCase() === t.PROFILE.CONFIRM_PLACEHOLDER) {
-                  alert('Profil-Löschung noch nicht implementiert. Bald verfügbar!');
-                  setShowDeleteConfirm(false);
-                  setDeleteInput('');
-                } else {
-                  alert(t.PROFILE.CONFIRM_MSG);
+              onClick={async () => {
+                if (deleteInput.length >= 6) {
+                  const { deleteAccount } = await import('./utils/api');
+                  const result = await deleteAccount(deleteInput);
+                  if (result.success) {
+                    alert(user.language === 'DE' ? 'Account erfolgreich gelöscht!' : user.language === 'ES' ? '¡Cuenta eliminada!' : 'Account deleted successfully!');
+                    setShowDeleteConfirm(false);
+                    setDeleteInput('');
+                    setCloudUsername(null);
+                    localStorage.clear();
+                    setView('ONBOARDING');
+                  } else {
+                    alert(result.error || 'Fehler beim Löschen');
+                  }
                 }
               }}
-              disabled={deleteInput.toUpperCase() !== t.PROFILE.CONFIRM_PLACEHOLDER}
+              disabled={deleteInput.length < 6}
               className="flex-1 py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ background: '#FF006E', color: '#FFF', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
             >
@@ -5072,8 +5067,8 @@ export default function App() {
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        onSuccess={(username) => {
-          handleCloudLogin(username);
+        onSuccess={(username, userData) => {
+          handleCloudLogin(username, userData);
           setShowAuthModal(false);
         }}
         lang={user.language}
@@ -5121,6 +5116,98 @@ export default function App() {
           v{APP_VERSION}
         </div>
       </div>
+
+      {/* Password Reset Modal */}
+      <Modal isOpen={showPasswordReset} onClose={() => { setShowPasswordReset(false); setResetToken(null); setNewPassword(''); setConfirmNewPassword(''); setResetError(''); setResetSuccess(false); }} title="Passwort zurücksetzen">
+        <div className="space-y-5">
+          {resetSuccess ? (
+            <div className="text-center space-y-4">
+              <div className="text-6xl">✅</div>
+              <h3 className="text-xl font-black" style={{ color: '#06FFA5' }}>Passwort geändert!</h3>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                Du kannst dich jetzt mit deinem neuen Passwort einloggen.
+              </p>
+              <button
+                onClick={() => { setShowPasswordReset(false); setResetToken(null); setResetSuccess(false); }}
+                className="w-full py-4 font-black uppercase"
+                style={{ background: '#06FFA5', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
+              >
+                Zum Login
+              </button>
+            </div>
+          ) : (
+            <>
+              {resetError && (
+                <div className="p-4 flex items-center gap-3" style={{ background: '#FF006E', color: '#FFF', border: '4px solid #000' }}>
+                  <AlertTriangle size={20} />
+                  <span className="text-sm font-bold">{resetError}</span>
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase" style={{ color: 'var(--color-text)' }}>Neues Passwort</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full p-4 font-bold"
+                  style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase" style={{ color: 'var(--color-text)' }}>Passwort bestätigen</label>
+                <input
+                  type="password"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full p-4 font-bold"
+                  style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
+                />
+              </div>
+              
+              <button
+                onClick={async () => {
+                  setResetError('');
+                  if (newPassword.length < 6) {
+                    setResetError('Passwort muss mindestens 6 Zeichen lang sein');
+                    return;
+                  }
+                  if (newPassword !== confirmNewPassword) {
+                    setResetError('Passwörter stimmen nicht überein');
+                    return;
+                  }
+                  if (!resetToken) {
+                    setResetError('Ungültiger Reset-Link');
+                    return;
+                  }
+                  setResetLoading(true);
+                  try {
+                    const { resetPassword } = await import('./utils/api');
+                    const result = await resetPassword(resetToken, newPassword);
+                    if (result.success) {
+                      setResetSuccess(true);
+                    } else {
+                      setResetError(result.error || 'Fehler beim Zurücksetzen');
+                    }
+                  } catch (err) {
+                    setResetError('Ein Fehler ist aufgetreten');
+                  } finally {
+                    setResetLoading(false);
+                  }
+                }}
+                disabled={resetLoading || newPassword.length < 6 || newPassword !== confirmNewPassword}
+                className="w-full py-4 font-black uppercase disabled:opacity-50"
+                style={{ background: '#FF006E', color: '#FFF', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
+              >
+                {resetLoading ? 'WIRD GEÄNDERT...' : 'PASSWORT ÄNDERN'}
+              </button>
+            </>
+          )}
+        </div>
+      </Modal>
 
     </div>
   );
