@@ -4,8 +4,7 @@ import { FaChessPawn, FaChessRook, FaChessKnight, FaChessBishop, FaChessQueen, F
 import { ArrowLeft, RotateCcw, Flag, Trophy, Users, User, Cpu, Coins, Lightbulb, Video, Clock } from 'lucide-react';
 import { UserState, Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { ref, onValue, set, push, update } from 'firebase/database';
-import { database } from '../utils/firebase';
+import { startGamePolling, makeGameMove } from '../utils/gamePolling';
 import { calculateBestMove, getLevelConfig } from '../utils/chessAI';
 
 interface ChessGameProps {
@@ -98,7 +97,30 @@ export const ChessGame: React.FC<ChessGameProps> = ({
         setHintCount(0);
     }, [multiplayerGameId, myColor, levelId]);
 
-    // ... (Multiplayer Listener remains same)
+    // Multiplayer Listener (polling)
+    useEffect(() => {
+        if (!isMultiplayer || !multiplayerGameId) return;
+
+        const cleanup = startGamePolling(multiplayerGameId, (gameState: any) => {
+            if (gameState.fen) {
+                const newGame = new Chess(gameState.fen);
+                updateBoard(newGame);
+                
+                if (gameState.lastMove) {
+                    setLastMove(gameState.lastMove);
+                }
+                
+                if (gameState.status && gameState.status !== 'playing') {
+                    setGameStatus(gameState.status);
+                    if (gameState.winner) {
+                        setWinner(gameState.winner);
+                    }
+                }
+            }
+        });
+
+        return cleanup;
+    }, [isMultiplayer, multiplayerGameId, updateBoard]);
 
     // AI Logic
     useEffect(() => {
@@ -171,11 +193,11 @@ export const ChessGame: React.FC<ChessGameProps> = ({
                 setSelectedSquare(null);
                 setPossibleMoves([]);
 
-                // Send to Firebase if multiplayer
+                // Send move via API if multiplayer
                 if (isMultiplayer && multiplayerGameId) {
-                    update(ref(database, `games/${multiplayerGameId}`), {
+                    makeGameMove(multiplayerGameId, {
                         fen: game.fen(),
-                        lastMove: { from: selectedSquare, to: square },
+                        lastMove: { from: selectedSquare, to: square, timestamp: Date.now() },
                         turn: game.turn() // 'w' or 'b'
                     });
                 }
@@ -194,7 +216,7 @@ export const ChessGame: React.FC<ChessGameProps> = ({
             setWinner(opponentColor);
 
             if (isMultiplayer && multiplayerGameId) {
-                update(ref(database, `games/${multiplayerGameId}`), {
+                makeGameMove(multiplayerGameId, {
                     status: 'resigned',
                     winner: opponentColor
                 });

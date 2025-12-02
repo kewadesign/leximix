@@ -5,12 +5,54 @@
  */
 
 // ============================================
+// CORS SETTINGS (MUST BE FIRST!)
+// ============================================
+$ALLOWED_ORIGINS = [
+    'https://leximix.de',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'capacitor://localhost',
+    'http://localhost'
+];
+
+// Set CORS headers IMMEDIATELY before any other code runs
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $ALLOWED_ORIGINS)) {
+    header("Access-Control-Allow-Origin: $origin");
+} else {
+    header("Access-Control-Allow-Origin: *");
+}
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Session-Token');
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json; charset=utf-8');
+
+// Handle preflight immediately
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// Global error handler to ensure JSON responses even on PHP errors
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => "Server error: $errstr"], JSON_UNESCAPED_UNICODE);
+    exit;
+});
+
+set_exception_handler(function($exception) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Server error: ' . $exception->getMessage()], JSON_UNESCAPED_UNICODE);
+    exit;
+});
+
+// ============================================
 // DATABASE CONFIGURATION
 // ============================================
-define('DB_HOST', 'db5019112648.hosting-data.io'); // IONOS MySQL host
-define('DB_NAME', 'db15023407');                   // Database name
-define('DB_USER', 'dbu725871');                    // Database user
-define('DB_PASS', 'Kewadesign1998');               // DB Passwort
+define('DB_HOST', 'db5019126627.hosting-data.io'); // IONOS MySQL host (NEW Standard DB)
+define('DB_NAME', 'dbs15032117');                  // Database name
+define('DB_USER', 'dbu1355789');                    // Database user
+define('DB_PASS', 'LmApiDb2024Secure!');               // DB Passwort
 define('DB_CHARSET', 'utf8mb4');
 
 // ============================================
@@ -36,18 +78,7 @@ define('RATE_LIMIT_MAX_REQUESTS', 30);             // Max requests per window
 // ============================================
 define('APP_URL', 'https://leximix.de');
 define('API_URL', 'https://leximix.de/api');
-define('DEBUG_MODE', false);                       // Set to true for development
-
-// ============================================
-// CORS SETTINGS
-// ============================================
-$ALLOWED_ORIGINS = [
-    'https://leximix.de',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'capacitor://localhost',
-    'http://localhost'
-];
+define('DEBUG_MODE', true);                        // Set to true for development
 
 // ============================================
 // DATABASE CONNECTION
@@ -74,33 +105,6 @@ function getDB(): PDO {
     }
     
     return $pdo;
-}
-
-// ============================================
-// CORS HEADERS
-// ============================================
-function setCorsHeaders(): void {
-    global $ALLOWED_ORIGINS;
-    
-    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-    
-    if (in_array($origin, $ALLOWED_ORIGINS)) {
-        header("Access-Control-Allow-Origin: $origin");
-    } else {
-        header("Access-Control-Allow-Origin: *");
-    }
-    
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Session-Token');
-    header('Access-Control-Allow-Credentials: true');
-    header('Content-Type: application/json; charset=utf-8');
-}
-
-// Handle preflight
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    setCorsHeaders();
-    http_response_code(200);
-    exit();
 }
 
 // ============================================
@@ -173,7 +177,7 @@ function getCurrentSession(): ?array {
         SELECT s.*, u.username, u.email, u.friend_code, u.is_premium
         FROM sessions s
         JOIN users u ON s.user_id = u.id
-        WHERE s.token = ? AND s.expires_at > NOW()
+        WHERE s.session_token = ? AND s.expires_at > NOW()
     ");
     $stmt->execute([$token]);
     
@@ -192,6 +196,3 @@ function requireAuth(): array {
     
     return $session;
 }
-
-// Set CORS headers for all requests
-setCorsHeaders();

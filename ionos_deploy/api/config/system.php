@@ -15,12 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 $pdo = getDB();
 
 // Get all public config
-$stmt = $pdo->query("SELECT `key`, `value` FROM system_config");
+$stmt = $pdo->query("SELECT config_key, config_value FROM system_config");
 $rows = $stmt->fetchAll();
 
 $config = [];
 foreach ($rows as $row) {
-    $config[$row['key']] = $row['value'];
+    $config[$row['config_key']] = $row['config_value'];
 }
 
 // Parse boolean values

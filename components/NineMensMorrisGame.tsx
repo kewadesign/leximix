@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Circle, RotateCcw, Lightbulb, Coins, Play, Trophy, X, Gem, Target } from 'lucide-react';
 import catDanceGif from '../assets/cat-dance.gif';
-import { ref, onValue, set, off, update } from 'firebase/database';
-import { database } from '../utils/firebase';
+import { startGamePolling, makeGameMove } from '../utils/gamePolling';
 import { Language, UserState, GameMode } from '../types';
 import { TRANSLATIONS } from '../constants';
 
@@ -175,24 +174,19 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
   useEffect(() => {
     if (!isMultiplayer || !multiplayerGameId) return;
 
-    const gameRef = ref(database, `games/${multiplayerGameId}`);
-
-    const unsubscribe = onValue(gameRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data.board) setBoard(data.board);
-        if (data.currentPlayer) setCurrentPlayer(data.currentPlayer);
-        if (data.phase) setPhase(data.phase);
-        if (data.piecesToPlace) setPiecesToPlace(data.piecesToPlace);
-        if (data.mustRemove !== undefined) setMustRemove(data.mustRemove);
-        if (data.moveHistory) setMoveHistory(data.moveHistory);
-        if (data.gameStatus && data.gameStatus !== 'playing') {
-          setGameStatus(data.gameStatus === playerColor ? 'won' : 'lost');
-        }
+    const cleanup = startGamePolling(multiplayerGameId, (data: any) => {
+      if (data.board) setBoard(data.board);
+      if (data.currentPlayer) setCurrentPlayer(data.currentPlayer);
+      if (data.phase) setPhase(data.phase);
+      if (data.piecesToPlace) setPiecesToPlace(data.piecesToPlace);
+      if (data.mustRemove !== undefined) setMustRemove(data.mustRemove);
+      if (data.moveHistory) setMoveHistory(data.moveHistory);
+      if (data.status && data.status !== 'playing') {
+        setGameStatus(data.status === playerColor ? 'won' : 'lost');
       }
     });
 
-    return () => off(gameRef);
+    return cleanup;
   }, [isMultiplayer, multiplayerGameId, playerColor]);
 
   // Check for game over
@@ -422,9 +416,8 @@ export const NineMensMorrisGame: React.FC<NineMensMorrisGameProps> = ({
     const nextPlayer = stillMustRemove ? currentPlayer : (currentPlayer === 'white' ? 'black' : 'white');
     const newPhase = newPiecesToPlace.white === 0 && newPiecesToPlace.black === 0 ? 'moving' : phase;
 
-    // Use update instead of set to preserve existing data like players
-    const gameRef = ref(database, `games/${multiplayerGameId}`);
-    update(gameRef, {
+    // Sync multiplayer via API
+    makeGameMove(multiplayerGameId, {
       board: newBoard,
       currentPlayer: nextPlayer,
       phase: newPhase,

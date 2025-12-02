@@ -1,11 +1,11 @@
 {
-    "minVersion": "2.4.0",
-    "version": "3.2.0",
-    "updateMessage": "LexiMix v3.2.0: Mau Mau & Rommé Redesign!",
+    "minVersion": "3.8.0",
+    "version": "4.0.0",
+    "updateMessage": "LexiMix v4.0.0: Vollständige Migration zu IONOS Server - Keine Firebase-Abhängigkeit mehr!",
     "apk": {
-        "url": "http://leximix.de/LexiMix-v3.2.0-Release.apk",
+        "url": "http://leximix.de/app-release.apk",
         "size": "46 MB",
-        "version": "3.2.0",
+        "version": "4.0.0",
         "forceUpdate": false
     }
 }

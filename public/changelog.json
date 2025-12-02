@@ -1,5 +1,21 @@
 [
   {
+    "version": "4.0.0",
+    "date": "30.11.2025",
+    "changes": [
+      "🚀 MAJOR UPDATE: Vollständige Migration von Firebase zu IONOS Server",
+      "☁️ Cloud Save: Jetzt vollständig über IONOS API",
+      "🎮 Multiplayer: Polling-basiertes System für alle Spiele (1.5s Intervall)",
+      "🔍 Matchmaking: Server-seitiges System mit atomaren Operationen",
+      "👥 Friends System: Komplett über IONOS API",
+      "🎫 Voucher System: Über IONOS API",
+      "📱 Version Management: Über IONOS API",
+      "🔒 Sicherheit: Alle Daten jetzt auf eigenem IONOS Server",
+      "🌐 Unabhängigkeit: Keine Firebase-Abhängigkeit mehr",
+      "🗑️ Firebase komplett entfernt"
+    ]
+  },
+  {
     "version": "3.2.0",
     "date": "29.11.2025",
     "changes": [

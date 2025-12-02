@@ -1,6 +1,9 @@
-// Multiplayer game state synchronization utilities
-import { ref, set, onValue, off, get, update } from 'firebase/database';
-import { database, sanitizeForFirebase } from './firebase';
+/**
+ * Multiplayer game state synchronization utilities
+ * Uses IONOS API with polling instead of Firebase
+ */
+
+import { startGamePolling, makeGameMove, createGame, joinGame } from './gamePolling';
 import { type Card, CardRank } from './maumau';
 
 export interface MultiplayerGameState {
@@ -143,11 +146,12 @@ export async function initializeRummyGame(
             lastActivity: Date.now()
         };
 
-        console.log('[MultiplayerGame] Writing RUMMY game state to Firebase...');
-        const sanitizedState = sanitizeForFirebase(gameState);
-        await set(ref(database, `games/${gameId}`), sanitizedState);
-        console.log('[MultiplayerGame] RUMMY Game state written successfully');
-        return true;
+        const result = await createGame('rummy', gameState);
+        if (result.success) {
+            console.log('[MultiplayerGame] RUMMY Game created successfully');
+            return true;
+        }
+        return false;
     } catch (error) {
         console.error('[MultiplayerGame] Error initializing rummy game:', error);
         return false;
@@ -181,11 +185,12 @@ export async function initializeNineMensMorrisGame(
             lastActivity: Date.now()
         };
 
-        console.log('[MultiplayerGame] Writing MORRIS game state to Firebase...', gameState);
-        const sanitizedState = sanitizeForFirebase(gameState);
-        await set(ref(database, `games/${gameId}`), sanitizedState);
-        console.log('[MultiplayerGame] MORRIS Game state written successfully');
-        return true;
+        const result = await createGame('morris', gameState);
+        if (result.success) {
+            console.log('[MultiplayerGame] MORRIS Game created successfully');
+            return true;
+        }
+        return false;
     } catch (error) {
         console.error('[MultiplayerGame] Error initializing morris game:', error);
         return false;
@@ -216,11 +221,12 @@ export async function initializeChessGame(
             lastActivity: Date.now()
         };
 
-        console.log('[MultiplayerGame] Writing CHESS game state to Firebase...', gameState);
-        const sanitizedState = sanitizeForFirebase(gameState);
-        await set(ref(database, `games/${gameId}`), sanitizedState);
-        console.log('[MultiplayerGame] CHESS Game state written successfully');
-        return true;
+        const result = await createGame('chess', gameState);
+        if (result.success) {
+            console.log('[MultiplayerGame] CHESS Game created successfully');
+            return true;
+        }
+        return false;
     } catch (error) {
         console.error('[MultiplayerGame] Error initializing chess game:', error);
         return false;
@@ -262,11 +268,12 @@ export async function initializeMultiplayerGame(
             lastActivity: Date.now()
         };
 
-        console.log('[MultiplayerGame] Writing game state to Firebase...', gameState);
-        const sanitizedState = sanitizeForFirebase(gameState);
-        await set(ref(database, `games/${gameId}`), sanitizedState);
-        console.log('[MultiplayerGame] Game state written successfully');
-        return true;
+        const result = await createGame('maumau', gameState);
+        if (result.success) {
+            console.log('[MultiplayerGame] Game created successfully');
+            return true;
+        }
+        return false;
     } catch (error) {
         console.error('[MultiplayerGame] Error initializing multiplayer game:', error);
         return false;
@@ -274,22 +281,13 @@ export async function initializeMultiplayerGame(
 }
 
 /**
- * Listen to game state changes
+ * Listen to game state changes (using polling)
  */
 export function subscribeToGameState(
     gameId: string,
-    onUpdate: (state: MultiplayerGameState) => void
+    onUpdate: (state: MultiplayerGameState | ChessGameState | NineMensMorrisGameState | RummyGameState) => void
 ): () => void {
-    const gameRef = ref(database, `games/${gameId}`);
-
-    const unsubscribe = onValue(gameRef, (snapshot) => {
-        if (snapshot.exists()) {
-            const state = snapshot.val() as MultiplayerGameState;
-            onUpdate(state);
-        }
-    });
-
-    return () => off(gameRef);
+    return startGamePolling(gameId, onUpdate);
 }
 
 /**
@@ -303,26 +301,27 @@ export async function playCardMultiplayer(
     wishedSuit?: number
 ): Promise<boolean> {
     try {
-        const gameRef = ref(database, `games/${gameId}`);
-        const snapshot = await get(gameRef);
+        // Get current state first (would need to fetch, but for now we'll pass full state)
+        // In practice, the component should pass the updated state
+        const currentState = await fetchGameState(gameId);
+        if (!currentState) return false;
 
-        if (!snapshot.exists()) return false;
-
-        const currentState = snapshot.val() as MultiplayerGameState;
+        const multiplayerState = currentState as MultiplayerGameState;
 
         // Validate it's player's turn
-        if (currentState.currentTurn !== playerUsername) {
+        if (multiplayerState.currentTurn !== playerUsername) {
             console.error('Not your turn!');
             return false;
         }
 
         // Update game state
         const updates: Partial<MultiplayerGameState> = {
+            ...multiplayerState,
             hands: {
-                ...currentState.hands,
+                ...multiplayerState.hands,
                 [playerUsername]: newHand
             },
-            discardPile: [...currentState.discardPile, card],
+            discardPile: [...multiplayerState.discardPile, card],
             lastMove: {
                 player: playerUsername,
                 action: 'play',
@@ -334,14 +333,14 @@ export async function playCardMultiplayer(
         };
 
         // Determine next player
-        const nextPlayer = currentState.currentTurn === currentState.players.host
-            ? currentState.players.guest
-            : currentState.players.host;
+        const nextPlayer = multiplayerState.currentTurn === multiplayerState.players.host
+            ? multiplayerState.players.guest
+            : multiplayerState.players.host;
 
         // Handle special cards
         if (card.rank === CardRank.SEVEN) {
             // 7: Next player must draw 2 (or stack)
-            updates.drawCount = (currentState.drawCount || 0) + 2;
+            updates.drawCount = (multiplayerState.drawCount || 0) + 2;
             updates.currentTurn = nextPlayer;
             updates.wishedSuit = null;
         } else if (card.rank === CardRank.JACK) {
@@ -367,9 +366,8 @@ export async function playCardMultiplayer(
             updates.winner = playerUsername;
         }
 
-        const sanitizedUpdates = sanitizeForFirebase(updates);
-        await update(gameRef, sanitizedUpdates);
-        return true;
+        const result = await makeGameMove(gameId, updates);
+        return result.success;
     } catch (error) {
         console.error('Error playing card:', error);
         return false;
@@ -385,32 +383,31 @@ export async function drawCardsMultiplayer(
     count: number
 ): Promise<boolean> {
     try {
-        const gameRef = ref(database, `games/${gameId}`);
-        const snapshot = await get(gameRef);
+        const currentState = await fetchGameState(gameId);
+        if (!currentState) return false;
 
-        if (!snapshot.exists()) return false;
-
-        const currentState = snapshot.val() as MultiplayerGameState;
+        const multiplayerState = currentState as MultiplayerGameState;
 
         // Validate it's player's turn
-        if (currentState.currentTurn !== playerUsername) {
+        if (multiplayerState.currentTurn !== playerUsername) {
             console.error('Not your turn!');
             return false;
         }
 
-        const actualCount = Math.min(count, currentState.deck.length);
-        const drawnCards = currentState.deck.slice(0, actualCount);
-        const remainingDeck = currentState.deck.slice(actualCount);
+        const actualCount = Math.min(count, multiplayerState.deck.length);
+        const drawnCards = multiplayerState.deck.slice(0, actualCount);
+        const remainingDeck = multiplayerState.deck.slice(actualCount);
 
         const updates: Partial<MultiplayerGameState> = {
+            ...multiplayerState,
             hands: {
-                ...currentState.hands,
-                [playerUsername]: [...currentState.hands[playerUsername], ...drawnCards]
+                ...multiplayerState.hands,
+                [playerUsername]: [...multiplayerState.hands[playerUsername], ...drawnCards]
             },
             deck: remainingDeck,
-            currentTurn: currentState.currentTurn === currentState.players.host
-                ? currentState.players.guest
-                : currentState.players.host,
+            currentTurn: multiplayerState.currentTurn === multiplayerState.players.host
+                ? multiplayerState.players.guest
+                : multiplayerState.players.host,
             drawCount: 0,
             lastMove: {
                 player: playerUsername,
@@ -420,9 +417,8 @@ export async function drawCardsMultiplayer(
             lastActivity: Date.now()
         };
 
-        const sanitizedUpdates = sanitizeForFirebase(updates);
-        await update(gameRef, sanitizedUpdates);
-        return true;
+        const result = await makeGameMove(gameId, updates);
+        return result.success;
     } catch (error) {
         console.error('Error drawing cards:', error);
         return false;
@@ -430,12 +426,35 @@ export async function drawCardsMultiplayer(
 }
 
 /**
+ * Fetch current game state
+ */
+async function fetchGameState(gameId: string): Promise<any | null> {
+    try {
+        const token = localStorage.getItem('leximix_session_token');
+        if (!token) return null;
+
+        const response = await fetch(`http://leximix.de/api/games/state.php?id=${encodeURIComponent(gameId)}`, {
+            headers: {
+                'X-Session-Token': token
+            }
+        });
+
+        const data = await response.json();
+        if (data.success && data.state) {
+            return data.state;
+        }
+        return null;
+    } catch (error) {
+        console.error('Error fetching game state:', error);
+        return null;
+    }
+}
+
+/**
  * Clean up finished game
  */
 export async function cleanupGame(gameId: string): Promise<void> {
-    try {
-        await set(ref(database, `games/${gameId}`), null);
-    } catch (error) {
-        console.error('Error cleaning up game:', error);
-    }
+    // Games are automatically cleaned up by the server after a period of inactivity
+    // No explicit cleanup needed
+    console.log('[MultiplayerGame] Game cleanup requested:', gameId);
 }

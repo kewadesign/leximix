@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { getDatabase, ref, get, onValue } from 'firebase/database';
 import { Modal } from './UI';
 import { AlertTriangle, ArrowLeft, Sparkles, Download } from 'lucide-react';
 import { ChangelogModal, ChangelogEntry } from './ChangelogModal';
@@ -29,39 +28,48 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
 
   const isCapacitor = (window as any).Capacitor !== undefined;
 
-  // Fetch Version Info from Firebase & Changelog
+  // Fetch Version Info from IONOS API & Changelog
   useEffect(() => {
     if (!isOnline) return;
 
-    const db = getDatabase();
-    const systemRef = ref(db, 'system');
+    // Poll system config from IONOS API
+    const fetchVersionInfo = async () => {
+      try {
+        const response = await fetch('https://leximix.de/api/config/system.php');
+        const data = await response.json();
+        
+        if (data.success && data.config) {
+          const config = data.config;
+          const latest = isCapacitor ? (config.latest_apk_version || config.latest_version || APP_VERSION) : (config.latest_version || APP_VERSION);
+          const minimum = config.min_version || '0.0.0';
+          const url = config.download_url || (isCapacitor ? 'http://leximix.de/app-release.apk' : '/app-release.apk');
 
-    // Listen for version changes
-    const unsubscribe = onValue(systemRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
+          // Check Maintenance Mode
+          if (config.maintenance_mode === 'true' || config.maintenance_active === 'true') {
+            setIsMaintenance(true);
+            setMaintenanceMessage(config.maintenance_message || '');
+          } else {
+            setIsMaintenance(false);
+          }
 
-        const latest = isCapacitor ? (data.latest_apk_version || data.latest_version) : data.latest_version;
-        const minimum = data.min_version || '0.0.0';
+          setServerVersion(latest);
+          setMinVersion(minimum);
+          setDownloadUrl(url);
 
-        // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
-        const url = data.download_url || (isCapacitor ? 'http://leximix.de/app-release.apk' : '/app-release.apk');
-
-        // Check Maintenance Mode
-        if (data.maintenance_active) {
-          setIsMaintenance(true);
-          setMaintenanceMessage(data.maintenance_message || '');
-        } else {
-          setIsMaintenance(false);
+          checkVersion(latest, minimum);
         }
-
-        setServerVersion(latest);
-        setMinVersion(minimum);
-        setDownloadUrl(url);
-
-        checkVersion(latest, minimum);
+      } catch (error) {
+        console.error('Failed to fetch version info:', error);
+        // Fallback to current version
+        setServerVersion(APP_VERSION);
+        setMinVersion('0.0.0');
       }
-    });
+    };
+
+    fetchVersionInfo();
+    
+    // Poll every 30 seconds for updates
+    const interval = setInterval(fetchVersionInfo, 30000);
 
     // Fetch Changelog
     fetch('/changelog.json')
@@ -69,7 +77,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
       .then(data => setChangelogData(data))
       .catch(err => console.error('Failed to load changelog', err));
 
-    return () => unsubscribe();
+    return () => clearInterval(interval);
   }, [isOnline, isCapacitor]);
 
   const checkVersion = (latest: string, minimum: string) => {

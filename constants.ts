@@ -4,7 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '3.8.0';
+export const APP_VERSION = '4.0.0';
 
 // ============================================================================
 // PROFILE FRAMES

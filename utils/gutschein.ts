@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { redeemVoucher } from './firebase'; // Pfad ggf. anpassen, z.B. '../services/firebase'
+import { redeemVoucher } from './api';
 
 export const useGutschein = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -30,15 +30,17 @@ export const useGutschein = () => {
         }
 
         try {
-            // Wir rufen die Firebase-Funktion auf
-            const result = await redeemVoucher(username, code);
+            // Rufe die IONOS API-Funktion auf
+            const result = await redeemVoucher(code);
 
             if (result.success) {
-                setSuccessMsg(`Erfolg! Du hast ${result.coinsAwarded} Coins erhalten.`);
+                const coinsMsg = result.coinsAwarded ? ` Du hast ${result.coinsAwarded} Coins erhalten.` : '';
+                const premiumMsg = result.isPremium ? ' PREMIUM STATUS AKTIVIERT!' : '';
+                setSuccessMsg(`Erfolg!${coinsMsg}${premiumMsg}`);
                 setIsLoading(false);
                 return true;
             } else {
-                // Fehlermeldung von Firebase (z.B. "Schade! Jemand war schneller.")
+                // Fehlermeldung von API (z.B. "Schade! Jemand war schneller.")
                 setError(result.error || 'Unbekannter Fehler.');
                 setIsLoading(false);
                 return false;

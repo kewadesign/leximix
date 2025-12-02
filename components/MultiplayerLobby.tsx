@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from './UI';
 import { Users, Send, X, Check, UserPlus, Clock, Play } from 'lucide-react';
-import { ref, set, get, onValue, off } from 'firebase/database';
-import { database } from '../utils/firebase';
+import { startInvitePolling, startGamePolling, sendGameInvite, respondToInvite, createGame, joinGame } from '../utils/gamePolling';
 import { initializeMultiplayerGame, initializeChessGame, initializeNineMensMorrisGame, initializeRummyGame } from '../utils/multiplayerGame';
 import { generateDeck, shuffleDeck, drawCards } from '../utils/maumau';
 import { GameMode } from '../types';
@@ -18,11 +17,13 @@ interface MultiplayerLobbyProps {
 }
 
 interface GameInvite {
+    id: number;
     from: string;
-    to: string;
+    fromUsername: string;
     gameId: string;
-    timestamp: number;
-    status: 'pending' | 'accepted' | 'declined';
+    gameType: string;
+    createdAt: string;
+    status?: 'pending' | 'accepted' | 'declined';
     mode?: GameMode; // Added mode to invite
 }
 
@@ -41,60 +42,59 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
     const [isSearching, setIsSearching] = useState(false);
     const [searchTime, setSearchTime] = useState(0);
 
-    // Listen for incoming invites
+    // Listen for incoming invites (polling)
     useEffect(() => {
         if (!isOpen || !currentUsername) return;
 
-        const invitesRef = ref(database, `gameInvites/${currentUsername}`);
-
-        const unsubscribe = onValue(invitesRef, (snapshot) => {
-            if (snapshot.exists()) {
-                const invitesData = snapshot.val();
-                const invites: GameInvite[] = Object.values(invitesData);
-                setPendingInvites(invites.filter(inv => inv.status === 'pending'));
-            } else {
-                setPendingInvites([]);
-            }
+        const cleanup = startInvitePolling((invites) => {
+            const pending = invites
+                .filter((inv: any) => inv.status === 'pending')
+                .map((inv: any) => ({
+                    id: inv.id,
+                    from: inv.fromUsername,
+                    fromUsername: inv.fromUsername,
+                    gameId: inv.gameId,
+                    gameType: inv.gameType,
+                    createdAt: inv.createdAt,
+                    mode: inv.gameType === 'chess' ? GameMode.CHESS :
+                          inv.gameType === 'morris' ? GameMode.NINE_MENS_MORRIS :
+                          inv.gameType === 'checkers' ? GameMode.CHECKERS :
+                          inv.gameType === 'rummy' ? GameMode.RUMMY :
+                          GameMode.SKAT_MAU_MAU
+                }));
+            setPendingInvites(pending);
         });
 
-        return () => {
-            off(invitesRef);
-        };
+        return cleanup;
     }, [isOpen, currentUsername]);
 
-    // Listen for game acceptance (for sent invites)
+    // Listen for game acceptance (for sent invites) - using polling
     useEffect(() => {
         if (!isOpen || !currentUsername || sentInvites.size === 0) return;
 
-        const listeners: (() => void)[] = [];
+        const cleanups: (() => void)[] = [];
 
         sentInvites.forEach((gameId, friendUsername) => {
-            const gameRef = ref(database, `games/${gameId}`);
-
-            const unsubscribe = onValue(gameRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const gameData = snapshot.val();
-                    // Game exists and is playing - guest has accepted and initialized the game!
-                    if (gameData.status === 'playing' && gameData.players?.host === currentUsername) {
-                        console.log('[Multiplayer] Game accepted by guest, starting game for host');
-                        // Clear the sent invite
-                        setSentInvites(prev => {
-                            const newMap = new Map(prev);
-                            newMap.delete(friendUsername);
-                            return newMap;
-                        });
-                        // Start game for host
-                        onStartGame(friendUsername, gameId);
-                        onClose();
-                    }
+            const cleanup = startGamePolling(gameId, (gameData) => {
+                // Game exists and is playing - guest has accepted and initialized the game!
+                if (gameData.status === 'playing' && gameData.players?.host === currentUsername) {
+                    console.log('[Multiplayer] Game accepted by guest, starting game for host');
+                    // Clear the sent invite
+                    setSentInvites(prev => {
+                        const newMap = new Map(prev);
+                        newMap.delete(friendUsername);
+                        return newMap;
+                    });
+                    // Start game for host
+                    onStartGame(friendUsername, gameId);
+                    onClose();
                 }
             });
-
-            listeners.push(() => off(gameRef));
+            cleanups.push(cleanup);
         });
 
         return () => {
-            listeners.forEach(unsub => unsub());
+            cleanups.forEach(cleanup => cleanup());
         };
     }, [isOpen, currentUsername, sentInvites, onStartGame, onClose]);
 
@@ -238,20 +238,52 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
         if (sentInvites.has(friendUsername)) return;
 
         setIsLoading(true);
-        const gameId = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Find friend code from friends list
+        const friend = friends.find(f => f.username === friendUsername);
+        if (!friend) {
+            console.error('Friend not found:', friendUsername);
+            setIsLoading(false);
+            return;
+        }
+        
+        // Map GameMode to API game type
+        const gameTypeMap: Record<GameMode, string> = {
+            [GameMode.SKAT_MAU_MAU]: 'maumau',
+            [GameMode.CHESS]: 'chess',
+            [GameMode.NINE_MENS_MORRIS]: 'morris',
+            [GameMode.CHECKERS]: 'checkers',
+            [GameMode.RUMMY]: 'rummy',
+            [GameMode.SOLITAIRE]: 'solitaire'
+        };
+        const gameType = gameTypeMap[mode] || 'maumau';
+        
+        // Create initial game state (empty, will be initialized when accepted)
+        const initialState = {
+            gameId: '',
+            players: {
+                host: currentUsername,
+                guest: null
+            },
+            status: 'waiting',
+            createdAt: Date.now(),
+            lastActivity: Date.now()
+        };
 
         try {
-            const invite: GameInvite = {
-                from: currentUsername,
-                to: friendUsername,
-                gameId,
-                timestamp: Date.now(),
-                status: 'pending',
-                mode: mode // Include current mode in invite
-            };
+            // Create game first
+            const createResult = await createGame(gameType, initialState);
+            if (!createResult.success || !createResult.gameId) {
+                throw new Error('Failed to create game');
+            }
+            
+            const gameId = createResult.gameId;
 
-            // Save invite to recipient's inbox
-            await set(ref(database, `gameInvites/${friendUsername}/${gameId}`), invite);
+            // Send invite via API using friend code
+            const inviteResult = await sendGameInvite(gameId, undefined, friend.code);
+            if (!inviteResult.success) {
+                throw new Error(inviteResult.error || 'Failed to send invite');
+            }
 
             setSentInvites(prev => new Map(prev).set(friendUsername, gameId));
 
@@ -280,8 +312,17 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
         setIsLoading(true);
 
         try {
-            // Update invite status
-            await set(ref(database, `gameInvites/${currentUsername}/${invite.gameId}/status`), 'accepted');
+            // Respond to invite via API
+            const respondResult = await respondToInvite(invite.id, 'accept');
+            if (!respondResult.success) {
+                throw new Error(respondResult.error || 'Failed to accept invite');
+            }
+
+            // Join the game
+            const joinResult = await joinGame(invite.gameId);
+            if (!joinResult.success) {
+                throw new Error(joinResult.error || 'Failed to join game');
+            }
 
             // Initialize Game based on Mode
             const inviteMode = invite.mode || GameMode.SKAT_MAU_MAU; // Default to Mau Mau for legacy invites
@@ -301,13 +342,8 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
                     currentUsername  // guest
                 );
             } else if (inviteMode === GameMode.CHECKERS) {
-                // Initialize Checkers Game - simple board state
-                await set(ref(database, `games/${invite.gameId}`), {
-                    players: { host: invite.from, guest: currentUsername },
-                    status: 'playing',
-                    currentPlayer: 'red',
-                    createdAt: Date.now()
-                });
+                // Checkers initialization is handled by the game component
+                // Just join the game
             } else if (inviteMode === GameMode.RUMMY) {
                 // Initialize Rummy Game with proper card dealing
                 await initializeRummyGame(
@@ -363,7 +399,7 @@ export const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
 
     const declineInvite = async (invite: GameInvite) => {
         try {
-            await set(ref(database, `gameInvites/${currentUsername}/${invite.gameId}/status`), 'declined');
+            await respondToInvite(invite.id, 'decline');
             setPendingInvites(prev => prev.filter(inv => inv.gameId !== invite.gameId));
         } catch (error) {
             console.error('Error declining invite:', error);

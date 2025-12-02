@@ -12,6 +12,43 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
     {
+        version: '4.0.1',
+        date: '2025-12-02',
+        changes: {
+            added: [
+                '🔒 SSL-Zertifikat für HTTPS aktiviert'
+            ],
+            fixed: [
+                '🌐 HTTPS funktioniert jetzt auf leximix.de',
+                '🌐 Automatische HTTP zu HTTPS Weiterleitung'
+            ]
+        }
+    },
+    {
+        version: '4.0.0',
+        date: '2025-11-30',
+        changes: {
+            added: [
+                '🚀 MAJOR UPDATE: Vollständige Migration von Firebase zu IONOS Server',
+                '☁️ Cloud Save: Jetzt vollständig über IONOS API',
+                '🎮 Multiplayer: Polling-basiertes System für alle Spiele',
+                '🔍 Matchmaking: Server-seitiges System mit atomaren Operationen',
+                '👥 Friends System: Komplett über IONOS API',
+                '🎫 Voucher System: Über IONOS API',
+                '📱 Version Management: Über IONOS API'
+            ],
+            changed: [
+                '⚡ Multiplayer: 1.5s Polling-Intervall statt Firebase Real-time',
+                '🔒 Sicherheit: Alle Daten jetzt auf eigenem IONOS Server',
+                '🌐 Unabhängigkeit: Keine Firebase-Abhängigkeit mehr'
+            ],
+            removed: [
+                '🗑️ Firebase komplett entfernt',
+                '🗑️ Firebase Package aus Dependencies entfernt'
+            ]
+        }
+    },
+    {
         version: '3.8.0',
         date: '2025-11-30',
         changes: {

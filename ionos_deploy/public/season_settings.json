@@ -1,0 +1,2911 @@
+{
+  "currentSeasonId": 1,
+  "seasons": [
+    {
+      "id": 1,
+      "name": "Genesis",
+      "theme": "space",
+      "startDate": 1763942400000,
+      "endDate": 1767139200000,
+      "colors": {
+        "primary": "#d946ef",
+        "secondary": "#a855f7",
+        "accent": "#3b82f6",
+        "bgDark": "#0f172a",
+        "bgCard": "#1e293b"
+      },
+      "avatars": [
+        {
+          "level": 10,
+          "name": "Space Explorer",
+          "id": "space_explorer",
+          "dicebear": "SpaceExplorer",
+          "desc": "Cosmic wanderer"
+        },
+        {
+          "level": 20,
+          "name": "Cyberpunk Warrior",
+          "id": "cyberpunk_warrior",
+          "dicebear": "CyberpunkWarrior",
+          "desc": "Neon fighter"
+        },
+        {
+          "level": 30,
+          "name": "Fantasy Wizard",
+          "id": "fantasy_wizard",
+          "dicebear": "FantasyWizard",
+          "desc": "Arcane master"
+        },
+        {
+          "level": 40,
+          "name": "Ocean Guardian",
+          "id": "ocean_guardian",
+          "dicebear": "Ocean",
+          "desc": "Deep sea protector"
+        },
+        {
+          "level": 50,
+          "name": "Mountain Sage",
+          "id": "mountain_sage",
+          "dicebear": "Sage",
+          "desc": "Ancient wisdom"
+        },
+        {
+          "level": 60,
+          "name": "Forest Spirit",
+          "id": "forest_spirit",
+          "dicebear": "Spirit",
+          "desc": "Nature voice"
+        },
+        {
+          "level": 70,
+          "name": "Desert Nomad",
+          "id": "desert_nomad",
+          "dicebear": "Nomad",
+          "desc": "Sand walker"
+        },
+        {
+          "level": 80,
+          "name": "Arctic Hunter",
+          "id": "arctic_hunter",
+          "dicebear": "Hunter",
+          "desc": "Ice stalker"
+        },
+        {
+          "level": 90,
+          "name": "Lava Titan",
+          "id": "lava_titan",
+          "dicebear": "Titan",
+          "desc": "Molten fury"
+        },
+        {
+          "level": 100,
+          "name": "Storm Caller",
+          "id": "storm_caller",
+          "dicebear": "Storm",
+          "desc": "Lightning master"
+        }
+      ],
+      "rewards": [
+        {
+          "level": 1,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 2,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 3,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Glow Frame",
+            "desc": "Pulsing magical border",
+            "value": "effect_glow",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 4,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 5,
+          "free": {
+            "type": "title",
+            "name": "Wortschmied",
+            "desc": "Titel für fleißige Spieler",
+            "value": "title_wordsmith",
+            "icon": "📝",
+            "rarity": "common"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #5",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_5",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent5",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 6,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Fire Frame",
+            "desc": "Rotating fire gradient",
+            "value": "effect_fire",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 7,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 8,
+          "free": null,
+          "premium": {
+            "type": "cardback",
+            "name": "Feuer Karten",
+            "desc": "Flammende Kartenrückseite",
+            "value": "cardback_fire",
+            "icon": "🔥",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 9,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Ice Frame",
+            "desc": "Shimmering icy border",
+            "value": "effect_ice",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 10,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Space Explorer",
+            "desc": "Cosmic wanderer",
+            "value": "space_explorer",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=SpaceExplorer",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 11,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 12,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Neon Frame",
+            "desc": "Flickering neon effect",
+            "value": "effect_neon",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 13,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 14,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 15,
+          "free": {
+            "type": "title",
+            "name": "Champion",
+            "desc": "Titel für wahre Gewinner",
+            "value": "title_champion",
+            "icon": "🏆",
+            "rarity": "rare"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #15",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_15",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent15",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 16,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 17,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 18,
+          "free": {
+            "type": "cardback",
+            "name": "Frost Karten",
+            "desc": "Eisige Kartenrückseite",
+            "value": "cardback_ice",
+            "icon": "❄️",
+            "rarity": "rare"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Flame Burst Frame",
+            "desc": "Animated flames",
+            "value": "effect_flame_burst",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 19,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 20,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Cyberpunk Warrior",
+            "desc": "Neon fighter",
+            "value": "cyberpunk_warrior",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=CyberpunkWarrior",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 21,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Frost Aura Frame",
+            "desc": "Icy particles",
+            "value": "effect_frost_aura",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 22,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 23,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 24,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Lightning Frame",
+            "desc": "Electric sparks",
+            "value": "effect_lightning_arc",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 25,
+          "free": {
+            "type": "title",
+            "name": "Genie",
+            "desc": "Für die Klügsten",
+            "value": "title_genius",
+            "icon": "🧠",
+            "rarity": "epic"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #25",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_25",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent25",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 26,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 27,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Water Ripple Frame",
+            "desc": "Flowing water",
+            "value": "effect_water_ripple",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 28,
+          "free": {
+            "type": "cardback",
+            "name": "Neon Grid",
+            "desc": "Cyberpunk Kartenrückseite",
+            "value": "cardback_neon",
+            "icon": "🌃",
+            "rarity": "rare"
+          },
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 29,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 30,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Fantasy Wizard",
+            "desc": "Arcane master",
+            "value": "fantasy_wizard",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=FantasyWizard",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 31,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 32,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 33,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Star Field Frame",
+            "desc": "Twinkling stars",
+            "value": "effect_star_field",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 34,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 35,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #35",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_35",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent35",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 36,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Nebula Frame",
+            "desc": "Colorful nebula",
+            "value": "effect_nebula_glow",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 37,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 38,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 39,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Void Edge Frame",
+            "desc": "Dark matter",
+            "value": "effect_void_edge",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 40,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Ocean Guardian",
+            "desc": "Deep sea protector",
+            "value": "ocean_guardian",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Ocean",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 41,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 42,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Rainbow Frame",
+            "desc": "Shifting rainbow",
+            "value": "effect_rainbow_pulse",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 43,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 44,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 45,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #45",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_45",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent45",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 46,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 47,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 48,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Diamond Frame",
+            "desc": "Crystal shine",
+            "value": "effect_diamond_shine",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 49,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 50,
+          "free": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Big Coin Stash",
+            "icon": "coins_large"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Mountain Sage",
+            "desc": "Ancient wisdom",
+            "value": "mountain_sage",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Sage",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 51,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Shadow Flame Frame",
+            "desc": "Dark fire",
+            "value": "effect_shadow_flame",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 52,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 53,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 54,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Aurora Frame",
+            "desc": "Northern lights",
+            "value": "effect_aurora_wave",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 55,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #55",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_55",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent55",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 56,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 57,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Pixel Glitch Frame",
+            "desc": "Retro pixels",
+            "value": "effect_pixel_glitch",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 58,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 59,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 60,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Forest Spirit",
+            "desc": "Nature voice",
+            "value": "forest_spirit",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Spirit",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 61,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 62,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 63,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Wave Motion Frame",
+            "desc": "Flowing waves",
+            "value": "effect_wave_motion",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 64,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 65,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #65",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_65",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent65",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 66,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Color Morph Frame",
+            "desc": "Rainbow cycle",
+            "value": "effect_color_morph",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 67,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 68,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 69,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Matrix Rain Frame",
+            "desc": "Code cascade",
+            "value": "effect_matrix_rain",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 70,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Desert Nomad",
+            "desc": "Sand walker",
+            "value": "desert_nomad",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Nomad",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 71,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 72,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Prism Split Frame",
+            "desc": "RGB split",
+            "value": "effect_prism_split",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 73,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 74,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 75,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #75",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_75",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent75",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 76,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 77,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 78,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Lava Flow Frame",
+            "desc": "Molten lava",
+            "value": "effect_lava_flow",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 79,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 80,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Arctic Hunter",
+            "desc": "Ice stalker",
+            "value": "arctic_hunter",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Hunter",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 81,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Electric Frame",
+            "desc": "Lightning zaps",
+            "value": "effect_electric_pulse",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 82,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 83,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 84,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Oil Slick Frame",
+            "desc": "Iridescent oil",
+            "value": "effect_oil_slick",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 85,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #85",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_85",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent85",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 86,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 87,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Chromatic Frame",
+            "desc": "Color split",
+            "value": "effect_chromatic_abberation",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 88,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 89,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 90,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Lava Titan",
+            "desc": "Molten fury",
+            "value": "lava_titan",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Titan",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 91,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 92,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 93,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Glow Frame",
+            "desc": "Pulsing magical border",
+            "value": "effect_glow",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 94,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 95,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #95",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_95",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent95",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 96,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Fire Frame",
+            "desc": "Rotating fire gradient",
+            "value": "effect_fire",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 97,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 98,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 99,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Ice Frame",
+            "desc": "Shimmering icy border",
+            "value": "effect_ice",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 100,
+          "free": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Big Coin Stash",
+            "icon": "coins_large"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Storm Caller",
+            "desc": "Lightning master",
+            "value": "storm_caller",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=Storm",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Neon Uprising",
+      "theme": "cyberpunk",
+      "startDate": 1767225600000,
+      "endDate": 1775001599000,
+      "colors": {
+        "primary": "#00ff9f",
+        "secondary": "#ff00ff",
+        "accent": "#00d4ff",
+        "bgDark": "#0a0e1a",
+        "bgCard": "#1a1f3a"
+      },
+      "avatars": [
+        {
+          "level": 10,
+          "name": "Nano Scout",
+          "id": "nano_banana_pro_1",
+          "dicebear": "nano_banana_pro_1",
+          "desc": "Recon Unit"
+        },
+        {
+          "level": 20,
+          "name": "Cyber Banana",
+          "id": "nano_banana_pro_2",
+          "dicebear": "nano_banana_pro_2",
+          "desc": "Enhanced organic"
+        },
+        {
+          "level": 30,
+          "name": "Neon Ape",
+          "id": "nano_banana_pro_3",
+          "dicebear": "nano_banana_pro_3",
+          "desc": "City dweller"
+        },
+        {
+          "level": 40,
+          "name": "Glitch Monkey",
+          "id": "nano_banana_pro_4",
+          "dicebear": "nano_banana_pro_4",
+          "desc": "System error"
+        },
+        {
+          "level": 50,
+          "name": "Mecha Kong",
+          "id": "nano_banana_pro_5",
+          "dicebear": "nano_banana_pro_5",
+          "desc": "Heavy hitter"
+        },
+        {
+          "level": 60,
+          "name": "Circuit Simian",
+          "id": "nano_banana_pro_6",
+          "dicebear": "nano_banana_pro_6",
+          "desc": "Network flow"
+        },
+        {
+          "level": 70,
+          "name": "Data Chimp",
+          "id": "nano_banana_pro_7",
+          "dicebear": "nano_banana_pro_7",
+          "desc": "Info broker"
+        },
+        {
+          "level": 80,
+          "name": "Void Primate",
+          "id": "nano_banana_pro_8",
+          "dicebear": "nano_banana_pro_8",
+          "desc": "Dark sector"
+        },
+        {
+          "level": 90,
+          "name": "Quantum Gorilla",
+          "id": "nano_banana_pro_9",
+          "dicebear": "nano_banana_pro_9",
+          "desc": "Reality bender"
+        },
+        {
+          "level": 100,
+          "name": "Nano Banana God",
+          "id": "nano_banana_pro_10",
+          "dicebear": "nano_banana_pro_10",
+          "desc": "Ascended"
+        }
+      ],
+      "rewards": [
+        {
+          "level": 1,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Nano Scout",
+            "value": "nano_banana_pro_1",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_1"
+          }
+        },
+        {
+          "level": 2,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Rainbow Pulse",
+            "value": "effect_rainbow",
+            "icon": "🌈"
+          }
+        },
+        {
+          "level": 3,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Glow Frame",
+            "desc": "Pulsing magical border",
+            "value": "effect_glow",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 4,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Space Explorer",
+            "value": "space_explorer",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=SpaceExplorer"
+          }
+        },
+        {
+          "level": 5,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Gold Luxury",
+            "value": "effect_gold",
+            "icon": "👑"
+          }
+        },
+        {
+          "level": 6,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Cyber Banana",
+            "value": "nano_banana_pro_2",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_2"
+          }
+        },
+        {
+          "level": 7,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Diamond Shine",
+            "value": "effect_diamond",
+            "icon": "💎"
+          }
+        },
+        {
+          "level": 8,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Matrix Rain",
+            "value": "effect_matrix",
+            "icon": "💻"
+          }
+        },
+        {
+          "level": 9,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Neon Ape",
+            "value": "nano_banana_pro_3",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_3"
+          }
+        },
+        {
+          "level": 10,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Glitch Wild",
+            "value": "effect_glitch_wild",
+            "icon": "👾"
+          }
+        },
+        {
+          "level": 11,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Glitch Monkey",
+            "value": "nano_banana_pro_4",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_4"
+          }
+        },
+        {
+          "level": 12,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Holo Shimmer",
+            "value": "effect_holo",
+            "icon": "💿"
+          }
+        },
+        {
+          "level": 13,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 14,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Mecha Kong",
+            "value": "nano_banana_pro_5",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_5"
+          }
+        },
+        {
+          "level": 15,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Quantum Flux",
+            "value": "effect_quantum",
+            "icon": "⚛️"
+          }
+        },
+        {
+          "level": 16,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 17,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 18,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Flame Burst Frame",
+            "desc": "Animated flames",
+            "value": "effect_flame_burst",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 19,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 20,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Cyber Banana",
+            "desc": "Enhanced organic",
+            "value": "nano_banana_pro_2",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_2",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 21,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Frost Aura Frame",
+            "desc": "Icy particles",
+            "value": "effect_frost_aura",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 22,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 23,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 24,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Lightning Frame",
+            "desc": "Electric sparks",
+            "value": "effect_lightning_arc",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 25,
+          "free": {
+            "type": "title",
+            "name": "Genie",
+            "desc": "Für die Klügsten",
+            "value": "title_genius",
+            "icon": "🧠",
+            "rarity": "epic"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #25",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_25",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent25",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 26,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 27,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Water Ripple Frame",
+            "desc": "Flowing water",
+            "value": "effect_water_ripple",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 28,
+          "free": {
+            "type": "cardback",
+            "name": "Neon Grid",
+            "desc": "Cyberpunk Kartenrückseite",
+            "value": "cardback_neon",
+            "icon": "🌃",
+            "rarity": "rare"
+          },
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 29,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 30,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Neon Ape",
+            "desc": "City dweller",
+            "value": "nano_banana_pro_3",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_3",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 31,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 32,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 33,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Star Field Frame",
+            "desc": "Twinkling stars",
+            "value": "effect_star_field",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 34,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 35,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #35",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_35",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent35",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 36,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Nebula Frame",
+            "desc": "Colorful nebula",
+            "value": "effect_nebula_glow",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 37,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 38,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 39,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Void Edge Frame",
+            "desc": "Dark matter",
+            "value": "effect_void_edge",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 40,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Glitch Monkey",
+            "desc": "System error",
+            "value": "nano_banana_pro_4",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_4",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 41,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 42,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Rainbow Frame",
+            "desc": "Shifting rainbow",
+            "value": "effect_rainbow_pulse",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 43,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 44,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 45,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #45",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_45",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent45",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 46,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 47,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 48,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Diamond Frame",
+            "desc": "Crystal shine",
+            "value": "effect_diamond_shine",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 49,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 50,
+          "free": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Big Coin Stash",
+            "icon": "coins_large"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Mecha Kong",
+            "desc": "Heavy hitter",
+            "value": "nano_banana_pro_5",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_5",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 51,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Shadow Flame Frame",
+            "desc": "Dark fire",
+            "value": "effect_shadow_flame",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 52,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 53,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 54,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Aurora Frame",
+            "desc": "Northern lights",
+            "value": "effect_aurora_wave",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 55,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #55",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_55",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent55",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 56,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 57,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Pixel Glitch Frame",
+            "desc": "Retro pixels",
+            "value": "effect_pixel_glitch",
+            "icon": "magic_wand",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 58,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 59,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 750,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 60,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Circuit Simian",
+            "desc": "Network flow",
+            "value": "nano_banana_pro_6",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_6",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 61,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 62,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 63,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Wave Motion Frame",
+            "desc": "Flowing waves",
+            "value": "effect_wave_motion",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 64,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 65,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #65",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_65",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent65",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 66,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Color Morph Frame",
+            "desc": "Rainbow cycle",
+            "value": "effect_color_morph",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 67,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 68,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 69,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Matrix Rain Frame",
+            "desc": "Code cascade",
+            "value": "effect_matrix_rain",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 70,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Data Chimp",
+            "desc": "Info broker",
+            "value": "nano_banana_pro_7",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_7",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 71,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 72,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Prism Split Frame",
+            "desc": "RGB split",
+            "value": "effect_prism_split",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 73,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 74,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 75,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #75",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_75",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent75",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 76,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 77,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 78,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Lava Flow Frame",
+            "desc": "Molten lava",
+            "value": "effect_lava_flow",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 79,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1000,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 80,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Void Primate",
+            "desc": "Dark sector",
+            "value": "nano_banana_pro_8",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_8",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 81,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Electric Frame",
+            "desc": "Lightning zaps",
+            "value": "effect_electric_pulse",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 82,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 83,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 84,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Oil Slick Frame",
+            "desc": "Iridescent oil",
+            "value": "effect_oil_slick",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 85,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #85",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_85",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent85",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 86,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 87,
+          "free": null,
+          "premium": {
+            "type": "effect",
+            "name": "Chromatic Frame",
+            "desc": "Color split",
+            "value": "effect_chromatic_abberation",
+            "icon": "magic_wand",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 88,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 89,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 90,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Quantum Gorilla",
+            "desc": "Reality bender",
+            "value": "nano_banana_pro_9",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_9",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        },
+        {
+          "level": 91,
+          "free": {
+            "type": "coins",
+            "amount": 50,
+            "name": "Loose Change",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 92,
+          "free": null,
+          "premium": {
+            "type": "booster",
+            "name": "XP Booster (1h)",
+            "desc": "Double XP for 1 hour",
+            "value": "xp_boost_1h",
+            "icon": "booster_pack",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 93,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Glow Frame",
+            "desc": "Pulsing magical border",
+            "value": "effect_glow",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 94,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 95,
+          "free": null,
+          "premium": {
+            "type": "avatar",
+            "name": "Agent #95",
+            "desc": "Exclusive Agent Avatar",
+            "value": "avatar_95",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent95",
+            "icon": "avatar_epic",
+            "rarity": "epic"
+          }
+        },
+        {
+          "level": 96,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Fire Frame",
+            "desc": "Rotating fire gradient",
+            "value": "effect_fire",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 97,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 98,
+          "free": null,
+          "premium": {
+            "type": "coins",
+            "amount": 1250,
+            "name": "Premium Coins",
+            "icon": "coin_pile_huge"
+          }
+        },
+        {
+          "level": 99,
+          "free": {
+            "type": "coins",
+            "amount": 100,
+            "name": "Coin Pouch",
+            "icon": "coins_small"
+          },
+          "premium": {
+            "type": "effect",
+            "name": "Ice Frame",
+            "desc": "Shimmering icy border",
+            "value": "effect_ice",
+            "icon": "magic_wand",
+            "rarity": "rare"
+          }
+        },
+        {
+          "level": 100,
+          "free": {
+            "type": "coins",
+            "amount": 500,
+            "name": "Big Coin Stash",
+            "icon": "coins_large"
+          },
+          "premium": {
+            "type": "avatar",
+            "name": "Nano Banana God",
+            "desc": "Ascended",
+            "value": "nano_banana_pro_10",
+            "preview": "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nano_banana_pro_10",
+            "icon": "avatar_legendary",
+            "rarity": "legendary"
+          }
+        }
+      ]
+    }
+  ]
+}

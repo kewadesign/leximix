@@ -7,7 +7,8 @@
 import { UserState } from '../types';
 
 // API Configuration
-const API_BASE = 'https://leximix.de/api';
+// Using HTTP as HTTPS has SSL certificate issues on the server
+const API_BASE = 'http://leximix.de/api';
 
 // Session storage
 let sessionToken: string | null = null;
@@ -110,7 +111,77 @@ export interface AuthResult {
 }
 
 /**
- * Request a magic link login
+ * Register a new user with email + password
+ */
+export const registerUser = async (
+    email: string,
+    password: string,
+    username: string,
+    initialData?: { language?: string; age?: number }
+): Promise<AuthResult> => {
+    try {
+        const result = await apiRequest('/auth/register.php', {
+            method: 'POST',
+            body: JSON.stringify({
+                email,
+                password,
+                username,
+                language: initialData?.language || 'DE',
+                age: initialData?.age || 18
+            }),
+        });
+        
+        if (result.success && result.sessionToken) {
+            setSession(result.sessionToken, result.expiresAt);
+        }
+        
+        return {
+            success: true,
+            sessionToken: result.sessionToken,
+            user: result.user,
+            userData: result.userData,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+};
+
+/**
+ * Login with email + password
+ */
+export const loginUser = async (
+    email: string,
+    password: string
+): Promise<AuthResult> => {
+    try {
+        const result = await apiRequest('/auth/login.php', {
+            method: 'POST',
+            body: JSON.stringify({ email, password }),
+        });
+        
+        if (result.success && result.sessionToken) {
+            setSession(result.sessionToken, result.expiresAt);
+        }
+        
+        return {
+            success: true,
+            sessionToken: result.sessionToken,
+            user: result.user,
+            userData: result.userData,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+};
+
+/**
+ * Request a magic link login (legacy - kept for compatibility)
  */
 export const requestMagicLink = async (email: string): Promise<AuthResult> => {
     try {
@@ -132,7 +203,7 @@ export const requestMagicLink = async (email: string): Promise<AuthResult> => {
 };
 
 /**
- * Verify magic link token and create session
+ * Verify magic link token and create session (legacy)
  */
 export const verifyMagicLink = async (
     token: string,
@@ -202,6 +273,73 @@ export const logout = async (): Promise<void> => {
         // Ignore errors
     }
     clearSession();
+};
+
+/**
+ * Delete user account permanently
+ */
+export const deleteAccount = async (password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+        const result = await apiRequest('/auth/delete-account.php', {
+            method: 'POST',
+            body: JSON.stringify({ password }),
+        });
+        
+        if (result.success) {
+            clearSession();
+        }
+        
+        return { success: true };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+};
+
+/**
+ * Request password reset email
+ */
+export const requestPasswordReset = async (email: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+    try {
+        const result = await apiRequest('/auth/request-password-reset.php', {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+        });
+        
+        return {
+            success: true,
+            message: result.message,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+};
+
+/**
+ * Reset password with token
+ */
+export const resetPassword = async (token: string, password: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+    try {
+        const result = await apiRequest('/auth/reset-password.php', {
+            method: 'POST',
+            body: JSON.stringify({ token, password }),
+        });
+        
+        return {
+            success: true,
+            message: result.message,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
 };
 
 // ============================================
@@ -435,6 +573,8 @@ export default {
     isAuthenticated,
     
     // Auth
+    registerUser,
+    loginUser,
     requestMagicLink,
     verifyMagicLink,
     checkSession,

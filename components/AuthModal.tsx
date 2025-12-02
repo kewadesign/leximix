@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './UI';
-import { registerUser, loginUser, resetPassword } from '../utils/firebase';
+import { registerUser, loginUser } from '../utils/api';
 import {
     IoMailSharp,
     IoPersonSharp,
@@ -12,12 +12,12 @@ import {
     IoSettingsSharp
 } from 'react-icons/io5';
 import { TRANSLATIONS } from '../translations';
-import { Language } from '../types';
+import { Language, UserState } from '../types';
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess: (username: string) => void;
+    onSuccess: (username: string, userData?: UserState) => void;
     lang: Language;
     onLanguageChange: (lang: Language) => void;
     embedded?: boolean;
@@ -130,15 +130,17 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
         try {
             if (mode === 'register') {
                 const result = await registerUser(email, password, username, { language: lang, age });
-                if (result.success) {
-                    setShowVerificationSent(true);
+                if (result.success && result.user) {
+                    // Registration successful - directly logged in (no email verification needed)
+                    onSuccess(result.user.username, result.userData as UserState);
+                    onClose();
                 } else {
                     setError(result.error || 'Registrierung fehlgeschlagen');
                 }
             } else {
                 const result = await loginUser(email, password);
-                if (result.success && result.username) {
-                    onSuccess(result.username);
+                if (result.success && result.user) {
+                    onSuccess(result.user.username, result.userData as UserState);
                     onClose();
                 } else {
                     setError(result.error || 'Login fehlgeschlagen');
@@ -167,11 +169,12 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
 
         setLoading(true);
         try {
-            const result = await resetPassword(email);
+            const { requestPasswordReset } = await import('../utils/api');
+            const result = await requestPasswordReset(email);
             if (result.success) {
                 setShowPasswordResetSent(true);
             } else {
-                setError(result.error || 'Fehler beim Senden der E-Mail');
+                setError(result.error || 'Fehler beim Senden');
             }
         } catch (err) {
             setError('Ein Fehler ist aufgetreten');

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, RotateCcw, Lightbulb, Coins, Play, Trophy, Plus, Check, X, Sparkles, Gem, Zap, Sun, Moon } from 'lucide-react';
-import { ref, onValue, set, off } from 'firebase/database';
-import { database } from '../utils/firebase';
+import { startGamePolling, makeGameMove } from '../utils/gamePolling';
 import { Language, UserState, GameMode } from '../types';
 import { TRANSLATIONS } from '../constants';
 import catDanceGif from '../assets/cat-dance.gif';
@@ -137,48 +136,43 @@ export const RummyGame: React.FC<RummyGameProps> = ({
 
   const sortHand = (hand: Card[]): Card[] => [...hand].sort((a, b) => a.suit !== b.suit ? SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit) : a.value - b.value);
 
-  // Multiplayer sync
+  // Multiplayer sync (polling)
   useEffect(() => {
     if (!isMultiplayer || !multiplayerGameId) return;
-    const gameRef = ref(database, `games/${multiplayerGameId}`);
-    const unsubscribe = onValue(gameRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data.deck) setDeck(data.deck);
-        if (data.discardPile) setDiscardPile(data.discardPile);
-        if (isHost) {
-          if (data.hostHand) setPlayerHand(data.hostHand);
-          if (data.guestHand) setAiHand(data.guestHand);
-          if (data.hostMelds) setPlayerMelds(data.hostMelds.map((cards: Card[]) => ({ cards, type: 'set' as const })));
-          if (data.guestMelds) setAiMelds(data.guestMelds.map((cards: Card[]) => ({ cards, type: 'set' as const })));
-        } else {
-          if (data.guestHand) setPlayerHand(data.guestHand);
-          if (data.hostHand) setAiHand(data.hostHand);
-          if (data.guestMelds) setPlayerMelds(data.guestMelds.map((cards: Card[]) => ({ cards, type: 'set' as const })));
-          if (data.hostMelds) setAiMelds(data.hostMelds.map((cards: Card[]) => ({ cards, type: 'set' as const })));
-        }
-        if (data.currentPlayer) {
-          const isMyTurn = (isHost && data.currentPlayer === 'host') || (!isHost && data.currentPlayer === 'guest');
-          setCurrentPlayer(isMyTurn ? 'player' : 'ai');
-        }
-        if (data.phase) setPhase(data.phase);
-        if (data.status === 'finished' && data.winner) {
-          setGameStatus((isHost && data.winner === 'host') || (!isHost && data.winner === 'guest') ? 'won' : 'lost');
-        }
+    
+    const cleanup = startGamePolling(multiplayerGameId, (data: any) => {
+      if (data.deck) setDeck(data.deck);
+      if (data.discardPile) setDiscardPile(data.discardPile);
+      if (isHost) {
+        if (data.hostHand) setPlayerHand(data.hostHand);
+        if (data.guestHand) setAiHand(data.guestHand);
+        if (data.hostMelds) setPlayerMelds(data.hostMelds.map((cards: Card[]) => ({ cards, type: 'set' as const })));
+        if (data.guestMelds) setAiMelds(data.guestMelds.map((cards: Card[]) => ({ cards, type: 'set' as const })));
+      } else {
+        if (data.guestHand) setPlayerHand(data.guestHand);
+        if (data.hostHand) setAiHand(data.hostHand);
+        if (data.guestMelds) setPlayerMelds(data.guestMelds.map((cards: Card[]) => ({ cards, type: 'set' as const })));
+        if (data.hostMelds) setAiMelds(data.hostMelds.map((cards: Card[]) => ({ cards, type: 'set' as const })));
+      }
+      if (data.currentPlayer) {
+        const isMyTurn = (isHost && data.currentPlayer === 'host') || (!isHost && data.currentPlayer === 'guest');
+        setCurrentPlayer(isMyTurn ? 'player' : 'ai');
+      }
+      if (data.phase) setPhase(data.phase);
+      if (data.status === 'finished' && data.winner) {
+        setGameStatus((isHost && data.winner === 'host') || (!isHost && data.winner === 'guest') ? 'won' : 'lost');
       }
     });
-    return () => off(gameRef);
+    
+    return cleanup;
   }, [isMultiplayer, multiplayerGameId, isHost]);
 
   const syncToFirebase = useCallback(() => {
     if (!isMultiplayer || !multiplayerGameId) return;
-    import('firebase/database').then(({ update }) => {
-      const gameRef = ref(database, `games/${multiplayerGameId}`);
-      const updateData: any = { deck, discardPile, currentPlayer: currentPlayer === 'player' ? (isHost ? 'host' : 'guest') : (isHost ? 'guest' : 'host'), phase, lastActivity: Date.now() };
-      if (isHost) { updateData.hostHand = playerHand; updateData.hostMelds = playerMelds.map(m => m.cards); }
-      else { updateData.guestHand = playerHand; updateData.guestMelds = playerMelds.map(m => m.cards); }
-      update(gameRef, updateData);
-    });
+    const updateData: any = { deck, discardPile, currentPlayer: currentPlayer === 'player' ? (isHost ? 'host' : 'guest') : (isHost ? 'guest' : 'host'), phase, lastActivity: Date.now() };
+    if (isHost) { updateData.hostHand = playerHand; updateData.hostMelds = playerMelds.map(m => m.cards); }
+    else { updateData.guestHand = playerHand; updateData.guestMelds = playerMelds.map(m => m.cards); }
+    makeGameMove(multiplayerGameId, updateData);
   }, [isMultiplayer, multiplayerGameId, deck, discardPile, playerHand, playerMelds, currentPlayer, phase, isHost]);
 
   // AI Turn

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ArrowLeft, Crown, Circle, RotateCcw, Lightbulb, Coins, Play, X, Trophy, Gem } from 'lucide-react';
-import { ref, onValue, set, off } from 'firebase/database';
-import { database } from '../utils/firebase';
+import { startGamePolling, makeGameMove } from '../utils/gamePolling';
 import { Language, UserState, GameMode } from '../types';
 import { TRANSLATIONS } from '../constants';
 import catDanceGif from '../assets/cat-dance.gif';
@@ -335,27 +334,22 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
   useEffect(() => {
     if (!isMultiplayer || !multiplayerGameId) return;
 
-    const gameRef = ref(database, `games/${multiplayerGameId}`);
-
-    const unsubscribe = onValue(gameRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data.board) {
-          setBoard(data.board);
-        }
-        if (data.currentPlayer) {
-          setCurrentPlayer(data.currentPlayer);
-        }
-        if (data.gameStatus && data.gameStatus !== 'playing') {
-          setGameStatus(data.gameStatus === playerColor ? 'won' : 'lost');
-        }
-        if (data.moveHistory) {
-          setMoveHistory(data.moveHistory);
-        }
+    const cleanup = startGamePolling(multiplayerGameId, (data: any) => {
+      if (data.board) {
+        setBoard(data.board);
+      }
+      if (data.currentPlayer) {
+        setCurrentPlayer(data.currentPlayer);
+      }
+      if (data.status && data.status !== 'playing') {
+        setGameStatus(data.status === playerColor ? 'won' : 'lost');
+      }
+      if (data.moveHistory) {
+        setMoveHistory(data.moveHistory);
       }
     });
 
-    return () => off(gameRef);
+    return cleanup;
   }, [isMultiplayer, multiplayerGameId, playerColor]);
 
   // AI Move
@@ -425,11 +419,11 @@ export const CheckersGame: React.FC<CheckersGameProps> = ({
 
     // Sync multiplayer
     if (isMultiplayer && multiplayerGameId) {
-      set(ref(database, `games/${multiplayerGameId}`), {
+      makeGameMove(multiplayerGameId, {
         board: newBoard,
         currentPlayer: nextPlayer,
         moveHistory: newHistory,
-        lastUpdate: Date.now()
+        lastActivity: Date.now()
       });
     }
   }, [board, currentPlayer, moveHistory, isMultiplayer, multiplayerGameId]);

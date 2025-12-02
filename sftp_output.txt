@@ -1,0 +1,2 @@
+spawn sftp -o StrictHostKeyChecking=no su357282@access-5019066038.webspace-host.com
+su357282@access-5019066038.webspace-host.com's password: 

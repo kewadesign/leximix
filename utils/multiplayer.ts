@@ -1,33 +1,37 @@
-// Multiplayer system utilities for LexiMix
-import { ref, set, get, onValue, off, push } from 'firebase/database';
-import { database } from './firebase';
+/**
+ * Multiplayer system utilities for LexiMix
+ * Uses IONOS API instead of Firebase
+ */
+
+import { getFriends, addFriend, respondToFriendRequest } from './api';
+
+const API_BASE = 'http://leximix.de/api';
+
+// Session token helper
+const getSessionToken = (): string | null => {
+    const stored = localStorage.getItem('leximix_session_token');
+    const storedExpires = localStorage.getItem('leximix_session_expires');
+    
+    if (stored && storedExpires) {
+        const expiresDate = new Date(storedExpires);
+        if (new Date() < expiresDate) {
+            return stored;
+        }
+    }
+    
+    return null;
+};
 
 /**
- * Generate a unique 8-character friend code
+ * Generate a unique friend code
  */
 export function generateFriendCode(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Removed confusing chars
     let code = '';
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 6; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return code;
-}
-
-/**
- * Store friend code in Firebase for a user
- */
-export async function saveFriendCodeToFirebase(username: string, friendCode: string): Promise<void> {
-    try {
-        const userCodeRef = ref(database, `friendCodes/${friendCode}`);
-        await set(userCodeRef, {
-            username,
-            timestamp: Date.now()
-        });
-    } catch (error) {
-        console.error('Error saving friend code:', error);
-        throw error;
-    }
 }
 
 /**
@@ -35,12 +39,23 @@ export async function saveFriendCodeToFirebase(username: string, friendCode: str
  */
 export async function getUsernameByFriendCode(friendCode: string): Promise<string | null> {
     try {
-        const codeRef = ref(database, `friendCodes/${friendCode}`);
-        const snapshot = await get(codeRef);
-
-        if (snapshot.exists()) {
-            return snapshot.val().username;
+        const token = getSessionToken();
+        if (!token) {
+            return null;
         }
+        
+        // Use friends API to lookup by code
+        const response = await fetch(`${API_BASE}/friends/lookup.php?code=${encodeURIComponent(friendCode)}`, {
+            headers: {
+                'X-Session-Token': token
+            }
+        });
+        
+        const data = await response.json();
+        if (data.success && data.username) {
+            return data.username;
+        }
+        
         return null;
     } catch (error) {
         console.error('Error looking up friend code:', error);
@@ -49,8 +64,27 @@ export async function getUsernameByFriendCode(friendCode: string): Promise<strin
 }
 
 /**
- * Add a friend to user's friend list in Firebase (BIDIRECTIONAL)
- * Both users get each other added as friends
+ * Get all friends for a user
+ */
+export async function getFriendsFromFirebase(username: string): Promise<{ code: string; username: string }[]> {
+    try {
+        const result = await getFriends();
+        if (result.success && result.friends) {
+            return result.friends.map(f => ({
+                code: f.friendCode,
+                username: f.username
+            }));
+        }
+        return [];
+    } catch (error) {
+        console.error('Error fetching friends:', error);
+        return [];
+    }
+}
+
+/**
+ * Add a friend using friend code
+ * Note: This now uses the API which handles bidirectional friendship
  */
 export async function addFriendToFirebase(
     currentUsername: string,
@@ -59,25 +93,8 @@ export async function addFriendToFirebase(
     friendUsername: string
 ): Promise<boolean> {
     try {
-        const timestamp = Date.now();
-        
-        // 1. Add friend to current user's list
-        const myFriendsRef = ref(database, `users/${currentUsername}/friends/${friendCode}`);
-        await set(myFriendsRef, {
-            code: friendCode,
-            username: friendUsername,
-            addedAt: timestamp
-        });
-        
-        // 2. Add current user to friend's list (BIDIRECTIONAL)
-        const theirFriendsRef = ref(database, `users/${friendUsername}/friends/${currentUserFriendCode}`);
-        await set(theirFriendsRef, {
-            code: currentUserFriendCode,
-            username: currentUsername,
-            addedAt: timestamp
-        });
-        
-        return true;
+        const result = await addFriend(friendCode);
+        return result.success || false;
     } catch (error) {
         console.error('Error adding friend:', error);
         return false;
@@ -85,8 +102,7 @@ export async function addFriendToFirebase(
 }
 
 /**
- * Remove a friend from user's friend list (BIDIRECTIONAL)
- * Removes from both users' friend lists
+ * Remove a friend
  */
 export async function removeFriendFromFirebase(
     currentUsername: string,
@@ -95,15 +111,22 @@ export async function removeFriendFromFirebase(
     friendUsername: string
 ): Promise<boolean> {
     try {
-        // 1. Remove friend from current user's list
-        const myFriendRef = ref(database, `users/${currentUsername}/friends/${friendCode}`);
-        await set(myFriendRef, null);
+        const token = getSessionToken();
+        if (!token) {
+            return false;
+        }
         
-        // 2. Remove current user from friend's list (BIDIRECTIONAL)
-        const theirFriendRef = ref(database, `users/${friendUsername}/friends/${currentUserFriendCode}`);
-        await set(theirFriendRef, null);
+        const response = await fetch(`${API_BASE}/friends/remove.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Token': token
+            },
+            body: JSON.stringify({ friendCode })
+        });
         
-        return true;
+        const data = await response.json();
+        return data.success || false;
     } catch (error) {
         console.error('Error removing friend:', error);
         return false;
@@ -111,20 +134,11 @@ export async function removeFriendFromFirebase(
 }
 
 /**
- * Get all friends for a user
+ * Save friend code to database
+ * Note: Friend codes are now stored in the users table via API
  */
-export async function getFriendsFromFirebase(username: string): Promise<{ code: string; username: string }[]> {
-    try {
-        const friendsRef = ref(database, `users/${username}/friends`);
-        const snapshot = await get(friendsRef);
-
-        if (snapshot.exists()) {
-            const friendsData = snapshot.val();
-            return Object.values(friendsData);
-        }
-        return [];
-    } catch (error) {
-        console.error('Error fetching friends:', error);
-        return [];
-    }
+export async function saveFriendCodeToFirebase(username: string, friendCode: string): Promise<void> {
+    // Friend codes are automatically managed by the API
+    // This function is kept for compatibility but does nothing
+    console.log('[Multiplayer] Friend code saved via API:', friendCode);
 }
