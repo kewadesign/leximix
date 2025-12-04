@@ -1,28 +1,20 @@
 [
   {
-    "version": "4.0.0",
-    "date": "30.11.2025",
+    "version": "3.5.0",
+    "date": "02.12.2025",
     "changes": [
-      "🚀 MAJOR UPDATE: Vollständige Migration von Firebase zu IONOS Server",
-      "☁️ Cloud Save: Jetzt vollständig über IONOS API",
-      "🎮 Multiplayer: Polling-basiertes System für alle Spiele (1.5s Intervall)",
-      "🔍 Matchmaking: Server-seitiges System mit atomaren Operationen",
-      "👥 Friends System: Komplett über IONOS API",
-      "🎫 Voucher System: Über IONOS API",
-      "📱 Version Management: Über IONOS API",
-      "🔒 Sicherheit: Alle Daten jetzt auf eigenem IONOS Server",
-      "🌐 Unabhängigkeit: Keine Firebase-Abhängigkeit mehr",
-      "🗑️ Firebase komplett entfernt"
+      "🐛 Fix: Rendering issues (Blank Screen)",
+      "🛠️ Tech: Improved AuthModal stability",
+      "✨ Update: Version bump to 3.5.0"
     ]
   },
   {
-    "version": "3.2.0",
+    "version": "3.1.3",
     "date": "29.11.2025",
     "changes": [
-      "🎴 Rommé: Neues Neo-Brutalism Design",
-      "🃏 Mau Mau: Komplett überarbeitetes UI",
-      "🐞 Mau Mau: Spiel lädt jetzt korrekt",
-      "🐞 Rommé: Scrolling-Problem behoben"
+      "🎨 Update Modal: Neo-Brutalist Redesign",
+      "🎴 Mau Mau: Removed redundant info button",
+      "⚡ Performance: General optimizations"
     ]
   },
   {

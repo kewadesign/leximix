@@ -11,6 +11,8 @@ import {
     canPlayCard
 } from './maumau';
 
+export type { MauMauGame };
+
 // Initialize a new game
 export function initializeGame(
     player1Uid: string,
@@ -192,7 +194,7 @@ export type AIDifficulty = 'easy' | 'medium' | 'hard';
 
 export class MauMauAI {
     // Main AI turn handler
-    static playTurn(game: MauMauGame, difficulty: AIDifficulty = 'easy'): { played: boolean; cardIndex?: number; wishCategory?: CardCategory } {
+    static playTurn(game: MauMauGame, difficulty: AIDifficulty = 'easy'): { played: boolean; cardIndex?: number; wishedSuit?: CardSuit } {
         switch (difficulty) {
             case 'easy':
                 return this.playTurnEasy(game);

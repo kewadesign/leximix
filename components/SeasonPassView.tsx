@@ -1,274 +1,8 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { ArrowLeft, Crown, Lock, Check, Zap, Box, Star, Image as ImageIcon, Coins, Gem, Gift, Type, Palette, CreditCard, X, Info, Frame } from 'lucide-react';
-import { UserState, SeasonReward, SeasonRewardItem } from '../types';
-import { SEASON_REWARDS, getCurrentSeason, TRANSLATIONS, PROFILE_FRAMES, PROFILE_EFFECTS, PROFILE_FONTS } from '../constants';
+import React, { useRef, useEffect } from 'react';
+import { ArrowLeft, Crown, Lock, Check, Sparkles, Zap, Box, Star, Image as ImageIcon, Coins, Gem } from 'lucide-react';
+import { UserState, SeasonReward } from '../types';
+import { SEASON_REWARDS, getCurrentSeason, TRANSLATIONS } from '../constants';
 import { audio } from '../utils/audio';
-import { getRarityColor } from '../utils/rewards';
-import { RewardClaimModal } from './RewardClaimModal';
-import { ClaimBurst } from './ParticleEffect';
-
-// Reward Info Popup Component
-interface RewardInfoProps {
-    reward: SeasonRewardItem;
-    isPremium: boolean;
-    position: { x: number; y: number };
-    onClose: () => void;
-    language: string;
-}
-
-const RewardInfoPopup: React.FC<RewardInfoProps> = ({ reward, isPremium, position, onClose, language }) => {
-    const getTypeLabel = () => {
-        const labels: Record<string, Record<string, string>> = {
-            avatar: { de: 'Avatar', en: 'Avatar', es: 'Avatar' },
-            frame: { de: 'Rahmen', en: 'Frame', es: 'Marco' },
-            effect: { de: 'Effekt', en: 'Effect', es: 'Efecto' },
-            font: { de: 'Schriftart', en: 'Font', es: 'Fuente' },
-            title: { de: 'Titel', en: 'Title', es: 'Título' },
-            cardback: { de: 'Kartenrückseite', en: 'Card Back', es: 'Dorso de Carta' },
-            coins: { de: 'Münzen', en: 'Coins', es: 'Monedas' },
-            booster: { de: 'Booster', en: 'Booster', es: 'Potenciador' },
-            sticker: { de: 'Sticker', en: 'Sticker', es: 'Pegatina' },
-            sticker_pack: { de: 'Sticker-Paket', en: 'Sticker Pack', es: 'Paquete de Pegatinas' },
-            mystery: { de: 'Geheimnis', en: 'Mystery', es: 'Misterio' },
-        };
-        return labels[reward.type]?.[language] || reward.type;
-    };
-
-    const getRarityLabel = () => {
-        const labels: Record<string, Record<string, string>> = {
-            common: { de: 'Gewöhnlich', en: 'Common', es: 'Común' },
-            rare: { de: 'Selten', en: 'Rare', es: 'Raro' },
-            epic: { de: 'Episch', en: 'Epic', es: 'Épico' },
-            legendary: { de: 'Legendär', en: 'Legendary', es: 'Legendario' },
-        };
-        return labels[reward.rarity || 'common']?.[language] || reward.rarity || 'Common';
-    };
-
-    const getDescription = () => {
-        const desc: Record<string, Record<string, string>> = {
-            avatar: { 
-                de: 'Ein einzigartiger Avatar für dein Profil', 
-                en: 'A unique avatar for your profile', 
-                es: 'Un avatar único para tu perfil' 
-            },
-            frame: { 
-                de: 'Ein stylischer Rahmen um deinen Avatar', 
-                en: 'A stylish frame around your avatar', 
-                es: 'Un marco elegante alrededor de tu avatar' 
-            },
-            effect: { 
-                de: 'Ein besonderer visueller Effekt', 
-                en: 'A special visual effect', 
-                es: 'Un efecto visual especial' 
-            },
-            font: { 
-                de: 'Eine besondere Schriftart für deinen Namen', 
-                en: 'A special font for your name', 
-                es: 'Una fuente especial para tu nombre' 
-            },
-            title: { 
-                de: 'Ein Titel der unter deinem Namen erscheint', 
-                en: 'A title that appears under your name', 
-                es: 'Un título que aparece bajo tu nombre' 
-            },
-            cardback: { 
-                de: 'Ein Design für die Rückseite deiner Karten', 
-                en: 'A design for the back of your cards', 
-                es: 'Un diseño para el reverso de tus cartas' 
-            },
-            coins: { 
-                de: 'Münzen zum Kaufen im Shop', 
-                en: 'Coins to spend in the shop', 
-                es: 'Monedas para gastar en la tienda' 
-            },
-            booster: { 
-                de: 'Erhalte mehr XP für deine nächsten Spiele', 
-                en: 'Get more XP for your next games', 
-                es: 'Obtén más XP para tus próximos juegos' 
-            },
-        };
-        return reward.desc || desc[reward.type]?.[language] || '';
-    };
-
-    // Get frame/effect preview
-    const getFramePreview = () => {
-        if (reward.type === 'frame') {
-            const frame = PROFILE_FRAMES.find(f => f.id === reward.value);
-            return frame?.cssClass || '';
-        }
-        return '';
-    };
-
-    const getEffectPreview = () => {
-        if (reward.type === 'effect') {
-            const effect = PROFILE_EFFECTS.find(e => e.id === reward.value);
-            return effect?.cssClass || '';
-        }
-        return '';
-    };
-
-    return (
-        <div 
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-            onClick={onClose}
-            style={{ background: 'rgba(0,0,0,0.7)' }}
-        >
-            <div 
-                className="relative max-w-sm w-full animate-scale-in"
-                onClick={e => e.stopPropagation()}
-                style={{
-                    background: 'var(--color-surface)',
-                    border: '4px solid #000',
-                    boxShadow: '8px 8px 0px #000'
-                }}
-            >
-                {/* Header */}
-                <div 
-                    className="flex items-center justify-between p-3"
-                    style={{ 
-                        background: isPremium ? '#FFBE0B' : '#00D9FF',
-                        borderBottom: '4px solid #000'
-                    }}
-                >
-                    <div className="flex items-center gap-2">
-                        <span className="text-lg">{reward.icon || '🎁'}</span>
-                        <span className="font-black text-black uppercase text-sm">{getTypeLabel()}</span>
-                    </div>
-                    <button 
-                        onClick={onClose}
-                        className="p-1 hover:bg-black/10 transition-colors"
-                    >
-                        <X size={20} className="text-black" />
-                    </button>
-                </div>
-
-                {/* Content */}
-                <div className="p-4 space-y-4">
-                    {/* Preview */}
-                    <div className="flex justify-center">
-                        {reward.type === 'avatar' && reward.preview ? (
-                            <div className={`relative ${getEffectPreview()}`}>
-                                <img 
-                                    src={reward.preview} 
-                                    alt={reward.name}
-                                    className={`w-24 h-24 object-cover ${getFramePreview()}`}
-                                    style={{ border: '4px solid #000' }}
-                                />
-                            </div>
-                        ) : reward.type === 'frame' ? (
-                            <div className="relative">
-                                <div 
-                                    className={`w-24 h-24 flex items-center justify-center ${getFramePreview()}`}
-                                    style={{ background: '#8338EC', border: '4px solid #000' }}
-                                >
-                                    <span className="text-4xl">🖼️</span>
-                                </div>
-                            </div>
-                        ) : reward.type === 'effect' ? (
-                            <div className={`w-24 h-24 flex items-center justify-center relative ${getEffectPreview()}`} style={{ background: '#FF006E', border: '4px solid #000' }}>
-                                <span className="text-4xl">{reward.icon || '✨'}</span>
-                            </div>
-                        ) : reward.type === 'font' ? (
-                            <div 
-                                className="px-6 py-4 flex flex-col items-center justify-center gap-2"
-                                style={{ 
-                                    background: 'linear-gradient(135deg, #8338EC, #FF006E)',
-                                    border: '4px solid #000',
-                                    boxShadow: '4px 4px 0px #000'
-                                }}
-                            >
-                                <span className="text-3xl">🔤</span>
-                                <span 
-                                    className="text-xl text-white"
-                                    style={{ fontFamily: reward.preview || 'inherit' }}
-                                >
-                                    Abc123
-                                </span>
-                            </div>
-                        ) : reward.type === 'title' ? (
-                            <div 
-                                className="px-6 py-3 flex items-center justify-center"
-                                style={{ 
-                                    background: getRarityColor(reward.rarity || 'common'),
-                                    border: '3px solid #000'
-                                }}
-                            >
-                                <span className="text-xl font-black text-white">{reward.icon} {reward.name}</span>
-                            </div>
-                        ) : reward.type === 'cardback' ? (
-                            <div 
-                                className="w-20 h-28 flex items-center justify-center"
-                                style={{ 
-                                    background: 'linear-gradient(135deg, #8338EC, #FF006E)',
-                                    border: '4px solid #000',
-                                    boxShadow: '4px 4px 0px #000'
-                                }}
-                            >
-                                <span className="text-3xl">🃏</span>
-                            </div>
-                        ) : reward.type === 'coins' ? (
-                            <div className="flex items-center gap-2">
-                                <Coins size={48} style={{ color: '#FFBE0B' }} />
-                                <span className="text-4xl font-black" style={{ color: '#FFBE0B' }}>
-                                    {reward.amount?.toLocaleString()}
-                                </span>
-                            </div>
-                        ) : reward.type === 'booster' ? (
-                            <div 
-                                className="w-20 h-20 flex items-center justify-center"
-                                style={{ background: '#FFBE0B', border: '4px solid #000' }}
-                            >
-                                <Zap size={40} className="text-black" />
-                            </div>
-                        ) : (
-                            <div 
-                                className="w-20 h-20 flex items-center justify-center"
-                                style={{ background: '#8338EC', border: '4px solid #000' }}
-                            >
-                                <Gift size={40} className="text-white" />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Name & Rarity */}
-                    <div className="text-center space-y-2">
-                        <h3 className="text-xl font-black" style={{ color: 'var(--color-text)' }}>
-                            {reward.name}
-                        </h3>
-                        <div 
-                            className="inline-block px-3 py-1 text-xs font-black uppercase"
-                            style={{ 
-                                background: getRarityColor(reward.rarity || 'common'),
-                                color: reward.rarity === 'common' ? '#000' : '#FFF',
-                                border: '2px solid #000'
-                            }}
-                        >
-                            {getRarityLabel()}
-                        </div>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-center text-sm font-bold" style={{ color: 'var(--color-text-muted)' }}>
-                        {getDescription()}
-                    </p>
-
-                    {/* Premium Badge */}
-                    {isPremium && (
-                        <div className="flex justify-center">
-                            <div 
-                                className="flex items-center gap-2 px-4 py-2"
-                                style={{ background: '#FFBE0B', border: '2px solid #000' }}
-                            >
-                                <Crown size={16} className="text-black" />
-                                <span className="text-xs font-black text-black uppercase">Premium Reward</span>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
 
 interface Props {
     user: UserState;
@@ -280,61 +14,16 @@ interface Props {
 
 export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClaim, onShowPremium }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
-    const [claimedReward, setClaimedReward] = useState<{ reward: SeasonRewardItem; isPremium: boolean } | null>(null);
-    const [recentlyClaimed, setRecentlyClaimed] = useState<number | null>(null);
-    const [activeInfoPopup, setActiveInfoPopup] = useState<{ reward: SeasonRewardItem; isPremium: boolean; position: { x: number; y: number } } | null>(null);
-    const longPressTimer = useRef<NodeJS.Timeout | null>(null);
-
-    // Long press handlers for mobile
-    const handleTouchStart = useCallback((reward: SeasonRewardItem, isPremium: boolean, e: React.TouchEvent) => {
-        const touch = e.touches[0];
-        longPressTimer.current = setTimeout(() => {
-            setActiveInfoPopup({ 
-                reward, 
-                isPremium, 
-                position: { x: touch.clientX, y: touch.clientY } 
-            });
-        }, 500); // 500ms long press
-    }, []);
-
-    const handleTouchEnd = useCallback(() => {
-        if (longPressTimer.current) {
-            clearTimeout(longPressTimer.current);
-            longPressTimer.current = null;
-        }
-    }, []);
-
-    // Click handler for info button
-    const handleInfoClick = useCallback((reward: SeasonRewardItem, isPremium: boolean, e: React.MouseEvent) => {
-        e.stopPropagation();
-        setActiveInfoPopup({ 
-            reward, 
-            isPremium, 
-            position: { x: e.clientX, y: e.clientY } 
-        });
-    }, []);
 
     // Auto-scroll to current level on mount
     useEffect(() => {
         if (scrollRef.current) {
-            const levelWidth = 208; // w-52 = 13rem = 208px
+            const levelWidth = 192; // w-48 = 12rem = 192px
             const centerOffset = window.innerWidth / 2 - levelWidth / 2;
             const scrollPos = (user.level - 1) * levelWidth - centerOffset;
             scrollRef.current.scrollLeft = Math.max(0, scrollPos);
         }
     }, []);
-
-    // Handle claim with modal
-    const handleClaim = (level: number, isPremium: boolean, reward: SeasonRewardItem | null) => {
-        if (reward) {
-            setRecentlyClaimed(level);
-            setClaimedReward({ reward, isPremium });
-            audio.playClaim(); // Play claim sound
-            onClaim(level, isPremium);
-            // Clear recently claimed after animation
-            setTimeout(() => setRecentlyClaimed(null), 500);
-        }
-    };
 
     const getEffectStyle = (effectId: string) => {
         if (!effectId) return "";
@@ -351,51 +40,14 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
     const t = TRANSLATIONS[user.language];
 
     return (
-        <div className="h-full flex flex-col relative" style={{ background: 'var(--color-bg)', minHeight: '100vh', maxHeight: '100vh' }}>
-            {/* Animated Background Pattern */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {/* Floating geometric shapes */}
-                <div className="absolute top-10 left-10 w-32 h-32 rotate-12 opacity-10" style={{ background: '#FF006E', border: '4px solid #000' }}></div>
-                <div className="absolute top-40 right-20 w-24 h-24 -rotate-6 opacity-10" style={{ background: '#FFBE0B', border: '4px solid #000' }}></div>
-                <div className="absolute bottom-20 left-1/4 w-40 h-40 rotate-45 opacity-10" style={{ background: '#8338EC', border: '4px solid #000' }}></div>
-                <div className="absolute bottom-40 right-10 w-28 h-28 -rotate-12 opacity-10" style={{ background: '#00D9FF', border: '4px solid #000' }}></div>
-                <div className="absolute top-1/2 left-1/2 w-48 h-48 rotate-6 opacity-5" style={{ background: '#FF7F00', border: '4px solid #000' }}></div>
-                
-                {/* Dotted grid pattern */}
-                <div 
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{
-                        backgroundImage: `
-                            radial-gradient(circle, #8338EC 2px, transparent 2px),
-                            radial-gradient(circle, #FF006E 2px, transparent 2px)
-                        `,
-                        backgroundSize: '40px 40px, 60px 60px',
-                        backgroundPosition: '0 0, 20px 20px'
-                    }}
-                ></div>
-                
-                {/* Diagonal stripes */}
-                <div 
-                    className="absolute inset-0 opacity-[0.02]"
-                    style={{
-                        backgroundImage: `repeating-linear-gradient(
-                            45deg,
-                            #FF006E 0px,
-                            #FF006E 2px,
-                            transparent 2px,
-                            transparent 20px
-                        )`
-                    }}
-                ></div>
-            </div>
-
-            {/* Rainbow Top Bar with Shimmer */}
-            <div className="flex h-3 w-full relative z-10">
-                <div className="flex-1 animate-pulse" style={{ background: '#FF006E', animationDelay: '0s' }}></div>
-                <div className="flex-1 animate-pulse" style={{ background: '#FF7F00', animationDelay: '0.1s' }}></div>
-                <div className="flex-1 animate-pulse" style={{ background: '#FFBE0B', animationDelay: '0.2s' }}></div>
-                <div className="flex-1 animate-pulse" style={{ background: '#00D9FF', animationDelay: '0.3s' }}></div>
-                <div className="flex-1 animate-pulse" style={{ background: '#8338EC', animationDelay: '0.4s' }}></div>
+        <div className="h-full flex flex-col relative overflow-hidden geo-pattern geo-shapes geo-confetti" style={{ background: 'var(--color-bg)' }}>
+            {/* Rainbow Top Bar */}
+            <div className="flex h-4 w-full">
+                <div className="flex-1" style={{ background: '#FF006E' }}></div>
+                <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+                <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+                <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+                <div className="flex-1" style={{ background: '#8338EC' }}></div>
             </div>
 
             {/* Header - Neo Brutal */}
@@ -428,7 +80,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                             <div className="w-32 h-4" style={{ background: '#000', border: '2px solid #000' }}>
                                 <div
                                     className="h-full transition-all duration-500"
-                                    style={{ width: `${Math.min(100, Math.max(5, user.xp % 100))}%`, background: '#00D9FF' }}
+                                    style={{ width: `${Math.min(100, Math.max(5, user.xp % 100))}%`, background: '#06FFA5' }}
                                 ></div>
                             </div>
                             <span className="text-xs font-black" style={{ color: 'var(--color-text)' }}>{user.xp % 100}/100</span>
@@ -436,7 +88,7 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     </div>
 
                     <div className="mt-2 text-xs font-black uppercase" style={{ color: '#FF7F00' }}>
-                        {Math.max(0, Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24)))} {t.daysRemaining}
+                        {Math.max(0, Math.ceil((currentSeason.endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage übrig
                     </div>
                 </div>
                 <div className="w-12"></div>
@@ -464,94 +116,69 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                         }}
                     >
                         <Crown size={24} fill="currentColor" />
-                        {t.unlockPremium}
+                        Premium Aktivieren
                     </button>
                 </div>
             )}
 
             {/* Reward Legend - Neo Brutal */}
-            {(() => {
-                const lang = user.language?.toLowerCase() || 'de';
-                const legendLabels: Record<string, Record<string, string>> = {
-                    avatar: { de: 'Avatar', en: 'Avatar', es: 'Avatar' },
-                    effect: { de: 'Effekt', en: 'Effect', es: 'Efecto' },
-                    title: { de: 'Titel', en: 'Title', es: 'Título' },
-                    cards: { de: 'Karten', en: 'Cards', es: 'Cartas' },
-                    coins: { de: 'Münzen', en: 'Coins', es: 'Monedas' },
-                    booster: { de: 'Booster', en: 'Booster', es: 'Potenciador' }
-                };
-                return (
-                    <div
-                        className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-2 text-xs font-black uppercase z-20"
-                        style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
-                    >
-                        <div className="flex items-center gap-1">
-                            <div className="p-1" style={{ background: '#0096FF', border: '2px solid #000' }}><ImageIcon size={12} style={{ color: '#FFF' }} /></div>
-                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.avatar[lang] || legendLabels.avatar.en}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><span style={{ fontSize: '10px' }}>🖼️</span></div>
-                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.effect[lang] || legendLabels.effect.en}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <div className="p-1" style={{ background: '#FF006E', border: '2px solid #000' }}><Crown size={12} style={{ color: '#FFF' }} /></div>
-                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.title[lang] || legendLabels.title.en}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <div className="p-1" style={{ background: '#00D9FF', border: '2px solid #000' }}><CreditCard size={12} style={{ color: '#000' }} /></div>
-                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.cards[lang] || legendLabels.cards.en}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={12} style={{ color: '#000' }} /></div>
-                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.coins[lang] || legendLabels.coins.en}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Zap size={12} style={{ color: '#000' }} /></div>
-                            <span style={{ color: 'var(--color-text)' }}>{legendLabels.booster[lang] || legendLabels.booster.en}</span>
-                        </div>
-                    </div>
-                );
-            })()}
+            <div
+                className="mx-4 mt-4 p-3 flex flex-wrap items-center justify-center gap-4 text-xs font-black uppercase z-20"
+                style={{ background: 'var(--color-surface)', border: '3px solid #000' }}
+            >
+                <div className="flex items-center gap-2">
+                    <div className="p-1" style={{ background: '#8338EC', border: '2px solid #000' }}><Sparkles size={14} style={{ color: '#FFF' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Frame</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="p-1" style={{ background: '#0096FF', border: '2px solid #000' }}><ImageIcon size={14} style={{ color: '#FFF' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Avatar</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="p-1" style={{ background: '#FFBE0B', border: '2px solid #000' }}><Zap size={14} style={{ color: '#000' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Booster</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="p-1" style={{ background: '#FF7F00', border: '2px solid #000' }}><Coins size={14} style={{ color: '#000' }} /></div>
+                    <span style={{ color: 'var(--color-text)' }}>Münzen</span>
+                </div>
+            </div>
 
-            {/* Scroll Track - GPU Optimized */}
+            {/* Scroll Track - Neo Brutal Colorful */}
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-x-scroll overflow-y-hidden p-0 scrollbar-hide relative z-10"
-                style={{ 
-                    willChange: 'scroll-position',
-                    WebkitOverflowScrolling: 'touch',
-                    scrollBehavior: 'smooth',
-                    touchAction: 'pan-x',
-                    overscrollBehavior: 'contain',
-                    minHeight: 0
+                className="flex-1 overflow-x-auto overflow-y-hidden p-0 scrollbar-hide relative"
+                onWheel={(e) => {
+                    if (scrollRef.current) {
+                        scrollRef.current.scrollLeft += e.deltaY;
+                        e.preventDefault();
+                    }
                 }}
             >
-                <div 
-                    className="flex items-center h-full px-[50vw] min-w-max gap-4 py-6"
-                    style={{ transform: 'translateZ(0)' }}
-                >
-                    {/* Animated Rainbow Track Line */}
+                <div className="flex items-center h-full px-[50vw] min-w-max gap-6 py-8">
+                    {/* Rainbow Stepped Track Line */}
                     <div
-                        className="absolute top-1/2 left-0 right-0 h-4 -translate-y-1/2 z-0"
-                        style={{ 
-                            background: 'linear-gradient(90deg, #FF006E, #FF7F00, #FFBE0B, #00D9FF, #8338EC, #FF006E)',
-                            backgroundSize: '200% 100%',
-                            animation: 'rainbow-flow 8s linear infinite',
-                            border: '3px solid #000',
-                            boxShadow: '0 4px 0px #000'
-                        }}
-                    ></div>
-                    {/* Progress overlay */}
+                        className="absolute top-1/2 left-0 right-0 h-6 -translate-y-1/2 z-0 flex"
+                        style={{ border: '3px solid #000' }}
+                    >
+                        {/* Rainbow segments */}
+                        <div className="flex-1" style={{ background: '#FF006E' }}></div>
+                        <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+                        <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+                        <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+                        <div className="flex-1" style={{ background: '#0096FF' }}></div>
+                        <div className="flex-1" style={{ background: '#8338EC' }}></div>
+                    </div>
+                    {/* Progress overlay (gray over unfinished) */}
                     <div
-                        className="absolute top-1/2 h-4 -translate-y-1/2 z-1"
+                        className="absolute top-1/2 h-6 -translate-y-1/2 z-1 transition-all duration-1000"
                         style={{
-                            left: `calc(50vw + ${(user.level - 1) * 176}px)`,
+                            left: `${(user.level / 100) * 100}%`,
                             right: 0,
-                            background: 'rgba(200,200,200,0.8)',
+                            background: '#E5E5E5',
                             borderRight: '3px solid #000',
                             borderTop: '3px solid #000',
-                            borderBottom: '3px solid #000',
-                            backdropFilter: 'blur(2px)'
+                            borderBottom: '3px solid #000'
                         }}
                     ></div>
 
@@ -570,16 +197,14 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                         const premiumReward = item.premium;
                         const freeReward = item.free;
 
-                        // Rainbow rotating colors for cards
-                        const colors = ['#FF006E', '#FF7F00', '#FFBE0B', '#00D9FF', '#8338EC', '#00FFB3'];
+                        // Rotating colors for cards
+                        const colors = ['#FF006E', '#FF7F00', '#FFBE0B', '#06FFA5', '#8338EC', '#0096FF'];
                         const cardColor = colors[index % colors.length];
-                        const isLegendary = premiumReward?.rarity === 'legendary';
-                        const isEpic = premiumReward?.rarity === 'epic';
 
                         return (
                             <div
                                 key={lvl}
-                                className="flex flex-col items-center justify-center relative w-52 h-full shrink-0 scroll-snap-center group"
+                                className="flex flex-col items-center justify-center relative w-52 h-full shrink-0 snap-center group"
                             >
                                 {/* Level Node (Center) - Bigger & Colorful */}
                                 <div
@@ -606,127 +231,61 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
 
                                     {premiumReward ? (
                                         <div
-                                            className={`relative w-36 p-4 flex flex-col items-center transition-all group-hover:-translate-y-3 cursor-pointer ${isLegendary ? 'rainbow-card holo-shimmer' : ''} ${isEpic ? 'rarity-epic' : ''}`}
+                                            className="relative w-36 p-4 flex flex-col items-center transition-all group-hover:-translate-y-3"
                                             style={{
                                                 background: 'var(--color-surface)',
-                                                border: isLegendary ? '4px solid #FFBE0B' : '4px solid #000',
-                                                boxShadow: isLegendary 
-                                                    ? '0 0 20px rgba(255,190,11,0.5), 8px 8px 0px #FFBE0B' 
-                                                    : `8px 8px 0px ${cardColor}`
+                                                border: '4px solid #000',
+                                                boxShadow: `8px 8px 0px ${cardColor}`
                                             }}
-                                            onTouchStart={(e) => handleTouchStart(premiumReward, true, e)}
-                                            onTouchEnd={handleTouchEnd}
-                                            onTouchCancel={handleTouchEnd}
                                         >
-                                            {/* Info Button */}
-                                            <button
-                                                onClick={(e) => handleInfoClick(premiumReward, true, e)}
-                                                className="absolute top-1 left-1 w-6 h-6 flex items-center justify-center transition-all hover:scale-110 z-20"
-                                                style={{ background: '#00D9FF', border: '2px solid #000' }}
-                                            >
-                                                <Info size={12} className="text-black" />
-                                            </button>
-                                            
                                             {!user.isPremium && (
                                                 <Lock size={12} style={{ color: '#999' }} className="absolute top-2 right-2" />
                                             )}
 
                                             {premiumReward.type === 'avatar' ? (
-                                                <div className={`relative ${isLegendary ? 'animate-pulse' : ''}`}>
-                                                    <img
-                                                        src={premiumReward.preview}
-                                                        alt="Avatar"
-                                                        className="w-14 h-14 object-cover"
-                                                        style={{ 
-                                                            border: isLegendary ? '3px solid #FFBE0B' : '3px solid #000',
-                                                            boxShadow: isLegendary ? '0 0 15px rgba(255,190,11,0.6)' : 'none'
-                                                        }}
-                                                    />
-                                                    {isLegendary && (
-                                                        <div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center" style={{ background: '#FFBE0B', border: '2px solid #000' }}>
-                                                            <span className="text-xs">⭐</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ) : premiumReward.type === 'frame' ? (
-                                                <div 
-                                                    className="w-12 h-12 flex items-center justify-center"
-                                                    style={{ background: '#8338EC', border: '3px solid #000' }}
-                                                >
-                                                    <span className="text-2xl">🖼️</span>
-                                                </div>
+                                                <img
+                                                    src={premiumReward.preview}
+                                                    alt="Avatar"
+                                                    className="w-12 h-12 object-cover"
+                                                    style={{ border: '3px solid #000' }}
+                                                />
                                             ) : premiumReward.type === 'effect' ? (
-                                                <div 
-                                                    className="w-12 h-12 flex items-center justify-center"
-                                                    style={{ background: '#FF006E', border: '3px solid #000' }}
-                                                >
-                                                    <span className="text-2xl">{premiumReward.icon || '✨'}</span>
-                                                </div>
-                                            ) : premiumReward.type === 'font' ? (
-                                                <div 
-                                                    className="w-12 h-12 flex items-center justify-center"
-                                                    style={{ background: 'linear-gradient(135deg, #8338EC, #FF006E)', border: '3px solid #000' }}
-                                                >
-                                                    <Type size={24} className="text-white" />
-                                                </div>
-                                            ) : premiumReward.type === 'title' ? (
-                                                <div 
-                                                    className="w-12 h-12 flex items-center justify-center"
-                                                    style={{ background: '#FF006E', border: '3px solid #000' }}
-                                                >
-                                                    <Crown size={24} className="text-white" />
-                                                </div>
-                                            ) : premiumReward.type === 'cardback' ? (
-                                                <div 
-                                                    className="w-10 h-14 flex items-center justify-center"
-                                                    style={{ background: '#00D9FF', border: '3px solid #000' }}
-                                                >
-                                                    <span className="text-xl">🃏</span>
-                                                </div>
-                                            ) : premiumReward.type === 'sticker_pack' ? (
-                                                <div 
-                                                    className="w-12 h-12 flex items-center justify-center"
-                                                    style={{ 
-                                                        background: getRarityColor(premiumReward.rarity || 'common'), 
-                                                        border: '3px solid #000' 
-                                                    }}
-                                                >
-                                                    <Gift size={24} className="text-white" />
-                                                </div>
-                                            ) : premiumReward.type === 'sticker' ? (
-                                                <Star size={36} style={{ color: '#FF006E' }} />
+                                                premiumReward.icon && premiumReward.icon.startsWith('/') ? (
+                                                    <img
+                                                        src={premiumReward.icon}
+                                                        alt="Frame"
+                                                        className="w-12 h-12 object-contain"
+                                                    />
+                                                ) : (
+                                                    <span className="text-4xl">{premiumReward.icon || '✨'}</span>
+                                                )
                                             ) : premiumReward.type === 'mystery' ? (
                                                 <Box size={36} style={{ color: '#8338EC' }} />
                                             ) : premiumReward.type === 'booster' ? (
                                                 <Zap size={36} style={{ color: '#FFBE0B' }} />
-                                            ) : premiumReward.type === 'coins' ? (
-                                                <Coins size={28} style={{ color: '#FFBE0B' }} />
+                                            ) : premiumReward.type === 'card_pack' ? (
+                                                <div className="text-4xl">📦</div>
                                             ) : (
                                                 <Gem size={28} style={{ color: '#0096FF' }} />
                                             )}
 
                                             <div className="mt-2 text-center">
-                                                <div className="text-[10px] font-black uppercase leading-tight" style={{ color: 'var(--color-text)' }}>{premiumReward.name}</div>
-                                                <div className="text-[9px] font-bold" style={{ color: getRarityColor(premiumReward.rarity || 'common') }}>
-                                                    {premiumReward.amount ? `x${premiumReward.amount}` : premiumReward.rarity?.toUpperCase() || ''}
-                                                </div>
-                                                {premiumReward.desc && (
-                                                    <div className="text-[8px] font-bold mt-1" style={{ color: '#FF006E' }}>{premiumReward.desc}</div>
-                                                )}
+                                                <div className="text-[10px] font-black uppercase" style={{ color: 'var(--color-text)' }}>{premiumReward.type}</div>
+                                                <div className="text-[9px] font-bold" style={{ color: '#666' }}>{premiumReward.amount ? `x${premiumReward.amount}` : 'Rare'}</div>
                                             </div>
 
                                             {canClaimPremium && user.isPremium && (
                                                 <button
-                                                    onClick={() => handleClaim(lvl, true, premiumReward)}
-                                                    className={`absolute -bottom-3 px-3 py-1 text-[9px] font-black uppercase flex items-center gap-1 transition-all hover:-translate-y-1 ${recentlyClaimed === lvl ? 'animate-claim-burst' : 'animate-glow-pulse'}`}
-                                                    style={{ background: '#00D9FF', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
+                                                    onClick={() => { audio.playWin(); onClaim(lvl, true); }}
+                                                    className="absolute -bottom-3 px-3 py-1 text-[9px] font-black uppercase flex items-center gap-1"
+                                                    style={{ background: '#06FFA5', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
                                                 >
                                                     <Check size={10} /> Claim
                                                 </button>
                                             )}
                                             {isPremiumClaimed && (
                                                 <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.9)' }}>
-                                                    <div className="p-2" style={{ background: '#00D9FF', border: '3px solid #000' }}>
+                                                    <div className="p-2" style={{ background: '#06FFA5', border: '3px solid #000' }}>
                                                         <Check size={20} style={{ color: '#000' }} />
                                                     </div>
                                                 </div>
@@ -741,67 +300,47 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                 <div className={`absolute top-[55%] flex flex-col items-center justify-start h-44 w-full transition-all ${isUnlocked ? 'opacity-100' : 'opacity-50 grayscale'}`}>
                                     <div
                                         className="px-3 py-1 text-[10px] font-black uppercase mt-10 mb-2"
-                                        style={{ background: '#00D9FF', color: '#000', border: '2px solid #000' }}
+                                        style={{ background: '#06FFA5', color: '#000', border: '2px solid #000' }}
                                     >
                                         Free
                                     </div>
 
                                     {freeReward ? (
                                         <div
-                                            className="relative w-32 p-4 flex flex-col items-center transition-all group-hover:translate-y-3 cursor-pointer"
+                                            className="relative w-32 p-4 flex flex-col items-center transition-all group-hover:translate-y-3"
                                             style={{
                                                 background: 'var(--color-surface)',
                                                 border: '4px solid #000',
                                                 boxShadow: '6px 6px 0px #000'
                                             }}
-                                            onTouchStart={(e) => handleTouchStart(freeReward, false, e)}
-                                            onTouchEnd={handleTouchEnd}
-                                            onTouchCancel={handleTouchEnd}
                                         >
-                                            {/* Info Button */}
-                                            <button
-                                                onClick={(e) => handleInfoClick(freeReward, false, e)}
-                                                className="absolute top-1 left-1 w-5 h-5 flex items-center justify-center transition-all hover:scale-110 z-20"
-                                                style={{ background: '#FFBE0B', border: '2px solid #000' }}
-                                            >
-                                                <Info size={10} className="text-black" />
-                                            </button>
-                                            
                                             {freeReward.type === 'coins' ? (
                                                 <Coins size={36} style={{ color: '#FFBE0B' }} />
                                             ) : freeReward.type === 'sticker' ? (
                                                 <Star size={36} style={{ color: '#FF006E' }} />
-                                            ) : freeReward.type === 'sticker_pack' ? (
-                                                <div 
-                                                    className="w-10 h-10 flex items-center justify-center"
-                                                    style={{ 
-                                                        background: getRarityColor(freeReward.rarity || 'common'), 
-                                                        border: '2px solid #000' 
-                                                    }}
-                                                >
-                                                    <span className="text-xl">🎁</span>
-                                                </div>
+                                            ) : freeReward.type === 'card_pack' ? (
+                                                <div className="text-4xl">📦</div>
                                             ) : (
                                                 <Coins size={32} style={{ color: '#FFBE0B' }} />
                                             )}
 
                                             <div className="mt-2 text-center">
-                                                <div className="text-[11px] font-black uppercase" style={{ color: 'var(--color-text)' }}>{freeReward.name || freeReward.type}</div>
-                                                {freeReward.amount && <div className="text-[10px] font-bold" style={{ color: '#666' }}>x{freeReward.amount?.toLocaleString()}</div>}
+                                                <div className="text-[11px] font-black uppercase" style={{ color: 'var(--color-text)' }}>{freeReward.type}</div>
+                                                {freeReward.amount && <div className="text-[10px] font-bold" style={{ color: '#666' }}>x{freeReward.amount}</div>}
                                             </div>
 
                                             {canClaimFree && (
                                                 <button
-                                                    onClick={() => handleClaim(lvl, false, freeReward)}
-                                                    className={`absolute -bottom-4 px-4 py-1.5 text-[10px] font-black uppercase transition-all hover:-translate-y-1 ${recentlyClaimed === lvl ? 'animate-claim-burst' : 'animate-glow-pulse'}`}
-                                                    style={{ background: '#00D9FF', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
+                                                    onClick={() => { audio.playWin(); onClaim(lvl, false); }}
+                                                    className="absolute -bottom-4 px-4 py-1.5 text-[10px] font-black uppercase"
+                                                    style={{ background: '#06FFA5', color: '#000', border: '3px solid #000', boxShadow: '3px 3px 0px #000' }}
                                                 >
                                                     CLAIM
                                                 </button>
                                             )}
                                             {isFreeClaimed && (
                                                 <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.9)' }}>
-                                                    <div className="p-2" style={{ background: '#00D9FF', border: '3px solid #000' }}>
+                                                    <div className="p-2" style={{ background: '#06FFA5', border: '3px solid #000' }}>
                                                         <Check size={20} style={{ color: '#000' }} />
                                                     </div>
                                                 </div>
@@ -816,26 +355,6 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                     })}
                 </div>
             </div>
-
-            {/* Reward Claim Modal */}
-            {claimedReward && (
-                <RewardClaimModal
-                    reward={claimedReward.reward}
-                    isPremium={claimedReward.isPremium}
-                    onClose={() => setClaimedReward(null)}
-                />
-            )}
-
-            {/* Reward Info Popup */}
-            {activeInfoPopup && (
-                <RewardInfoPopup
-                    reward={activeInfoPopup.reward}
-                    isPremium={activeInfoPopup.isPremium}
-                    position={activeInfoPopup.position}
-                    onClose={() => setActiveInfoPopup(null)}
-                    language={user.language}
-                />
-            )}
         </div >
     );
 };
