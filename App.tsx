@@ -5,6 +5,7 @@ import { Button, Modal } from './components/UI';
 import { VersionManager } from './components/VersionManager';
 import { SeasonPass } from './components/SeasonPass';
 import { SeasonPassView } from './components/SeasonPassView';
+import { PayPalButton } from './components/PayPalButton';
 import { AuthModal } from './components/AuthModal';
 import { PremiumStatus } from './components/PremiumStatus';
 import { ShopView } from './components/ShopView';
@@ -17,25 +18,20 @@ import { ChessGame } from './components/ChessGame';
 import { CheckersGame } from './components/CheckersGame';
 import { NineMensMorrisGame } from './components/NineMensMorrisGame';
 import { RummyGame } from './components/RummyGame';
-import { ProfileEditor } from './components/ProfileEditor';
-import { StickerAlbumView } from './components/StickerAlbumView';
 
 import SkatMauMauGame from './components/SkatMauMauGame';
-import { DeckbuilderGame } from './components/DeckbuilderGame';
-import { SolitaireGame } from './components/SolitaireGame';
-import { CardCollectionView } from './components/CardCollectionView';
 import { MultiplayerLobby } from './components/MultiplayerLobby';
 import { FriendsManager } from './components/FriendsManager';
-import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION, STICKER_CATEGORIES } from './constants';
-// Firebase removed - using IONOS API now
-import { startGamePolling, startInvitePolling } from './utils/gamePolling';
+import { TIER_COLORS, TIER_BG, TUTORIALS, TRANSLATIONS, AVATARS, MATH_CHALLENGES, SHOP_ITEMS, PREMIUM_PLANS, VALID_CODES, COIN_CODES, SEASON_REWARDS, getCurrentSeason, generateSeasonRewards, SEASONS, APP_VERSION } from './constants';
+// import { auth, database } from './utils/firebase';
+// import { ref, onValue } from 'firebase/database';
 import { getLevelContent, checkGuess, generateSudoku, generateChallenge, generateRiddle } from './utils/gameLogic';
 import { validateSudoku } from './utils/sudokuValidation';
-import { audio, music } from './utils/audio';
+import { audio } from './utils/audio';
 import catDanceGif from './assets/cat-dance.gif';
 
 
-import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu, Circle, Target, Layers, Hash, Sword } from 'lucide-react';
+import { Trophy, ArrowLeft, HelpCircle, Gem, Lock, User, Users, Globe, Puzzle, Zap, Link as LinkIcon, BookOpen, Grid3X3, Play, Check, Star, Clock, Sparkles, Settings, Edit2, Skull, Brain, Info, ShoppingBag, Coins, CreditCard, AlertTriangle, Crown, Sun, Moon, Plus, WifiOff, Database, Download, Menu, X, Smartphone, Cpu, Circle, Target, Layers } from 'lucide-react';
 
 // React Icons for brutal design
 import { IoGlobeSharp, IoPersonSharp, IoSettingsSharp } from 'react-icons/io5';
@@ -222,7 +218,7 @@ const WordGrid = ({ guesses, currentGuess, targetLength, turn }: any) => {
 // --- Main App Component ---
 
 // Define ViewType
-type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS' | 'NINE_MENS_MORRIS' | 'RUMMY' | 'DECKBUILDER' | 'SOLITAIRE';
+type ViewType = 'ONBOARDING' | 'HOME' | 'MODES' | 'LEVELS' | 'GAME' | 'TUTORIAL' | 'SEASON' | 'SHOP' | 'AUTH' | 'MAU_MAU' | 'SKAT_MAU_MAU' | 'CHESS' | 'CHECKERS' | 'NINE_MENS_MORRIS' | 'RUMMY';
 
 const FALLBACK_SEASON_CONFIG = {
   "activeSeasonId": 1,
@@ -261,51 +257,21 @@ const FALLBACK_SEASON_CONFIG = {
 
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [apkDownloadUrl, setApkDownloadUrl] = useState('https://leximix.de/app-release.apk');
-  
-  // Password Reset State
-  const [showPasswordReset, setShowPasswordReset] = useState(false);
-  const [resetToken, setResetToken] = useState<string | null>(null);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [resetError, setResetError] = useState('');
-  const [resetSuccess, setResetSuccess] = useState(false);
-  const [resetLoading, setResetLoading] = useState(false);
-
-  // Check for password reset token in URL
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    if (token) {
-      setResetToken(token);
-      setShowPasswordReset(true);
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
-
-  // Background music based on current view
-  useEffect(() => {
-    music.playForMode(view);
-  }, [view]);
+  const [apkDownloadUrl, setApkDownloadUrl] = useState('https://leximix.de/LexiMix-v3.0.2-Release.apk');
 
   useEffect(() => {
-    // Fetch system config from IONOS API
-    const fetchSystemConfig = async () => {
-      try {
-        const response = await fetch('https://leximix.de/api/config/system.php');
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.config?.download_url) {
-            setApkDownloadUrl(data.config.download_url);
-          }
+    /*
+    const systemRef = ref(database, 'system');
+    const unsubscribe = onValue(systemRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data.download_url) {
+          setApkDownloadUrl(data.download_url);
         }
-      } catch (error) {
-        console.log('Failed to fetch system config');
       }
-    };
-    fetchSystemConfig();
+    });
+    return () => unsubscribe();
+    */
   }, []);
 
   // Navigation
@@ -425,12 +391,37 @@ export default function App() {
   const [currentSeason, setCurrentSeason] = useState(() => getCurrentSeason());
   const [dynamicRewards, setDynamicRewards] = useState(SEASON_REWARDS);
 
-  // Fetch Season Settings from IONOS
+  // Fetch Season Settings from Ionos & Firebase
   useEffect(() => {
+    let unsubscribeSeasonId: (() => void) | undefined;
+
     const fetchSeasonSettings = async () => {
       try {
-        // Fetch Season Data from IONOS (static config)
-        let settings = null;
+        // 1. Setup Real-time Listener for Active Season ID from Firebase
+        // Import the initialized database instance to avoid initialization errors
+        let db;
+        let seasonRef;
+
+        try {
+          /*
+          const { database } = await import('./utils/firebase');
+          const { ref } = await import('firebase/database');
+          db = database;
+          seasonRef = ref(db, 'system/active_season_id');
+          */
+        } catch (initError) {
+          console.warn('[Season] Failed to import initialized database, falling back to getDatabase:', initError);
+          /*
+          const { getDatabase, ref } = await import('firebase/database');
+          db = getDatabase();
+          seasonRef = ref(db, 'system/active_season_id');
+          */
+        }
+
+        const { onValue } = await import('firebase/database');
+
+        // 2. Fetch Season Data from Ionos (static config)
+        let settings = null; // Declare settings here
         let response;
         try {
           response = await fetch('https://leximix.de/season_settings.json');
@@ -444,8 +435,8 @@ export default function App() {
           }
         }
 
-        if (response && response.ok) {
-          settings = await response.json();
+        if (response.ok) {
+          settings = await response.json(); // Assign to settings
           setSeasonConfig(settings);
         } else {
           console.warn('[Season] Fetch failed, using hardcoded fallback');
@@ -453,20 +444,29 @@ export default function App() {
           setSeasonConfig(settings);
         }
 
-        // Get active season ID from system config (polling-based)
-        try {
-          const configResponse = await fetch('https://leximix.de/api/config/system.php');
-          const configData = await configResponse.json();
-          const activeSeasonId = configData.config?.active_season_id;
-          
+        // 3. Listen for ID changes (Moved outside try/catch of fetch to ensure it runs)
+        /*
+        unsubscribeSeasonId = onValue(seasonRef, (snapshot) => {
+          const firebaseActiveId = snapshot.exists() ? snapshot.val() : null;
+
+          // Priority: Firebase ID > JSON activeSeasonId > Date-based fallback
+          // Use currentSeasonId which is the correct key from the JSON
+          // Use local 'settings' variable if available, otherwise fallback to state (which might be null initially but we are inside the function where we try to fetch it)
+          // Actually, we should use the 'settings' object we just fetched/derived.
+
           const currentSettings = settings || seasonConfig;
-          const activeId = activeSeasonId || (currentSettings ? ((currentSettings as any).currentSeasonId || currentSettings.activeId) : null);
+          const activeId = firebaseActiveId || (currentSettings ? ((currentSettings as any).currentSeasonId || currentSettings.activeId) : null);
 
           if (activeId && currentSettings) {
             const activeSeasonData = currentSettings.seasons.find((s: any) => s.id === activeId);
             if (activeSeasonData) {
               console.log(`[Season] Loaded Dynamic Season: ${activeSeasonData.name} (ID: ${activeId})`);
               setCurrentSeason(activeSeasonData);
+
+              // Update Rewards
+              if (activeSeasonData.rewards) {
+                setDynamicRewards(activeSeasonData.rewards);
+              }
 
               // Apply Colors
               const root = document.documentElement;
@@ -477,9 +477,8 @@ export default function App() {
               root.style.setProperty('--season-bg-card', activeSeasonData.colors.bgCard);
             }
           }
-        } catch (configError) {
-          console.warn('[Season] Failed to load system config:', configError);
-        }
+        });
+        */
 
       } catch (error) {
         console.error('[Season] Failed to load dynamic settings:', error);
@@ -487,6 +486,10 @@ export default function App() {
     };
 
     fetchSeasonSettings();
+
+    return () => {
+      if (unsubscribeSeasonId) unsubscribeSeasonId();
+    };
   }, []); // Removed dependency on seasonConfig to prevent infinite loop
 
   // Apply Season Colors to CSS Variables (Initial / Fallback)
@@ -523,24 +526,21 @@ export default function App() {
       // Must be logged in to use app
       if (!cloudUser) {
         setView('AUTH');
-        setIsInitialized(true);
       } else {
         setView('HOME'); // Go straight to home
-        setIsInitialized(true);
 
         // Background Sync on Startup: Ensure we have the latest cloud data
-        import('./utils/cloudStorage').then(async ({ loadUserData, normalizeUsername }) => {
-          const { generateFriendCode } = await import('./utils/multiplayer');
+        // This fixes issues where local data might be stale or missing
+        import('./utils/api').then(async ({ loadFromCloud, redeemVoucher }) => {
+          // Helper for normalizing username if needed, though API handles it
+          const normalizeUsername = (u: string) => u.replace(/\s+/g, '').toLowerCase();
+          // Friend code generation is now handled by backend on register/login
+
           const normalizedUser = normalizeUsername(cloudUser);
           try {
-            const result = await loadUserData(normalizedUser);
-            if (result.success && result.data) {
-              const cloudData = result.data;
+            const cloudData = await loadFromCloud(normalizedUser);
+            if (cloudData) {
               let friendCode = cloudData.friendCode;
-              // Generate Friend Code if missing
-              if (!friendCode) {
-                friendCode = generateFriendCode();
-              }
 
               setUser(prev => ({
                 ...prev,
@@ -548,16 +548,9 @@ export default function App() {
                 name: normalizedUser, // Ensure username consistency
                 friendCode: friendCode // Ensure friend code is in state
               }));
-              setLastCloudSync(Date.now());
-              console.log('[Cloud] Startup sync successful from:', result.source);
+              console.log('[Cloud] Startup sync successful');
             } else {
-              // If no cloud data but logged in (rare), generate friend code for new user
-              const { generateFriendCode } = await import('./utils/multiplayer');
-              const friendCode = generateFriendCode();
-
-              setUser(prev => ({
-                ...prev, friendCode: friendCode || undefined
-              }));
+              // No cloud data found
             }
           } catch (err) {
             console.error('[Cloud] Startup sync failed:', err);
@@ -567,39 +560,28 @@ export default function App() {
     } catch (error) {
       console.error('[LexiMix] Init error:', error);
       setView('AUTH');
-      setIsInitialized(true);
     }
   }, []);
 
-  // Hybrid Cloud Sync: IONOS + Firebase Backup (with debouncing)
+  // Anti-Cheat: Verify premium status with server every 60 seconds
+  // Sync user state to cloud on changes (with debouncing)
   useEffect(() => {
     if (!cloudUsername) return;
 
-    // Debounce: Wait 5 seconds before syncing for better batching
+    // Debounce: Wait 3 seconds before syncing to avoid too many requests
     const syncTimer = setTimeout(async () => {
       try {
-        const { saveUserData } = await import('./utils/cloudStorage');
-        const result = await saveUserData(cloudUsername, user);
-        if (result.success) {
-          console.log('[Sync] User data synced to cloud (v' + (result.version || '?') + ')');
-          setLastCloudSync(Date.now());
-        } else if (result.error === 'conflict') {
-          console.warn('[Sync] Conflict detected - reloading from server');
-          // Bei Konflikt: Server-Daten laden
-          const { loadUserData } = await import('./utils/cloudStorage');
-          const loadResult = await loadUserData(cloudUsername);
-          if (loadResult.success && loadResult.data) {
-            setUser(prev => ({ ...prev, ...loadResult.data, name: cloudUsername }));
-          }
-        } else if (result.error === 'queued') {
-          console.log('[Sync] Offline - queued for later');
+        const { saveToCloud } = await import('./utils/api');
+        const success = await saveToCloud(cloudUsername, user);
+        if (success) {
+          console.log('[Sync] User data synced to cloud');
         } else {
-          console.warn('[Sync] Save failed:', result.error);
+          console.warn('[Sync] Save failed (rate limit or error)');
         }
       } catch (e) {
         console.error('[Sync] Failed to sync:', e);
       }
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(syncTimer);
   }, [cloudUsername, user.level, user.coins, user.xp, user.isPremium, JSON.stringify(user.completedLevels), user.language, user.theme, user.name, user.avatarId, user.activeFrame, JSON.stringify(user.ownedAvatars), JSON.stringify(user.claimedSeasonRewards), JSON.stringify(user.claimedPremiumRewards)]);
@@ -608,11 +590,10 @@ export default function App() {
 
     const verifyPremiumStatus = async () => {
       try {
-        const { loadUserData } = await import('./utils/cloudStorage');
-        const result = await loadUserData(cloudUsername);
+        const { loadFromCloud } = await import('./utils/api');
+        const cloudData = await loadFromCloud(cloudUsername);
 
-        if (result.success && result.data) {
-          const cloudData = result.data;
+        if (cloudData) {
           // Check if local premium status matches server
           if (user.isPremium !== cloudData.isPremium) {
             console.warn('[Anti-Cheat] Premium status mismatch detected - correcting from server');
@@ -637,16 +618,9 @@ export default function App() {
     return () => clearInterval(interval);
   }, [cloudUsername]);
 
-  // Normalize language to uppercase and provide fallback
-  const normalizeLanguage = (lang: Language | string | undefined): Language => {
-    if (!lang) return Language.DE;
-    const upper = String(lang).toUpperCase() as Language;
-    if (upper === 'EN' || upper === 'DE' || upper === 'ES') return upper;
-    return Language.DE;
-  };
-  
-  const currentLang = normalizeLanguage(view === 'ONBOARDING' ? tempUser.language : user.language);
-  const t = TRANSLATIONS[currentLang] || TRANSLATIONS[Language.DE]; // Handle lang during onboarding with fallback
+  // Ensure language is uppercase to match TRANSLATIONS keys
+  const currentLang = (view === 'ONBOARDING' ? tempUser.language : user.language).toUpperCase() as Language;
+  const t = TRANSLATIONS[currentLang] || TRANSLATIONS[Language.DE]; // Fallback to DE if missing
 
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
   const [gameState, setGameState] = useState<any>(null);
@@ -686,12 +660,7 @@ export default function App() {
   const [editName, setEditName] = useState(user.name || "Player");
   const [editAge, setEditAge] = useState(user.age || 18);
   const [editAvatar, setEditAvatar] = useState(user.avatarId || AVATARS[0]);
-  const [editFrame, setEditFrame] = useState(user.activeFrame || 'frame_none');
-  const [editFont, setEditFont] = useState(user.activeFont || 'font_default');
-  const [editEffect, setEditEffect] = useState(user.activeEffect || 'effect_none');
-  const [editTitle, setEditTitle] = useState(user.activeTitle || 'title_none');
-  const [editCardBack, setEditCardBack] = useState(user.activeCardBack || 'cardback_default');
-  const [showStickerAlbum, setShowStickerAlbum] = useState(false);
+  const [editFrame, setEditFrame] = useState(user.activeFrame || 'none');
   const [editUsername, setEditUsername] = useState('');
   const [usernameError, setUsernameError] = useState('');
 
@@ -714,56 +683,9 @@ export default function App() {
   const [globalGameInvite, setGlobalGameInvite] = useState<{ from: string; gameId: string; mode?: GameMode } | null>(null);
   const [pendingSentInvite, setPendingSentInvite] = useState<{ to: string; gameId: string } | null>(null);
 
-  // Global listener for sent invite acceptance (host side) - using polling
-  useEffect(() => {
-    if (!cloudUsername || !pendingSentInvite) {
-      console.log('[App] Listener skipped - cloudUsername:', cloudUsername, 'pendingInvite:', pendingSentInvite);
-      return;
-    }
-
-    console.log('[App] Setting up polling for game:', pendingSentInvite.gameId);
-    
-    const cleanup = startGamePolling(pendingSentInvite.gameId, (gameData) => {
-      console.log('[App] Game update received:', gameData.status, gameData.players);
-
-      // Game is playing and we're the host - guest accepted!
-      if (gameData.status === 'playing' && gameData.players?.host === cloudUsername) {
-        console.log('[App] Game accepted by guest, starting game for host');
-        setMultiplayerOpponent(pendingSentInvite.to);
-        setMultiplayerGameId(pendingSentInvite.gameId);
-        setIsMultiplayerHost(true);
-        setPendingSentInvite(null);
-        setShowMultiplayerLobby(false);
-        setView('MAU_MAU');
-      }
-    });
-
-    return () => {
-      console.log('[App] Cleaning up polling');
-      cleanup();
-    };
-  }, [cloudUsername, pendingSentInvite]);
-
-  // Global listener for game invitations (shows popup anywhere in app) - using polling
-  useEffect(() => {
-    if (!cloudUsername) return;
-    
-    const cleanup = startInvitePolling((invites) => {
-      const pendingInvite = invites.find((inv: any) => inv.status === 'pending');
-
-      if (pendingInvite && !showMultiplayerLobby) {
-        // Show global popup only if not already in lobby
-        setGlobalGameInvite({
-          from: pendingInvite.fromUsername,
-          gameId: pendingInvite.gameId,
-          mode: pendingInvite.gameType,
-          inviteId: pendingInvite.id
-        });
-      }
-    });
-
-    return cleanup;
-  }, [cloudUsername, showMultiplayerLobby]);
+  // Global listeners REMOVED - Firebase Dependency
+  // These listeners monitored real-time game invites and multiplayer state changes
+  // TODO: Implement WebSocket or polling-based multiplayer if needed
 
   const handleAcceptGlobalInvite = async () => {
     if (!globalGameInvite || !cloudUsername) {
@@ -774,27 +696,13 @@ export default function App() {
     console.log('[App] Accepting invite...', globalGameInvite);
 
     try {
-      const { respondToInvite, joinGame } = await import('./utils/gamePolling');
+      const { ref, set } = await import('firebase/database');
+      const { database } = await import('./utils/firebase');
       const { initializeMultiplayerGame, initializeChessGame } = await import('./utils/multiplayerGame');
 
-      // Find invite ID first (we need to get it from the invite list)
-      // For now, we'll use the gameId to find the invite
-      const inviteId = (globalGameInvite as any).inviteId;
-      
-      if (inviteId) {
-        // Update invite status via API
-        console.log('[App] Updating invite status to accepted...');
-        const respondResult = await respondToInvite(inviteId, 'accept');
-        if (!respondResult.success) {
-          throw new Error(respondResult.error || 'Failed to accept invite');
-        }
-      }
-      
-      // Join the game
-      const joinResult = await joinGame(globalGameInvite.gameId);
-      if (!joinResult.success) {
-        throw new Error(joinResult.error || 'Failed to join game');
-      }
+      // Update invite status
+      console.log('[App] Updating invite status to accepted...');
+      await set(ref(database, `gameInvites/${cloudUsername}/${globalGameInvite.gameId}/status`), 'accepted');
 
       const inviteMode = globalGameInvite.mode || GameMode.SKAT_MAU_MAU;
 
@@ -874,12 +782,10 @@ export default function App() {
     if (!globalGameInvite || !cloudUsername) return;
 
     try {
-      const { respondToInvite } = await import('./utils/gamePolling');
-      const inviteId = (globalGameInvite as any).inviteId;
-      
-      if (inviteId) {
-        await respondToInvite(inviteId, 'decline');
-      }
+      const { ref, set } = await import('firebase/database');
+      const { database } = await import('./utils/firebase');
+
+      await set(ref(database, `gameInvites/${cloudUsername}/${globalGameInvite.gameId}/status`), 'declined');
       setGlobalGameInvite(null);
     } catch (error) {
       console.error('[Global Invite] Decline error:', error);
@@ -944,6 +850,9 @@ export default function App() {
           const errorCode = err?.code || 'unknown';
           const errorMessage = err?.message || String(err);
           console.error(`[Fix] Failed to generate friend code. Code: ${errorCode}, Message: ${errorMessage}`);
+          if (errorCode === 'PERMISSION_DENIED') {
+            console.error('[Fix] Firebase rules are blocking write to friendCodes. Update database.rules.json');
+          }
         }
       }
     };
@@ -1220,8 +1129,12 @@ export default function App() {
       return;
     }
 
-    // Letter Mau Mau goes to intro modal first
+    // Kartenschmiede (Letter Mau Mau) - Premium Only
     if (mode === GameMode.LETTER_MAU_MAU) {
+      if (!user.isPremium) {
+        setShowPremiumRequiredModal(true);
+        return;
+      }
       setShowMauMauIntro(true);
       return;
     }
@@ -1247,18 +1160,6 @@ export default function App() {
       setGameConfig({ mode, tier: Tier.BEGINNER, levelId: 1 });
       setTutorialMode(mode);
       setView('TUTORIAL');
-      return;
-    }
-
-    // Deckbuilder - Goes directly to game (has its own intro)
-    if (mode === GameMode.DECKBUILDER) {
-      setView('DECKBUILDER');
-      return;
-    }
-
-    // Solitaire - Goes directly to game (has its own level select)
-    if (mode === GameMode.SOLITAIRE) {
-      setView('SOLITAIRE');
       return;
     }
 
@@ -1431,26 +1332,16 @@ export default function App() {
   }, [view, gameConfig, user.language]);
 
   // Cloud Save Handlers
-  const handleCloudLogin = async (username: string, userData?: UserState) => {
-    const { normalizeUsername } = await import('./utils/cloudStorage');
-    const { loadUserData } = await import('./utils/cloudStorage');
+  const handleCloudLogin = async (username: string) => {
+    const { normalizeUsername, loadFromCloud } = await import('./utils/firebase');
     const { getFriendsFromFirebase, generateFriendCode, saveFriendCodeToFirebase } = await import('./utils/multiplayer');
     const normalizedUser = normalizeUsername(username);
 
     setCloudUsername(normalizedUser);
     localStorage.setItem('leximix_cloud_user', normalizedUser);
 
-    // If userData provided from new API auth, use it directly
-    // Otherwise load from IONOS cloud storage
-    let cloudData: any = null;
-    if (userData) {
-      cloudData = userData;
-      console.log('[Cloud] Using userData from API auth');
-    } else {
-      const loadResult = await loadUserData(normalizedUser);
-      cloudData = loadResult.success ? loadResult.data : null;
-      console.log('[Cloud] Loaded from:', loadResult.source || 'none');
-    }
+    // Load from cloud
+    const cloudData = await loadFromCloud(normalizedUser);
 
     if (cloudData) {
       // Load existing data
@@ -1725,32 +1616,20 @@ export default function App() {
     try {
       console.log('[handleWin] Called with:', { mode, tier, levelId, targetWord });
       console.log('[handleWin] Current showWin state:', showWin);
-      // Scaling Rewards - v3.5.0 Increased rewards
-      let xpGain = tier * 50; // 50, 100, 150, 200, 250 XP
-      let coinGain = tier * 15; // 15, 30, 45, 60, 75 Coins
-
-      // Mode-specific bonuses
-      if (mode === GameMode.SUDOKU) {
-        xpGain += 30; // Sudoku bonus
-        coinGain += 10;
-      } else if (mode === GameMode.CHAIN || mode === GameMode.CATEGORY) {
-        xpGain += 20; // Word chain bonus
-        coinGain += 5;
-      } else if (mode === GameMode.RIDDLE) {
-        xpGain += 40; // Riddle bonus for difficulty
-        coinGain += 15;
-      }
+      // Scaling Rewards
+      let xpGain = tier * 20;
+      let coinGain = tier * 5;
 
       // Grant bonus XP for challenge mode completion
       if (mode === GameMode.CHALLENGE) {
-        const bonusXP = 75 * tier; // 75/150/225 XP for tiers 1/2/3
+        const bonusXP = 50 * tier; // 50/100/150 XP for tiers 1/2/3
         xpGain += bonusXP;
       }
 
       // Challenge Mode Bonus
       if (mode === GameMode.CHALLENGE) {
         xpGain *= 2; // Double XP
-        coinGain = tier * 100; // 100/200/300 coins
+        coinGain = tier * 80; // Net profit 30*Tier
       }
 
       console.log('[handleWin] Setting winStats:', { xp: xpGain, coins: coinGain });
@@ -1769,7 +1648,7 @@ export default function App() {
           setTimeout(() => {
             setLevelUpData({ level: newLevel, xp: newXp });
             setShowLevelUp(true);
-            audio.playLevelUp(); // Epic level up fanfare
+            audio.playWin(); // Extra fanfare
           }, 1000); // Show after Win modal appears
         }
 
@@ -1892,36 +1771,9 @@ export default function App() {
       name: editName,
       age: ageNum,
       avatarId: editAvatar,
-      activeFrame: editFrame !== 'frame_none' ? editFrame : undefined,
-      activeFont: editFont !== 'font_default' ? editFont : undefined,
-      activeEffect: editEffect !== 'effect_none' ? editEffect : undefined,
-      activeTitle: editTitle !== 'title_none' ? editTitle : undefined,
-      activeCardBack: editCardBack !== 'cardback_default' ? editCardBack : undefined
+      activeFrame: editFrame !== 'none' ? editFrame : undefined
     }));
     setShowProfile(false);
-  };
-
-  // Handle sticker album category completion reward
-  const handleClaimCategoryReward = (categoryId: string) => {
-    const category = STICKER_CATEGORIES.find((c: any) => c.id === categoryId);
-    if (!category) return;
-
-    setUser(prev => {
-      const newUser = { ...prev };
-      
-      // Add reward frame if exists
-      if (category.rewardFrame) {
-        newUser.ownedFrames = [...(prev.ownedFrames || []), category.rewardFrame];
-      }
-      
-      // Add reward coins
-      newUser.coins = (prev.coins || 0) + category.rewardCoins;
-      
-      // Mark category as completed
-      newUser.completedCategories = [...(prev.completedCategories || []), categoryId];
-      
-      return newUser;
-    });
   };
 
   const deleteProfile = () => {
@@ -1931,9 +1783,14 @@ export default function App() {
   const confirmDelete = async () => {
     try {
       if (cloudUsername) {
-        // Account deletion via API would be implemented here
-        // For now, just clear local data
-        console.log('[LexiMix] Account deletion requested - local data cleared');
+        const { deleteUserAccount } = await import('./utils/firebase');
+        const success = await deleteUserAccount(cloudUsername);
+        if (success) {
+          console.log('[LexiMix] Account deleted from cloud');
+        } else {
+          alert("Fehler beim Löschen des Accounts. Bitte versuche es später erneut.");
+          return;
+        }
       }
 
       // Use the existing logout handler to ensure clean state and redirection
@@ -1954,9 +1811,7 @@ export default function App() {
     setEditName(user.name || "");
     setEditAge(user.age || 18);
     setEditAvatar(user.avatarId || AVATARS[0]);
-    setEditFrame(user.activeFrame || 'frame_none');
-    setEditFont(user.activeFont || 'font_default');
-    setEditEffect(user.activeEffect || 'effect_none');
+    setEditFrame(user.activeFrame || 'none');
     setEditUsername('');
     setUsernameError('');
     setShowProfile(true);
@@ -1989,7 +1844,20 @@ export default function App() {
     }
 
     try {
-      // Username validation is done on the server side
+      // Check if username is taken
+      const { normalizeUsername, database } = await import('./utils/firebase');
+      const { ref, get } = await import('firebase/database');
+      const normalizedNew = normalizeUsername(editUsername);
+
+      const userRef = ref(database, `users/${normalizedNew}`);
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists() && normalizedNew !== normalizeUsername(cloudUsername || '')) {
+        setUsernameError('Benutzername bereits vergeben');
+        audio.playError();
+        return;
+      }
+
       // Show confirmation modal
       setShowUsernameConfirm(true);
     } catch (error) {
@@ -2001,7 +1869,7 @@ export default function App() {
 
   const confirmUsernameChange = async () => {
     try {
-      const { normalizeUsername } = await import('./utils/cloudStorage');
+      const { normalizeUsername } = await import('./utils/firebase');
       const normalizedNew = normalizeUsername(editUsername);
 
       // Deduct coins and update
@@ -2039,7 +1907,7 @@ export default function App() {
 
     try {
       const { redeemVoucher } = await import('./utils/api');
-      const result = await redeemVoucher(voucherCode);
+      const result = await redeemVoucher(cloudUsername, voucherCode);
 
       if (result.success) {
         // Award coins to user if applicable
@@ -2086,8 +1954,15 @@ export default function App() {
 
   const handleBuyItem = (item: ShopItem) => {
     if (item.type === 'currency') {
-      // Real money purchases coming soon
-      alert(t.SHOP?.COMING_SOON || 'Bald verfügbar');
+      if (item.paypalLink) {
+        // Open PayPal Link
+        window.open(item.paypalLink, '_blank');
+      } else {
+        // Simulate In-App Purchase (Fallback)
+        audio.playWin(); // "Ca-ching"
+        setUser(u => ({ ...u, coins: u.coins + (item.currencyAmount || 0) }));
+        alert(`${t.SHOP.SUCCESS}: ${item.name} `);
+      }
     } else {
       // Buy Avatar
       if (user.coins >= (item.cost as number)) {
@@ -2119,21 +1994,10 @@ export default function App() {
     [GameMode.CHECKERS]: { bg: '#DC2626', accent: '#000' },     // Rot für Dame
     [GameMode.NINE_MENS_MORRIS]: { bg: '#D97706', accent: '#000' }, // Amber für Mühle
     [GameMode.RUMMY]: { bg: '#059669', accent: '#000' },        // Smaragd für Rommé
-    [GameMode.DECKBUILDER]: { bg: '#8B5CF6', accent: '#000' },  // Lila für Deckbuilder
-    [GameMode.SOLITAIRE]: { bg: '#06FFA5', accent: '#000' },    // Grün für Solitaire
   };
 
   const GameCard = ({ mode, title, desc, icon: Icon, locked = false, comingSoon = false }: any) => {
     const colors = brutalColors[mode] || { bg: '#FF006E', accent: '#000' };
-    const [isHovered, setIsHovered] = useState(false);
-
-    const resetHover = (e: any) => {
-      setIsHovered(false);
-      if (e.currentTarget) {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '6px 6px 0px var(--color-border)';
-      }
-    };
 
     return (
       <button
@@ -2144,26 +2008,28 @@ export default function App() {
           background: 'var(--color-surface)',
           border: '3px solid var(--color-border)',
           borderRadius: '16px',
-          boxShadow: isHovered ? '10px 10px 0px #000' : '6px 6px 0px var(--color-border)',
-          transform: isHovered ? 'translateY(-4px)' : 'translateY(0)'
+          boxShadow: '6px 6px 0px var(--color-border)'
         }}
         onMouseEnter={(e) => {
           if (!comingSoon) {
-            setIsHovered(true);
-            audio.playHover();
+            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.boxShadow = '10px 10px 0px #000';
           }
         }}
-        onMouseLeave={resetHover}
-        onMouseUp={resetHover}
-        onTouchEnd={resetHover}
-        onTouchCancel={resetHover}
-        onBlur={resetHover}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+        }}
       >
-        {/* Animated Rainbow top border */}
-        <div 
-          className="absolute top-0 left-0 right-0 h-1.5 animate-rainbow-shimmer" 
-          style={{ borderRadius: '13px 13px 0 0' }}
-        />
+        {/* Rainbow top border */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 flex" style={{ borderRadius: '13px 13px 0 0', overflow: 'hidden' }}>
+          <div className="flex-1" style={{ background: '#FF006E' }}></div>
+          <div className="flex-1" style={{ background: '#FF7F00' }}></div>
+          <div className="flex-1" style={{ background: '#FFBE0B' }}></div>
+          <div className="flex-1" style={{ background: '#06FFA5' }}></div>
+          <div className="flex-1" style={{ background: '#0096FF' }}></div>
+          <div className="flex-1" style={{ background: '#8338EC' }}></div>
+        </div>
 
         {/* Large animated icon - half cut off */}
         <div
@@ -2223,7 +2089,7 @@ export default function App() {
             <span style={{ transform: 'skewX(5deg)' }}>{locked ? 'UNLOCK' : t.HOME.PLAY}</span>
           </div>
         </div>
-      </button>
+      </button >
     );
   };
 
@@ -2421,6 +2287,48 @@ export default function App() {
     )
   }
 
+  const handlePayPalSuccess = async (details: any, planType: 'monthly' | '30days') => {
+    console.log('PayPal Success:', details);
+    audio.playWin();
+
+    // Update User State
+    setUser(prev => {
+      const newState = {
+        ...prev,
+        isPremium: true,
+        premiumActivatedAt: Date.now()
+      };
+
+      // Bonus for Monthly Plan (7.99)
+      if (planType === 'monthly') {
+        newState.level = (newState.level || 1) + 10; // +10 Levels
+      }
+
+      return newState;
+    });
+
+    // Save to Cloud
+    if (cloudUsername) {
+      try {
+        const { saveToCloud } = await import('./utils/firebase');
+        // We need to save the new state. 
+        // Since we can't easily access the *new* state from setUser here without a ref or waiting,
+        // we'll construct a temporary object for saving.
+        const tempState = {
+          ...user,
+          isPremium: true,
+          premiumActivatedAt: Date.now(),
+          level: planType === 'monthly' ? (user.level || 1) + 10 : user.level
+        };
+        await saveToCloud(cloudUsername, tempState);
+      } catch (e) {
+        console.error("Failed to save premium status", e);
+      }
+    }
+
+    alert(`Premium erfolgreich aktiviert!(${planType === 'monthly' ? '+10 Level Boost' : '30 Tage'})`);
+    setShowPremiumInfo(false);
+  };
 
 
   const toggleTheme = () => {
@@ -2459,15 +2367,7 @@ export default function App() {
 
 
   const renderHome = () => (
-    <div 
-      className="flex flex-col relative z-10 overflow-y-scroll pb-24" 
-      style={{ 
-        background: 'var(--color-bg)', 
-        height: '100vh',
-        WebkitOverflowScrolling: 'touch',
-        touchAction: 'pan-y'
-      }}
-    >
+    <div className="h-full flex flex-col relative z-10 overflow-y-auto pb-24" style={{ background: 'var(--color-bg)' }}>
       {/* Rainbow Top Bar */}
       <div className="flex h-4 w-full">
         <div className="flex-1" style={{ background: '#FF006E' }}></div>
@@ -2498,14 +2398,14 @@ export default function App() {
           }}
         >
           <div className="w-14 h-14 overflow-hidden" style={{ border: '3px solid #000', background: 'var(--color-bg)' }}>
-            <img src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
+            <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user.avatarId}`} alt="Avatar" className="w-full h-full" />
           </div>
           <div>
             <h2 className="font-black text-lg uppercase leading-none" style={{ color: '#000' }}>
               {cloudUsername || user.name}
             </h2>
             <div
-              className="mt-2 px-3 py-1 font-black text-xs uppercase inline-block animate-pulse-subtle"
+              className="mt-2 px-3 py-1 font-black text-xs uppercase inline-block"
               style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
             >
               LVL {user.level} • {user.xp % 100}/100 XP
@@ -2518,8 +2418,7 @@ export default function App() {
           {/* Coins Button */}
           <button
             onClick={() => setView('SHOP')}
-            key={`coins-${user.coins}`}
-            className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 font-black text-sm transition-all duration-100 animate-shadow-breathe"
+            className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 font-black text-sm transition-all duration-100"
             style={{
               background: '#FFBE0B',
               border: '3px solid #000',
@@ -2527,8 +2426,8 @@ export default function App() {
               boxShadow: '4px 4px 0px #000'
             }}
           >
-            <Gem size={16} style={{ color: '#000' }} className="animate-sparkle" />
-            <span style={{ color: '#000' }}>{Math.max(0, user.coins || 0)}</span>
+            <Gem size={16} style={{ color: '#000' }} />
+            <span style={{ color: '#000' }}>{user.coins}</span>
           </button>
 
           {/* Language Button */}
@@ -2644,16 +2543,16 @@ export default function App() {
       {/* Logo & Title - Brutal Style */}
       <div className="flex flex-col items-center justify-center mb-6 px-4">
         <div
-          className="p-6 mb-4 animate-float"
+          className="p-6 mb-4"
           style={{
-            background: user.theme === 'dark' ? '#1E1E1E' : '#FFF',
-            border: user.theme === 'dark' ? '6px solid #FFF' : '6px solid #000',
-            boxShadow: user.theme === 'dark' ? '12px 12px 0px #8338EC' : '12px 12px 0px #8338EC',
+            background: '#FFF',
+            border: '6px solid #000',
+            boxShadow: '12px 12px 0px #8338EC',
             transform: 'rotate(-2deg)'
           }}
         >
           <img
-            src={user.theme === 'dark' ? "/LexiMix_Logo_Bright.png" : "/LexiMix_Logo_Dark.png"}
+            src="/LexiMix_Logo_Dark.png"
             alt="LexiMix"
             className="h-24 md:h-32 w-auto"
           />
@@ -2686,38 +2585,38 @@ export default function App() {
         <div className="flex gap-3 mt-4">
           {/* Season Timer */}
           <div
-            className="flex-1 p-4 flex flex-col items-center justify-center animate-float-delay-1"
+            className="flex-1 p-4 flex flex-col items-center justify-center"
             style={{
-              background: 'var(--color-surface)',
-              border: '4px solid var(--color-border)',
-              boxShadow: '6px 6px 0px var(--color-border)',
+              background: '#FFF',
+              border: '4px solid #000',
+              boxShadow: '6px 6px 0px #000',
               transform: 'skew(-2deg)'
             }}
           >
-            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)', transform: 'skew(2deg)' }}>{t.seasonEnds}</span>
-            <div className="flex items-center gap-2 font-black" style={{ color: 'var(--color-text)', transform: 'skew(2deg)' }}>
+            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: '#4A4A4A', transform: 'skew(2deg)' }}>Season Ende</span>
+            <div className="flex items-center gap-2 font-black" style={{ color: '#000', transform: 'skew(2deg)' }}>
               <Clock size={16} />
-              {Math.max(0, Math.ceil((getCurrentSeason().endDate - Date.now()) / (1000 * 60 * 60 * 24)))} {t.days}
+              {Math.max(0, Math.ceil((getCurrentSeason().endDate - Date.now()) / (1000 * 60 * 60 * 24)))} Tage
             </div>
           </div>
 
           {/* Premium Status */}
           <div
-            className={`flex-1 p-4 flex flex-col items-center justify-center animate-float-delay-2 ${user.isPremium ? 'animate-glow-idle' : ''}`}
+            className="flex-1 p-4 flex flex-col items-center justify-center"
             style={{
-              background: user.isPremium ? '#FFBE0B' : 'var(--color-surface)',
-              border: '4px solid var(--color-border)',
-              boxShadow: '6px 6px 0px var(--color-border)',
+              background: user.isPremium ? '#FFBE0B' : '#FFF',
+              border: '4px solid #000',
+              boxShadow: '6px 6px 0px #000',
               transform: 'skew(2deg)'
             }}
           >
-            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: user.isPremium ? 'rgba(0,0,0,0.6)' : 'var(--color-text-muted)', transform: 'skew(-2deg)' }}>Premium</span>
+            <span className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: '#4A4A4A', transform: 'skew(-2deg)' }}>Premium</span>
             {user.isPremium ? (
               <div className="flex items-center gap-2 font-black" style={{ color: '#000', transform: 'skew(-2deg)' }}>
-                <Crown size={16} className="animate-sparkle" /> AKTIV
+                <Crown size={16} /> AKTIV
               </div>
             ) : (
-              <div className="flex items-center gap-1 font-black text-sm" style={{ color: 'var(--color-text)', transform: 'skew(-2deg)' }}>
+              <div className="flex items-center gap-1 font-black text-sm" style={{ color: '#000', transform: 'skew(-2deg)' }}>
                 <Lock size={14} /> Inaktiv
               </div>
             )}
@@ -2744,13 +2643,11 @@ export default function App() {
         <GameCard mode={GameMode.SUDOKU} title={t.MODES.SUDOKU.title} desc={t.MODES.SUDOKU.desc} icon={Grid3X3} />
         <GameCard mode={GameMode.CHALLENGE} title={t.MODES.CHALLENGE.title} desc={t.MODES.CHALLENGE.desc} icon={Brain} locked={!user.isPremium} />
         <GameCard mode={GameMode.RIDDLE} title={t.MODES.RIDDLE.title} desc={t.MODES.RIDDLE.desc} icon={HelpCircle} />
-        <GameCard mode={GameMode.LETTER_MAU_MAU} title="Mau Mau" desc="Karten Spiel" icon={Sparkles} />
+        <GameCard mode={GameMode.LETTER_MAU_MAU} title={t.MODES.LETTER_MAU_MAU.title} desc={t.MODES.LETTER_MAU_MAU.desc} icon={Sparkles} locked={!user.isPremium} />
         <GameCard mode={GameMode.CHESS} title={t.MODES.CHESS.title} desc={t.MODES.CHESS.desc} icon={Cpu} />
         <GameCard mode={GameMode.CHECKERS} title={t.MODES.CHECKERS.title} desc={t.MODES.CHECKERS.desc} icon={Circle} />
         <GameCard mode={GameMode.NINE_MENS_MORRIS} title={t.MODES.NINE_MENS_MORRIS.title} desc={t.MODES.NINE_MENS_MORRIS.desc} icon={Target} />
         <GameCard mode={GameMode.RUMMY} title={t.MODES.RUMMY.title} desc={t.MODES.RUMMY.desc} icon={Layers} />
-        <GameCard mode={GameMode.DECKBUILDER} title={t.MODES.DECKBUILDER.title} desc={t.MODES.DECKBUILDER.desc} icon={Sword} />
-        <GameCard mode={GameMode.SOLITAIRE} title={t.MODES.SOLITAIRE.title} desc={t.MODES.SOLITAIRE.desc} icon={Layers} />
       </div>
 
       {/* Footer */}
@@ -3373,27 +3270,6 @@ export default function App() {
     </svg>
   );
 
-  // Loading screen while initializing - prevents flash of wrong content
-  if (!isInitialized) {
-    return (
-      <div 
-        className="h-screen w-full flex items-center justify-center"
-        style={{ background: '#FFF8E7' }}
-      >
-        <div className="text-center">
-          <div 
-            className="w-16 h-16 mx-auto mb-4 animate-pulse"
-            style={{ 
-              background: 'linear-gradient(135deg, #FF006E, #8338EC)',
-              border: '4px solid #000',
-              boxShadow: '6px 6px 0px #000'
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={`${user.theme} h-screen w-full text-[var(--color-text)] font-sans overflow-hidden relative selection:bg-brutal-pink selection:text-white transition-colors duration-300 geo-pattern geo-shapes`}>
       {/* Global Grain Overlay */}
@@ -3444,7 +3320,7 @@ export default function App() {
                 Keine Verbindung
               </h2>
               <p className="text-sm font-bold leading-relaxed" style={{ color: '#4A4A4A' }}>
-                LexiMix benötigt eine aktive Internetverbindung, um deine Fortschritte zu synchronisieren.
+                LexiMix benötigt eine aktive Internetverbindung, um deine Fortschritte mit Firebase zu synchronisieren.
               </p>
             </div>
             <div className="flex flex-col gap-3">
@@ -3460,7 +3336,7 @@ export default function App() {
                 style={{ background: '#FFBE0B', color: '#000', border: '2px solid #000' }}
               >
                 <Database size={14} />
-                <span>Cloud-Synchronisation erforderlich</span>
+                <span>Firebase-Synchronisation erforderlich</span>
               </div>
             </div>
             <button
@@ -3596,59 +3472,12 @@ export default function App() {
             audio.playWin();
           }}
           levelId={gameConfig?.levelId || 1}
-          onThemeToggle={toggleTheme}
-        />
-      )}
-      {view === 'DECKBUILDER' && (
-        <DeckbuilderGame
-          onBack={() => setView('HOME')}
-          onOpenCollection={() => setView('CARD_COLLECTION')}
-          onGameEnd={(coins, xp) => {
-            setUser(prev => ({
-              ...prev,
-              coins: prev.coins + coins,
-              xp: prev.xp + xp,
-              level: Math.floor((prev.xp + xp) / 100) + 1,
-              deckbuilderData: {
-                ...prev.deckbuilderData,
-                savedRun: null // Clear saved run on game end
-              }
-            }));
-            setView('HOME');
-            audio.playWin();
-          }}
-          language={user.language}
-          user={user}
-          onUpdateUser={setUser}
-        />
-      )}
-      {view === 'CARD_COLLECTION' && (
-        <CardCollectionView
-          user={user}
-          onBack={() => setView('DECKBUILDER')}
-          language={user.language}
-        />
-      )}
-      {view === 'SOLITAIRE' && (
-        <SolitaireGame
-          onBack={() => setView('HOME')}
-          onGameEnd={(coins, xp) => {
-            setUser(prev => ({
-              ...prev,
-              coins: prev.coins + coins,
-              xp: prev.xp + xp,
-              level: Math.floor((prev.xp + xp) / 100) + 1
-            }));
-          }}
-          language={user.language}
-          user={user}
-          onUpdateUser={setUser}
         />
       )}
       {/* Navigation Icons */}
 
-      {/* Challenge Mode Intro Modal - nicht schließbar */}
-      <Modal isOpen={showChallengeIntro} title={t.MODES.CHALLENGE.title}>
+      {/* Challenge Mode Intro Modal */}
+      <Modal isOpen={showChallengeIntro} onClose={() => { setShowChallengeIntro(false); setView('HOME'); }} title={t.MODES.CHALLENGE.title}>
         <div className="p-6 text-center space-y-6">
           <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg animate-bounce-slow">
             <Brain size={40} className="text-white" />
@@ -3686,17 +3515,11 @@ export default function App() {
           >
             <Play size={20} fill="currentColor" /> Challenge Starten
           </button>
-          <button
-            onClick={() => { setShowChallengeIntro(false); setView('HOME'); }}
-            className="w-full py-3 font-bold text-sm uppercase text-gray-400 hover:text-white transition-colors"
-          >
-            ← Zurück zum Menü
-          </button>
         </div>
       </Modal>
 
-      {/* Mau Mau Intro Modal - nicht schließbar */}
-      <Modal isOpen={showMauMauIntro} title="Mau Mau">
+      {/* Mau Mau Intro Modal */}
+      <Modal isOpen={showMauMauIntro} onClose={() => { setShowMauMauIntro(false); setView('HOME'); }} title="Mau Mau">
         <div className="p-6 text-center space-y-6">
           <div
             className="w-24 h-24 mx-auto flex items-center justify-center relative"
@@ -3771,18 +3594,11 @@ export default function App() {
           >
             <Play size={20} fill="currentColor" /> Weiter
           </button>
-          <button
-            onClick={() => { setShowMauMauIntro(false); setView('HOME'); }}
-            className="w-full py-3 font-bold text-sm uppercase transition-all"
-            style={{ color: '#666' }}
-          >
-            ← Zurück zum Menü
-          </button>
         </div>
       </Modal>
 
-      {/* Board Game Mode Select Modal (Checkers, Rummy, Nine Men's Morris) - nicht schließbar */}
-      <Modal isOpen={showBoardGameModeSelect} title="Spielmodus wählen">
+      {/* Board Game Mode Select Modal (Checkers, Rummy, Nine Men's Morris) */}
+      <Modal isOpen={showBoardGameModeSelect} onClose={() => { setShowBoardGameModeSelect(false); setView('HOME'); }} title="Spielmodus wählen">
         <div className="p-6 space-y-4">
           <p className="text-center text-sm font-bold mb-6" style={{ color: '#4A4A4A' }}>
             Wähle deinen bevorzugten Spielmodus:
@@ -3839,20 +3655,11 @@ export default function App() {
               <ArrowLeft size={24} className="rotate-180" style={{ color: '#000' }} />
             </div>
           </button>
-
-          {/* Zurück Button */}
-          <button
-            onClick={() => { setShowBoardGameModeSelect(false); setView('HOME'); }}
-            className="w-full py-3 mt-4 font-black text-sm uppercase"
-            style={{ background: '#EEE', border: '3px solid #000', color: '#666' }}
-          >
-            ← Zurück
-          </button>
         </div>
       </Modal>
 
-      {/* Chess Mode Select Modal - nicht schließbar */}
-      <Modal isOpen={showChessModeSelect} title={t.CHESS.TITLE}>
+      {/* Chess Mode Select Modal */}
+      <Modal isOpen={showChessModeSelect} onClose={() => { setShowChessModeSelect(false); setView('HOME'); }} title={t.CHESS.TITLE}>
         <div className="space-y-4">
           <div className="p-4 bg-white border-4 border-black shadow-[6px_6px_0px_#000]">
             <p className="font-bold text-center mb-6">Select Mode</p>
@@ -3880,20 +3687,13 @@ export default function App() {
               >
                 <Users size={24} /> Multiplayer
               </button>
-
-              <button
-                onClick={() => { setShowChessModeSelect(false); setView('HOME'); }}
-                className="p-3 bg-gray-100 border-3 border-black font-black text-sm uppercase transition-all shadow-[3px_3px_0px_#000]"
-              >
-                ← Zurück
-              </button>
             </div>
           </div>
         </div>
       </Modal>
 
-      {/* Mau Mau Mode Selection Modal - nicht schließbar */}
-      <Modal isOpen={showMauMauModeSelect} title="Spielmodus wählen">
+      {/* Mau Mau Mode Selection Modal */}
+      <Modal isOpen={showMauMauModeSelect} onClose={() => { setShowMauMauModeSelect(false); setView('HOME'); }} title="Spielmodus wählen">
         <div className="p-6 space-y-4">
           <p className="text-center text-sm font-bold mb-6" style={{ color: '#4A4A4A' }}>
             Wähle deinen bevorzugten Spielmodus:
@@ -3958,7 +3758,7 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => { setShowMauMauModeSelect(false); setView('HOME'); }}
+            onClick={() => setShowMauMauModeSelect(false)}
             className="w-full py-3 font-black uppercase text-sm transition-all active:translate-y-1 mt-4"
             style={{
               background: '#F5F5F5',
@@ -3967,7 +3767,7 @@ export default function App() {
               boxShadow: '4px 4px 0px #000'
             }}
           >
-            ← Zurück
+            Zurück
           </button>
         </div>
       </Modal>
@@ -4068,6 +3868,27 @@ export default function App() {
         </div>
       )}
 
+      {/* Onboarding Screen */}
+      {view === 'ONBOARDING' && (
+        <div className="h-full flex items-center justify-center p-6 animate-fade-in">
+          <div className="max-w-md w-full glass-panel p-8 rounded-3xl">
+            <AuthModal
+              isOpen={true}
+              onClose={() => { }}
+              onSuccess={(username) => {
+                handleOnboardingComplete();
+              }}
+              lang={tempUser.language}
+              onLanguageChange={(lang) => {
+                setTempUser(prev => ({ ...prev, language: lang }));
+              }}
+              embedded={true}
+              initialMode={'language_select'}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Auth Screen (First screen) */}
       {view === 'AUTH' && (
         <div className="h-full flex items-center justify-center p-6 animate-fade-in">
@@ -4087,8 +3908,8 @@ export default function App() {
               <AuthModal
                 isOpen={true}
                 onClose={() => { }}
-                onSuccess={(username, userData) => {
-                  handleCloudLogin(username, userData);
+                onSuccess={(username) => {
+                  handleCloudLogin(username);
                 }}
                 lang={user.language}
                 onLanguageChange={(lang) => {
@@ -4145,15 +3966,8 @@ export default function App() {
               onClick={() => {
                 const skipCost = 30 + (hintCostMultiplier * 10);
                 if (user.coins >= skipCost) {
-                  setUser(prev => {
-                    const newCoins = Math.max(0, prev.coins - skipCost);
-                    return { ...prev, coins: newCoins };
-                  });
+                  setUser(prev => ({ ...prev, coins: prev.coins - skipCost }));
                   setAdTimer(0);
-                  // Force re-render by updating a dummy state
-                  setTimeout(() => {
-                    setUser(prev => ({ ...prev }));
-                  }, 100);
                 } else {
                   alert('Nicht genügend Coins!');
                 }
@@ -4188,86 +4002,22 @@ export default function App() {
         </div>
       </Modal>
 
-      <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title="">
+      <Modal isOpen={showLevelUp} onClose={() => setShowLevelUp(false)} title={t.GAME.LEVEL_UP || 'Level Up'}>
         <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center relative overflow-hidden">
-          {/* Rainbow Background - pointer-events-none to allow clicking through */}
-          <div 
-            className="absolute inset-0 opacity-30 pointer-events-none"
-            style={{
-              background: 'linear-gradient(135deg, #FF006E 0%, #FF7F00 25%, #FFBE0B 50%, #00D9FF 75%, #8338EC 100%)',
-              backgroundSize: '200% 200%',
-              animation: 'rainbow-flow 4s ease infinite'
-            }}
-          ></div>
-          
-          {/* Confetti particles */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {[...Array(12)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-3 h-3"
-                style={{
-                  background: ['#FF006E', '#FF7F00', '#FFBE0B', '#00D9FF', '#8338EC'][i % 5],
-                  left: `${10 + (i * 8)}%`,
-                  top: '-10px',
-                  animation: `confetti-fall ${1.5 + (i * 0.2)}s ease-in-out infinite`,
-                  animationDelay: `${i * 0.1}s`,
-                  transform: `rotate(${i * 30}deg)`
-                }}
-              ></div>
-            ))}
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-lexi-fuchsia/20 to-transparent animate-pulse-slow"></div>
 
-          {/* Level Circle with Glow */}
-          <div className="relative z-10">
-            <div className="absolute inset-0 blur-3xl opacity-60 pointer-events-none" style={{ background: '#FFBE0B' }}></div>
-            <div 
-              className="w-36 h-36 flex items-center justify-center relative z-10"
-              style={{
-                background: 'linear-gradient(135deg, #FFBE0B 0%, #FF7F00 100%)',
-                border: '6px solid #000',
-                boxShadow: '8px 8px 0px #000, 0 0 40px rgba(255,190,11,0.6)'
-              }}
-            >
-              <span className="text-7xl font-black" style={{ color: '#000' }}>{levelUpData.level}</span>
+          <div className="relative">
+            <div className="absolute inset-0 bg-lexi-fuchsia blur-3xl opacity-50 animate-pulse"></div>
+            <div className="w-32 h-32 bg-gradient-to-br from-lexi-fuchsia to-purple-800 rounded-full flex items-center justify-center border-4 border-white/20 shadow-[0_0_50px_rgba(217,70,239,0.6)] relative z-10 animate-bounce">
+              <span className="text-6xl font-black text-white drop-shadow-lg">{levelUpData.level}</span>
             </div>
-            {/* Stars around */}
-            <div className="absolute -top-2 -right-2 text-3xl animate-bounce pointer-events-none">⭐</div>
-            <div className="absolute -bottom-2 -left-2 text-2xl animate-bounce pointer-events-none" style={{ animationDelay: '0.2s' }}>✨</div>
           </div>
 
-          {/* Text */}
-          <div className="relative z-10 space-y-3">
-            <h3 
-              className="text-3xl font-black uppercase"
-              style={{ 
-                color: '#FFBE0B',
-                textShadow: '3px 3px 0px #000'
-              }}
-            >
-              🎉 {user.language === 'de' ? 'LEVEL UP!' : user.language === 'es' ? '¡SUBISTE DE NIVEL!' : 'LEVEL UP!'} 🎉
-            </h3>
-            <p className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>
-              {user.language === 'de' ? 'Du hast Level' : user.language === 'es' ? 'Alcanzaste el nivel' : 'You reached level'} <span style={{ color: '#FF006E' }}>{levelUpData.level}</span> {user.language === 'de' ? 'erreicht!' : user.language === 'es' ? '!' : '!'}
-            </p>
-            <p className="text-sm font-bold" style={{ color: 'var(--color-text-muted)' }}>
-              {user.language === 'de' ? 'Gesamt XP:' : user.language === 'es' ? 'XP Total:' : 'Total XP:'} {levelUpData.xp.toLocaleString()}
-            </p>
+          <div className="relative z-10 space-y-2">
+            <h3 className="text-2xl font-black italic text-white">AGENT PROMOTED</h3>
+            <p className="text-gray-400 font-bold">Total XP: {levelUpData.xp}</p>
           </div>
-
-          {/* Continue Button */}
-          <button
-            onClick={() => setShowLevelUp(false)}
-            className="px-8 py-3 text-lg font-black uppercase transition-all hover:-translate-y-1 relative z-20"
-            style={{
-              background: '#00D9FF',
-              color: '#000',
-              border: '4px solid #000',
-              boxShadow: '6px 6px 0px #000'
-            }}
-          >
-            {user.language === 'de' ? 'WEITER' : user.language === 'es' ? 'CONTINUAR' : 'CONTINUE'}
-          </button>
+          <Button fullWidth onClick={() => setShowLevelUp(false)}>CONTINUE</Button>
         </div>
       </Modal>
 
@@ -4282,6 +4032,13 @@ export default function App() {
             </div>
 
             <div className="text-left space-y-3 text-sm">
+              <div className="p-4 bg-[var(--color-surface)]/5 rounded-xl border border-white/10">
+                <h4 className="font-bold text-cyan-400 mb-2 uppercase tracking-wide">v3.1.3 - Update</h4>
+                <ul className="space-y-2 text-gray-300">
+                  <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Mau Mau UI Verbesserungen</li>
+                  <li className="flex items-start gap-2"><span className="text-cyan-500">•</span> Performance Optimierungen</li>
+                </ul>
+              </div>
               <p className="font-bold text-white">
                 Diese Aktion löscht <span className="text-red-400 underline">UNWIDERRUFLICH</span>:
               </p>
@@ -4344,18 +4101,7 @@ export default function App() {
           >
             <Trophy size={64} style={{ color: '#000' }} />
           </div>
-          {/* Rainbow Text for Level Cleared */}
-          <div 
-            className="text-2xl font-black uppercase tracking-wide"
-            style={{ 
-              background: 'linear-gradient(90deg, #FF006E, #FF7F00, #FFBE0B, #06FFA5, #00D9FF, #8338EC)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
-            {t.GAME.WIN_DESC}
-          </div>
+          <div className="text-2xl font-black uppercase tracking-wide" style={{ color: '#000' }}>{t.GAME.WIN_DESC}</div>
 
           {/* Stats */}
           <div className="flex justify-center gap-4">
@@ -4377,40 +4123,31 @@ export default function App() {
             </div>
           </div>
 
-          {/* Level Progress - Segmented Bar */}
+          {/* Level Progress */}
           <div className="px-4">
-            <div className="flex justify-between text-xs font-black mb-2" style={{ color: 'var(--color-text-muted)' }}>
+            <div className="flex justify-between text-xs font-black mb-2" style={{ color: '#4A4A4A' }}>
               <span>LVL {user.level}</span>
               <span>{(user.xp % 100)} / 100 XP</span>
             </div>
-            <div className="h-4 flex gap-[2px]" style={{ background: 'var(--color-border)', border: '3px solid var(--color-border)' }}>
-              {[...Array(10)].map((_, i) => (
-                <div 
-                  key={i}
-                  className="flex-1 h-full transition-all duration-300"
-                  style={{ 
-                    background: i < Math.floor((user.xp % 100) / 10) ? '#06FFA5' : 'var(--color-surface)',
-                    transitionDelay: `${i * 50}ms`
-                  }}
-                />
-              ))}
+            <div className="h-4" style={{ background: '#000', border: '3px solid #000' }}>
+              <div className="h-full transition-all duration-1000" style={{ width: `${user.xp % 100}%`, background: '#06FFA5' }}></div>
             </div>
           </div>
 
           <div className="flex gap-4 pt-4">
             <button
               className="flex-1 py-4 font-black uppercase text-sm transition-all"
-              style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '4px solid var(--color-border)', boxShadow: '4px 4px 0px var(--color-border)' }}
+              style={{ background: '#FFF', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
               onClick={() => { setShowWin(false); setView('LEVELS'); }}
             >
-              {user.language === 'de' ? 'Übersicht' : user.language === 'es' ? 'Vista General' : 'Overview'}
+              Übersicht
             </button>
             <button
               className="flex-1 py-4 font-black uppercase text-sm transition-all"
               style={{ background: '#06FFA5', color: '#000', border: '4px solid #000', boxShadow: '6px 6px 0px #000' }}
               onClick={() => { setShowWin(false); handleNextLevel(); }}
             >
-              {t.ONBOARDING.CONTINUE}
+              Weiter
             </button>
           </div>
         </div>
@@ -4509,12 +4246,12 @@ export default function App() {
       >
         <div className="text-center py-6 space-y-6">
           <div className="inline-block p-6 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-            <Hash className="text-blue-400 drop-shadow-lg" size={48} />
+            <Sparkles className="text-blue-400 drop-shadow-lg" size={48} />
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>{t.HOME.VOUCHER_HEADING}</h3>
-            <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{t.HOME.VOUCHER_DESC}</p>
+            <h3 className="text-lg font-bold text-gray-300">{t.HOME.VOUCHER_HEADING}</h3>
+            <p className="text-xs text-gray-500">{t.HOME.VOUCHER_DESC}</p>
           </div>
 
           <div className="w-full">
@@ -4527,13 +4264,12 @@ export default function App() {
                 setVoucherSuccess('');
               }}
               placeholder={t.HOME.VOUCHER_PLACEHOLDER}
-              className={`w-full border-2 ${voucherError
+              className={`w-full bg-gray-900 border-2 ${voucherError
                 ? 'border-red-500 animate-shake'
                 : voucherSuccess
                   ? 'border-green-500'
                   : 'border-gray-700 focus:border-blue-400'
-                } rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors uppercase`}
-              style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}
+                } rounded-xl p-4 text-center text-sm font-mono font-bold focus:outline-none transition-colors text-white uppercase`}
               maxLength={20}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -4558,11 +4294,7 @@ export default function App() {
           <div className="flex gap-3">
             <Button
               className="flex-1"
-              style={{ 
-                background: 'var(--color-surface)', 
-                color: 'var(--color-text)', 
-                border: '3px solid var(--color-border)' 
-              }}
+              variant="secondary"
               onClick={() => {
                 setShowRedeemModal(false);
                 setVoucherCode('');
@@ -4585,7 +4317,7 @@ export default function App() {
 
       {/* Premium Info Modal - Neo Brutal */}
       <Modal isOpen={showPremiumInfo} onClose={() => setShowPremiumInfo(false)} title="PREMIUM STORE">
-        <div className="space-y-5 p-2 rounded-lg" style={{ background: '#FFF8E7' }}>
+        <div className="space-y-5">
           {/* Header */}
           <div className="text-center">
             <div
@@ -4600,7 +4332,7 @@ export default function App() {
 
           {/* Plans Grid */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Plan 1: Monthly Abo */}
+            {/* Plan 1: Monthly */}
             <button
               className="relative p-4 text-left transition-all"
               style={{
@@ -4615,18 +4347,18 @@ export default function App() {
                 className="absolute -top-3 right-2 px-2 py-1 text-[10px] font-black uppercase"
                 style={{ background: '#FF006E', color: '#FFF', border: '2px solid #000' }}
               >
-                BELIEBT
+                BEST VALUE
               </div>
-              <h4 className="font-black text-lg uppercase" style={{ color: '#000' }}>Monats-Abo</h4>
-              <div className="text-3xl font-black my-2" style={{ color: '#000' }}>2,99€<span className="text-sm">/Monat</span></div>
+              <h4 className="font-black text-lg uppercase" style={{ color: '#000' }}>Monatlich</h4>
+              <div className="text-3xl font-black my-2" style={{ color: '#000' }}>7,99€</div>
               <ul className="text-xs font-bold space-y-1" style={{ color: '#4A4A4A' }}>
-                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Alle Premium Features</li>
-                <li className="flex items-center gap-2" style={{ color: '#FF006E' }}><Sparkles size={12} /> +5 Level Boost</li>
-                <li className="flex items-center gap-2"><Clock size={12} /> Monatlich kündbar</li>
+                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Premium Features</li>
+                <li className="flex items-center gap-2" style={{ color: '#FF006E' }}><Sparkles size={12} /> +10 Level Boost</li>
+                <li className="flex items-center gap-2"><Clock size={12} /> Auto-Verlängerung</li>
               </ul>
             </button>
 
-            {/* Plan 2: Lifetime / Einmal */}
+            {/* Plan 2: 30 Days */}
             <button
               className="relative p-4 text-left transition-all"
               style={{
@@ -4637,11 +4369,10 @@ export default function App() {
               }}
               onClick={() => setSelectedPlan('30days')}
             >
-              <h4 className="font-black text-lg uppercase" style={{ color: selectedPlan === '30days' ? '#FFF' : '#000' }}>Lifetime</h4>
-              <div className="text-3xl font-black my-2" style={{ color: selectedPlan === '30days' ? '#FFF' : '#8338EC' }}>9,99€</div>
-              <ul className="text-xs font-bold space-y-1" style={{ color: selectedPlan === '30days' ? 'rgba(255,255,255,0.9)' : '#4A4A4A' }}>
-                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Alle Premium Features</li>
-                <li className="flex items-center gap-2"><Crown size={12} style={{ color: selectedPlan === '30days' ? '#FFBE0B' : '#FFBE0B' }} /> Für immer!</li>
+              <h4 className="font-black text-lg uppercase" style={{ color: selectedPlan === '30days' ? '#FFF' : '#000' }}>30 Tage Pass</h4>
+              <div className="text-3xl font-black my-2" style={{ color: selectedPlan === '30days' ? '#FFF' : '#8338EC' }}>4,99€</div>
+              <ul className="text-xs font-bold space-y-1" style={{ color: selectedPlan === '30days' ? 'rgba(255,255,255,0.8)' : '#4A4A4A' }}>
+                <li className="flex items-center gap-2"><Check size={12} style={{ color: '#06FFA5' }} /> Premium Features</li>
                 <li className="flex items-center gap-2"><CreditCard size={12} /> Einmalzahlung</li>
               </ul>
             </button>
@@ -4649,25 +4380,19 @@ export default function App() {
 
           {/* Payment Section */}
           <div
-            className="p-4 flex flex-col items-center rounded-lg"
-            style={{ background: '#FFF', border: '4px solid #000' }}
+            className="p-4 flex flex-col items-center"
+            style={{ background: 'var(--color-bg)', border: '4px solid #000' }}
           >
             <div className="flex items-center gap-2 mb-4 font-black text-sm uppercase" style={{ color: '#000' }}>
-              <CreditCard size={16} /> {t.SHOP?.PAYMENT || 'Zahlung'}
+              <CreditCard size={16} /> Bezahlen mit PayPal
             </div>
             <div className="w-full max-w-[250px]">
-              <button
-                disabled
-                className="w-full py-3 font-black text-sm uppercase opacity-60 cursor-not-allowed"
-                style={{
-                  background: '#8338EC',
-                  color: '#fff',
-                  border: '3px solid #000',
-                  boxShadow: '3px 3px 0px #000'
-                }}
-              >
-                {t.SHOP?.COMING_SOON || 'Bald verfügbar'}
-              </button>
+              {selectedPlan === 'monthly' && (
+                <PayPalButton amount="7.99" onSuccess={(d: any) => handlePayPalSuccess(d, 'monthly')} />
+              )}
+              {selectedPlan === '30days' && (
+                <PayPalButton amount="4.99" onSuccess={(d: any) => handlePayPalSuccess(d, '30days')} />
+              )}
             </div>
           </div>
 
@@ -4683,7 +4408,7 @@ export default function App() {
                 onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
                 placeholder="CODE EINGEBEN..."
                 className="flex-1 p-3 font-mono font-bold uppercase"
-                style={{ background: '#FFF', border: '3px solid #000', color: '#000' }}
+                style={{ background: 'var(--color-bg)', border: '3px solid #000', color: '#000' }}
               />
               <button
                 onClick={handleVoucherRedeem}
@@ -4823,22 +4548,28 @@ export default function App() {
               </div>
 
               {/* Account Security */}
+              {/* Account Security - TEMPORARILY DISABLED DUE TO FIREBASE MIGRATION
               <div
                 className="p-4"
                 style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #8338EC' }}
               >
                 <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#8338EC', color: '#FFF', border: '2px solid #000' }}>
-                  {t.PROFILE.ACCOUNT_SECURITY}
+                  ACCOUNT SICHERHEIT
                 </div>
-                {cloudUsername && (
+                {auth.currentUser?.email && (
                   <div className="mb-3">
-                    <p className="text-xs font-bold uppercase" style={{ color: '#4A4A4A' }}>Benutzername</p>
-                    <p className="font-black" style={{ color: '#000' }}>{cloudUsername}</p>
+                    <p className="text-xs font-bold uppercase" style={{ color: '#4A4A4A' }}>E-MAIL</p>
+                    <p className="font-black" style={{ color: '#000' }}>{auth.currentUser.email}</p>
                   </div>
                 )}
                 <button
-                  onClick={() => {
-                    alert('Passwort-Reset: Bitte kontaktiere support@leximix.de');
+                  onClick={async () => {
+                    if (!auth.currentUser?.email) return;
+                    if (confirm(`Passwort-Reset E-Mail an ${auth.currentUser.email} senden?`)) {
+                      const { resetPassword } = await import('./utils/firebase');
+                      const result = await resetPassword(auth.currentUser.email);
+                      alert(result.success ? 'E-Mail gesendet!' : 'Fehler: ' + result.error);
+                    }
                   }}
                   className="w-full py-3 font-black uppercase text-xs flex items-center justify-center gap-2 transition-all"
                   style={{ background: '#FFF', color: '#000', border: '3px solid #000', boxShadow: '4px 4px 0px #000' }}
@@ -4846,6 +4577,7 @@ export default function App() {
                   <Lock size={14} /> Passwort zurücksetzen
                 </button>
               </div>
+              */}
 
               {/* Friend Code */}
               <div
@@ -4888,7 +4620,7 @@ export default function App() {
                 className={`w-24 h-24 overflow-hidden bg-[#FFF8E7] ${getAvatarEffect(editFrame)}`}
                 style={{ border: '4px solid #000' }}
               >
-                <img src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${editAvatar}`} alt="Avatar" className="w-full h-full object-cover" />
+                <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${editAvatar}`} alt="Avatar" className="w-full h-full object-cover" />
               </div>
             </div>
 
@@ -4907,7 +4639,7 @@ export default function App() {
                     transform: editAvatar === avatar ? 'scale(1.05)' : 'scale(1)'
                   }}
                 >
-                  <img src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full" />
+                  <img src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatar}`} alt="Avatar" className="w-full h-full" />
                 </button>
               ))}
             </div>
@@ -4936,22 +4668,33 @@ export default function App() {
             </div>
           </div>
 
-          {/* Profile Customization - Frames, Fonts, Effects, Sticker Album */}
-          <ProfileEditor
-            user={user}
-            selectedFrame={editFrame}
-            selectedFont={editFont}
-            selectedEffect={editEffect}
-            selectedTitle={editTitle}
-            selectedCardBack={editCardBack}
-            onFrameChange={setEditFrame}
-            onFontChange={setEditFont}
-            onEffectChange={setEditEffect}
-            onTitleChange={setEditTitle}
-            onCardBackChange={setEditCardBack}
-            onOpenAlbum={() => { setShowProfile(false); setShowStickerAlbum(true); }}
-            t={t}
-          />
+          {/* Frames */}
+          {(user.ownedFrames || []).length > 0 && (
+            <div className="p-4" style={{ background: '#FFF', border: '4px solid #000', boxShadow: '6px 6px 0px #FF7F00' }}>
+              <div className="inline-block px-3 py-1 mb-3 font-black text-xs uppercase" style={{ background: '#FF7F00', color: '#000', border: '2px solid #000' }}>
+                Rahmen & Effekte
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                <button
+                  onClick={() => setEditFrame('none')}
+                  className="aspect-square flex items-center justify-center"
+                  style={{ background: editFrame === 'none' ? '#FFBE0B' : '#FFF', border: '3px solid #000' }}
+                >
+                  <span className="text-xs font-black" style={{ color: '#000' }}>Kein</span>
+                </button>
+                {(user.ownedFrames || []).map((frameId) => (
+                  <button
+                    key={frameId}
+                    onClick={() => setEditFrame(frameId)}
+                    className={`aspect-square flex items-center justify-center relative overflow-hidden ${getAvatarEffect(frameId)}`}
+                    style={{ background: editFrame === frameId ? '#FFBE0B' : '#FFF', border: '3px solid #000' }}
+                  >
+                    <div className="w-8 h-8" style={{ background: '#CCC' }}></div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Delete Account */}
           <div className="p-4" style={{ background: '#FFF', border: '3px solid #ccc' }}>
@@ -4988,15 +4731,6 @@ export default function App() {
         </div>
       </Modal>
 
-      {/* Sticker Album View */}
-      {showStickerAlbum && (
-        <StickerAlbumView
-          user={user}
-          onClose={() => setShowStickerAlbum(false)}
-          onClaimCategoryReward={handleClaimCategoryReward}
-        />
-      )}
-
       {/* Delete Confirmation Modal - Neo Brutal */}
       <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} title={t.PROFILE.DELETE_ACCOUNT}>
         <div className="space-y-5">
@@ -5014,14 +4748,12 @@ export default function App() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-black uppercase" style={{ color: '#4A4A4A' }}>
-              {user.language === 'DE' ? 'Passwort zur Bestätigung eingeben:' : user.language === 'ES' ? 'Ingresa tu contraseña para confirmar:' : 'Enter your password to confirm:'}
-            </label>
+            <label className="text-xs font-black uppercase" style={{ color: '#4A4A4A' }}>{t.PROFILE.CONFIRM_MSG}</label>
             <input
-              type="password"
+              type="text"
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
-              placeholder="••••••••"
+              placeholder={t.PROFILE.CONFIRM_PLACEHOLDER}
               className="w-full p-4 font-mono text-center"
               style={{ background: 'var(--color-bg)', border: '4px solid #FF006E', color: '#000' }}
             />
@@ -5036,23 +4768,16 @@ export default function App() {
               {t.PROFILE.CANCEL}
             </button>
             <button
-              onClick={async () => {
-                if (deleteInput.length >= 6) {
-                  const { deleteAccount } = await import('./utils/api');
-                  const result = await deleteAccount(deleteInput);
-                  if (result.success) {
-                    alert(user.language === 'DE' ? 'Account erfolgreich gelöscht!' : user.language === 'ES' ? '¡Cuenta eliminada!' : 'Account deleted successfully!');
-                    setShowDeleteConfirm(false);
-                    setDeleteInput('');
-                    setCloudUsername(null);
-                    localStorage.clear();
-                    setView('ONBOARDING');
-                  } else {
-                    alert(result.error || 'Fehler beim Löschen');
-                  }
+              onClick={() => {
+                if (deleteInput.toUpperCase() === t.PROFILE.CONFIRM_PLACEHOLDER) {
+                  alert('Profil-Löschung noch nicht implementiert. Bald verfügbar!');
+                  setShowDeleteConfirm(false);
+                  setDeleteInput('');
+                } else {
+                  alert(t.PROFILE.CONFIRM_MSG);
                 }
               }}
-              disabled={deleteInput.length < 6}
+              disabled={deleteInput.toUpperCase() !== t.PROFILE.CONFIRM_PLACEHOLDER}
               className="flex-1 py-4 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ background: '#FF006E', color: '#FFF', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
             >
@@ -5066,16 +4791,16 @@ export default function App() {
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        onSuccess={(username, userData) => {
-          handleCloudLogin(username, userData);
+        onSuccess={(username) => {
+          handleCloudLogin(username);
           setShowAuthModal(false);
         }}
         lang={user.language}
         onLanguageChange={(lang) => setUser(prev => ({ ...prev, language: lang }))}
       />
 
-      {/* Web Version: APK Download Button - Only show on HOME, MODES, LEVELS, SEASON, SHOP */}
-      {(window as any).Capacitor === undefined && ['HOME', 'MODES', 'LEVELS', 'SEASON', 'SHOP'].includes(view) && (
+      {/* Web Version: APK Download Button */}
+      {(window as any).Capacitor === undefined && (
         <div className="fixed bottom-4 right-4 z-[50]">
           <a
             href={apkDownloadUrl}
@@ -5106,107 +4831,12 @@ export default function App() {
         </div>
       )}
 
-      {/* Music Player */}
-      <MusicPlayer currentView={view} gameMode={gameConfig?.mode} />
-
       {/* Version Display (Bottom Left) */}
-      <div className="fixed bottom-20 left-4 z-[40] pointer-events-none">
+      <div className="fixed bottom-4 left-4 z-[50] pointer-events-none">
         <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest font-mono">
           v{APP_VERSION}
         </div>
       </div>
-
-      {/* Password Reset Modal */}
-      <Modal isOpen={showPasswordReset} onClose={() => { setShowPasswordReset(false); setResetToken(null); setNewPassword(''); setConfirmNewPassword(''); setResetError(''); setResetSuccess(false); }} title="Passwort zurücksetzen">
-        <div className="space-y-5">
-          {resetSuccess ? (
-            <div className="text-center space-y-4">
-              <div className="text-6xl">✅</div>
-              <h3 className="text-xl font-black" style={{ color: '#06FFA5' }}>Passwort geändert!</h3>
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                Du kannst dich jetzt mit deinem neuen Passwort einloggen.
-              </p>
-              <button
-                onClick={() => { setShowPasswordReset(false); setResetToken(null); setResetSuccess(false); }}
-                className="w-full py-4 font-black uppercase"
-                style={{ background: '#06FFA5', color: '#000', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
-              >
-                Zum Login
-              </button>
-            </div>
-          ) : (
-            <>
-              {resetError && (
-                <div className="p-4 flex items-center gap-3" style={{ background: '#FF006E', color: '#FFF', border: '4px solid #000' }}>
-                  <AlertTriangle size={20} />
-                  <span className="text-sm font-bold">{resetError}</span>
-                </div>
-              )}
-              
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase" style={{ color: 'var(--color-text)' }}>Neues Passwort</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full p-4 font-bold"
-                  style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase" style={{ color: 'var(--color-text)' }}>Passwort bestätigen</label>
-                <input
-                  type="password"
-                  value={confirmNewPassword}
-                  onChange={(e) => setConfirmNewPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full p-4 font-bold"
-                  style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
-                />
-              </div>
-              
-              <button
-                onClick={async () => {
-                  setResetError('');
-                  if (newPassword.length < 6) {
-                    setResetError('Passwort muss mindestens 6 Zeichen lang sein');
-                    return;
-                  }
-                  if (newPassword !== confirmNewPassword) {
-                    setResetError('Passwörter stimmen nicht überein');
-                    return;
-                  }
-                  if (!resetToken) {
-                    setResetError('Ungültiger Reset-Link');
-                    return;
-                  }
-                  setResetLoading(true);
-                  try {
-                    const { resetPassword } = await import('./utils/api');
-                    const result = await resetPassword(resetToken, newPassword);
-                    if (result.success) {
-                      setResetSuccess(true);
-                    } else {
-                      setResetError(result.error || 'Fehler beim Zurücksetzen');
-                    }
-                  } catch (err) {
-                    setResetError('Ein Fehler ist aufgetreten');
-                  } finally {
-                    setResetLoading(false);
-                  }
-                }}
-                disabled={resetLoading || newPassword.length < 6 || newPassword !== confirmNewPassword}
-                className="w-full py-4 font-black uppercase disabled:opacity-50"
-                style={{ background: '#FF006E', color: '#FFF', border: '4px solid #000', boxShadow: '4px 4px 0px #000' }}
-              >
-                {resetLoading ? 'WIRD GEÄNDERT...' : 'PASSWORT ÄNDERN'}
-              </button>
-            </>
-          )}
-        </div>
-      </Modal>
 
     </div>
   );

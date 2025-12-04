@@ -232,7 +232,7 @@ export const LetterMauMauGame: React.FC<Props> = ({
                 <button onClick={onExit} className="p-2 hover:bg-[var(--color-surface)]/10 rounded-lg transition-colors">
                     <ArrowLeft className="text-white" size={24} />
                 </button>
-                <h1 className="text-2xl font-black text-white uppercase tracking-wider">Mau Mau</h1>
+                <h1 className="text-2xl font-black text-white uppercase tracking-wider">Kartenschmiede</h1>
                 <div className="w-10"></div>
             </div>
 

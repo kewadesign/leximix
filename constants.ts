@@ -1,241 +1,10 @@
-import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonReward, ProfileFrame, ProfileFont, ProfileEffect, Sticker, StickerCategory, ProfileTitle, CardBack } from './types';
+import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonReward } from './types';
 
 // ============================================================================
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '4.0.0';
-
-// ============================================================================
-// PROFILE FRAMES
-// ============================================================================
-
-export const PROFILE_FRAMES: ProfileFrame[] = [
-  { id: 'frame_none', name: 'Kein Rahmen', cssClass: '', unlockLevel: 0, isPremium: false, rarity: 'common' },
-  { id: 'frame_gold', name: 'Goldrand', cssClass: 'frame-gold', unlockLevel: 5, isPremium: false, rarity: 'common' },
-  { id: 'frame_neon', name: 'Neon Glow', cssClass: 'frame-neon', unlockLevel: 15, isPremium: true, rarity: 'rare' },
-  { id: 'frame_fire', name: 'Flammenrahmen', cssClass: 'frame-fire', unlockLevel: 25, isPremium: true, rarity: 'rare' },
-  { id: 'frame_ice', name: 'Eisrahmen', cssClass: 'frame-ice', unlockLevel: 35, isPremium: true, rarity: 'epic' },
-  { id: 'frame_rainbow', name: 'Regenbogen', cssClass: 'frame-rainbow', unlockLevel: 50, isPremium: true, rarity: 'epic' },
-  { id: 'frame_lightning', name: 'Blitz', cssClass: 'frame-lightning', unlockLevel: 65, isPremium: true, rarity: 'epic' },
-  { id: 'frame_galaxy', name: 'Galaxie', cssClass: 'frame-galaxy', unlockLevel: 75, isPremium: true, rarity: 'legendary' },
-  { id: 'frame_dragon', name: 'Drache', cssClass: 'frame-dragon', unlockLevel: 90, isPremium: true, rarity: 'legendary' },
-  { id: 'frame_legendary', name: 'Legendär', cssClass: 'frame-legendary', unlockLevel: 100, isPremium: true, rarity: 'legendary' },
-  // Category completion rewards
-  { id: 'frame_animals', name: 'Tierfreund', cssClass: 'ring-4 ring-green-500 shadow-[0_0_20px_rgba(34,197,94,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
-  { id: 'frame_food', name: 'Gourmet', cssClass: 'ring-4 ring-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
-  { id: 'frame_nature', name: 'Naturliebhaber', cssClass: 'ring-4 ring-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
-  { id: 'frame_sports', name: 'Sportler', cssClass: 'ring-4 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
-  { id: 'frame_collector', name: 'Sammler', cssClass: 'ring-[6px] ring-amber-400 shadow-[0_0_30px_rgba(251,191,36,0.8)]', unlockLevel: 0, isPremium: false, rarity: 'epic' },
-];
-
-// ============================================================================
-// PROFILE FONTS
-// ============================================================================
-
-export const PROFILE_FONTS: ProfileFont[] = [
-  { id: 'font_default', name: 'Standard', fontFamily: "'Poppins', sans-serif", unlockLevel: 0, isPremium: false },
-  { id: 'font_pixel', name: 'Pixel', fontFamily: "'Press Start 2P', cursive", unlockLevel: 10, isPremium: true },
-  { id: 'font_script', name: 'Elegant', fontFamily: "'Dancing Script', cursive", unlockLevel: 20, isPremium: true },
-  { id: 'font_mono', name: 'Hacker', fontFamily: "'JetBrains Mono', monospace", unlockLevel: 30, isPremium: true },
-  { id: 'font_comic', name: 'Comic', fontFamily: "'Comic Neue', cursive", unlockLevel: 40, isPremium: true },
-  { id: 'font_bold', name: 'Ultra Bold', fontFamily: "'Black Ops One', cursive", unlockLevel: 60, isPremium: true },
-];
-
-// ============================================================================
-// PROFILE EFFECTS
-// ============================================================================
-
-export const PROFILE_EFFECTS: ProfileEffect[] = [
-  { id: 'effect_none', name: 'Kein Effekt', cssClass: '', icon: '❌', unlockLevel: 0, isPremium: false },
-  { id: 'effect_glow', name: 'Leuchtend', cssClass: 'shadow-[0_0_30px_rgba(255,255,255,0.6)] animate-pulse', icon: '✨', unlockLevel: 5, isPremium: false },
-  { id: 'effect_rainbow', name: 'Regenbogen Pulse', cssClass: 'animate-rainbow-bg holo-shimmer', icon: '🌈', unlockLevel: 0, isPremium: true },
-  { id: 'effect_fire', name: 'Feuer', cssClass: 'effect-fire shadow-[0_0_30px_rgba(255,127,0,0.8)] animate-pulse', icon: '🔥', unlockLevel: 0, isPremium: true },
-  { id: 'effect_ice', name: 'Eis', cssClass: 'effect-ice shadow-[0_0_30px_rgba(0,217,255,0.8)]', icon: '❄️', unlockLevel: 0, isPremium: true },
-  { id: 'effect_gold', name: 'Gold Luxus', cssClass: 'effect-gold shadow-[0_0_35px_rgba(255,215,0,0.9)]', icon: '👑', unlockLevel: 0, isPremium: true },
-  { id: 'effect_diamond', name: 'Diamant', cssClass: 'shadow-[0_0_30px_rgba(168,85,247,0.8)] holo-shimmer', icon: '💎', unlockLevel: 0, isPremium: true },
-  { id: 'effect_matrix', name: 'Matrix Rain', cssClass: 'shadow-[0_0_25px_rgba(0,217,255,0.9)]', icon: '💻', unlockLevel: 0, isPremium: true },
-  { id: 'effect_neon', name: 'Neon', cssClass: 'effect-neon shadow-[0_0_30px_rgba(255,0,110,0.8)]', icon: '💜', unlockLevel: 0, isPremium: true },
-  { id: 'effect_sakura', name: 'Sakura', cssClass: 'shadow-[0_0_25px_rgba(244,114,182,0.7)]', icon: '🌸', unlockLevel: 0, isPremium: true },
-  { id: 'effect_lightning', name: 'Blitz', cssClass: 'shadow-[0_0_35px_rgba(255,190,11,1)] animate-pulse', icon: '⚡', unlockLevel: 0, isPremium: true },
-  { id: 'effect_vaporwave', name: 'Vaporwave', cssClass: 'shadow-[0_0_30px_rgba(255,0,110,0.7),0_0_60px_rgba(0,217,255,0.5)]', icon: '🌴', unlockLevel: 0, isPremium: true },
-  { id: 'effect_glitch', name: 'Glitch', cssClass: 'animate-glitch', icon: '👾', unlockLevel: 0, isPremium: true },
-  { id: 'effect_holo', name: 'Hologramm', cssClass: 'holo-shimmer shadow-[0_0_40px_rgba(192,132,252,0.8)]', icon: '💿', unlockLevel: 0, isPremium: true },
-  { id: 'effect_quantum', name: 'Quantum', cssClass: 'shadow-[0_0_35px_rgba(99,102,241,0.9)]', icon: '⚛️', unlockLevel: 0, isPremium: true },
-];
-
-// ============================================================================
-// PROFILE TITLES
-// ============================================================================
-
-export const PROFILE_TITLES: ProfileTitle[] = [
-  { id: 'title_none', name: 'Kein Titel', rarity: 'common', cssClass: '', unlockLevel: 0, isPremium: false },
-  { id: 'title_newcomer', name: 'Neuling', rarity: 'common', cssClass: 'text-gray-400', icon: '🌱', unlockLevel: 0, isPremium: false },
-  { id: 'title_wordsmith', name: 'Wortschmied', rarity: 'common', cssClass: 'text-blue-400', icon: '📝', unlockLevel: 5, isPremium: false },
-  { id: 'title_puzzle_solver', name: 'Rätsellöser', rarity: 'rare', cssClass: 'text-green-400', icon: '🧩', unlockLevel: 10, isPremium: true },
-  { id: 'title_champion', name: 'Champion', rarity: 'rare', cssClass: 'text-yellow-400', icon: '🏆', unlockLevel: 15, isPremium: true },
-  { id: 'title_genius', name: 'Genie', rarity: 'epic', cssClass: 'text-purple-400 animate-pulse', icon: '🧠', unlockLevel: 25, isPremium: true },
-  { id: 'title_legend', name: 'Legende', rarity: 'epic', cssClass: 'text-orange-400 animate-pulse', icon: '⭐', unlockLevel: 35, isPremium: true },
-  { id: 'title_master', name: 'Meister', rarity: 'epic', cssClass: 'text-red-400', icon: '👑', unlockLevel: 50, isPremium: true },
-  { id: 'title_elite', name: 'Elite', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 bg-clip-text text-transparent animate-shimmer', icon: '💎', unlockLevel: 75, isPremium: true },
-  { id: 'title_supreme', name: 'Supreme', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent animate-shimmer', icon: '🔱', unlockLevel: 100, isPremium: true },
-  // Special titles
-  { id: 'title_cyber', name: 'Cyber Agent', rarity: 'epic', cssClass: 'text-cyan-400 animate-pulse', icon: '🤖', unlockLevel: 0, isPremium: true },
-  { id: 'title_neon', name: 'Neon Rider', rarity: 'epic', cssClass: 'text-fuchsia-400 animate-pulse', icon: '🌃', unlockLevel: 0, isPremium: true },
-  { id: 'title_shadow', name: 'Schattenwandler', rarity: 'legendary', cssClass: 'text-gray-300', icon: '🌑', unlockLevel: 0, isPremium: true },
-  { id: 'title_phoenix', name: 'Phoenix', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 bg-clip-text text-transparent', icon: '🔥', unlockLevel: 0, isPremium: true },
-];
-
-// Helper: Get title by ID
-export const getTitleById = (id: string): ProfileTitle | undefined => {
-  return PROFILE_TITLES.find(t => t.id === id);
-};
-
-// ============================================================================
-// CARD BACKS
-// ============================================================================
-
-export const CARD_BACKS: CardBack[] = [
-  { id: 'cardback_default', name: 'Standard', preview: '/assets/cardbacks/default.png', rarity: 'common', unlockLevel: 0, isPremium: false },
-  { id: 'cardback_blue', name: 'Ozean Blau', preview: '/assets/cardbacks/blue.png', rarity: 'common', cssClass: 'bg-gradient-to-br from-blue-600 to-blue-900', unlockLevel: 5, isPremium: false },
-  { id: 'cardback_fire', name: 'Feuer', preview: '/assets/cardbacks/fire.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-orange-500 via-red-600 to-yellow-500', unlockLevel: 10, isPremium: true },
-  { id: 'cardback_ice', name: 'Frost', preview: '/assets/cardbacks/ice.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-cyan-400 to-blue-600', unlockLevel: 18, isPremium: true },
-  { id: 'cardback_neon', name: 'Neon Grid', preview: '/assets/cardbacks/neon.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-fuchsia-600 via-purple-600 to-cyan-500', unlockLevel: 28, isPremium: true },
-  { id: 'cardback_galaxy', name: 'Galaxie', preview: '/assets/cardbacks/galaxy.png', rarity: 'epic', cssClass: 'bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900', unlockLevel: 38, isPremium: true },
-  { id: 'cardback_gold', name: 'Gold Royal', preview: '/assets/cardbacks/gold.png', rarity: 'epic', cssClass: 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600', unlockLevel: 48, isPremium: true },
-  { id: 'cardback_matrix', name: 'Matrix', preview: '/assets/cardbacks/matrix.png', rarity: 'epic', cssClass: 'bg-gradient-to-b from-green-900 to-black', unlockLevel: 58, isPremium: true },
-  { id: 'cardback_rainbow', name: 'Prisma', preview: '/assets/cardbacks/rainbow.png', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500', unlockLevel: 78, isPremium: true },
-  { id: 'cardback_legendary', name: 'Legendär', preview: '/assets/cardbacks/legendary.png', rarity: 'legendary', cssClass: 'bg-gradient-to-br from-yellow-300 via-orange-500 to-red-600 animate-pulse', unlockLevel: 100, isPremium: true },
-];
-
-// Helper: Get card back by ID
-export const getCardBackById = (id: string): CardBack | undefined => {
-  return CARD_BACKS.find(c => c.id === id);
-};
-
-// ============================================================================
-// STICKER ALBUM SYSTEM
-// ============================================================================
-
-export const STICKER_CATEGORIES: StickerCategory[] = [
-  { id: 'animals', name: 'Tiere', icon: '🐾', totalStickers: 12, rewardFrame: 'frame_animals', rewardCoins: 100 },
-  { id: 'food', name: 'Essen', icon: '🍔', totalStickers: 12, rewardFrame: 'frame_food', rewardCoins: 100 },
-  { id: 'nature', name: 'Natur', icon: '🌿', totalStickers: 12, rewardFrame: 'frame_nature', rewardCoins: 100 },
-  { id: 'sports', name: 'Sport', icon: '⚽', totalStickers: 12, rewardFrame: 'frame_sports', rewardCoins: 100 },
-  { id: 'emojis', name: 'Emojis', icon: '😎', totalStickers: 12, rewardCoins: 150 },
-  { id: 'rare', name: 'Seltene', icon: '💎', totalStickers: 12, rewardFrame: 'frame_collector', rewardCoins: 250 },
-];
-
-export const STICKERS: Sticker[] = [
-  // Animals (12)
-  { id: 'sticker_cat', emoji: '🐱', name: 'Katze', category: 'animals', rarity: 'common' },
-  { id: 'sticker_dog', emoji: '🐶', name: 'Hund', category: 'animals', rarity: 'common' },
-  { id: 'sticker_fox', emoji: '🦊', name: 'Fuchs', category: 'animals', rarity: 'common' },
-  { id: 'sticker_panda', emoji: '🐼', name: 'Panda', category: 'animals', rarity: 'common' },
-  { id: 'sticker_lion', emoji: '🦁', name: 'Löwe', category: 'animals', rarity: 'rare' },
-  { id: 'sticker_tiger', emoji: '🐯', name: 'Tiger', category: 'animals', rarity: 'rare' },
-  { id: 'sticker_elephant', emoji: '🐘', name: 'Elefant', category: 'animals', rarity: 'rare' },
-  { id: 'sticker_monkey', emoji: '🐵', name: 'Affe', category: 'animals', rarity: 'common' },
-  { id: 'sticker_rabbit', emoji: '🐰', name: 'Hase', category: 'animals', rarity: 'common' },
-  { id: 'sticker_bear', emoji: '🐻', name: 'Bär', category: 'animals', rarity: 'rare' },
-  { id: 'sticker_unicorn', emoji: '🦄', name: 'Einhorn', category: 'animals', rarity: 'epic' },
-  { id: 'sticker_dragon', emoji: '🐲', name: 'Drache', category: 'animals', rarity: 'legendary' },
-
-  // Food (12)
-  { id: 'sticker_pizza', emoji: '🍕', name: 'Pizza', category: 'food', rarity: 'common' },
-  { id: 'sticker_burger', emoji: '🍔', name: 'Burger', category: 'food', rarity: 'common' },
-  { id: 'sticker_fries', emoji: '🍟', name: 'Pommes', category: 'food', rarity: 'common' },
-  { id: 'sticker_hotdog', emoji: '🌭', name: 'Hotdog', category: 'food', rarity: 'common' },
-  { id: 'sticker_donut', emoji: '🍩', name: 'Donut', category: 'food', rarity: 'rare' },
-  { id: 'sticker_icecream', emoji: '🍦', name: 'Eis', category: 'food', rarity: 'common' },
-  { id: 'sticker_cake', emoji: '🎂', name: 'Kuchen', category: 'food', rarity: 'rare' },
-  { id: 'sticker_sushi', emoji: '🍣', name: 'Sushi', category: 'food', rarity: 'rare' },
-  { id: 'sticker_ramen', emoji: '🍜', name: 'Ramen', category: 'food', rarity: 'rare' },
-  { id: 'sticker_taco', emoji: '🌮', name: 'Taco', category: 'food', rarity: 'common' },
-  { id: 'sticker_cookie', emoji: '🍪', name: 'Keks', category: 'food', rarity: 'common' },
-  { id: 'sticker_lobster', emoji: '🦞', name: 'Hummer', category: 'food', rarity: 'legendary' },
-
-  // Nature (12)
-  { id: 'sticker_flower', emoji: '🌸', name: 'Kirschblüte', category: 'nature', rarity: 'common' },
-  { id: 'sticker_sunflower', emoji: '🌻', name: 'Sonnenblume', category: 'nature', rarity: 'common' },
-  { id: 'sticker_tree', emoji: '🌳', name: 'Baum', category: 'nature', rarity: 'common' },
-  { id: 'sticker_mountain', emoji: '🏔️', name: 'Berg', category: 'nature', rarity: 'rare' },
-  { id: 'sticker_wave', emoji: '🌊', name: 'Welle', category: 'nature', rarity: 'rare' },
-  { id: 'sticker_sun', emoji: '☀️', name: 'Sonne', category: 'nature', rarity: 'common' },
-  { id: 'sticker_moon', emoji: '🌙', name: 'Mond', category: 'nature', rarity: 'rare' },
-  { id: 'sticker_star', emoji: '⭐', name: 'Stern', category: 'nature', rarity: 'common' },
-  { id: 'sticker_rainbow_n', emoji: '🌈', name: 'Regenbogen', category: 'nature', rarity: 'epic' },
-  { id: 'sticker_fire_n', emoji: '🔥', name: 'Feuer', category: 'nature', rarity: 'rare' },
-  { id: 'sticker_snowflake', emoji: '❄️', name: 'Schneeflocke', category: 'nature', rarity: 'common' },
-  { id: 'sticker_aurora', emoji: '🌌', name: 'Nordlicht', category: 'nature', rarity: 'legendary' },
-
-  // Sports (12)
-  { id: 'sticker_soccer', emoji: '⚽', name: 'Fußball', category: 'sports', rarity: 'common' },
-  { id: 'sticker_basketball', emoji: '🏀', name: 'Basketball', category: 'sports', rarity: 'common' },
-  { id: 'sticker_football', emoji: '🏈', name: 'Football', category: 'sports', rarity: 'common' },
-  { id: 'sticker_tennis', emoji: '🎾', name: 'Tennis', category: 'sports', rarity: 'common' },
-  { id: 'sticker_baseball', emoji: '⚾', name: 'Baseball', category: 'sports', rarity: 'common' },
-  { id: 'sticker_golf', emoji: '⛳', name: 'Golf', category: 'sports', rarity: 'rare' },
-  { id: 'sticker_ski', emoji: '⛷️', name: 'Ski', category: 'sports', rarity: 'rare' },
-  { id: 'sticker_surf', emoji: '🏄', name: 'Surfen', category: 'sports', rarity: 'rare' },
-  { id: 'sticker_medal', emoji: '🥇', name: 'Goldmedaille', category: 'sports', rarity: 'epic' },
-  { id: 'sticker_trophy_s', emoji: '🏆', name: 'Pokal', category: 'sports', rarity: 'epic' },
-  { id: 'sticker_boxing', emoji: '🥊', name: 'Boxen', category: 'sports', rarity: 'rare' },
-  { id: 'sticker_champion', emoji: '🏅', name: 'Champion', category: 'sports', rarity: 'legendary' },
-
-  // Emojis (12)
-  { id: 'sticker_cool', emoji: '😎', name: 'Cool', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_heart_eyes', emoji: '😍', name: 'Verliebt', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_laugh', emoji: '😂', name: 'Lachen', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_thinking', emoji: '🤔', name: 'Denken', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_party', emoji: '🥳', name: 'Party', category: 'emojis', rarity: 'rare' },
-  { id: 'sticker_mind_blown', emoji: '🤯', name: 'Mind Blown', category: 'emojis', rarity: 'rare' },
-  { id: 'sticker_nerd', emoji: '🤓', name: 'Nerd', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_devil', emoji: '😈', name: 'Teufel', category: 'emojis', rarity: 'rare' },
-  { id: 'sticker_ghost', emoji: '👻', name: 'Geist', category: 'emojis', rarity: 'rare' },
-  { id: 'sticker_alien', emoji: '👽', name: 'Alien', category: 'emojis', rarity: 'epic' },
-  { id: 'sticker_robot', emoji: '🤖', name: 'Roboter', category: 'emojis', rarity: 'epic' },
-  { id: 'sticker_skull', emoji: '💀', name: 'Totenkopf', category: 'emojis', rarity: 'legendary' },
-
-  // Rare (12)
-  { id: 'sticker_gem', emoji: '💎', name: 'Diamant', category: 'rare', rarity: 'rare' },
-  { id: 'sticker_crown', emoji: '👑', name: 'Krone', category: 'rare', rarity: 'epic' },
-  { id: 'sticker_rocket', emoji: '🚀', name: 'Rakete', category: 'rare', rarity: 'epic' },
-  { id: 'sticker_ufo', emoji: '🛸', name: 'UFO', category: 'rare', rarity: 'epic' },
-  { id: 'sticker_crystal', emoji: '🔮', name: 'Kristallkugel', category: 'rare', rarity: 'epic' },
-  { id: 'sticker_sword', emoji: '⚔️', name: 'Schwerter', category: 'rare', rarity: 'rare' },
-  { id: 'sticker_magic', emoji: '✨', name: 'Magie', category: 'rare', rarity: 'rare' },
-  { id: 'sticker_infinity', emoji: '♾️', name: 'Unendlich', category: 'rare', rarity: 'legendary' },
-  { id: 'sticker_heart_gold', emoji: '💛', name: 'Goldenes Herz', category: 'rare', rarity: 'legendary' },
-  { id: 'sticker_star_gold', emoji: '🌟', name: 'Goldstern', category: 'rare', rarity: 'legendary' },
-  { id: 'sticker_phoenix', emoji: '🔱', name: 'Dreizack', category: 'rare', rarity: 'legendary' },
-  { id: 'sticker_legendary', emoji: '⚜️', name: 'Lilie', category: 'rare', rarity: 'legendary' },
-];
-
-// Helper: Get stickers by category
-export const getStickersByCategory = (categoryId: string): Sticker[] => {
-  return STICKERS.filter(s => s.category === categoryId);
-};
-
-// Helper: Get sticker by ID
-export const getStickerById = (id: string): Sticker | undefined => {
-  return STICKERS.find(s => s.id === id);
-};
-
-// Helper: Get frame by ID
-export const getFrameById = (id: string): ProfileFrame | undefined => {
-  return PROFILE_FRAMES.find(f => f.id === id);
-};
-
-// Helper: Get font by ID
-export const getFontById = (id: string): ProfileFont | undefined => {
-  return PROFILE_FONTS.find(f => f.id === id);
-};
-
-// Helper: Get effect by ID
-export const getEffectById = (id: string): ProfileEffect | undefined => {
-  return PROFILE_EFFECTS.find(e => e.id === id);
-};
+export const APP_VERSION = '3.5.0';
 
 // ============================================================================
 // SEASON SYSTEM
@@ -269,36 +38,37 @@ export interface Season {
 
 // Season 1: Agent Training (Purple/Space Theme)
 export const SEASON_1_AVATARS: SeasonAvatar[] = [
-  { level: 10, name: 'Space Explorer', id: 'space_explorer', dicebear: 'SpaceExplorer', desc: 'Cosmic wanderer' },
-  { level: 20, name: 'Cyberpunk Warrior', id: 'cyberpunk_warrior', dicebear: 'CyberpunkWarrior', desc: 'Neon fighter' },
-  { level: 30, name: 'Fantasy Wizard', id: 'fantasy_wizard', dicebear: 'FantasyWizard', desc: 'Arcane master' },
-  { level: 40, name: 'Ocean Guardian', id: 'ocean_guardian', dicebear: 'Ocean', desc: 'Deep sea protector' },
-  { level: 50, name: 'Mountain Sage', id: 'mountain_sage', dicebear: 'Sage', desc: 'Ancient wisdom' },
-  { level: 60, name: 'Forest Spirit', id: 'forest_spirit', dicebear: 'Spirit', desc: 'Nature voice' },
-  { level: 70, name: 'Desert Nomad', id: 'desert_nomad', dicebear: 'Nomad', desc: 'Sand walker' },
-  { level: 80, name: 'Arctic Hunter', id: 'arctic_hunter', dicebear: 'Hunter', desc: 'Ice stalker' },
-  { level: 90, name: 'Lava Titan', id: 'lava_titan', dicebear: 'Titan', desc: 'Molten fury' },
-  { level: 100, name: 'Storm Caller', id: 'storm_caller', dicebear: 'Storm', desc: 'Lightning master' }
+  { level: 10, name: 'Space Explorer', id: 'space_explorer', dicebear: '/assets/season/avatar_space_explorer.png', desc: 'Cosmic wanderer' },
+  { level: 20, name: 'Cyberpunk Warrior', id: 'cyberpunk_warrior', dicebear: '/assets/season/avatar_cyberpunk_warrior.png', desc: 'Neon fighter' },
+  { level: 30, name: 'Fantasy Wizard', id: 'fantasy_wizard', dicebear: '/assets/season/avatar_fantasy_wizard.png', desc: 'Arcane master' },
+  { level: 40, name: 'Ocean Guardian', id: 'ocean_guardian', dicebear: '/assets/season/avatar_space_explorer.png', desc: 'Deep sea protector' }, // Fallback to Space Explorer
+  { level: 50, name: 'Mountain Sage', id: 'mountain_sage', dicebear: '/assets/season/avatar_fantasy_wizard.png', desc: 'Ancient wisdom' }, // Fallback
+  { level: 60, name: 'Forest Spirit', id: 'forest_spirit', dicebear: '/assets/season/avatar_fantasy_wizard.png', desc: 'Nature voice' }, // Fallback
+  { level: 70, name: 'Desert Nomad', id: 'desert_nomad', dicebear: '/assets/season/avatar_cyberpunk_warrior.png', desc: 'Sand walker' }, // Fallback
+  { level: 80, name: 'Arctic Hunter', id: 'arctic_hunter', dicebear: '/assets/season/avatar_cyberpunk_warrior.png', desc: 'Ice stalker' }, // Fallback
+  { level: 90, name: 'Lava Titan', id: 'lava_titan', dicebear: '/assets/season/avatar_mecha_kong.png', desc: 'Molten fury' }, // Fallback
+  { level: 100, name: 'Storm Caller', id: 'storm_caller', dicebear: '/assets/season/avatar_space_explorer.png', desc: 'Lightning master' } // Fallback
 ];
 
 // Season 2: Neon Uprising (Cyberpunk Theme) - UPDATED with Nano Banana Pro Style
+// Season 2: Neon Uprising (Cyberpunk Theme) - UPDATED with Nano Banana Pro Style
 export const SEASON_2_AVATARS: SeasonAvatar[] = [
-  { level: 10, name: 'Nano Scout', id: 'nano_banana_pro_1', dicebear: 'nano_banana_pro_1', desc: 'Recon Unit' },
-  { level: 20, name: 'Cyber Banana', id: 'nano_banana_pro_2', dicebear: 'nano_banana_pro_2', desc: 'Enhanced organic' },
-  { level: 30, name: 'Neon Ape', id: 'nano_banana_pro_3', dicebear: 'nano_banana_pro_3', desc: 'City dweller' },
-  { level: 40, name: 'Glitch Monkey', id: 'nano_banana_pro_4', dicebear: 'nano_banana_pro_4', desc: 'System error' },
-  { level: 50, name: 'Mecha Kong', id: 'nano_banana_pro_5', dicebear: 'nano_banana_pro_5', desc: 'Heavy hitter' },
-  { level: 60, name: 'Circuit Simian', id: 'nano_banana_pro_6', dicebear: 'nano_banana_pro_6', desc: 'Network flow' },
-  { level: 70, name: 'Data Chimp', id: 'nano_banana_pro_7', dicebear: 'nano_banana_pro_7', desc: 'Info broker' },
-  { level: 80, name: 'Void Primate', id: 'nano_banana_pro_8', dicebear: 'nano_banana_pro_8', desc: 'Dark sector' },
-  { level: 90, name: 'Quantum Gorilla', id: 'nano_banana_pro_9', dicebear: 'nano_banana_pro_9', desc: 'Reality bender' },
-  { level: 100, name: 'Nano Banana God', id: 'nano_banana_pro_10', dicebear: 'nano_banana_pro_10', desc: 'Ascended' }
+  { level: 10, name: 'Nano Scout', id: 'nano_banana_pro_1', dicebear: '/assets/season/avatar_nano_scout.png', desc: 'Recon Unit' },
+  { level: 20, name: 'Cyber Banana', id: 'nano_banana_pro_2', dicebear: '/assets/season/avatar_nano_scout.png', desc: 'Enhanced organic' },
+  { level: 30, name: 'Neon Ape', id: 'nano_banana_pro_3', dicebear: '/assets/season/avatar_nano_scout.png', desc: 'City dweller' },
+  { level: 40, name: 'Glitch Monkey', id: 'nano_banana_pro_4', dicebear: '/assets/season/avatar_nano_scout.png', desc: 'System error' },
+  { level: 50, name: 'Mecha Kong', id: 'nano_banana_pro_5', dicebear: '/assets/season/avatar_mecha_kong.png', desc: 'Heavy hitter' },
+  { level: 60, name: 'Circuit Simian', id: 'nano_banana_pro_6', dicebear: '/assets/season/avatar_mecha_kong.png', desc: 'Network flow' },
+  { level: 70, name: 'Data Chimp', id: 'nano_banana_pro_7', dicebear: '/assets/season/avatar_mecha_kong.png', desc: 'Info broker' },
+  { level: 80, name: 'Void Primate', id: 'nano_banana_pro_8', dicebear: '/assets/season/avatar_mecha_kong.png', desc: 'Dark sector' },
+  { level: 90, name: 'Quantum Gorilla', id: 'nano_banana_pro_9', dicebear: '/assets/season/avatar_mecha_kong.png', desc: 'Reality bender' },
+  { level: 100, name: 'Nano Banana God', id: 'nano_banana_pro_10', dicebear: '/assets/season/avatar_mecha_kong.png', desc: 'Ascended' }
 ];
 
 export const SEASONS: Season[] = [
   {
     id: 1,
-    name: 'Season I',
+    name: 'Genesis',
     theme: 'space',
     startDate: Date.parse('2025-11-24T00:00:00Z'),
     endDate: Date.parse('2025-12-31T00:00:00Z'),
@@ -370,6 +140,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Max 20 characters",
       ERR_AGE: "Invalid age (1-120)"
     },
+    AUTH: {
+      login: "LOGIN",
+      register: "REGISTER",
+      username: "USERNAME",
+      password: "PASSWORD",
+      confirmPassword: "CONFIRM PASSWORD",
+      captcha: "CAPTCHA",
+      result: "Result",
+      loading: "LOADING...",
+      resetEmailSent: "EMAIL SENT",
+      checkEmail: "Check your inbox.",
+      backToLogin: "BACK TO LOGIN",
+      resetPassword: "RESET PASSWORD",
+      forgotPassword: "Forgot Password?",
+      sendResetEmail: "SEND RESET EMAIL",
+      age: "AGE",
+      minAge: "Minimum age: 12 years"
+    },
     HOME: {
       PLAYER: "Puzzle Pal",
       SEASON_LEVEL: "Season Level",
@@ -390,8 +178,6 @@ export const TRANSLATIONS = {
       VOUCHER_REDEEM: "Redeem",
       VOUCHER_REDEEMED: "✓ Redeemed"
     },
-    seasonEnds: "Season Ends",
-    days: "days",
     MODES: {
       CLASSIC: { title: "CLASSIC", desc: "The Standard" },
       SPEEDRUN: { title: "SPEEDRUN", desc: "Race against time" },
@@ -400,18 +186,16 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "LETTER SUDOKU", desc: "Logic (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Challenges" },
       RIDDLE: { title: "RIDDLES", desc: "Word Puzzles" },
-      LETTER_MAU_MAU: { title: "LETTER MAU MAU", desc: "Card Game" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Premium Card Forge" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Classic Card Game" },
       CHESS: { title: "CHESS", desc: "Classic Strategy Game" },
       CHECKERS: { title: "CHECKERS", desc: "Classic Board Game" },
       NINE_MENS_MORRIS: { title: "NINE MEN'S MORRIS", desc: "Strategy Mill Game" },
       RUMMY: { title: "RUMMY", desc: "Classic Card Game" },
-      DECKBUILDER: { title: "CARD FORGE", desc: "Roguelike Deckbuilder" },
-      SOLITAIRE: { title: "SOLITAIRE", desc: "Classic Card Game" },
       LOCKED: { title: "LOCKED", desc: "Coming Soon" }
     },
     MAU_MAU: {
-      TITLE: "LETTER MAU MAU",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Your Turn",
       OPPONENT_TURN: "Opponent's Turn",
       CARDS: "cards",
@@ -496,7 +280,7 @@ export const TRANSLATIONS = {
       RUN: "Run"
     },
     SEASON: {
-      TITLE: "SEASON I",
+      TITLE: "SEASON I: GENESIS",
       SUBTITLE: "BATTLE PASS",
       PREMIUM_ACTIVE: "PREMIUM ACTIVE",
       FREE_ACTIVE: "FREE PASS ACTIVE",
@@ -607,9 +391,7 @@ export const TRANSLATIONS = {
       EQUIP: "EQUIP",
       EQUIPPED: "EQUIPPED",
       INSUFFICIENT: "NOT ENOUGH COINS",
-      SUCCESS: "PURCHASED",
-      COMING_SOON: "Coming soon",
-      PAYMENT: "Payment"
+      SUCCESS: "PURCHASED"
     },
     UPDATES: {
       REQUIRED_TITLE: "UPDATE REQUIRED",
@@ -642,6 +424,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Max 20 Zeichen",
       ERR_AGE: "Ungültiges Alter (1-120)"
     },
+    AUTH: {
+      login: "ANMELDEN",
+      register: "REGISTRIEREN",
+      username: "BENUTZERNAME",
+      password: "PASSWORT",
+      confirmPassword: "PASSWORT WIEDERHOLEN",
+      captcha: "SICHERHEITSFRAGE",
+      result: "Ergebnis",
+      loading: "LÄDT...",
+      resetEmailSent: "E-MAIL GESENDET",
+      checkEmail: "Prüfe dein Postfach.",
+      backToLogin: "ZURÜCK ZUM LOGIN",
+      resetPassword: "PASSWORT ZURÜCKSETZEN",
+      forgotPassword: "Passwort vergessen?",
+      sendResetEmail: "RESET E-MAIL SENDEN",
+      age: "ALTER",
+      minAge: "Mindestalter: 12 Jahre"
+    },
     HOME: {
       PLAYER: "Rätselfreund",
       SEASON_LEVEL: "Saison Stufe",
@@ -662,8 +462,6 @@ export const TRANSLATIONS = {
       VOUCHER_REDEEM: "Einlösen",
       VOUCHER_REDEEMED: "✓ Eingelöst"
     },
-    seasonEnds: "Season Ende",
-    days: "Tage",
     MODES: {
       CLASSIC: { title: "KLASSISCH", desc: "Der Standard" },
       SPEEDRUN: { title: "ZEITRENNEN", desc: "Gegen die Zeit" },
@@ -672,18 +470,16 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "Buchstaben Sudoku", desc: "Logik (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Herausforderungen" },
       RIDDLE: { title: "RÄTSEL", desc: "Worträtsel" },
-      LETTER_MAU_MAU: { title: "BUCHSTABEN MAU MAU", desc: "Kartenspiel" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Premium Kartenschmiede" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Klassisches Kartenspiel" },
       CHESS: { title: "SCHACH", desc: "Klassisches Strategiespiel" },
       CHECKERS: { title: "DAME", desc: "Klassisches Brettspiel" },
       NINE_MENS_MORRIS: { title: "MÜHLE", desc: "Strategie-Brettspiel" },
       RUMMY: { title: "ROMMÉ", desc: "Klassisches Kartenspiel" },
-      DECKBUILDER: { title: "KARTENSCHMIEDE", desc: "Roguelike Deckbuilder" },
-      SOLITAIRE: { title: "SOLITÄR", desc: "Klassisches Kartenspiel" },
       LOCKED: { title: "BALD", desc: "Demnächst" }
     },
     MAU_MAU: {
-      TITLE: "BUCHSTABEN MAU MAU",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Dein Zug",
       OPPONENT_TURN: "Gegner am Zug",
       CARDS: "Karten",
@@ -767,7 +563,7 @@ export const TRANSLATIONS = {
       RUN: "Reihe"
     },
     SEASON: {
-      TITLE: "SAISON I",
+      TITLE: "SAISON I: GENESIS",
       SUBTITLE: "BATTLE PASS",
       PREMIUM_ACTIVE: "PREMIUM AKTIV",
       FREE_ACTIVE: "GRATIS PASS AKTIV",
@@ -878,9 +674,7 @@ export const TRANSLATIONS = {
       EQUIP: "AUSRÜSTEN",
       EQUIPPED: "AUSGERÜSTET",
       INSUFFICIENT: "NICHT GENUG MÜNZEN",
-      SUCCESS: "GEKAUFT",
-      COMING_SOON: "Bald verfügbar",
-      PAYMENT: "Zahlung"
+      SUCCESS: "GEKAUFT"
     },
     UPDATES: {
       REQUIRED_TITLE: "Update Erforderlich",
@@ -913,6 +707,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Máx 20 caracteres",
       ERR_AGE: "Edad inválida (1-120)"
     },
+    AUTH: {
+      login: "INICIAR SESIÓN",
+      register: "REGISTRARSE",
+      username: "USUARIO",
+      password: "CONTRASEÑA",
+      confirmPassword: "CONFIRMAR CONTRASEÑA",
+      captcha: "CAPTCHA",
+      result: "Resultado",
+      loading: "CARGANDO...",
+      resetEmailSent: "CORREO ENVIADO",
+      checkEmail: "Revisa tu bandeja de entrada.",
+      backToLogin: "VOLVER AL LOGIN",
+      resetPassword: "RESTABLECER CONTRASEÑA",
+      forgotPassword: "¿Olvidaste tu contraseña?",
+      sendResetEmail: "ENVIAR CORREO",
+      age: "EDAD",
+      minAge: "Edad mínima: 12 años"
+    },
     HOME: {
       PLAYER: "Jugador",
       SEASON_LEVEL: "Nivel de Temporada",
@@ -933,8 +745,6 @@ export const TRANSLATIONS = {
       VOUCHER_REDEEM: "Canjear",
       VOUCHER_REDEEMED: "✓ Canjeado"
     },
-    seasonEnds: "Temporada Termina",
-    days: "días",
     MODES: {
       CLASSIC: { title: "CLÁSICO", desc: "El Estándar" },
       SPEEDRUN: { title: "CONTRARRELOJ", desc: "Carrera contra el tiempo" },
@@ -943,18 +753,16 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "SUDOKU DE LETRAS", desc: "Lógica (A-I)" },
       CHALLENGE: { title: "DESAFÍO", desc: "Retos Premium" },
       RIDDLE: { title: "ACERTIJOS", desc: "Rompecabezas" },
-      LETTER_MAU_MAU: { title: "MAU MAU DE LETRAS", desc: "Juego de Cartas" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Forja de Cartas Premium" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Juego de Cartas Clásico" },
       CHESS: { title: "AJEDREZ", desc: "Juego de Estrategia Clásico" },
       CHECKERS: { title: "DAMAS", desc: "Juego de Mesa Clásico" },
       NINE_MENS_MORRIS: { title: "MOLINO", desc: "Juego de Estrategia" },
       RUMMY: { title: "RUMMY", desc: "Juego de Cartas Clásico" },
-      DECKBUILDER: { title: "FORJA DE CARTAS", desc: "Roguelike Deckbuilder" },
-      SOLITAIRE: { title: "SOLITARIO", desc: "Juego de Cartas Clásico" },
       LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
     },
     MAU_MAU: {
-      TITLE: "MAU MAU DE LETRAS",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Tu Turno",
       OPPONENT_TURN: "Turno del Oponente",
       CARDS: "cartas",
@@ -1037,7 +845,7 @@ export const TRANSLATIONS = {
       RUN: "Escalera"
     },
     SEASON: {
-      TITLE: "TEMPORADA I",
+      TITLE: "TEMPORADA I: GÉNESIS",
       SUBTITLE: "PASE DE BATALLA",
       PREMIUM_ACTIVE: "PREMIUM ACTIVO",
       FREE_ACTIVE: "PASE GRATIS ACTIVO",
@@ -1148,9 +956,7 @@ export const TRANSLATIONS = {
       EQUIP: "EQUIPAR",
       EQUIPPED: "EQUIPADO",
       INSUFFICIENT: "MONEDAS INSUFICIENTES",
-      SUCCESS: "COMPRADO",
-      COMING_SOON: "Próximamente",
-      PAYMENT: "Pago"
+      SUCCESS: "COMPRADO"
     },
     UPDATES: {
       REQUIRED_TITLE: "ACTUALIZACIÓN REQUERIDA",
@@ -1174,598 +980,598 @@ export const TRANSLATIONS = {
 
 // Word Lists with Hints and Tiers
 export const WORDS_EN: WordData[] = [
-    // Beginner (Tier 1) - Common, simple words (50)
-    { word: "APPLE", hint: "A popular red or green fruit.", tier: Tier.BEGINNER },
-    { word: "HOUSE", hint: "A building for human habitation.", tier: Tier.BEGINNER },
-    { word: "WATER", hint: "Essential liquid for life.", tier: Tier.BEGINNER },
-    { word: "BREAD", hint: "Baked dough food staple.", tier: Tier.BEGINNER },
-    { word: "NIGHT", hint: "The time when it is dark.", tier: Tier.BEGINNER },
-    { word: "HAPPY", hint: "Feeling or showing pleasure.", tier: Tier.BEGINNER },
-    { word: "GREEN", hint: "Color of grass and leaves.", tier: Tier.BEGINNER },
-    { word: "MUSIC", hint: "Vocal or instrumental sounds.", tier: Tier.BEGINNER },
-    { word: "PHONE", hint: "Device used for calling.", tier: Tier.BEGINNER },
-    { word: "SMILE", hint: "Facial expression of joy.", tier: Tier.BEGINNER },
-    { word: "CHAIR", hint: "Seat with a back.", tier: Tier.BEGINNER },
-    { word: "TABLE", hint: "Furniture with a flat top.", tier: Tier.BEGINNER },
-    { word: "LIGHT", hint: "Makes things visible.", tier: Tier.BEGINNER },
-    { word: "RIVER", hint: "Large natural stream of water.", tier: Tier.BEGINNER },
-    { word: "MONEY", hint: "Medium of exchange.", tier: Tier.BEGINNER },
-    { word: "PAPER", hint: "Material for writing on.", tier: Tier.BEGINNER },
-    { word: "CLOCK", hint: "Instrument to measure time.", tier: Tier.BEGINNER },
-    { word: "HEART", hint: "Organ that pumps blood.", tier: Tier.BEGINNER },
-    { word: "DREAM", hint: "Thoughts during sleep.", tier: Tier.BEGINNER },
-    { word: "BEACH", hint: "Sandy shore by the sea.", tier: Tier.BEGINNER },
-    { word: "CLOUD", hint: "White mass in the sky.", tier: Tier.BEGINNER },
-    { word: "GRASS", hint: "Green ground cover.", tier: Tier.BEGINNER },
-    { word: "SPOON", hint: "Utensil for eating soup.", tier: Tier.BEGINNER },
-    { word: "TRAIN", hint: "Railway vehicle.", tier: Tier.BEGINNER },
-    { word: "WORLD", hint: "The earth and all life.", tier: Tier.BEGINNER },
-    { word: "PARTY", hint: "Social gathering.", tier: Tier.BEGINNER },
-    { word: "PIZZA", hint: "Italian dish with cheese.", tier: Tier.BEGINNER },
-    { word: "SHOES", hint: "Footwear.", tier: Tier.BEGINNER },
-    { word: "TRUCK", hint: "Large vehicle for cargo.", tier: Tier.BEGINNER },
-    { word: "WATCH", hint: "Small clock worn on wrist.", tier: Tier.BEGINNER },
-    { word: "SPACE", hint: "Area beyond earth.", tier: Tier.BEGINNER },
-    { word: "NURSE", hint: "Person who cares for sick.", tier: Tier.BEGINNER },
-    { word: "STORE", hint: "Place to buy things.", tier: Tier.BEGINNER },
-    { word: "TIGER", hint: "Large striped cat.", tier: Tier.BEGINNER },
-    { word: "ZEBRA", hint: "Striped African horse.", tier: Tier.BEGINNER },
-    { word: "LEMON", hint: "Sour yellow fruit.", tier: Tier.BEGINNER },
-    { word: "MANGO", hint: "Tropical sweet fruit.", tier: Tier.BEGINNER },
-    { word: "BERRY", hint: "Small juicy fruit.", tier: Tier.BEGINNER },
-    { word: "SHEEP", hint: "Woolly farm animal.", tier: Tier.BEGINNER },
-    { word: "HORSE", hint: "Large riding animal.", tier: Tier.BEGINNER },
-    { word: "MOUSE", hint: "Small rodent or device.", tier: Tier.BEGINNER },
-    { word: "SNAKE", hint: "Legless reptile.", tier: Tier.BEGINNER },
-    { word: "WHALE", hint: "Large marine mammal.", tier: Tier.BEGINNER },
-    { word: "SHARK", hint: "Predatory fish.", tier: Tier.BEGINNER },
-    { word: "EAGLE", hint: "Large bird of prey.", tier: Tier.BEGINNER },
-    { word: "ROBOT", hint: "Automated machine.", tier: Tier.BEGINNER },
-    { word: "GHOST", hint: "Spirit of the dead.", tier: Tier.BEGINNER },
-    { word: "MAGIC", hint: "Supernatural power.", tier: Tier.BEGINNER },
-    { word: "QUEEN", hint: "Female ruler.", tier: Tier.BEGINNER },
-    { word: "KINGS", hint: "Male rulers.", tier: Tier.BEGINNER },
+  // Beginner (Tier 1) - Common, simple words (50)
+  { word: "APPLE", hint: "A popular red or green fruit.", tier: Tier.BEGINNER },
+  { word: "HOUSE", hint: "A building for human habitation.", tier: Tier.BEGINNER },
+  { word: "WATER", hint: "Essential liquid for life.", tier: Tier.BEGINNER },
+  { word: "BREAD", hint: "Baked dough food staple.", tier: Tier.BEGINNER },
+  { word: "NIGHT", hint: "The time when it is dark.", tier: Tier.BEGINNER },
+  { word: "HAPPY", hint: "Feeling or showing pleasure.", tier: Tier.BEGINNER },
+  { word: "GREEN", hint: "Color of grass and leaves.", tier: Tier.BEGINNER },
+  { word: "MUSIC", hint: "Vocal or instrumental sounds.", tier: Tier.BEGINNER },
+  { word: "PHONE", hint: "Device used for calling.", tier: Tier.BEGINNER },
+  { word: "SMILE", hint: "Facial expression of joy.", tier: Tier.BEGINNER },
+  { word: "CHAIR", hint: "Seat with a back.", tier: Tier.BEGINNER },
+  { word: "TABLE", hint: "Furniture with a flat top.", tier: Tier.BEGINNER },
+  { word: "LIGHT", hint: "Makes things visible.", tier: Tier.BEGINNER },
+  { word: "RIVER", hint: "Large natural stream of water.", tier: Tier.BEGINNER },
+  { word: "MONEY", hint: "Medium of exchange.", tier: Tier.BEGINNER },
+  { word: "PAPER", hint: "Material for writing on.", tier: Tier.BEGINNER },
+  { word: "CLOCK", hint: "Instrument to measure time.", tier: Tier.BEGINNER },
+  { word: "HEART", hint: "Organ that pumps blood.", tier: Tier.BEGINNER },
+  { word: "DREAM", hint: "Thoughts during sleep.", tier: Tier.BEGINNER },
+  { word: "BEACH", hint: "Sandy shore by the sea.", tier: Tier.BEGINNER },
+  { word: "CLOUD", hint: "White mass in the sky.", tier: Tier.BEGINNER },
+  { word: "GRASS", hint: "Green ground cover.", tier: Tier.BEGINNER },
+  { word: "SPOON", hint: "Utensil for eating soup.", tier: Tier.BEGINNER },
+  { word: "TRAIN", hint: "Railway vehicle.", tier: Tier.BEGINNER },
+  { word: "WORLD", hint: "The earth and all life.", tier: Tier.BEGINNER },
+  { word: "PARTY", hint: "Social gathering.", tier: Tier.BEGINNER },
+  { word: "PIZZA", hint: "Italian dish with cheese.", tier: Tier.BEGINNER },
+  { word: "SHOES", hint: "Footwear.", tier: Tier.BEGINNER },
+  { word: "TRUCK", hint: "Large vehicle for cargo.", tier: Tier.BEGINNER },
+  { word: "WATCH", hint: "Small clock worn on wrist.", tier: Tier.BEGINNER },
+  { word: "SPACE", hint: "Area beyond earth.", tier: Tier.BEGINNER },
+  { word: "NURSE", hint: "Person who cares for sick.", tier: Tier.BEGINNER },
+  { word: "STORE", hint: "Place to buy things.", tier: Tier.BEGINNER },
+  { word: "TIGER", hint: "Large striped cat.", tier: Tier.BEGINNER },
+  { word: "ZEBRA", hint: "Striped African horse.", tier: Tier.BEGINNER },
+  { word: "LEMON", hint: "Sour yellow fruit.", tier: Tier.BEGINNER },
+  { word: "MANGO", hint: "Tropical sweet fruit.", tier: Tier.BEGINNER },
+  { word: "BERRY", hint: "Small juicy fruit.", tier: Tier.BEGINNER },
+  { word: "SHEEP", hint: "Woolly farm animal.", tier: Tier.BEGINNER },
+  { word: "HORSE", hint: "Large riding animal.", tier: Tier.BEGINNER },
+  { word: "MOUSE", hint: "Small rodent or device.", tier: Tier.BEGINNER },
+  { word: "SNAKE", hint: "Legless reptile.", tier: Tier.BEGINNER },
+  { word: "WHALE", hint: "Large marine mammal.", tier: Tier.BEGINNER },
+  { word: "SHARK", hint: "Predatory fish.", tier: Tier.BEGINNER },
+  { word: "EAGLE", hint: "Large bird of prey.", tier: Tier.BEGINNER },
+  { word: "ROBOT", hint: "Automated machine.", tier: Tier.BEGINNER },
+  { word: "GHOST", hint: "Spirit of the dead.", tier: Tier.BEGINNER },
+  { word: "MAGIC", hint: "Supernatural power.", tier: Tier.BEGINNER },
+  { word: "QUEEN", hint: "Female ruler.", tier: Tier.BEGINNER },
+  { word: "KINGS", hint: "Male rulers.", tier: Tier.BEGINNER },
 
-    // Learner (Tier 2) - Slightly longer or less concrete (50)
-    { word: "PLANET", hint: "Celestial body orbiting a star.", tier: Tier.LEARNER },
-    { word: "GARDEN", hint: "Plot of ground for plants.", tier: Tier.LEARNER },
-    { word: "DOCTOR", hint: "Person who treats the sick.", tier: Tier.LEARNER },
-    { word: "MARKET", hint: "Place where goods are sold.", tier: Tier.LEARNER },
-    { word: "WINDOW", hint: "Opening in a wall for light.", tier: Tier.LEARNER },
-    { word: "TRAVEL", hint: "Go from one place to another.", tier: Tier.LEARNER },
-    { word: "SUMMER", hint: "The warmest season.", tier: Tier.LEARNER },
-    { word: "FRIEND", hint: "Person you know and like.", tier: Tier.LEARNER },
-    { word: "SCHOOL", hint: "Institution for educating.", tier: Tier.LEARNER },
-    { word: "ANIMAL", hint: "Living organism that moves.", tier: Tier.LEARNER },
-    { word: "FOREST", hint: "Large area covered with trees.", tier: Tier.LEARNER },
-    { word: "ISLAND", hint: "Land surrounded by water.", tier: Tier.LEARNER },
-    { word: "DESERT", hint: "Dry, sandy region.", tier: Tier.LEARNER },
-    { word: "OCEAN", hint: "Vast body of salt water.", tier: Tier.LEARNER },
-    { word: "VALLEY", hint: "Low land between hills.", tier: Tier.LEARNER },
-    { word: "BRIDGE", hint: "Structure over water.", tier: Tier.LEARNER },
-    { word: "CASTLE", hint: "Large fortified building.", tier: Tier.LEARNER },
-    { word: "OFFICE", hint: "Place for business work.", tier: Tier.LEARNER },
-    { word: "STREET", hint: "Public road in a city.", tier: Tier.LEARNER },
-    { word: "WINTER", hint: "Coldest season.", tier: Tier.LEARNER },
-    { word: "SPRING", hint: "Season of rebirth.", tier: Tier.LEARNER },
-    { word: "AUTUMN", hint: "Season of falling leaves.", tier: Tier.LEARNER },
-    { word: "DINNER", hint: "Main meal of the day.", tier: Tier.LEARNER },
-    { word: "FAMILY", hint: "Parents and children.", tier: Tier.LEARNER },
-    { word: "PERSON", hint: "A human being.", tier: Tier.LEARNER },
-    { word: "FARMER", hint: "Person who grows crops.", tier: Tier.LEARNER },
-    { word: "DRIVER", hint: "Person who operates a car.", tier: Tier.LEARNER },
-    { word: "ARTIST", hint: "Person who creates art.", tier: Tier.LEARNER },
-    { word: "WRITER", hint: "Person who writes books.", tier: Tier.LEARNER },
-    { word: "PLAYER", hint: "Participant in a game.", tier: Tier.LEARNER },
-    { word: "LEADER", hint: "Person who commands.", tier: Tier.LEARNER },
-    { word: "WINNER", hint: "Person who wins.", tier: Tier.LEARNER },
-    { word: "SECOND", hint: "Unit of time.", tier: Tier.LEARNER },
-    { word: "MINUTE", hint: "Sixty seconds.", tier: Tier.LEARNER },
-    { word: "NUMBER", hint: "Arithmetical value.", tier: Tier.LEARNER },
-    { word: "LETTER", hint: "Character of alphabet.", tier: Tier.LEARNER },
-    { word: "SYMBOL", hint: "Mark or character.", tier: Tier.LEARNER },
-    { word: "REASON", hint: "Cause or explanation.", tier: Tier.LEARNER },
-    { word: "RESULT", hint: "Outcome of an action.", tier: Tier.LEARNER },
-    { word: "ANSWER", hint: "Response to a question.", tier: Tier.LEARNER },
-    { word: "DANGER", hint: "Possibility of harm.", tier: Tier.LEARNER },
-    { word: "SAFETY", hint: "Condition of being safe.", tier: Tier.LEARNER },
-    { word: "HEALTH", hint: "State of being well.", tier: Tier.LEARNER },
-    { word: "WEALTH", hint: "Abundance of money.", tier: Tier.LEARNER },
-    { word: "GROWTH", hint: "Process of growing.", tier: Tier.LEARNER },
-    { word: "CHANGE", hint: "Make different.", tier: Tier.LEARNER },
-    { word: "CHANCE", hint: "Possibility of something happening.", tier: Tier.LEARNER },
-    { word: "CHOICE", hint: "Act of selecting.", tier: Tier.LEARNER },
-    { word: "VOICE", hint: "Sound from the mouth.", tier: Tier.LEARNER },
-    { word: "NOISE", hint: "Unpleasant sound.", tier: Tier.LEARNER },
+  // Learner (Tier 2) - Slightly longer or less concrete (50)
+  { word: "PLANET", hint: "Celestial body orbiting a star.", tier: Tier.LEARNER },
+  { word: "GARDEN", hint: "Plot of ground for plants.", tier: Tier.LEARNER },
+  { word: "DOCTOR", hint: "Person who treats the sick.", tier: Tier.LEARNER },
+  { word: "MARKET", hint: "Place where goods are sold.", tier: Tier.LEARNER },
+  { word: "WINDOW", hint: "Opening in a wall for light.", tier: Tier.LEARNER },
+  { word: "TRAVEL", hint: "Go from one place to another.", tier: Tier.LEARNER },
+  { word: "SUMMER", hint: "The warmest season.", tier: Tier.LEARNER },
+  { word: "FRIEND", hint: "Person you know and like.", tier: Tier.LEARNER },
+  { word: "SCHOOL", hint: "Institution for educating.", tier: Tier.LEARNER },
+  { word: "ANIMAL", hint: "Living organism that moves.", tier: Tier.LEARNER },
+  { word: "FOREST", hint: "Large area covered with trees.", tier: Tier.LEARNER },
+  { word: "ISLAND", hint: "Land surrounded by water.", tier: Tier.LEARNER },
+  { word: "DESERT", hint: "Dry, sandy region.", tier: Tier.LEARNER },
+  { word: "OCEAN", hint: "Vast body of salt water.", tier: Tier.LEARNER },
+  { word: "VALLEY", hint: "Low land between hills.", tier: Tier.LEARNER },
+  { word: "BRIDGE", hint: "Structure over water.", tier: Tier.LEARNER },
+  { word: "CASTLE", hint: "Large fortified building.", tier: Tier.LEARNER },
+  { word: "OFFICE", hint: "Place for business work.", tier: Tier.LEARNER },
+  { word: "STREET", hint: "Public road in a city.", tier: Tier.LEARNER },
+  { word: "WINTER", hint: "Coldest season.", tier: Tier.LEARNER },
+  { word: "SPRING", hint: "Season of rebirth.", tier: Tier.LEARNER },
+  { word: "AUTUMN", hint: "Season of falling leaves.", tier: Tier.LEARNER },
+  { word: "DINNER", hint: "Main meal of the day.", tier: Tier.LEARNER },
+  { word: "FAMILY", hint: "Parents and children.", tier: Tier.LEARNER },
+  { word: "PERSON", hint: "A human being.", tier: Tier.LEARNER },
+  { word: "FARMER", hint: "Person who grows crops.", tier: Tier.LEARNER },
+  { word: "DRIVER", hint: "Person who operates a car.", tier: Tier.LEARNER },
+  { word: "ARTIST", hint: "Person who creates art.", tier: Tier.LEARNER },
+  { word: "WRITER", hint: "Person who writes books.", tier: Tier.LEARNER },
+  { word: "PLAYER", hint: "Participant in a game.", tier: Tier.LEARNER },
+  { word: "LEADER", hint: "Person who commands.", tier: Tier.LEARNER },
+  { word: "WINNER", hint: "Person who wins.", tier: Tier.LEARNER },
+  { word: "SECOND", hint: "Unit of time.", tier: Tier.LEARNER },
+  { word: "MINUTE", hint: "Sixty seconds.", tier: Tier.LEARNER },
+  { word: "NUMBER", hint: "Arithmetical value.", tier: Tier.LEARNER },
+  { word: "LETTER", hint: "Character of alphabet.", tier: Tier.LEARNER },
+  { word: "SYMBOL", hint: "Mark or character.", tier: Tier.LEARNER },
+  { word: "REASON", hint: "Cause or explanation.", tier: Tier.LEARNER },
+  { word: "RESULT", hint: "Outcome of an action.", tier: Tier.LEARNER },
+  { word: "ANSWER", hint: "Response to a question.", tier: Tier.LEARNER },
+  { word: "DANGER", hint: "Possibility of harm.", tier: Tier.LEARNER },
+  { word: "SAFETY", hint: "Condition of being safe.", tier: Tier.LEARNER },
+  { word: "HEALTH", hint: "State of being well.", tier: Tier.LEARNER },
+  { word: "WEALTH", hint: "Abundance of money.", tier: Tier.LEARNER },
+  { word: "GROWTH", hint: "Process of growing.", tier: Tier.LEARNER },
+  { word: "CHANGE", hint: "Make different.", tier: Tier.LEARNER },
+  { word: "CHANCE", hint: "Possibility of something happening.", tier: Tier.LEARNER },
+  { word: "CHOICE", hint: "Act of selecting.", tier: Tier.LEARNER },
+  { word: "VOICE", hint: "Sound from the mouth.", tier: Tier.LEARNER },
+  { word: "NOISE", hint: "Unpleasant sound.", tier: Tier.LEARNER },
 
-    // Skilled (Tier 3) - Abstract concepts or technical terms (50)
-    { word: "GALAXY", hint: "System of millions of stars.", tier: Tier.SKILLED },
-    { word: "ENERGY", hint: "Power derived from resources.", tier: Tier.SKILLED },
-    { word: "SYSTEM", hint: "Set of connected things.", tier: Tier.SKILLED },
-    { word: "THEORY", hint: "System of ideas to explain.", tier: Tier.SKILLED },
-    { word: "MEMORY", hint: "Faculty of encoding info.", tier: Tier.SKILLED },
-    { word: "FUTURE", hint: "Time that is yet to come.", tier: Tier.SKILLED },
-    { word: "NATURE", hint: "Physical world and life.", tier: Tier.SKILLED },
-    { word: "DESIGN", hint: "Plan or drawing of object.", tier: Tier.SKILLED },
-    { word: "SOURCE", hint: "Place where something starts.", tier: Tier.SKILLED },
-    { word: "PUBLIC", hint: "Concerning the people.", tier: Tier.SKILLED },
-    { word: "ACTION", hint: "Process of doing something.", tier: Tier.SKILLED },
-    { word: "METHOD", hint: "Procedure for accomplishing.", tier: Tier.SKILLED },
-    { word: "POLICY", hint: "Course of action adopted.", tier: Tier.SKILLED },
-    { word: "SERIES", hint: "Number of things in order.", tier: Tier.SKILLED },
-    { word: "STATUS", hint: "Social or professional standing.", tier: Tier.SKILLED },
-    { word: "VISION", hint: "Faculty or state of being able to see.", tier: Tier.SKILLED },
-    { word: "VOLUME", hint: "Amount of space occupied.", tier: Tier.SKILLED },
-    { word: "ACCESS", hint: "Means of approaching.", tier: Tier.SKILLED },
-    { word: "ADVICE", hint: "Guidance or recommendations.", tier: Tier.SKILLED },
-    { word: "AMOUNT", hint: "Quantity of something.", tier: Tier.SKILLED },
-    { word: "ATTACK", hint: "Aggressive action.", tier: Tier.SKILLED },
-    { word: "AUTHOR", hint: "Writer of a book.", tier: Tier.SKILLED },
-    { word: "BASKET", hint: "Container used to hold or carry.", tier: Tier.SKILLED },
-    { word: "BUDGET", hint: "Estimate of income and expenditure.", tier: Tier.SKILLED },
-    { word: "BUTTON", hint: "Small disc to fasten clothes.", tier: Tier.SKILLED },
-    { word: "CAMERA", hint: "Device for taking photos.", tier: Tier.SKILLED },
-    { word: "CANYON", hint: "Deep gorge.", tier: Tier.SKILLED },
-    { word: "CAREER", hint: "Occupation undertaken for life.", tier: Tier.SKILLED },
-    { word: "CENTER", hint: "Middle point.", tier: Tier.SKILLED },
-    { word: "CLIENT", hint: "Person using services.", tier: Tier.SKILLED },
-    { word: "CLIMATE", hint: "Weather conditions.", tier: Tier.SKILLED },
-    { word: "COFFEE", hint: "Hot drink from beans.", tier: Tier.SKILLED },
-    { word: "COLUMN", hint: "Upright pillar.", tier: Tier.SKILLED },
-    { word: "COMMON", hint: "Occurring often.", tier: Tier.SKILLED },
-    { word: "COUNTY", hint: "Territorial division.", tier: Tier.SKILLED },
-    { word: "COUPLE", hint: "Two people or things.", tier: Tier.SKILLED },
-    { word: "COURSE", hint: "Direction or route.", tier: Tier.SKILLED },
-    { word: "CREDIT", hint: "Ability to obtain goods.", tier: Tier.SKILLED },
-    { word: "CUSTOM", hint: "Traditional way of behaving.", tier: Tier.SKILLED },
-    { word: "DAMAGE", hint: "Physical harm.", tier: Tier.SKILLED },
-    { word: "DEBATE", hint: "Formal discussion.", tier: Tier.SKILLED },
-    { word: "DEGREE", hint: "Unit of measurement.", tier: Tier.SKILLED },
-    { word: "DEVICE", hint: "Thing made for a purpose.", tier: Tier.SKILLED },
-    { word: "DIET", hint: "Kinds of food eaten.", tier: Tier.SKILLED },
-    { word: "DIRECT", hint: "Extending in a straight line.", tier: Tier.SKILLED },
-    { word: "DOUBLE", hint: "Consisting of two parts.", tier: Tier.SKILLED },
-    { word: "EDITOR", hint: "Person who edits.", tier: Tier.SKILLED },
-    { word: "EFFECT", hint: "Change that is a result.", tier: Tier.SKILLED },
-    { word: "EFFORT", hint: "Vigorous or determined attempt.", tier: Tier.SKILLED },
-    { word: "ENGINE", hint: "Machine with moving parts.", tier: Tier.SKILLED },
+  // Skilled (Tier 3) - Abstract concepts or technical terms (50)
+  { word: "GALAXY", hint: "System of millions of stars.", tier: Tier.SKILLED },
+  { word: "ENERGY", hint: "Power derived from resources.", tier: Tier.SKILLED },
+  { word: "SYSTEM", hint: "Set of connected things.", tier: Tier.SKILLED },
+  { word: "THEORY", hint: "System of ideas to explain.", tier: Tier.SKILLED },
+  { word: "MEMORY", hint: "Faculty of encoding info.", tier: Tier.SKILLED },
+  { word: "FUTURE", hint: "Time that is yet to come.", tier: Tier.SKILLED },
+  { word: "NATURE", hint: "Physical world and life.", tier: Tier.SKILLED },
+  { word: "DESIGN", hint: "Plan or drawing of object.", tier: Tier.SKILLED },
+  { word: "SOURCE", hint: "Place where something starts.", tier: Tier.SKILLED },
+  { word: "PUBLIC", hint: "Concerning the people.", tier: Tier.SKILLED },
+  { word: "ACTION", hint: "Process of doing something.", tier: Tier.SKILLED },
+  { word: "METHOD", hint: "Procedure for accomplishing.", tier: Tier.SKILLED },
+  { word: "POLICY", hint: "Course of action adopted.", tier: Tier.SKILLED },
+  { word: "SERIES", hint: "Number of things in order.", tier: Tier.SKILLED },
+  { word: "STATUS", hint: "Social or professional standing.", tier: Tier.SKILLED },
+  { word: "VISION", hint: "Faculty or state of being able to see.", tier: Tier.SKILLED },
+  { word: "VOLUME", hint: "Amount of space occupied.", tier: Tier.SKILLED },
+  { word: "ACCESS", hint: "Means of approaching.", tier: Tier.SKILLED },
+  { word: "ADVICE", hint: "Guidance or recommendations.", tier: Tier.SKILLED },
+  { word: "AMOUNT", hint: "Quantity of something.", tier: Tier.SKILLED },
+  { word: "ATTACK", hint: "Aggressive action.", tier: Tier.SKILLED },
+  { word: "AUTHOR", hint: "Writer of a book.", tier: Tier.SKILLED },
+  { word: "BASKET", hint: "Container used to hold or carry.", tier: Tier.SKILLED },
+  { word: "BUDGET", hint: "Estimate of income and expenditure.", tier: Tier.SKILLED },
+  { word: "BUTTON", hint: "Small disc to fasten clothes.", tier: Tier.SKILLED },
+  { word: "CAMERA", hint: "Device for taking photos.", tier: Tier.SKILLED },
+  { word: "CANYON", hint: "Deep gorge.", tier: Tier.SKILLED },
+  { word: "CAREER", hint: "Occupation undertaken for life.", tier: Tier.SKILLED },
+  { word: "CENTER", hint: "Middle point.", tier: Tier.SKILLED },
+  { word: "CLIENT", hint: "Person using services.", tier: Tier.SKILLED },
+  { word: "CLIMATE", hint: "Weather conditions.", tier: Tier.SKILLED },
+  { word: "COFFEE", hint: "Hot drink from beans.", tier: Tier.SKILLED },
+  { word: "COLUMN", hint: "Upright pillar.", tier: Tier.SKILLED },
+  { word: "COMMON", hint: "Occurring often.", tier: Tier.SKILLED },
+  { word: "COUNTY", hint: "Territorial division.", tier: Tier.SKILLED },
+  { word: "COUPLE", hint: "Two people or things.", tier: Tier.SKILLED },
+  { word: "COURSE", hint: "Direction or route.", tier: Tier.SKILLED },
+  { word: "CREDIT", hint: "Ability to obtain goods.", tier: Tier.SKILLED },
+  { word: "CUSTOM", hint: "Traditional way of behaving.", tier: Tier.SKILLED },
+  { word: "DAMAGE", hint: "Physical harm.", tier: Tier.SKILLED },
+  { word: "DEBATE", hint: "Formal discussion.", tier: Tier.SKILLED },
+  { word: "DEGREE", hint: "Unit of measurement.", tier: Tier.SKILLED },
+  { word: "DEVICE", hint: "Thing made for a purpose.", tier: Tier.SKILLED },
+  { word: "DIET", hint: "Kinds of food eaten.", tier: Tier.SKILLED },
+  { word: "DIRECT", hint: "Extending in a straight line.", tier: Tier.SKILLED },
+  { word: "DOUBLE", hint: "Consisting of two parts.", tier: Tier.SKILLED },
+  { word: "EDITOR", hint: "Person who edits.", tier: Tier.SKILLED },
+  { word: "EFFECT", hint: "Change that is a result.", tier: Tier.SKILLED },
+  { word: "EFFORT", hint: "Vigorous or determined attempt.", tier: Tier.SKILLED },
+  { word: "ENGINE", hint: "Machine with moving parts.", tier: Tier.SKILLED },
 
-    // Expert (Tier 4) - Specific, scientific, or complex (50)
-    { word: "QUANTUM", hint: "Physics of discrete energy.", tier: Tier.EXPERT },
-    { word: "PHYSICS", hint: "Study of matter and energy.", tier: Tier.EXPERT },
-    { word: "BIOLOGY", hint: "Study of living organisms.", tier: Tier.EXPERT },
-    { word: "CULTURE", hint: "Arts and social institutions.", tier: Tier.EXPERT },
-    { word: "JUSTICE", hint: "Just behavior or treatment.", tier: Tier.EXPERT },
-    { word: "LIBERTY", hint: "State of being free.", tier: Tier.EXPERT },
-    { word: "ECONOMY", hint: "Wealth and resources of a region.", tier: Tier.EXPERT },
-    { word: "SOCIETY", hint: "Aggregate of people living together.", tier: Tier.EXPERT },
-    { word: "HISTORY", hint: "Study of past events.", tier: Tier.EXPERT },
-    { word: "COMPLEX", hint: "Consisting of many parts.", tier: Tier.EXPERT },
-    { word: "ACIDITY", hint: "Level of acid.", tier: Tier.EXPERT },
-    { word: "ADDRESS", hint: "Particulars of place.", tier: Tier.EXPERT },
-    { word: "AIRPORT", hint: "Complex for aircraft.", tier: Tier.EXPERT },
-    { word: "ANALYST", hint: "Person who analyzes.", tier: Tier.EXPERT },
-    { word: "ANXIETY", hint: "Feeling of worry.", tier: Tier.EXPERT },
-    { word: "ARCHIVE", hint: "Collection of historical records.", tier: Tier.EXPERT },
-    { word: "ARTICLE", hint: "Piece of writing.", tier: Tier.EXPERT },
-    { word: "ASSAULT", hint: "Physical attack.", tier: Tier.EXPERT },
-    { word: "AUCTION", hint: "Public sale.", tier: Tier.EXPERT },
-    { word: "BALANCE", hint: "Even distribution of weight.", tier: Tier.EXPERT },
-    { word: "BATTERY", hint: "Container for power.", tier: Tier.EXPERT },
-    { word: "BLANKET", hint: "Large piece of woolen material.", tier: Tier.EXPERT },
-    { word: "CABINET", hint: "Cupboard with shelves.", tier: Tier.EXPERT },
-    { word: "CAPTAIN", hint: "Person in command.", tier: Tier.EXPERT },
-    { word: "CENTURY", hint: "Period of one hundred years.", tier: Tier.EXPERT },
-    { word: "CHAMBER", hint: "Large room.", tier: Tier.EXPERT },
-    { word: "CHARITY", hint: "Voluntary giving of help.", tier: Tier.EXPERT },
-    { word: "CHICKEN", hint: "Domestic fowl.", tier: Tier.EXPERT },
-    { word: "CIRCUIT", hint: "Roughly circular line.", tier: Tier.EXPERT },
-    { word: "CLASSES", hint: "Groups of students.", tier: Tier.EXPERT },
-    { word: "CLUSTER", hint: "Group of similar things.", tier: Tier.EXPERT },
-    { word: "COLLEGE", hint: "Educational institution.", tier: Tier.EXPERT },
-    { word: "COMFORT", hint: "State of physical ease.", tier: Tier.EXPERT },
-    { word: "COMMAND", hint: "Give an authoritative order.", tier: Tier.EXPERT },
-    { word: "COMPANY", hint: "Commercial business.", tier: Tier.EXPERT },
-    { word: "CONCEPT", hint: "Abstract idea.", tier: Tier.EXPERT },
-    { word: "CONCERN", hint: "Anxiety; worry.", tier: Tier.EXPERT },
-    { word: "CONCERT", hint: "Musical performance.", tier: Tier.EXPERT },
-    { word: "CONDUCT", hint: "Manner in which person behaves.", tier: Tier.EXPERT },
-    { word: "CONFIRM", hint: "Establish the truth.", tier: Tier.EXPERT },
-    { word: "CONNECT", hint: "Bring together.", tier: Tier.EXPERT },
-    { word: "CONSENT", hint: "Permission for something.", tier: Tier.EXPERT },
-    { word: "CONSIST", hint: "Be composed or made up of.", tier: Tier.EXPERT },
-    { word: "CONTACT", hint: "State of physical touching.", tier: Tier.EXPERT },
-    { word: "CONTAIN", hint: "Have or hold within.", tier: Tier.EXPERT },
-    { word: "CONTENT", hint: "State of satisfaction.", tier: Tier.EXPERT },
-    { word: "CONTEST", hint: "Event where people compete.", tier: Tier.EXPERT },
-    { word: "CONTEXT", hint: "Circumstances of an event.", tier: Tier.EXPERT },
-    { word: "CONTROL", hint: "Power to influence.", tier: Tier.EXPERT },
-    { word: "CONVERT", hint: "Change into different form.", tier: Tier.EXPERT },
+  // Expert (Tier 4) - Specific, scientific, or complex (50)
+  { word: "QUANTUM", hint: "Physics of discrete energy.", tier: Tier.EXPERT },
+  { word: "PHYSICS", hint: "Study of matter and energy.", tier: Tier.EXPERT },
+  { word: "BIOLOGY", hint: "Study of living organisms.", tier: Tier.EXPERT },
+  { word: "CULTURE", hint: "Arts and social institutions.", tier: Tier.EXPERT },
+  { word: "JUSTICE", hint: "Just behavior or treatment.", tier: Tier.EXPERT },
+  { word: "LIBERTY", hint: "State of being free.", tier: Tier.EXPERT },
+  { word: "ECONOMY", hint: "Wealth and resources of a region.", tier: Tier.EXPERT },
+  { word: "SOCIETY", hint: "Aggregate of people living together.", tier: Tier.EXPERT },
+  { word: "HISTORY", hint: "Study of past events.", tier: Tier.EXPERT },
+  { word: "COMPLEX", hint: "Consisting of many parts.", tier: Tier.EXPERT },
+  { word: "ACIDITY", hint: "Level of acid.", tier: Tier.EXPERT },
+  { word: "ADDRESS", hint: "Particulars of place.", tier: Tier.EXPERT },
+  { word: "AIRPORT", hint: "Complex for aircraft.", tier: Tier.EXPERT },
+  { word: "ANALYST", hint: "Person who analyzes.", tier: Tier.EXPERT },
+  { word: "ANXIETY", hint: "Feeling of worry.", tier: Tier.EXPERT },
+  { word: "ARCHIVE", hint: "Collection of historical records.", tier: Tier.EXPERT },
+  { word: "ARTICLE", hint: "Piece of writing.", tier: Tier.EXPERT },
+  { word: "ASSAULT", hint: "Physical attack.", tier: Tier.EXPERT },
+  { word: "AUCTION", hint: "Public sale.", tier: Tier.EXPERT },
+  { word: "BALANCE", hint: "Even distribution of weight.", tier: Tier.EXPERT },
+  { word: "BATTERY", hint: "Container for power.", tier: Tier.EXPERT },
+  { word: "BLANKET", hint: "Large piece of woolen material.", tier: Tier.EXPERT },
+  { word: "CABINET", hint: "Cupboard with shelves.", tier: Tier.EXPERT },
+  { word: "CAPTAIN", hint: "Person in command.", tier: Tier.EXPERT },
+  { word: "CENTURY", hint: "Period of one hundred years.", tier: Tier.EXPERT },
+  { word: "CHAMBER", hint: "Large room.", tier: Tier.EXPERT },
+  { word: "CHARITY", hint: "Voluntary giving of help.", tier: Tier.EXPERT },
+  { word: "CHICKEN", hint: "Domestic fowl.", tier: Tier.EXPERT },
+  { word: "CIRCUIT", hint: "Roughly circular line.", tier: Tier.EXPERT },
+  { word: "CLASSES", hint: "Groups of students.", tier: Tier.EXPERT },
+  { word: "CLUSTER", hint: "Group of similar things.", tier: Tier.EXPERT },
+  { word: "COLLEGE", hint: "Educational institution.", tier: Tier.EXPERT },
+  { word: "COMFORT", hint: "State of physical ease.", tier: Tier.EXPERT },
+  { word: "COMMAND", hint: "Give an authoritative order.", tier: Tier.EXPERT },
+  { word: "COMPANY", hint: "Commercial business.", tier: Tier.EXPERT },
+  { word: "CONCEPT", hint: "Abstract idea.", tier: Tier.EXPERT },
+  { word: "CONCERN", hint: "Anxiety; worry.", tier: Tier.EXPERT },
+  { word: "CONCERT", hint: "Musical performance.", tier: Tier.EXPERT },
+  { word: "CONDUCT", hint: "Manner in which person behaves.", tier: Tier.EXPERT },
+  { word: "CONFIRM", hint: "Establish the truth.", tier: Tier.EXPERT },
+  { word: "CONNECT", hint: "Bring together.", tier: Tier.EXPERT },
+  { word: "CONSENT", hint: "Permission for something.", tier: Tier.EXPERT },
+  { word: "CONSIST", hint: "Be composed or made up of.", tier: Tier.EXPERT },
+  { word: "CONTACT", hint: "State of physical touching.", tier: Tier.EXPERT },
+  { word: "CONTAIN", hint: "Have or hold within.", tier: Tier.EXPERT },
+  { word: "CONTENT", hint: "State of satisfaction.", tier: Tier.EXPERT },
+  { word: "CONTEST", hint: "Event where people compete.", tier: Tier.EXPERT },
+  { word: "CONTEXT", hint: "Circumstances of an event.", tier: Tier.EXPERT },
+  { word: "CONTROL", hint: "Power to influence.", tier: Tier.EXPERT },
+  { word: "CONVERT", hint: "Change into different form.", tier: Tier.EXPERT },
 
-    // Master (Tier 5) - Obscure, long, or very specific (50)
-    { word: "ZEPHYR", hint: "A soft gentle breeze.", tier: Tier.MASTER },
-    { word: "QUARTZ", hint: "Hard mineral of silica.", tier: Tier.MASTER },
-    { word: "VORTEX", hint: "Mass of whirling fluid.", tier: Tier.MASTER },
-    { word: "CRYPTIC", hint: "Having a meaning that is mysterious.", tier: Tier.MASTER },
-    { word: "JINXED", hint: "Bring bad luck to.", tier: Tier.MASTER },
-    { word: "SPHINX", hint: "Mythical creature with riddles.", tier: Tier.MASTER },
-    { word: "RHYTHM", hint: "Strong, regular repeated pattern.", tier: Tier.MASTER },
-    { word: "OXYGEN", hint: "Life-supporting gas.", tier: Tier.MASTER },
-    { word: "UNIQUE", hint: "Being the only one of its kind.", tier: Tier.MASTER },
-    { word: "ZENITH", hint: "The time at which something is most powerful.", tier: Tier.MASTER },
-    { word: "ABSOLUTE", hint: "Not qualified or diminished.", tier: Tier.MASTER },
-    { word: "ABSTRACT", hint: "Existing in thought.", tier: Tier.MASTER },
-    { word: "ACADEMIC", hint: "Relating to education.", tier: Tier.MASTER },
-    { word: "ACCIDENT", hint: "Unfortunate incident.", tier: Tier.MASTER },
-    { word: "ACCURACY", hint: "Quality of being correct.", tier: Tier.MASTER },
-    { word: "ACTIVITY", hint: "Condition in which things are happening.", tier: Tier.MASTER },
-    { word: "ADJACENT", hint: "Next to or adjoining.", tier: Tier.MASTER },
-    { word: "ADVOCATE", hint: "Person who publicly supports.", tier: Tier.MASTER },
-    { word: "AIRCRAFT", hint: "Machine capable of flight.", tier: Tier.MASTER },
-    { word: "ALLIANCE", hint: "Union formed for mutual benefit.", tier: Tier.MASTER },
-    { word: "ALUMINUM", hint: "Light silvery-gray metal.", tier: Tier.MASTER },
-    { word: "AMBITION", hint: "Strong desire to do.", tier: Tier.MASTER },
-    { word: "ANALYSIS", hint: "Detailed examination.", tier: Tier.MASTER },
-    { word: "ANCESTOR", hint: "Person from whom one is descended.", tier: Tier.MASTER },
-    { word: "ANYWHERE", hint: "In or to any place.", tier: Tier.MASTER },
-    { word: "APPARENT", hint: "Clearly visible or understood.", tier: Tier.MASTER },
-    { word: "APPENDIX", hint: "Supplementary material.", tier: Tier.MASTER },
-    { word: "APPROACH", hint: "Come near or nearer to.", tier: Tier.MASTER },
-    { word: "APPROVAL", hint: "Action of approving.", tier: Tier.MASTER },
-    { word: "ARGUMENT", hint: "Exchange of diverging views.", tier: Tier.MASTER },
-    { word: "ARTISTIC", hint: "Having natural creative skill.", tier: Tier.MASTER },
-    { word: "ASSEMBLY", hint: "Group of people gathered.", tier: Tier.MASTER },
-    { word: "ATHLETIC", hint: "Physically strong, fit.", tier: Tier.MASTER },
-    { word: "ATTITUDE", hint: "Settled way of thinking.", tier: Tier.MASTER },
-    { word: "ATTORNEY", hint: "Person appointed to act for another.", tier: Tier.MASTER },
-    { word: "AUDIENCE", hint: "Assembled spectators.", tier: Tier.MASTER },
-    { word: "BACKWARD", hint: "Directed behind.", tier: Tier.MASTER },
-    { word: "BACTERIA", hint: "Microscopic organisms.", tier: Tier.MASTER },
-    { word: "BASEBALL", hint: "Ball game played with bat.", tier: Tier.MASTER },
-    { word: "BASEMENT", hint: "Floor of a building below ground.", tier: Tier.MASTER },
-    { word: "BATHROOM", hint: "Room with toilet and bath.", tier: Tier.MASTER },
-    { word: "BECOMING", hint: "Process of coming to be.", tier: Tier.MASTER },
-    { word: "BEHAVIOR", hint: "Way in which one acts.", tier: Tier.MASTER },
-    { word: "BIRTHDAY", hint: "Anniversary of birth.", tier: Tier.MASTER },
-    { word: "BOUNDARY", hint: "Line that marks limits.", tier: Tier.MASTER },
-    { word: "BUILDING", hint: "Structure with roof and walls.", tier: Tier.MASTER },
-    { word: "BUSINESS", hint: "Person's regular occupation.", tier: Tier.MASTER },
-    { word: "CALENDAR", hint: "Chart showing days.", tier: Tier.MASTER },
-    { word: "CAMPAIGN", hint: "Series of military operations.", tier: Tier.MASTER },
-    { word: "CAPACITY", hint: "Maximum amount that can be contained.", tier: Tier.MASTER }
-  ];
+  // Master (Tier 5) - Obscure, long, or very specific (50)
+  { word: "ZEPHYR", hint: "A soft gentle breeze.", tier: Tier.MASTER },
+  { word: "QUARTZ", hint: "Hard mineral of silica.", tier: Tier.MASTER },
+  { word: "VORTEX", hint: "Mass of whirling fluid.", tier: Tier.MASTER },
+  { word: "CRYPTIC", hint: "Having a meaning that is mysterious.", tier: Tier.MASTER },
+  { word: "JINXED", hint: "Bring bad luck to.", tier: Tier.MASTER },
+  { word: "SPHINX", hint: "Mythical creature with riddles.", tier: Tier.MASTER },
+  { word: "RHYTHM", hint: "Strong, regular repeated pattern.", tier: Tier.MASTER },
+  { word: "OXYGEN", hint: "Life-supporting gas.", tier: Tier.MASTER },
+  { word: "UNIQUE", hint: "Being the only one of its kind.", tier: Tier.MASTER },
+  { word: "ZENITH", hint: "The time at which something is most powerful.", tier: Tier.MASTER },
+  { word: "ABSOLUTE", hint: "Not qualified or diminished.", tier: Tier.MASTER },
+  { word: "ABSTRACT", hint: "Existing in thought.", tier: Tier.MASTER },
+  { word: "ACADEMIC", hint: "Relating to education.", tier: Tier.MASTER },
+  { word: "ACCIDENT", hint: "Unfortunate incident.", tier: Tier.MASTER },
+  { word: "ACCURACY", hint: "Quality of being correct.", tier: Tier.MASTER },
+  { word: "ACTIVITY", hint: "Condition in which things are happening.", tier: Tier.MASTER },
+  { word: "ADJACENT", hint: "Next to or adjoining.", tier: Tier.MASTER },
+  { word: "ADVOCATE", hint: "Person who publicly supports.", tier: Tier.MASTER },
+  { word: "AIRCRAFT", hint: "Machine capable of flight.", tier: Tier.MASTER },
+  { word: "ALLIANCE", hint: "Union formed for mutual benefit.", tier: Tier.MASTER },
+  { word: "ALUMINUM", hint: "Light silvery-gray metal.", tier: Tier.MASTER },
+  { word: "AMBITION", hint: "Strong desire to do.", tier: Tier.MASTER },
+  { word: "ANALYSIS", hint: "Detailed examination.", tier: Tier.MASTER },
+  { word: "ANCESTOR", hint: "Person from whom one is descended.", tier: Tier.MASTER },
+  { word: "ANYWHERE", hint: "In or to any place.", tier: Tier.MASTER },
+  { word: "APPARENT", hint: "Clearly visible or understood.", tier: Tier.MASTER },
+  { word: "APPENDIX", hint: "Supplementary material.", tier: Tier.MASTER },
+  { word: "APPROACH", hint: "Come near or nearer to.", tier: Tier.MASTER },
+  { word: "APPROVAL", hint: "Action of approving.", tier: Tier.MASTER },
+  { word: "ARGUMENT", hint: "Exchange of diverging views.", tier: Tier.MASTER },
+  { word: "ARTISTIC", hint: "Having natural creative skill.", tier: Tier.MASTER },
+  { word: "ASSEMBLY", hint: "Group of people gathered.", tier: Tier.MASTER },
+  { word: "ATHLETIC", hint: "Physically strong, fit.", tier: Tier.MASTER },
+  { word: "ATTITUDE", hint: "Settled way of thinking.", tier: Tier.MASTER },
+  { word: "ATTORNEY", hint: "Person appointed to act for another.", tier: Tier.MASTER },
+  { word: "AUDIENCE", hint: "Assembled spectators.", tier: Tier.MASTER },
+  { word: "BACKWARD", hint: "Directed behind.", tier: Tier.MASTER },
+  { word: "BACTERIA", hint: "Microscopic organisms.", tier: Tier.MASTER },
+  { word: "BASEBALL", hint: "Ball game played with bat.", tier: Tier.MASTER },
+  { word: "BASEMENT", hint: "Floor of a building below ground.", tier: Tier.MASTER },
+  { word: "BATHROOM", hint: "Room with toilet and bath.", tier: Tier.MASTER },
+  { word: "BECOMING", hint: "Process of coming to be.", tier: Tier.MASTER },
+  { word: "BEHAVIOR", hint: "Way in which one acts.", tier: Tier.MASTER },
+  { word: "BIRTHDAY", hint: "Anniversary of birth.", tier: Tier.MASTER },
+  { word: "BOUNDARY", hint: "Line that marks limits.", tier: Tier.MASTER },
+  { word: "BUILDING", hint: "Structure with roof and walls.", tier: Tier.MASTER },
+  { word: "BUSINESS", hint: "Person's regular occupation.", tier: Tier.MASTER },
+  { word: "CALENDAR", hint: "Chart showing days.", tier: Tier.MASTER },
+  { word: "CAMPAIGN", hint: "Series of military operations.", tier: Tier.MASTER },
+  { word: "CAPACITY", hint: "Maximum amount that can be contained.", tier: Tier.MASTER }
+];
 
-  export const WORDS_DE: WordData[] = [
-    // Beginner (Tier 1) - Common, simple words (50)
-    { word: "APFEL", hint: "Ein beliebtes Kernobst.", tier: Tier.BEGINNER },
-    { word: "HAUS", hint: "Gebäude zum Wohnen.", tier: Tier.BEGINNER },
-    { word: "KATZE", hint: "Beliebtes Haustier.", tier: Tier.BEGINNER },
-    { word: "BLUME", hint: "Pflanze mit Blüten.", tier: Tier.BEGINNER },
-    { word: "SONNE", hint: "Stern unseres Systems.", tier: Tier.BEGINNER },
-    { word: "MILCH", hint: "Weiße Flüssigkeit.", tier: Tier.BEGINNER },
-    { word: "STUHL", hint: "Möbel zum Sitzen.", tier: Tier.BEGINNER },
-    { word: "TISCH", hint: "Möbel mit Platte.", tier: Tier.BEGINNER },
-    { word: "VOGEL", hint: "Tier mit Federn.", tier: Tier.BEGINNER },
-    { word: "FARBE", hint: "Eigenschaft des Lichts.", tier: Tier.BEGINNER },
-    { word: "BAUM", hint: "Große Pflanze mit Stamm.", tier: Tier.BEGINNER },
-    { word: "BUCH", hint: "Seiten zum Lesen.", tier: Tier.BEGINNER },
-    { word: "BROT", hint: "Gebackenes Nahrungsmittel.", tier: Tier.BEGINNER },
-    { word: "FISCH", hint: "Tier im Wasser.", tier: Tier.BEGINNER },
-    { word: "GELD", hint: "Zahlungsmittel.", tier: Tier.BEGINNER },
-    { word: "GLAS", hint: "Durchsichtiges Material.", tier: Tier.BEGINNER },
-    { word: "GRAS", hint: "Grüne Pflanze am Boden.", tier: Tier.BEGINNER },
-    { word: "HAND", hint: "Körperteil zum Greifen.", tier: Tier.BEGINNER },
-    { word: "HERZ", hint: "Organ für Blutkreislauf.", tier: Tier.BEGINNER },
-    { word: "HUND", hint: "Bester Freund des Menschen.", tier: Tier.BEGINNER },
-    { word: "INSEL", hint: "Land im Wasser.", tier: Tier.BEGINNER },
-    { word: "KIND", hint: "Junger Mensch.", tier: Tier.BEGINNER },
-    { word: "KOPF", hint: "Oberster Körperteil.", tier: Tier.BEGINNER },
-    { word: "LAMPE", hint: "Spendet Licht.", tier: Tier.BEGINNER },
-    { word: "LICHT", hint: "Gegenteil von Dunkelheit.", tier: Tier.BEGINNER },
-    { word: "LIED", hint: "Gesungenes Musikstück.", tier: Tier.BEGINNER },
-    { word: "MAUS", hint: "Kleines Nagetier.", tier: Tier.BEGINNER },
-    { word: "MOND", hint: "Trabant der Erde.", tier: Tier.BEGINNER },
-    { word: "NACHT", hint: "Zeit der Dunkelheit.", tier: Tier.BEGINNER },
-    { word: "NASE", hint: "Riechorgan.", tier: Tier.BEGINNER },
-    { word: "OBST", hint: "Früchte zum Essen.", tier: Tier.BEGINNER },
-    { word: "OFEN", hint: "Gerät zum Backen.", tier: Tier.BEGINNER },
-    { word: "PARK", hint: "Grünanlage in der Stadt.", tier: Tier.BEGINNER },
-    { word: "PFERD", hint: "Reittier.", tier: Tier.BEGINNER },
-    { word: "PILZ", hint: "Wächst im Wald.", tier: Tier.BEGINNER },
-    { word: "RING", hint: "Schmuck für den Finger.", tier: Tier.BEGINNER },
-    { word: "ROSE", hint: "Blume mit Dornen.", tier: Tier.BEGINNER },
-    { word: "SALZ", hint: "Gewürz, weiß.", tier: Tier.BEGINNER },
-    { word: "SCHUH", hint: "Kleidung für den Fuß.", tier: Tier.BEGINNER },
-    { word: "SEIFE", hint: "Zum Waschen.", tier: Tier.BEGINNER },
-    { word: "SOFA", hint: "Bequemes Sitzmöbel.", tier: Tier.BEGINNER },
-    { word: "STADT", hint: "Große Siedlung.", tier: Tier.BEGINNER },
-    { word: "STERN", hint: "Leuchtet am Nachthimmel.", tier: Tier.BEGINNER },
-    { word: "TAG", hint: "Zeit des Lichts.", tier: Tier.BEGINNER },
-    { word: "TANTE", hint: "Schwester der Mutter.", tier: Tier.BEGINNER },
-    { word: "UHR", hint: "Zeigt die Zeit an.", tier: Tier.BEGINNER },
-    { word: "VATER", hint: "Männliches Elternteil.", tier: Tier.BEGINNER },
-    { word: "WALD", hint: "Viele Bäume.", tier: Tier.BEGINNER },
-    { word: "WAND", hint: "Teil eines Raumes.", tier: Tier.BEGINNER },
-    { word: "WEG", hint: "Pfad zum Gehen.", tier: Tier.BEGINNER },
+export const WORDS_DE: WordData[] = [
+  // Beginner (Tier 1) - Common, simple words (50)
+  { word: "APFEL", hint: "Ein beliebtes Kernobst.", tier: Tier.BEGINNER },
+  { word: "HAUS", hint: "Gebäude zum Wohnen.", tier: Tier.BEGINNER },
+  { word: "KATZE", hint: "Beliebtes Haustier.", tier: Tier.BEGINNER },
+  { word: "BLUME", hint: "Pflanze mit Blüten.", tier: Tier.BEGINNER },
+  { word: "SONNE", hint: "Stern unseres Systems.", tier: Tier.BEGINNER },
+  { word: "MILCH", hint: "Weiße Flüssigkeit.", tier: Tier.BEGINNER },
+  { word: "STUHL", hint: "Möbel zum Sitzen.", tier: Tier.BEGINNER },
+  { word: "TISCH", hint: "Möbel mit Platte.", tier: Tier.BEGINNER },
+  { word: "VOGEL", hint: "Tier mit Federn.", tier: Tier.BEGINNER },
+  { word: "FARBE", hint: "Eigenschaft des Lichts.", tier: Tier.BEGINNER },
+  { word: "BAUM", hint: "Große Pflanze mit Stamm.", tier: Tier.BEGINNER },
+  { word: "BUCH", hint: "Seiten zum Lesen.", tier: Tier.BEGINNER },
+  { word: "BROT", hint: "Gebackenes Nahrungsmittel.", tier: Tier.BEGINNER },
+  { word: "FISCH", hint: "Tier im Wasser.", tier: Tier.BEGINNER },
+  { word: "GELD", hint: "Zahlungsmittel.", tier: Tier.BEGINNER },
+  { word: "GLAS", hint: "Durchsichtiges Material.", tier: Tier.BEGINNER },
+  { word: "GRAS", hint: "Grüne Pflanze am Boden.", tier: Tier.BEGINNER },
+  { word: "HAND", hint: "Körperteil zum Greifen.", tier: Tier.BEGINNER },
+  { word: "HERZ", hint: "Organ für Blutkreislauf.", tier: Tier.BEGINNER },
+  { word: "HUND", hint: "Bester Freund des Menschen.", tier: Tier.BEGINNER },
+  { word: "INSEL", hint: "Land im Wasser.", tier: Tier.BEGINNER },
+  { word: "KIND", hint: "Junger Mensch.", tier: Tier.BEGINNER },
+  { word: "KOPF", hint: "Oberster Körperteil.", tier: Tier.BEGINNER },
+  { word: "LAMPE", hint: "Spendet Licht.", tier: Tier.BEGINNER },
+  { word: "LICHT", hint: "Gegenteil von Dunkelheit.", tier: Tier.BEGINNER },
+  { word: "LIED", hint: "Gesungenes Musikstück.", tier: Tier.BEGINNER },
+  { word: "MAUS", hint: "Kleines Nagetier.", tier: Tier.BEGINNER },
+  { word: "MOND", hint: "Trabant der Erde.", tier: Tier.BEGINNER },
+  { word: "NACHT", hint: "Zeit der Dunkelheit.", tier: Tier.BEGINNER },
+  { word: "NASE", hint: "Riechorgan.", tier: Tier.BEGINNER },
+  { word: "OBST", hint: "Früchte zum Essen.", tier: Tier.BEGINNER },
+  { word: "OFEN", hint: "Gerät zum Backen.", tier: Tier.BEGINNER },
+  { word: "PARK", hint: "Grünanlage in der Stadt.", tier: Tier.BEGINNER },
+  { word: "PFERD", hint: "Reittier.", tier: Tier.BEGINNER },
+  { word: "PILZ", hint: "Wächst im Wald.", tier: Tier.BEGINNER },
+  { word: "RING", hint: "Schmuck für den Finger.", tier: Tier.BEGINNER },
+  { word: "ROSE", hint: "Blume mit Dornen.", tier: Tier.BEGINNER },
+  { word: "SALZ", hint: "Gewürz, weiß.", tier: Tier.BEGINNER },
+  { word: "SCHUH", hint: "Kleidung für den Fuß.", tier: Tier.BEGINNER },
+  { word: "SEIFE", hint: "Zum Waschen.", tier: Tier.BEGINNER },
+  { word: "SOFA", hint: "Bequemes Sitzmöbel.", tier: Tier.BEGINNER },
+  { word: "STADT", hint: "Große Siedlung.", tier: Tier.BEGINNER },
+  { word: "STERN", hint: "Leuchtet am Nachthimmel.", tier: Tier.BEGINNER },
+  { word: "TAG", hint: "Zeit des Lichts.", tier: Tier.BEGINNER },
+  { word: "TANTE", hint: "Schwester der Mutter.", tier: Tier.BEGINNER },
+  { word: "UHR", hint: "Zeigt die Zeit an.", tier: Tier.BEGINNER },
+  { word: "VATER", hint: "Männliches Elternteil.", tier: Tier.BEGINNER },
+  { word: "WALD", hint: "Viele Bäume.", tier: Tier.BEGINNER },
+  { word: "WAND", hint: "Teil eines Raumes.", tier: Tier.BEGINNER },
+  { word: "WEG", hint: "Pfad zum Gehen.", tier: Tier.BEGINNER },
 
-    // Learner (Tier 2) - Slightly longer or less concrete (50)
-    { word: "SCHULE", hint: "Ort zum Lernen.", tier: Tier.LEARNER },
-    { word: "STRASSE", hint: "Weg für Fahrzeuge.", tier: Tier.LEARNER },
-    { word: "FREUND", hint: "Nahestehende Person.", tier: Tier.LEARNER },
-    { word: "URLAUB", hint: "Freie Zeit zur Erholung.", tier: Tier.LEARNER },
-    { word: "WINTER", hint: "Die kälteste Jahreszeit.", tier: Tier.LEARNER },
-    { word: "GARTEN", hint: "Kultiviertes Stück Land.", tier: Tier.LEARNER },
-    { word: "ZIMMER", hint: "Raum in einem Haus.", tier: Tier.LEARNER },
-    { word: "WASSER", hint: "Klare Flüssigkeit H2O.", tier: Tier.LEARNER },
-    { word: "HIMMEL", hint: "Gewölbe über der Erde.", tier: Tier.LEARNER },
-    { word: "BRUDER", hint: "Männliches Geschwister.", tier: Tier.LEARNER },
-    { word: "ABEND", hint: "Ende des Tages.", tier: Tier.LEARNER },
-    { word: "AMPEL", hint: "Verkehrszeichen mit Licht.", tier: Tier.LEARNER },
-    { word: "ANGST", hint: "Gefühl der Bedrohung.", tier: Tier.LEARNER },
-    { word: "ARBEIT", hint: "Tätigkeit gegen Lohn.", tier: Tier.LEARNER },
-    { word: "AUGEN", hint: "Sehorgane.", tier: Tier.LEARNER },
-    { word: "AUTO", hint: "Kraftfahrzeug.", tier: Tier.LEARNER },
-    { word: "BADEN", hint: "Im Wasser waschen.", tier: Tier.LEARNER },
-    { word: "BANANE", hint: "Gelbe, krumme Frucht.", tier: Tier.LEARNER },
-    { word: "BERUF", hint: "Erlernte Tätigkeit.", tier: Tier.LEARNER },
-    { word: "BILD", hint: "Gemälde oder Foto.", tier: Tier.LEARNER },
-    { word: "BLATT", hint: "Teil einer Pflanze.", tier: Tier.LEARNER },
-    { word: "BLAU", hint: "Farbe des Himmels.", tier: Tier.LEARNER },
-    { word: "BRIEF", hint: "Schriftliche Nachricht.", tier: Tier.LEARNER },
-    { word: "BRILLE", hint: "Sehhilfe.", tier: Tier.LEARNER },
-    { word: "DACH", hint: "Oberster Teil des Hauses.", tier: Tier.LEARNER },
-    { word: "DANKE", hint: "Wort des Dankes.", tier: Tier.LEARNER },
-    { word: "DATUM", hint: "Kalenderangabe.", tier: Tier.LEARNER },
-    { word: "DAUER", hint: "Zeitspanne.", tier: Tier.LEARNER },
-    { word: "DECKE", hint: "Wärmt im Bett.", tier: Tier.LEARNER },
-    { word: "DORF", hint: "Kleine Siedlung.", tier: Tier.LEARNER },
-    { word: "DURST", hint: "Verlangen zu trinken.", tier: Tier.LEARNER },
-    { word: "ELTERN", hint: "Vater und Mutter.", tier: Tier.LEARNER },
-    { word: "ENDE", hint: "Schluss von etwas.", tier: Tier.LEARNER },
-    { word: "ERDE", hint: "Unser Planet.", tier: Tier.LEARNER },
-    { word: "ESSEN", hint: "Nahrung aufnehmen.", tier: Tier.LEARNER },
-    { word: "EULE", hint: "Nachtaktiver Vogel.", tier: Tier.LEARNER },
-    { word: "FAHRT", hint: "Reise mit Fahrzeug.", tier: Tier.LEARNER },
-    { word: "FALL", hint: "Sturz nach unten.", tier: Tier.LEARNER },
-    { word: "FEUER", hint: "Heiß und leuchtend.", tier: Tier.LEARNER },
-    { word: "FILM", hint: "Bewegte Bilder.", tier: Tier.LEARNER },
-    { word: "FLUSS", hint: "Fließendes Gewässer.", tier: Tier.LEARNER },
-    { word: "FRAGE", hint: "Verlangt eine Antwort.", tier: Tier.LEARNER },
-    { word: "FRAU", hint: "Weiblicher Mensch.", tier: Tier.LEARNER },
-    { word: "GABEL", hint: "Besteck zum Aufspießen.", tier: Tier.LEARNER },
-    { word: "GAST", hint: "Besucher.", tier: Tier.LEARNER },
-    { word: "GEBEN", hint: "Jemandem etwas reichen.", tier: Tier.LEARNER },
-    { word: "GEHEN", hint: "Sich zu Fuß bewegen.", tier: Tier.LEARNER },
-    { word: "GRUEN", hint: "Farbe der Hoffnung.", tier: Tier.LEARNER },
-    { word: "HAARE", hint: "Wachsen auf dem Kopf.", tier: Tier.LEARNER },
-    { word: "HALLO", hint: "Grußwort.", tier: Tier.LEARNER },
+  // Learner (Tier 2) - Slightly longer or less concrete (50)
+  { word: "SCHULE", hint: "Ort zum Lernen.", tier: Tier.LEARNER },
+  { word: "STRASSE", hint: "Weg für Fahrzeuge.", tier: Tier.LEARNER },
+  { word: "FREUND", hint: "Nahestehende Person.", tier: Tier.LEARNER },
+  { word: "URLAUB", hint: "Freie Zeit zur Erholung.", tier: Tier.LEARNER },
+  { word: "WINTER", hint: "Die kälteste Jahreszeit.", tier: Tier.LEARNER },
+  { word: "GARTEN", hint: "Kultiviertes Stück Land.", tier: Tier.LEARNER },
+  { word: "ZIMMER", hint: "Raum in einem Haus.", tier: Tier.LEARNER },
+  { word: "WASSER", hint: "Klare Flüssigkeit H2O.", tier: Tier.LEARNER },
+  { word: "HIMMEL", hint: "Gewölbe über der Erde.", tier: Tier.LEARNER },
+  { word: "BRUDER", hint: "Männliches Geschwister.", tier: Tier.LEARNER },
+  { word: "ABEND", hint: "Ende des Tages.", tier: Tier.LEARNER },
+  { word: "AMPEL", hint: "Verkehrszeichen mit Licht.", tier: Tier.LEARNER },
+  { word: "ANGST", hint: "Gefühl der Bedrohung.", tier: Tier.LEARNER },
+  { word: "ARBEIT", hint: "Tätigkeit gegen Lohn.", tier: Tier.LEARNER },
+  { word: "AUGEN", hint: "Sehorgane.", tier: Tier.LEARNER },
+  { word: "AUTO", hint: "Kraftfahrzeug.", tier: Tier.LEARNER },
+  { word: "BADEN", hint: "Im Wasser waschen.", tier: Tier.LEARNER },
+  { word: "BANANE", hint: "Gelbe, krumme Frucht.", tier: Tier.LEARNER },
+  { word: "BERUF", hint: "Erlernte Tätigkeit.", tier: Tier.LEARNER },
+  { word: "BILD", hint: "Gemälde oder Foto.", tier: Tier.LEARNER },
+  { word: "BLATT", hint: "Teil einer Pflanze.", tier: Tier.LEARNER },
+  { word: "BLAU", hint: "Farbe des Himmels.", tier: Tier.LEARNER },
+  { word: "BRIEF", hint: "Schriftliche Nachricht.", tier: Tier.LEARNER },
+  { word: "BRILLE", hint: "Sehhilfe.", tier: Tier.LEARNER },
+  { word: "DACH", hint: "Oberster Teil des Hauses.", tier: Tier.LEARNER },
+  { word: "DANKE", hint: "Wort des Dankes.", tier: Tier.LEARNER },
+  { word: "DATUM", hint: "Kalenderangabe.", tier: Tier.LEARNER },
+  { word: "DAUER", hint: "Zeitspanne.", tier: Tier.LEARNER },
+  { word: "DECKE", hint: "Wärmt im Bett.", tier: Tier.LEARNER },
+  { word: "DORF", hint: "Kleine Siedlung.", tier: Tier.LEARNER },
+  { word: "DURST", hint: "Verlangen zu trinken.", tier: Tier.LEARNER },
+  { word: "ELTERN", hint: "Vater und Mutter.", tier: Tier.LEARNER },
+  { word: "ENDE", hint: "Schluss von etwas.", tier: Tier.LEARNER },
+  { word: "ERDE", hint: "Unser Planet.", tier: Tier.LEARNER },
+  { word: "ESSEN", hint: "Nahrung aufnehmen.", tier: Tier.LEARNER },
+  { word: "EULE", hint: "Nachtaktiver Vogel.", tier: Tier.LEARNER },
+  { word: "FAHRT", hint: "Reise mit Fahrzeug.", tier: Tier.LEARNER },
+  { word: "FALL", hint: "Sturz nach unten.", tier: Tier.LEARNER },
+  { word: "FEUER", hint: "Heiß und leuchtend.", tier: Tier.LEARNER },
+  { word: "FILM", hint: "Bewegte Bilder.", tier: Tier.LEARNER },
+  { word: "FLUSS", hint: "Fließendes Gewässer.", tier: Tier.LEARNER },
+  { word: "FRAGE", hint: "Verlangt eine Antwort.", tier: Tier.LEARNER },
+  { word: "FRAU", hint: "Weiblicher Mensch.", tier: Tier.LEARNER },
+  { word: "GABEL", hint: "Besteck zum Aufspießen.", tier: Tier.LEARNER },
+  { word: "GAST", hint: "Besucher.", tier: Tier.LEARNER },
+  { word: "GEBEN", hint: "Jemandem etwas reichen.", tier: Tier.LEARNER },
+  { word: "GEHEN", hint: "Sich zu Fuß bewegen.", tier: Tier.LEARNER },
+  { word: "GRUEN", hint: "Farbe der Hoffnung.", tier: Tier.LEARNER },
+  { word: "HAARE", hint: "Wachsen auf dem Kopf.", tier: Tier.LEARNER },
+  { word: "HALLO", hint: "Grußwort.", tier: Tier.LEARNER },
 
-    // Skilled (Tier 3) - Abstract concepts or technical terms (50)
-    { word: "ENERGIE", hint: "Fähigkeit, Arbeit zu verrichten.", tier: Tier.SKILLED },
-    { word: "SYSTEM", hint: "Geordnetes Ganzes.", tier: Tier.SKILLED },
-    { word: "PLANET", hint: "Himmelskörper im Orbit.", tier: Tier.SKILLED },
-    { word: "KULTUR", hint: "Gesamtheit der geistigen Güter.", tier: Tier.SKILLED },
-    { word: "GESETZ", hint: "Rechtliche Vorschrift.", tier: Tier.SKILLED },
-    { word: "WISSEN", hint: "Kenntnis von Fakten.", tier: Tier.SKILLED },
-    { word: "GLUECK", hint: "Zustand der Zufriedenheit.", tier: Tier.SKILLED },
-    { word: "TRAUM", hint: "Erlebnis im Schlaf.", tier: Tier.SKILLED },
-    { word: "MUSIK", hint: "Kunst der Töne.", tier: Tier.SKILLED },
-    { word: "NATUR", hint: "Alles nicht vom Menschen Geschaffene.", tier: Tier.SKILLED },
-    { word: "ABLAUF", hint: "Reihenfolge von Ereignissen.", tier: Tier.SKILLED },
-    { word: "ABSATZ", hint: "Teil eines Textes.", tier: Tier.SKILLED },
-    { word: "ABSICHT", hint: "Gewolltes Ziel.", tier: Tier.SKILLED },
-    { word: "ACHTUNG", hint: "Respekt oder Vorsicht.", tier: Tier.SKILLED },
-    { word: "AKTION", hint: "Handlung oder Tat.", tier: Tier.SKILLED },
-    { word: "ALLTAG", hint: "Gewohnter Tagesablauf.", tier: Tier.SKILLED },
-    { word: "ANFANG", hint: "Beginn von etwas.", tier: Tier.SKILLED },
-    { word: "ANGEBOT", hint: "Vorschlag zum Kauf.", tier: Tier.SKILLED },
-    { word: "ANLAGE", hint: "Investition oder Park.", tier: Tier.SKILLED },
-    { word: "ANRUF", hint: "Telefonat.", tier: Tier.SKILLED },
-    { word: "ANSATZ", hint: "Herangehensweise.", tier: Tier.SKILLED },
-    { word: "ANWALT", hint: "Rechtsbeistand.", tier: Tier.SKILLED },
-    { word: "ANZAHL", hint: "Menge.", tier: Tier.SKILLED },
-    { word: "ARBEIT", hint: "Berufliche Tätigkeit.", tier: Tier.SKILLED },
-    { word: "ARMUT", hint: "Mangel an Geld.", tier: Tier.SKILLED },
-    { word: "ARTIKEL", hint: "Wortart oder Zeitungsbericht.", tier: Tier.SKILLED },
-    { word: "AUFBAU", hint: "Struktur oder Konstruktion.", tier: Tier.SKILLED },
-    { word: "AUFGABE", hint: "Zu erledigende Arbeit.", tier: Tier.SKILLED },
-    { word: "AUFTRAG", hint: "Bestellung einer Leistung.", tier: Tier.SKILLED },
-    { word: "AUSGABE", hint: "Kosten oder Edition.", tier: Tier.SKILLED },
-    { word: "AUSSAGE", hint: "Behauptung oder Statement.", tier: Tier.SKILLED },
-    { word: "AUSWAHL", hint: "Selektion.", tier: Tier.SKILLED },
-    { word: "BAHNHOF", hint: "Station für Züge.", tier: Tier.SKILLED },
-    { word: "BANKER", hint: "Arbeitet mit Geld.", tier: Tier.SKILLED },
-    { word: "BAUER", hint: "Landwirt.", tier: Tier.SKILLED },
-    { word: "BEAMTE", hint: "Staatsdiener.", tier: Tier.SKILLED },
-    { word: "BEDARF", hint: "Notwendigkeit.", tier: Tier.SKILLED },
-    { word: "BEGINN", hint: "Start.", tier: Tier.SKILLED },
-    { word: "BEGRIFF", hint: "Wort oder Konzept.", tier: Tier.SKILLED },
-    { word: "BEITRAG", hint: "Spende oder Artikel.", tier: Tier.SKILLED },
-    { word: "BERICHT", hint: "Schilderung von Ereignissen.", tier: Tier.SKILLED },
-    { word: "BETRAG", hint: "Geldsumme.", tier: Tier.SKILLED },
-    { word: "BETRIEB", hint: "Firma oder Unternehmen.", tier: Tier.SKILLED },
-    { word: "BEWEIS", hint: "Beleg für Wahrheit.", tier: Tier.SKILLED },
-    { word: "BILANZ", hint: "Gegenüberstellung von Werten.", tier: Tier.SKILLED },
-    { word: "BILDUNG", hint: "Schulung und Wissen.", tier: Tier.SKILLED },
-    { word: "BINDUNG", hint: "Zusammenhalt.", tier: Tier.SKILLED },
-    { word: "BITTE", hint: "Höfliches Ersuchen.", tier: Tier.SKILLED },
-    { word: "BLICK", hint: "Augenaufschlag.", tier: Tier.SKILLED },
-    { word: "BODEN", hint: "Untergrund.", tier: Tier.SKILLED },
+  // Skilled (Tier 3) - Abstract concepts or technical terms (50)
+  { word: "ENERGIE", hint: "Fähigkeit, Arbeit zu verrichten.", tier: Tier.SKILLED },
+  { word: "SYSTEM", hint: "Geordnetes Ganzes.", tier: Tier.SKILLED },
+  { word: "PLANET", hint: "Himmelskörper im Orbit.", tier: Tier.SKILLED },
+  { word: "KULTUR", hint: "Gesamtheit der geistigen Güter.", tier: Tier.SKILLED },
+  { word: "GESETZ", hint: "Rechtliche Vorschrift.", tier: Tier.SKILLED },
+  { word: "WISSEN", hint: "Kenntnis von Fakten.", tier: Tier.SKILLED },
+  { word: "GLUECK", hint: "Zustand der Zufriedenheit.", tier: Tier.SKILLED },
+  { word: "TRAUM", hint: "Erlebnis im Schlaf.", tier: Tier.SKILLED },
+  { word: "MUSIK", hint: "Kunst der Töne.", tier: Tier.SKILLED },
+  { word: "NATUR", hint: "Alles nicht vom Menschen Geschaffene.", tier: Tier.SKILLED },
+  { word: "ABLAUF", hint: "Reihenfolge von Ereignissen.", tier: Tier.SKILLED },
+  { word: "ABSATZ", hint: "Teil eines Textes.", tier: Tier.SKILLED },
+  { word: "ABSICHT", hint: "Gewolltes Ziel.", tier: Tier.SKILLED },
+  { word: "ACHTUNG", hint: "Respekt oder Vorsicht.", tier: Tier.SKILLED },
+  { word: "AKTION", hint: "Handlung oder Tat.", tier: Tier.SKILLED },
+  { word: "ALLTAG", hint: "Gewohnter Tagesablauf.", tier: Tier.SKILLED },
+  { word: "ANFANG", hint: "Beginn von etwas.", tier: Tier.SKILLED },
+  { word: "ANGEBOT", hint: "Vorschlag zum Kauf.", tier: Tier.SKILLED },
+  { word: "ANLAGE", hint: "Investition oder Park.", tier: Tier.SKILLED },
+  { word: "ANRUF", hint: "Telefonat.", tier: Tier.SKILLED },
+  { word: "ANSATZ", hint: "Herangehensweise.", tier: Tier.SKILLED },
+  { word: "ANWALT", hint: "Rechtsbeistand.", tier: Tier.SKILLED },
+  { word: "ANZAHL", hint: "Menge.", tier: Tier.SKILLED },
+  { word: "ARBEIT", hint: "Berufliche Tätigkeit.", tier: Tier.SKILLED },
+  { word: "ARMUT", hint: "Mangel an Geld.", tier: Tier.SKILLED },
+  { word: "ARTIKEL", hint: "Wortart oder Zeitungsbericht.", tier: Tier.SKILLED },
+  { word: "AUFBAU", hint: "Struktur oder Konstruktion.", tier: Tier.SKILLED },
+  { word: "AUFGABE", hint: "Zu erledigende Arbeit.", tier: Tier.SKILLED },
+  { word: "AUFTRAG", hint: "Bestellung einer Leistung.", tier: Tier.SKILLED },
+  { word: "AUSGABE", hint: "Kosten oder Edition.", tier: Tier.SKILLED },
+  { word: "AUSSAGE", hint: "Behauptung oder Statement.", tier: Tier.SKILLED },
+  { word: "AUSWAHL", hint: "Selektion.", tier: Tier.SKILLED },
+  { word: "BAHNHOF", hint: "Station für Züge.", tier: Tier.SKILLED },
+  { word: "BANKER", hint: "Arbeitet mit Geld.", tier: Tier.SKILLED },
+  { word: "BAUER", hint: "Landwirt.", tier: Tier.SKILLED },
+  { word: "BEAMTE", hint: "Staatsdiener.", tier: Tier.SKILLED },
+  { word: "BEDARF", hint: "Notwendigkeit.", tier: Tier.SKILLED },
+  { word: "BEGINN", hint: "Start.", tier: Tier.SKILLED },
+  { word: "BEGRIFF", hint: "Wort oder Konzept.", tier: Tier.SKILLED },
+  { word: "BEITRAG", hint: "Spende oder Artikel.", tier: Tier.SKILLED },
+  { word: "BERICHT", hint: "Schilderung von Ereignissen.", tier: Tier.SKILLED },
+  { word: "BETRAG", hint: "Geldsumme.", tier: Tier.SKILLED },
+  { word: "BETRIEB", hint: "Firma oder Unternehmen.", tier: Tier.SKILLED },
+  { word: "BEWEIS", hint: "Beleg für Wahrheit.", tier: Tier.SKILLED },
+  { word: "BILANZ", hint: "Gegenüberstellung von Werten.", tier: Tier.SKILLED },
+  { word: "BILDUNG", hint: "Schulung und Wissen.", tier: Tier.SKILLED },
+  { word: "BINDUNG", hint: "Zusammenhalt.", tier: Tier.SKILLED },
+  { word: "BITTE", hint: "Höfliches Ersuchen.", tier: Tier.SKILLED },
+  { word: "BLICK", hint: "Augenaufschlag.", tier: Tier.SKILLED },
+  { word: "BODEN", hint: "Untergrund.", tier: Tier.SKILLED },
 
-    // Expert (Tier 4) - Specific, scientific, or complex (50)
-    { word: "FREIHEIT", hint: "Zustand der Unabhängigkeit.", tier: Tier.EXPERT },
-    { word: "GERECHT", hint: "Fair und unparteiisch.", tier: Tier.EXPERT },
-    { word: "BIOLOGIE", hint: "Lehre vom Leben.", tier: Tier.EXPERT },
-    { word: "THEORIE", hint: "Wissenschaftliches Modell.", tier: Tier.EXPERT },
-    { word: "ZUKUNFT", hint: "Die kommende Zeit.", tier: Tier.EXPERT },
-    { word: "PROZESS", hint: "Ablauf oder Vorgang.", tier: Tier.EXPERT },
-    { word: "STRUKTUR", hint: "Innerer Aufbau.", tier: Tier.EXPERT },
-    { word: "KONZEPT", hint: "Plan oder Entwurf.", tier: Tier.EXPERT },
-    { word: "POLITIK", hint: "Staatskunst.", tier: Tier.EXPERT },
-    { word: "WIRTSCHAFT", hint: "Ökonomisches System.", tier: Tier.EXPERT },
-    { word: "ABKOMMEN", hint: "Vertrag oder Vereinbarung.", tier: Tier.EXPERT },
-    { word: "ABSCHIED", hint: "Trennung von Personen.", tier: Tier.EXPERT },
-    { word: "ABSCHLUSS", hint: "Ende oder Examen.", tier: Tier.EXPERT },
-    { word: "ABSTAND", hint: "Distanz.", tier: Tier.EXPERT },
-    { word: "ABTEILUNG", hint: "Sektor einer Firma.", tier: Tier.EXPERT },
-    { word: "ADRESSE", hint: "Wohnortangabe.", tier: Tier.EXPERT },
-    { word: "AGENTUR", hint: "Dienstleistungsfirma.", tier: Tier.EXPERT },
-    { word: "AKTIVITAET", hint: "Tätigkeit.", tier: Tier.EXPERT },
-    { word: "ALKOHOL", hint: "Berauschende Flüssigkeit.", tier: Tier.EXPERT },
-    { word: "ALLIANZ", hint: "Bündnis.", tier: Tier.EXPERT },
-    { word: "ANALYSE", hint: "Untersuchung.", tier: Tier.EXPERT },
-    { word: "ANBIETER", hint: "Verkäufer einer Leistung.", tier: Tier.EXPERT },
-    { word: "ANGEBOT", hint: "Offerte.", tier: Tier.EXPERT },
-    { word: "ANGRIFF", hint: "Attacke.", tier: Tier.EXPERT },
-    { word: "ANHANG", hint: "Beigefügtes Dokument.", tier: Tier.EXPERT },
-    { word: "ANLASS", hint: "Grund oder Gelegenheit.", tier: Tier.EXPERT },
-    { word: "ANMELDUNG", hint: "Registrierung.", tier: Tier.EXPERT },
-    { word: "ANSPRUCH", hint: "Forderung oder Recht.", tier: Tier.EXPERT },
-    { word: "ANSTALT", hint: "Institution.", tier: Tier.EXPERT },
-    { word: "ANTEIL", hint: "Part oder Stück.", tier: Tier.EXPERT },
-    { word: "ANTRAG", hint: "Gesuch.", tier: Tier.EXPERT },
-    { word: "ANTWORT", hint: "Reaktion auf Frage.", tier: Tier.EXPERT },
-    { word: "ANZEIGE", hint: "Inserat oder Meldung.", tier: Tier.EXPERT },
-    { word: "APOTHEKE", hint: "Verkauft Medikamente.", tier: Tier.EXPERT },
-    { word: "APPARAT", hint: "Gerät oder Maschine.", tier: Tier.EXPERT },
-    { word: "ARGUMENT", hint: "Beweisgrund.", tier: Tier.EXPERT },
-    { word: "ASPEKT", hint: "Gesichtspunkt.", tier: Tier.EXPERT },
-    { word: "ATEMZUG", hint: "Luftholen.", tier: Tier.EXPERT },
-    { word: "AUFGABE", hint: "Mission.", tier: Tier.EXPERT },
-    { word: "AUFLAGE", hint: "Anzahl gedruckter Exemplare.", tier: Tier.EXPERT },
-    { word: "AUFNAHME", hint: "Foto oder Empfang.", tier: Tier.EXPERT },
-    { word: "AUFRUF", hint: "Appell.", tier: Tier.EXPERT },
-    { word: "AUFSTIEG", hint: "Weg nach oben.", tier: Tier.EXPERT },
-    { word: "AUFTRITT", hint: "Darbietung auf Bühne.", tier: Tier.EXPERT },
-    { word: "AUFWAND", hint: "Einsatz von Mitteln.", tier: Tier.EXPERT },
-    { word: "AUGENBLICK", hint: "Kurzer Moment.", tier: Tier.EXPERT },
-    { word: "AUSDRUCK", hint: "Formulierung oder Print.", tier: Tier.EXPERT },
-    { word: "AUSFLUG", hint: "Kurze Reise.", tier: Tier.EXPERT },
-    { word: "AUSGANG", hint: "Weg nach draußen.", tier: Tier.EXPERT },
-    { word: "AUSKUNFT", hint: "Information.", tier: Tier.EXPERT },
+  // Expert (Tier 4) - Specific, scientific, or complex (50)
+  { word: "FREIHEIT", hint: "Zustand der Unabhängigkeit.", tier: Tier.EXPERT },
+  { word: "GERECHT", hint: "Fair und unparteiisch.", tier: Tier.EXPERT },
+  { word: "BIOLOGIE", hint: "Lehre vom Leben.", tier: Tier.EXPERT },
+  { word: "THEORIE", hint: "Wissenschaftliches Modell.", tier: Tier.EXPERT },
+  { word: "ZUKUNFT", hint: "Die kommende Zeit.", tier: Tier.EXPERT },
+  { word: "PROZESS", hint: "Ablauf oder Vorgang.", tier: Tier.EXPERT },
+  { word: "STRUKTUR", hint: "Innerer Aufbau.", tier: Tier.EXPERT },
+  { word: "KONZEPT", hint: "Plan oder Entwurf.", tier: Tier.EXPERT },
+  { word: "POLITIK", hint: "Staatskunst.", tier: Tier.EXPERT },
+  { word: "WIRTSCHAFT", hint: "Ökonomisches System.", tier: Tier.EXPERT },
+  { word: "ABKOMMEN", hint: "Vertrag oder Vereinbarung.", tier: Tier.EXPERT },
+  { word: "ABSCHIED", hint: "Trennung von Personen.", tier: Tier.EXPERT },
+  { word: "ABSCHLUSS", hint: "Ende oder Examen.", tier: Tier.EXPERT },
+  { word: "ABSTAND", hint: "Distanz.", tier: Tier.EXPERT },
+  { word: "ABTEILUNG", hint: "Sektor einer Firma.", tier: Tier.EXPERT },
+  { word: "ADRESSE", hint: "Wohnortangabe.", tier: Tier.EXPERT },
+  { word: "AGENTUR", hint: "Dienstleistungsfirma.", tier: Tier.EXPERT },
+  { word: "AKTIVITAET", hint: "Tätigkeit.", tier: Tier.EXPERT },
+  { word: "ALKOHOL", hint: "Berauschende Flüssigkeit.", tier: Tier.EXPERT },
+  { word: "ALLIANZ", hint: "Bündnis.", tier: Tier.EXPERT },
+  { word: "ANALYSE", hint: "Untersuchung.", tier: Tier.EXPERT },
+  { word: "ANBIETER", hint: "Verkäufer einer Leistung.", tier: Tier.EXPERT },
+  { word: "ANGEBOT", hint: "Offerte.", tier: Tier.EXPERT },
+  { word: "ANGRIFF", hint: "Attacke.", tier: Tier.EXPERT },
+  { word: "ANHANG", hint: "Beigefügtes Dokument.", tier: Tier.EXPERT },
+  { word: "ANLASS", hint: "Grund oder Gelegenheit.", tier: Tier.EXPERT },
+  { word: "ANMELDUNG", hint: "Registrierung.", tier: Tier.EXPERT },
+  { word: "ANSPRUCH", hint: "Forderung oder Recht.", tier: Tier.EXPERT },
+  { word: "ANSTALT", hint: "Institution.", tier: Tier.EXPERT },
+  { word: "ANTEIL", hint: "Part oder Stück.", tier: Tier.EXPERT },
+  { word: "ANTRAG", hint: "Gesuch.", tier: Tier.EXPERT },
+  { word: "ANTWORT", hint: "Reaktion auf Frage.", tier: Tier.EXPERT },
+  { word: "ANZEIGE", hint: "Inserat oder Meldung.", tier: Tier.EXPERT },
+  { word: "APOTHEKE", hint: "Verkauft Medikamente.", tier: Tier.EXPERT },
+  { word: "APPARAT", hint: "Gerät oder Maschine.", tier: Tier.EXPERT },
+  { word: "ARGUMENT", hint: "Beweisgrund.", tier: Tier.EXPERT },
+  { word: "ASPEKT", hint: "Gesichtspunkt.", tier: Tier.EXPERT },
+  { word: "ATEMZUG", hint: "Luftholen.", tier: Tier.EXPERT },
+  { word: "AUFGABE", hint: "Mission.", tier: Tier.EXPERT },
+  { word: "AUFLAGE", hint: "Anzahl gedruckter Exemplare.", tier: Tier.EXPERT },
+  { word: "AUFNAHME", hint: "Foto oder Empfang.", tier: Tier.EXPERT },
+  { word: "AUFRUF", hint: "Appell.", tier: Tier.EXPERT },
+  { word: "AUFSTIEG", hint: "Weg nach oben.", tier: Tier.EXPERT },
+  { word: "AUFTRITT", hint: "Darbietung auf Bühne.", tier: Tier.EXPERT },
+  { word: "AUFWAND", hint: "Einsatz von Mitteln.", tier: Tier.EXPERT },
+  { word: "AUGENBLICK", hint: "Kurzer Moment.", tier: Tier.EXPERT },
+  { word: "AUSDRUCK", hint: "Formulierung oder Print.", tier: Tier.EXPERT },
+  { word: "AUSFLUG", hint: "Kurze Reise.", tier: Tier.EXPERT },
+  { word: "AUSGANG", hint: "Weg nach draußen.", tier: Tier.EXPERT },
+  { word: "AUSKUNFT", hint: "Information.", tier: Tier.EXPERT },
 
-    // Master (Tier 5) - Obscure, long, or very specific (50)
-    { word: "PHYSIK", hint: "Lehre von Materie.", tier: Tier.MASTER },
-    { word: "ZYKLUS", hint: "Kreislauf.", tier: Tier.MASTER },
-    { word: "SPHAERE", hint: "Kugel oder Bereich.", tier: Tier.MASTER },
-    { word: "MYSTIK", hint: "Geheimnisvolle Lehre.", tier: Tier.MASTER },
-    { word: "RHYTHMUS", hint: "Gleichmäßige Wiederkehr.", tier: Tier.MASTER },
-    { word: "QUARZ", hint: "Häufiges Mineral.", tier: Tier.MASTER },
-    { word: "VORTEX", hint: "Wirbelströmung.", tier: Tier.MASTER },
-    { word: "ZENIT", hint: "Höchster Punkt.", tier: Tier.MASTER },
-    { word: "UNIKAT", hint: "Einzigartiges Stück.", tier: Tier.MASTER },
-    { word: "KOSMOS", hint: "Das Weltall.", tier: Tier.MASTER },
-    { word: "ABENTEUER", hint: "Spannendes Erlebnis.", tier: Tier.MASTER },
-    { word: "ABNEIGUNG", hint: "Widerwille.", tier: Tier.MASTER },
-    { word: "ABSCHNITT", hint: "Teil eines Ganzen.", tier: Tier.MASTER },
-    { word: "ABSOLVENT", hint: "Jemand der fertig studiert hat.", tier: Tier.MASTER },
-    { word: "ABSTIEG", hint: "Weg nach unten.", tier: Tier.MASTER },
-    { word: "ABTEILUNG", hint: "Sektion.", tier: Tier.MASTER },
-    { word: "ABWECHSLUNG", hint: "Veränderung.", tier: Tier.MASTER },
-    { word: "ABWESENHEIT", hint: "Nicht da sein.", tier: Tier.MASTER },
-    { word: "ACHTUNG", hint: "Vorsicht.", tier: Tier.MASTER },
-    { word: "AEHNLICHKEIT", hint: "Gleichheit in Merkmalen.", tier: Tier.MASTER },
-    { word: "AENDERUNG", hint: "Modifikation.", tier: Tier.MASTER },
-    { word: "AERGERNIS", hint: "Grund zur Verärgerung.", tier: Tier.MASTER },
-    { word: "AGGRESSION", hint: "Angriffslust.", tier: Tier.MASTER },
-    { word: "AKTIVITAET", hint: "Tatendrang.", tier: Tier.MASTER },
-    { word: "AKTUALITAET", hint: "Neuheit.", tier: Tier.MASTER },
-    { word: "AKZEPTANZ", hint: "Annahme.", tier: Tier.MASTER },
-    { word: "ALBTRAUM", hint: "Schlechter Traum.", tier: Tier.MASTER },
-    { word: "ALLERGIE", hint: "Überempfindlichkeit.", tier: Tier.MASTER },
-    { word: "ALLGEMEIN", hint: "Generell.", tier: Tier.MASTER },
-    { word: "ALPHABET", hint: "Buchstabenfolge.", tier: Tier.MASTER },
-    { word: "ALTERNATIVE", hint: "Andere Möglichkeit.", tier: Tier.MASTER },
-    { word: "ALTERTUM", hint: "Antike Zeit.", tier: Tier.MASTER },
-    { word: "AMBIENTE", hint: "Umgebung/Atmosphäre.", tier: Tier.MASTER },
-    { word: "AMBITION", hint: "Ehrgeiz.", tier: Tier.MASTER },
-    { word: "AMBULANZ", hint: "Notfallaufnahme.", tier: Tier.MASTER },
-    { word: "ANALYSE", hint: "Zerlegung.", tier: Tier.MASTER },
-    { word: "ANATOMIE", hint: "Körperbaulehre.", tier: Tier.MASTER },
-    { word: "ANBLICK", hint: "Ansicht.", tier: Tier.MASTER },
-    { word: "ANDENKEN", hint: "Souvenir.", tier: Tier.MASTER },
-    { word: "ANEKDOTE", hint: "Kurze Geschichte.", tier: Tier.MASTER },
-    { word: "ANERKENNUNG", hint: "Lob oder Bestätigung.", tier: Tier.MASTER },
-    { word: "ANFORDERUNG", hint: "Voraussetzung.", tier: Tier.MASTER },
-    { word: "ANGEHOERIGE", hint: "Verwandte.", tier: Tier.MASTER },
-    { word: "ANGELEGENHEIT", hint: "Sache oder Ding.", tier: Tier.MASTER },
-    { word: "ANGESTELLTE", hint: "Arbeitnehmer.", tier: Tier.MASTER },
-    { word: "ANGEWOHNHEIT", hint: "Routine.", tier: Tier.MASTER },
-    { word: "ANHAENGER", hint: "Fan oder Wagen.", tier: Tier.MASTER },
-    { word: "ANLEITUNG", hint: "Instruktion.", tier: Tier.MASTER },
-    { word: "ANLIEGEN", hint: "Wunsch oder Bitte.", tier: Tier.MASTER },
-    { word: "ANMUTUNG", hint: "Eindruck.", tier: Tier.MASTER }
-  ];
+  // Master (Tier 5) - Obscure, long, or very specific (50)
+  { word: "PHYSIK", hint: "Lehre von Materie.", tier: Tier.MASTER },
+  { word: "ZYKLUS", hint: "Kreislauf.", tier: Tier.MASTER },
+  { word: "SPHAERE", hint: "Kugel oder Bereich.", tier: Tier.MASTER },
+  { word: "MYSTIK", hint: "Geheimnisvolle Lehre.", tier: Tier.MASTER },
+  { word: "RHYTHMUS", hint: "Gleichmäßige Wiederkehr.", tier: Tier.MASTER },
+  { word: "QUARZ", hint: "Häufiges Mineral.", tier: Tier.MASTER },
+  { word: "VORTEX", hint: "Wirbelströmung.", tier: Tier.MASTER },
+  { word: "ZENIT", hint: "Höchster Punkt.", tier: Tier.MASTER },
+  { word: "UNIKAT", hint: "Einzigartiges Stück.", tier: Tier.MASTER },
+  { word: "KOSMOS", hint: "Das Weltall.", tier: Tier.MASTER },
+  { word: "ABENTEUER", hint: "Spannendes Erlebnis.", tier: Tier.MASTER },
+  { word: "ABNEIGUNG", hint: "Widerwille.", tier: Tier.MASTER },
+  { word: "ABSCHNITT", hint: "Teil eines Ganzen.", tier: Tier.MASTER },
+  { word: "ABSOLVENT", hint: "Jemand der fertig studiert hat.", tier: Tier.MASTER },
+  { word: "ABSTIEG", hint: "Weg nach unten.", tier: Tier.MASTER },
+  { word: "ABTEILUNG", hint: "Sektion.", tier: Tier.MASTER },
+  { word: "ABWECHSLUNG", hint: "Veränderung.", tier: Tier.MASTER },
+  { word: "ABWESENHEIT", hint: "Nicht da sein.", tier: Tier.MASTER },
+  { word: "ACHTUNG", hint: "Vorsicht.", tier: Tier.MASTER },
+  { word: "AEHNLICHKEIT", hint: "Gleichheit in Merkmalen.", tier: Tier.MASTER },
+  { word: "AENDERUNG", hint: "Modifikation.", tier: Tier.MASTER },
+  { word: "AERGERNIS", hint: "Grund zur Verärgerung.", tier: Tier.MASTER },
+  { word: "AGGRESSION", hint: "Angriffslust.", tier: Tier.MASTER },
+  { word: "AKTIVITAET", hint: "Tatendrang.", tier: Tier.MASTER },
+  { word: "AKTUALITAET", hint: "Neuheit.", tier: Tier.MASTER },
+  { word: "AKZEPTANZ", hint: "Annahme.", tier: Tier.MASTER },
+  { word: "ALBTRAUM", hint: "Schlechter Traum.", tier: Tier.MASTER },
+  { word: "ALLERGIE", hint: "Überempfindlichkeit.", tier: Tier.MASTER },
+  { word: "ALLGEMEIN", hint: "Generell.", tier: Tier.MASTER },
+  { word: "ALPHABET", hint: "Buchstabenfolge.", tier: Tier.MASTER },
+  { word: "ALTERNATIVE", hint: "Andere Möglichkeit.", tier: Tier.MASTER },
+  { word: "ALTERTUM", hint: "Antike Zeit.", tier: Tier.MASTER },
+  { word: "AMBIENTE", hint: "Umgebung/Atmosphäre.", tier: Tier.MASTER },
+  { word: "AMBITION", hint: "Ehrgeiz.", tier: Tier.MASTER },
+  { word: "AMBULANZ", hint: "Notfallaufnahme.", tier: Tier.MASTER },
+  { word: "ANALYSE", hint: "Zerlegung.", tier: Tier.MASTER },
+  { word: "ANATOMIE", hint: "Körperbaulehre.", tier: Tier.MASTER },
+  { word: "ANBLICK", hint: "Ansicht.", tier: Tier.MASTER },
+  { word: "ANDENKEN", hint: "Souvenir.", tier: Tier.MASTER },
+  { word: "ANEKDOTE", hint: "Kurze Geschichte.", tier: Tier.MASTER },
+  { word: "ANERKENNUNG", hint: "Lob oder Bestätigung.", tier: Tier.MASTER },
+  { word: "ANFORDERUNG", hint: "Voraussetzung.", tier: Tier.MASTER },
+  { word: "ANGEHOERIGE", hint: "Verwandte.", tier: Tier.MASTER },
+  { word: "ANGELEGENHEIT", hint: "Sache oder Ding.", tier: Tier.MASTER },
+  { word: "ANGESTELLTE", hint: "Arbeitnehmer.", tier: Tier.MASTER },
+  { word: "ANGEWOHNHEIT", hint: "Routine.", tier: Tier.MASTER },
+  { word: "ANHAENGER", hint: "Fan oder Wagen.", tier: Tier.MASTER },
+  { word: "ANLEITUNG", hint: "Instruktion.", tier: Tier.MASTER },
+  { word: "ANLIEGEN", hint: "Wunsch oder Bitte.", tier: Tier.MASTER },
+  { word: "ANMUTUNG", hint: "Eindruck.", tier: Tier.MASTER }
+];
 
-  // Challenge Mode Math Questions
-  export const MATH_CHALLENGES = [
-    { q: "12 + 5", a: "17" }, { q: "10 * 2", a: "20" }, { q: "50 / 2", a: "25" },
-    { q: "8 * 8", a: "64" }, { q: "100 - 33", a: "67" }, { q: "12 * 12", a: "144" },
-    { q: "3 * 3 * 3", a: "27" }, { q: "15 + 15 + 15", a: "45" }, { q: "99 / 3", a: "33" }
-  ];
+// Challenge Mode Math Questions
+export const MATH_CHALLENGES = [
+  { q: "12 + 5", a: "17" }, { q: "10 * 2", a: "20" }, { q: "50 / 2", a: "25" },
+  { q: "8 * 8", a: "64" }, { q: "100 - 33", a: "67" }, { q: "12 * 12", a: "144" },
+  { q: "3 * 3 * 3", a: "27" }, { q: "15 + 15 + 15", a: "45" }, { q: "99 / 3", a: "33" }
+];
 
-  // Chain Pairs: [Hint, Target] - Expanded for Arcade Mode
-  export const CHAIN_PAIRS_EN = [
-    ["RAIN", "BOW"], ["SUN", "LIGHT"], ["FIRE", "WORK"], ["SNOW", "BALL"], ["KEY", "BOARD"],
-    ["TIME", "OUT"], ["DOOR", "BELL"], ["PAN", "CAKE"], ["CUP", "CAKE"], ["EAR", "RING"],
-    ["BACK", "PACK"], ["BASE", "BALL"], ["BASKET", "BALL"], ["BED", "ROOM"], ["BIRTH", "DAY"],
-    ["BLACK", "BERRY"], ["BLUE", "BERRY"], ["BOOK", "SHELF"], ["BUTTER", "FLY"], ["CAMP", "FIRE"],
-    ["CANDLE", "LIGHT"], ["CARD", "BOARD"], ["CLASS", "ROOM"], ["COW", "BOY"], ["CROSS", "WORD"],
-    ["DAY", "LIGHT"], ["DRAGON", "FLY"], ["EYE", "BALL"], ["EYE", "LID"], ["FARM", "HOUSE"],
-    ["FIRE", "MAN"], ["FIRE", "PLACE"], ["FISH", "BOWL"], ["FOOT", "BALL"], ["FOOT", "PRINT"],
-    ["GOLDFISH", "BOWL"], ["GRAND", "FATHER"], ["GRAND", "MOTHER"], ["GRASS", "HOPPER"], ["HAIR", "CUT"],
-    ["HAND", "BAG"], ["HEAD", "ACHE"], ["HEAD", "PHONE"], ["HIGH", "WAY"], ["HOME", "WORK"],
-    ["HONEY", "BEE"], ["HOT", "DOG"], ["HOUSE", "WORK"], ["ICE", "CREAM"], ["JELLY", "FISH"],
-    ["LADY", "BUG"], ["LAP", "TOP"], ["LIFE", "BOAT"], ["LIGHT", "HOUSE"], ["MAIL", "BOX"],
-    ["MILK", "SHAKE"], ["MOON", "LIGHT"], ["MOTOR", "CYCLE"], ["NECK", "LACE"], ["NEWS", "PAPER"],
-    ["NIGHT", "MARE"], ["NOTE", "BOOK"], ["OVER", "COAT"], ["PAN", "CAKE"], ["PASS", "PORT"],
-    ["PEA", "NUT"], ["PINE", "APPLE"], ["PLAY", "GROUND"], ["POLICE", "MAN"], ["POP", "CORN"],
-    ["RAIN", "COAT"], ["RAIN", "DROP"], ["RIVER", "BANK"], ["ROCKET", "SHIP"], ["SAND", "BOX"],
-    ["SEA", "FOOD"], ["SEA", "SHELL"], ["SHOELACE", "KNOT"], ["SIDE", "WALK"], ["SKATE", "BOARD"],
-    ["SNOW", "MAN"], ["SOFT", "WARE"], ["SPACE", "SHIP"], ["STAR", "FISH"], ["STRAW", "BERRY"],
-    ["SUN", "FLOWER"], ["SUN", "GLASSES"], ["SUPER", "MAN"], ["TABLE", "CLOTH"], ["TEA", "POT"],
-    ["TOOTH", "BRUSH"], ["TOOTH", "PASTE"], ["WALL", "PAPER"], ["WATER", "MELON"], ["WEEK", "END"]
-  ];
+// Chain Pairs: [Hint, Target] - Expanded for Arcade Mode
+export const CHAIN_PAIRS_EN = [
+  ["RAIN", "BOW"], ["SUN", "LIGHT"], ["FIRE", "WORK"], ["SNOW", "BALL"], ["KEY", "BOARD"],
+  ["TIME", "OUT"], ["DOOR", "BELL"], ["PAN", "CAKE"], ["CUP", "CAKE"], ["EAR", "RING"],
+  ["BACK", "PACK"], ["BASE", "BALL"], ["BASKET", "BALL"], ["BED", "ROOM"], ["BIRTH", "DAY"],
+  ["BLACK", "BERRY"], ["BLUE", "BERRY"], ["BOOK", "SHELF"], ["BUTTER", "FLY"], ["CAMP", "FIRE"],
+  ["CANDLE", "LIGHT"], ["CARD", "BOARD"], ["CLASS", "ROOM"], ["COW", "BOY"], ["CROSS", "WORD"],
+  ["DAY", "LIGHT"], ["DRAGON", "FLY"], ["EYE", "BALL"], ["EYE", "LID"], ["FARM", "HOUSE"],
+  ["FIRE", "MAN"], ["FIRE", "PLACE"], ["FISH", "BOWL"], ["FOOT", "BALL"], ["FOOT", "PRINT"],
+  ["GOLDFISH", "BOWL"], ["GRAND", "FATHER"], ["GRAND", "MOTHER"], ["GRASS", "HOPPER"], ["HAIR", "CUT"],
+  ["HAND", "BAG"], ["HEAD", "ACHE"], ["HEAD", "PHONE"], ["HIGH", "WAY"], ["HOME", "WORK"],
+  ["HONEY", "BEE"], ["HOT", "DOG"], ["HOUSE", "WORK"], ["ICE", "CREAM"], ["JELLY", "FISH"],
+  ["LADY", "BUG"], ["LAP", "TOP"], ["LIFE", "BOAT"], ["LIGHT", "HOUSE"], ["MAIL", "BOX"],
+  ["MILK", "SHAKE"], ["MOON", "LIGHT"], ["MOTOR", "CYCLE"], ["NECK", "LACE"], ["NEWS", "PAPER"],
+  ["NIGHT", "MARE"], ["NOTE", "BOOK"], ["OVER", "COAT"], ["PAN", "CAKE"], ["PASS", "PORT"],
+  ["PEA", "NUT"], ["PINE", "APPLE"], ["PLAY", "GROUND"], ["POLICE", "MAN"], ["POP", "CORN"],
+  ["RAIN", "COAT"], ["RAIN", "DROP"], ["RIVER", "BANK"], ["ROCKET", "SHIP"], ["SAND", "BOX"],
+  ["SEA", "FOOD"], ["SEA", "SHELL"], ["SHOELACE", "KNOT"], ["SIDE", "WALK"], ["SKATE", "BOARD"],
+  ["SNOW", "MAN"], ["SOFT", "WARE"], ["SPACE", "SHIP"], ["STAR", "FISH"], ["STRAW", "BERRY"],
+  ["SUN", "FLOWER"], ["SUN", "GLASSES"], ["SUPER", "MAN"], ["TABLE", "CLOTH"], ["TEA", "POT"],
+  ["TOOTH", "BRUSH"], ["TOOTH", "PASTE"], ["WALL", "PAPER"], ["WATER", "MELON"], ["WEEK", "END"]
+];
 
-  export const CHAIN_PAIRS_DE = [
-    ["AUTO", "BAHN"], ["HAND", "SCHUH"], ["FLUG", "ZEUG"], ["KÜHL", "SCHRANK"], ["SCHREIB", "TISCH"],
-    ["BAUM", "HAUS"], ["WASSER", "FALL"], ["REGEN", "BOGEN"], ["SONNEN", "LICHT"], ["FEUER", "WEHR"],
-    ["ABEND", "BROT"], ["APFEL", "SAFT"], ["AUGEN", "ARZT"], ["BADE", "WANNE"], ["BAHN", "HOF"],
-    ["BALL", "SPIEL"], ["BAU", "STELLE"], ["BERG", "STEIGER"], ["BETT", "DECKE"], ["BIER", "GARTEN"],
-    ["BILDER", "RAHMEN"], ["BLUMEN", "TOPF"], ["BRIEF", "KASTEN"], ["BROT", "ZEIT"], ["BUCH", "STABE"],
-    ["BÜRO", "STUHL"], ["BUS", "HALTESTELLE"], ["COMPUTER", "SPIEL"], ["DACH", "BODEN"], ["DAMPF", "SCHIFF"],
-    ["DONNER", "WETTER"], ["DUSCH", "GEL"], ["EI", "GELB"], ["EIS", "BÄR"], ["ERD", "BEERE"],
-    ["FAHR", "RAD"], ["FERN", "SEHER"], ["FEUER", "ZEUG"], ["FINGER", "NAGEL"], ["FISCH", "STÄBCHEN"],
-    ["FLASCHEN", "HALS"], ["FUSS", "BALL"], ["GARTEN", "ZAUN"], ["GAST", "HAUS"], ["GELD", "BEUTEL"],
-    ["GESCHENK", "PAPIER"], ["GLAS", "SCHEIBE"], ["GLÜH", "BIRNE"], ["GOLD", "FISCH"], ["GRAS", "HALM"],
-    ["HAAR", "BÜRSTE"], ["HALS", "KETTE"], ["HAND", "TUCH"], ["HAUS", "TÜR"], ["HEIM", "WEH"],
-    ["HERBST", "LAUB"], ["HIMBEER", "SAFT"], ["HOSEN", "TASCHE"], ["HUND", "HÜTTE"], ["KAFFEE", "KANNE"],
-    ["KINDER", "GARTEN"], ["KINO", "FILM"], ["KLEIDER", "SCHRANK"], ["KOCH", "TOPF"], ["KOPF", "HÖRER"],
-    ["KRANKEN", "HAUS"], ["KÜCHEN", "TISCH"], ["KUH", "MILCH"], ["LAND", "KARTE"], ["LAST", "WAGEN"],
-    ["LEBENS", "MITTEL"], ["LEHR", "ER"], ["LICHT", "SCHALTER"], ["LIEDER", "BUCH"], ["LUFT", "BALLON"],
-    ["MAUS", "PAD"], ["MEER", "SCHWEINCHEN"], ["MILCH", "ZAHN"], ["MITTAG", "ESSEN"], ["MOND", "SCHEIN"],
-    ["MÜLL", "EIMER"], ["NACHT", "HEMD"], ["NAGEL", "LACK"], ["NASE", "BÄR"], ["OBST", "SALAT"],
-    ["OHR", "RING"], ["PAPIER", "KORB"], ["PFANN", "KUCHEN"], ["PFERDE", "SCHWANZ"], ["PILZ", "SUPPE"],
-    ["PIZZA", "BÄCKER"], ["POST", "KARTE"], ["PUPPEN", "HAUS"], ["REGEN", "SCHIRM"], ["REISE", "KOFFER"],
-    ["RENN", "AUTO"], ["RUCKSACK", "TOURIST"], ["SAFT", "GLAS"], ["SALZ", "STANGE"], ["SAND", "KASTEN"],
-    ["SCHAF", "KÄSE"], ["SCHIFF", "FAHRT"], ["SCHLAF", "ZIMMER"], ["SCHLÜSSEL", "BUND"], ["SCHNEE", "MANN"],
-    ["SCHOKO", "LADE"], ["SCHUL", "TASCHE"], ["SCHWEINE", "BRATEN"], ["SEE", "PFERDCHEN"], ["SEIFEN", "BLASE"],
-    ["SOMMER", "FERIEN"], ["SONNEN", "BRILLE"], ["SPIEL", "PLATZ"], ["SPORT", "PLATZ"], ["STADT", "MITTE"],
-    ["STERN", "SCHNUPPE"], ["STRASSEN", "BAHN"], ["SUPPEN", "LÖFFEL"], ["TASCHEN", "LAMPE"], ["TEE", "KANNE"],
-    ["TELEFON", "BUCH"], ["TENNIS", "BALL"], ["TEPPICH", "BODEN"], ["TIER", "ARZT"], ["TISCH", "DECKE"],
-    ["TOMATEN", "SAFT"], ["TOR", "WART"], ["TRAUM", "SCHIFF"], ["TRINK", "WASSER"], ["TURN", "SCHUH"],
-    ["UHR", "ZEIT"], ["URLAUBS", "ZIEL"], ["VATER", "TAG"], ["VOGEL", "NEST"], ["WAND", "UHR"],
-    ["WASCH", "MASCHINE"], ["WASSER", "HAHN"], ["WEIHNACHTS", "MANN"], ["WEIN", "GLAS"], ["WELT", "RAUM"],
-    ["WERK", "ZEUG"], ["WETTER", "BERICHT"], ["WINTER", "MANTEL"], ["WOHN", "ZIMMER"], ["WORT", "SCHATZ"],
-    ["ZAHN", "BÜRSTE"], ["ZEIT", "UNG"], ["ZITRONEN", "SAFT"], ["ZOO", "TIER"], ["ZUCKER", "WÜRFEL"]
-  ];
+export const CHAIN_PAIRS_DE = [
+  ["AUTO", "BAHN"], ["HAND", "SCHUH"], ["FLUG", "ZEUG"], ["KÜHL", "SCHRANK"], ["SCHREIB", "TISCH"],
+  ["BAUM", "HAUS"], ["WASSER", "FALL"], ["REGEN", "BOGEN"], ["SONNEN", "LICHT"], ["FEUER", "WEHR"],
+  ["ABEND", "BROT"], ["APFEL", "SAFT"], ["AUGEN", "ARZT"], ["BADE", "WANNE"], ["BAHN", "HOF"],
+  ["BALL", "SPIEL"], ["BAU", "STELLE"], ["BERG", "STEIGER"], ["BETT", "DECKE"], ["BIER", "GARTEN"],
+  ["BILDER", "RAHMEN"], ["BLUMEN", "TOPF"], ["BRIEF", "KASTEN"], ["BROT", "ZEIT"], ["BUCH", "STABE"],
+  ["BÜRO", "STUHL"], ["BUS", "HALTESTELLE"], ["COMPUTER", "SPIEL"], ["DACH", "BODEN"], ["DAMPF", "SCHIFF"],
+  ["DONNER", "WETTER"], ["DUSCH", "GEL"], ["EI", "GELB"], ["EIS", "BÄR"], ["ERD", "BEERE"],
+  ["FAHR", "RAD"], ["FERN", "SEHER"], ["FEUER", "ZEUG"], ["FINGER", "NAGEL"], ["FISCH", "STÄBCHEN"],
+  ["FLASCHEN", "HALS"], ["FUSS", "BALL"], ["GARTEN", "ZAUN"], ["GAST", "HAUS"], ["GELD", "BEUTEL"],
+  ["GESCHENK", "PAPIER"], ["GLAS", "SCHEIBE"], ["GLÜH", "BIRNE"], ["GOLD", "FISCH"], ["GRAS", "HALM"],
+  ["HAAR", "BÜRSTE"], ["HALS", "KETTE"], ["HAND", "TUCH"], ["HAUS", "TÜR"], ["HEIM", "WEH"],
+  ["HERBST", "LAUB"], ["HIMBEER", "SAFT"], ["HOSEN", "TASCHE"], ["HUND", "HÜTTE"], ["KAFFEE", "KANNE"],
+  ["KINDER", "GARTEN"], ["KINO", "FILM"], ["KLEIDER", "SCHRANK"], ["KOCH", "TOPF"], ["KOPF", "HÖRER"],
+  ["KRANKEN", "HAUS"], ["KÜCHEN", "TISCH"], ["KUH", "MILCH"], ["LAND", "KARTE"], ["LAST", "WAGEN"],
+  ["LEBENS", "MITTEL"], ["LEHR", "ER"], ["LICHT", "SCHALTER"], ["LIEDER", "BUCH"], ["LUFT", "BALLON"],
+  ["MAUS", "PAD"], ["MEER", "SCHWEINCHEN"], ["MILCH", "ZAHN"], ["MITTAG", "ESSEN"], ["MOND", "SCHEIN"],
+  ["MÜLL", "EIMER"], ["NACHT", "HEMD"], ["NAGEL", "LACK"], ["NASE", "BÄR"], ["OBST", "SALAT"],
+  ["OHR", "RING"], ["PAPIER", "KORB"], ["PFANN", "KUCHEN"], ["PFERDE", "SCHWANZ"], ["PILZ", "SUPPE"],
+  ["PIZZA", "BÄCKER"], ["POST", "KARTE"], ["PUPPEN", "HAUS"], ["REGEN", "SCHIRM"], ["REISE", "KOFFER"],
+  ["RENN", "AUTO"], ["RUCKSACK", "TOURIST"], ["SAFT", "GLAS"], ["SALZ", "STANGE"], ["SAND", "KASTEN"],
+  ["SCHAF", "KÄSE"], ["SCHIFF", "FAHRT"], ["SCHLAF", "ZIMMER"], ["SCHLÜSSEL", "BUND"], ["SCHNEE", "MANN"],
+  ["SCHOKO", "LADE"], ["SCHUL", "TASCHE"], ["SCHWEINE", "BRATEN"], ["SEE", "PFERDCHEN"], ["SEIFEN", "BLASE"],
+  ["SOMMER", "FERIEN"], ["SONNEN", "BRILLE"], ["SPIEL", "PLATZ"], ["SPORT", "PLATZ"], ["STADT", "MITTE"],
+  ["STERN", "SCHNUPPE"], ["STRASSEN", "BAHN"], ["SUPPEN", "LÖFFEL"], ["TASCHEN", "LAMPE"], ["TEE", "KANNE"],
+  ["TELEFON", "BUCH"], ["TENNIS", "BALL"], ["TEPPICH", "BODEN"], ["TIER", "ARZT"], ["TISCH", "DECKE"],
+  ["TOMATEN", "SAFT"], ["TOR", "WART"], ["TRAUM", "SCHIFF"], ["TRINK", "WASSER"], ["TURN", "SCHUH"],
+  ["UHR", "ZEIT"], ["URLAUBS", "ZIEL"], ["VATER", "TAG"], ["VOGEL", "NEST"], ["WAND", "UHR"],
+  ["WASCH", "MASCHINE"], ["WASSER", "HAHN"], ["WEIHNACHTS", "MANN"], ["WEIN", "GLAS"], ["WELT", "RAUM"],
+  ["WERK", "ZEUG"], ["WETTER", "BERICHT"], ["WINTER", "MANTEL"], ["WOHN", "ZIMMER"], ["WORT", "SCHATZ"],
+  ["ZAHN", "BÜRSTE"], ["ZEIT", "UNG"], ["ZITRONEN", "SAFT"], ["ZOO", "TIER"], ["ZUCKER", "WÜRFEL"]
+];
 
-  // Categories
-  export const CATEGORY_DATA_EN: Record<string, string[]> = {
-    "SPACE": ["MARS", "MOON", "STAR", "SUN", "ORBIT"],
-    "FOOD": ["APPLE", "BREAD", "CAKE", "PIZZA", "SOUP"],
-    "TECH": ["CODE", "DATA", "WIFI", "BYTE", "LINK"]
-  };
+// Categories
+export const CATEGORY_DATA_EN: Record<string, string[]> = {
+  "SPACE": ["MARS", "MOON", "STAR", "SUN", "ORBIT"],
+  "FOOD": ["APPLE", "BREAD", "CAKE", "PIZZA", "SOUP"],
+  "TECH": ["CODE", "DATA", "WIFI", "BYTE", "LINK"]
+};
 export const CATEGORY_DATA_DE: Record<string, string[]> = {
   "WELTRAUM": ["MOND", "MARS", "STERN", "SONNE", "KOMET"],
   "ESSEN": ["APFEL", "BROT", "KUCHEN", "PIZZA", "SUPPE"],
@@ -1983,28 +1789,12 @@ export const TUTORIALS: Record<GameMode, Record<Language, TutorialContent>> = {
   }
 };
 
-// Avatars List (DiceBear Seeds) - 80 unique avatars
+// Avatars List (DiceBear IDs) - Expanded
 export const AVATARS = [
-  // Classic Names
-  "Felix", "Luna", "Max", "Nova", "Ace", "Blaze", "Storm", "Frost",
-  // Cyber/Tech
-  "Neon", "Cyber", "Pixel", "Glitch", "Matrix", "Binary", "Chrome", "Vector",
-  // Space
-  "Orion", "Nebula", "Cosmos", "Astro", "Pulsar", "Quasar", "Stellar", "Comet",
-  // Nature
-  "Thunder", "Blizzard", "Ember", "Ocean", "Forest", "Desert", "Aurora", "Eclipse",
-  // Animals
-  "Wolf", "Tiger", "Falcon", "Panther", "Viper", "Cobra", "Phoenix", "Dragon",
-  // Colors
-  "Crimson", "Azure", "Jade", "Onyx", "Violet", "Golden", "Silver", "Scarlet",
-  // Mythical
-  "Titan", "Sphinx", "Griffin", "Hydra", "Wraith", "Specter", "Phantom", "Shadow",
-  // Gaming
-  "Rogue", "Knight", "Mage", "Hunter", "Scout", "Tank", "Healer", "Sniper",
-  // Abstract
-  "Zero", "Omega", "Alpha", "Delta", "Sigma", "Zenith", "Apex", "Prime",
-  // Cool Words
-  "Havoc", "Chaos", "Fury", "Rage", "Doom", "Blade", "Edge", "Spark"
+  "Felix", "Aneka", "Zack", "Midnight", "Shadow", "Cyber", "Neon", "Glitch",
+  "Viper", "Echo", "Raven", "Blade", "Matrix", "Nova", "Rogue", "Titan",
+  "Luna", "Sol", "Astra", "Orion", "Vega", "Sirius", "Altair", "Draco",
+  "Phoenix", "Griffin", "Dragon", "Hydra", "Chimera", "Sphinx", "Golem", "Wraith"
 ];
 
 // Season Pass Avatar Rewards - Now using Season System!
@@ -2013,255 +1803,129 @@ export const SEASON_AVATARS = SEASON_1_AVATARS; // Legacy compatibility
 
 /**
  * Generate Season Rewards dynamically based on season avatars
- * v3.5.1 - 40 New Avatars + Better XP/Coin rewards
- * 
- * MILESTONE LEVELS: 10, 25, 50, 75, 100
- * Each milestone has special, memorable rewards
+ * Season 2 has enhanced rewards compared to Season 1
  */
 export const generateSeasonRewards = (season: Season) => {
-  // 40 Premium Avatars mit lokalen Dateien
-  const PREMIUM_AVATARS = [
-    // Adventurer Style (Level 2-15) - Cartoon Abenteurer
-    { level: 2, name: 'Abenteurer Luna', preview: '/avatars/adventurer-Luna.svg' },
-    { level: 3, name: 'Wanderer Felix', preview: '/avatars/adventurer-Felix.svg' },
-    { level: 6, name: 'Entdeckerin Nova', preview: '/avatars/adventurer-Nova.svg' },
-    { level: 7, name: 'Reisende Stella', preview: '/avatars/adventurer-Stella.svg' },
-    { level: 9, name: 'Heldin Maya', preview: '/avatars/adventurer-Maya.svg' },
-    { level: 11, name: 'Held Leo', preview: '/avatars/adventurer-Leo.svg' },
-    { level: 13, name: 'Kriegerin Aria', preview: '/avatars/adventurer-Aria.svg' },
-    { level: 14, name: 'Ritter Kai', preview: '/avatars/adventurer-Kai.svg' },
-    // Bottts Style - Roboter (Level 17-28)
-    { level: 17, name: 'Roboter Alpha', preview: '/avatars/bottts-RoboX1.svg' },
-    { level: 18, name: 'Cyborg Beta', preview: '/avatars/bottts-Cyber7.svg' },
-    { level: 19, name: 'Mech Gamma', preview: '/avatars/bottts-Mecha9.svg' },
-    { level: 21, name: 'Droide Delta', preview: '/avatars/bottts-DroidK.svg' },
-    { level: 23, name: 'Android Zeta', preview: '/avatars/bottts-UnitZ3.svg' },
-    { level: 24, name: 'Bot Prime', preview: '/avatars/bottts-BotPrime.svg' },
-    { level: 26, name: 'Maschine X', preview: '/avatars/bottts-AndroidX.svg' },
-    { level: 27, name: 'Synth Omega', preview: '/avatars/bottts-SynthOne.svg' },
-    // Pixel Art Style - Retro Gaming (Level 29-39)
-    { level: 29, name: 'Pixel Held', preview: '/avatars/pixel-art-PixelHero.svg' },
-    { level: 31, name: 'Retro Ritter', preview: '/avatars/pixel-art-RetroKnight.svg' },
-    { level: 32, name: '8-Bit Magier', preview: '/avatars/pixel-art-8BitMage.svg' },
-    { level: 33, name: 'Arcade König', preview: '/avatars/pixel-art-ArcadeKing.svg' },
-    { level: 36, name: 'Pixel Ninja', preview: '/avatars/pixel-art-PixelNinja.svg' },
-    { level: 37, name: 'Spielmeister', preview: '/avatars/pixel-art-GameMaster.svg' },
-    { level: 38, name: 'Bit Brecher', preview: '/avatars/pixel-art-BitCrusher.svg' },
-    { level: 39, name: 'Retro Star', preview: '/avatars/pixel-art-RetroStar.svg' },
-    // Lorelei Style - Elegante Portraits (Level 41-49)
-    { level: 41, name: 'Weiser Sage', preview: '/avatars/lorelei-Sage.svg' },
-    { level: 42, name: 'Orakel', preview: '/avatars/lorelei-Oracle.svg' },
-    { level: 43, name: 'Mystiker', preview: '/avatars/lorelei-Mystic.svg' },
-    { level: 44, name: 'Seraph', preview: '/avatars/lorelei-Seraph.svg' },
-    { level: 46, name: 'Phantom', preview: '/avatars/lorelei-Phantom.svg' },
-    { level: 47, name: 'Enigma', preview: '/avatars/lorelei-Enigma.svg' },
-    { level: 48, name: 'Aurora', preview: '/avatars/lorelei-Aurora.svg' },
-    { level: 49, name: 'Eclipse', preview: '/avatars/lorelei-Eclipse.svg' },
-    // Fun Emoji Style - Lustige Emojis (Level 51-59)
-    { level: 51, name: 'Fröhlich', preview: '/avatars/fun-emoji-HappyGo.svg' },
-    { level: 52, name: 'Cool Katze', preview: '/avatars/fun-emoji-CoolCat.svg' },
-    { level: 53, name: 'Sternenaugen', preview: '/avatars/fun-emoji-StarEyes.svg' },
-    { level: 54, name: 'Party Emoji', preview: '/avatars/fun-emoji-PartyFace.svg' },
-    { level: 56, name: 'Entspannt', preview: '/avatars/fun-emoji-ChillVibes.svg' },
-    { level: 57, name: 'Feuer Emoji', preview: '/avatars/fun-emoji-FireMode.svg' },
-    { level: 58, name: 'Superstar', preview: '/avatars/fun-emoji-SuperStar.svg' },
-    { level: 59, name: 'Legende', preview: '/avatars/fun-emoji-Legend.svg' },
-  ];
-
-  // Pre-define all unique rewards for better organization
-  const FRAMES = [
-    { level: 5, name: 'Goldrand', value: 'frame_gold', rarity: 'common' },
-    { level: 15, name: 'Neon Glow', value: 'frame_neon', rarity: 'rare' },
-    { level: 25, name: 'Flammenrahmen', value: 'frame_fire', rarity: 'rare' },
-    { level: 35, name: 'Eisrahmen', value: 'frame_ice', rarity: 'epic' },
-    { level: 50, name: 'Regenbogen', value: 'frame_rainbow', rarity: 'epic' },
-    { level: 65, name: 'Blitz', value: 'frame_lightning', rarity: 'epic' },
-    { level: 75, name: 'Galaxie', value: 'frame_galaxy', rarity: 'legendary' },
-    { level: 90, name: 'Drache', value: 'frame_dragon', rarity: 'legendary' },
-    { level: 100, name: 'Legendär', value: 'frame_legendary', rarity: 'legendary' },
-  ];
-
-  const FONTS = [
-    { level: 10, name: 'Pixel Font', value: 'font_pixel', rarity: 'rare', preview: "'Press Start 2P', cursive" },
-    { level: 20, name: 'Elegant Script', value: 'font_script', rarity: 'rare', preview: "'Dancing Script', cursive" },
-    { level: 30, name: 'Hacker Mono', value: 'font_mono', rarity: 'epic', preview: "'JetBrains Mono', monospace" },
-    { level: 40, name: 'Comic Style', value: 'font_comic', rarity: 'epic', preview: "'Comic Neue', cursive" },
-    { level: 60, name: 'Ultra Bold', value: 'font_bold', rarity: 'legendary', preview: "'Black Ops One', cursive" },
-  ];
-
-  const EFFECTS = [
-    { level: 4, name: 'Feuer', value: 'effect_fire', icon: '🔥', rarity: 'rare' },
-    { level: 8, name: 'Neon', value: 'effect_neon', icon: '💜', rarity: 'rare' },
-    { level: 12, name: 'Eis', value: 'effect_ice', icon: '❄️', rarity: 'rare' },
-    { level: 16, name: 'Gold Luxus', value: 'effect_gold', icon: '👑', rarity: 'epic' },
-    { level: 22, name: 'Matrix', value: 'effect_matrix', icon: '💻', rarity: 'epic' },
-    { level: 28, name: 'Hologramm', value: 'effect_holo', icon: '💿', rarity: 'epic' },
-    { level: 34, name: 'Sakura', value: 'effect_sakura', icon: '🌸', rarity: 'epic' },
-    { level: 45, name: 'Vaporwave', value: 'effect_vaporwave', icon: '🌴', rarity: 'epic' },
-    { level: 55, name: 'Glitch', value: 'effect_glitch', icon: '👾', rarity: 'legendary' },
-    { level: 70, name: 'Quantum', value: 'effect_quantum', icon: '⚛️', rarity: 'legendary' },
-    { level: 85, name: 'Supernova', value: 'effect_supernova', icon: '💥', rarity: 'legendary' },
-  ];
-
-  const TITLES = [
-    { level: 1, name: 'Neuling', value: 'title_newcomer', icon: '🌱', rarity: 'common' },
-    { level: 61, name: 'Rätsellöser', value: 'title_puzzle_solver', icon: '🧩', rarity: 'rare' },
-    { level: 62, name: 'Champion', value: 'title_champion', icon: '🏆', rarity: 'rare' },
-    { level: 63, name: 'Genie', value: 'title_genius', icon: '🧠', rarity: 'epic' },
-    { level: 64, name: 'Legende', value: 'title_legend', icon: '⭐', rarity: 'epic' },
-    { level: 66, name: 'Meister', value: 'title_master', icon: '👑', rarity: 'epic' },
-    { level: 67, name: 'Elite', value: 'title_elite', icon: '💎', rarity: 'legendary' },
-    { level: 68, name: 'Supreme', value: 'title_supreme', icon: '🔱', rarity: 'legendary' },
-    { level: 69, name: 'Cyber Agent', value: 'title_cyber', icon: '🤖', rarity: 'epic' },
-  ];
-
-  const CARDBACKS = [
-    { level: 71, name: 'Ozean Blau', value: 'cardback_blue', rarity: 'common' },
-    { level: 72, name: 'Feuer', value: 'cardback_fire', rarity: 'rare' },
-    { level: 73, name: 'Frost', value: 'cardback_ice', rarity: 'rare' },
-    { level: 74, name: 'Neon Grid', value: 'cardback_neon', rarity: 'rare' },
-    { level: 76, name: 'Galaxie', value: 'cardback_galaxy', rarity: 'epic' },
-    { level: 77, name: 'Gold Royal', value: 'cardback_gold', rarity: 'epic' },
-    { level: 78, name: 'Matrix', value: 'cardback_matrix', rarity: 'epic' },
-    { level: 79, name: 'Prisma', value: 'cardback_rainbow', rarity: 'legendary' },
-  ];
-
-  // More avatars for higher levels (80-100) - Legendary
-  const HIGH_LEVEL_AVATARS = [
-    // Micah Style (Level 80-84) - Moderne Charaktere
-    { level: 80, name: 'Purpur König', preview: '/avatars/micah-CrimsonKing.svg' },
-    { level: 81, name: 'Azur Drache', preview: '/avatars/micah-AzureDragon.svg' },
-    { level: 82, name: 'Jade Meister', preview: '/avatars/micah-JadeMaster.svg' },
-    { level: 83, name: 'Onyx Schatten', preview: '/avatars/micah-OnyxShadow.svg' },
-    { level: 84, name: 'Violetter Sturm', preview: '/avatars/micah-VioletStorm.svg' },
-    // Avataaars Style (Level 86-89) - Cartoon Personen
-    { level: 86, name: 'Goldener Held', preview: '/avatars/avataaars-GoldenOne.svg' },
-    { level: 87, name: 'Silber Wolf', preview: '/avatars/avataaars-SilverWolf.svg' },
-    { level: 88, name: 'Scharlach Fury', preview: '/avatars/avataaars-ScarletFury.svg' },
-    { level: 89, name: 'Titan Kraft', preview: '/avatars/avataaars-TitanForce.svg' },
-    // Thumbs Style (Level 91-94) - Daumen-Charaktere
-    { level: 91, name: 'Sphinx', preview: '/avatars/thumbs-SphinxRiddle.svg' },
-    { level: 92, name: 'Greif', preview: '/avatars/thumbs-GriffinPride.svg' },
-    { level: 93, name: 'Hydra', preview: '/avatars/thumbs-HydraBeast.svg' },
-    { level: 94, name: 'Geisterlord', preview: '/avatars/thumbs-WraithLord.svg' },
-    // Notionists Style (Level 95-97) - Abstrakte Kunst
-    { level: 95, name: 'Geisterseele', preview: '/avatars/notionists-SpecterSoul.svg' },
-    { level: 96, name: 'Phantom Ass', preview: '/avatars/notionists-PhantomAce.svg' },
-    { level: 97, name: 'Schattenkönig', preview: '/avatars/notionists-ShadowKing.svg' },
-    // Open Peeps Style (Level 98-99) - Illustration Menschen
-    { level: 98, name: 'Apex Elite', preview: '/avatars/open-peeps-ApexElite.svg' },
-    { level: 99, name: 'Ultimative Legende', preview: '/avatars/open-peeps-PrimeLegend.svg' },
-  ];
+  const isSeason2 = season.id === 2;
 
   return Array.from({ length: 100 }, (_, i) => {
     const level = i + 1;
-    let freeReward: SeasonRewardItem | null = null;
-    let premiumReward: SeasonRewardItem | null = null;
+    let freeReward = null;
+    let premiumReward = null;
 
-    // ============================================================================
-    // FREE TRACK - Better coins & stickers
-    // ============================================================================
-    
-    // Milestone Free Rewards
-    if (level === 10) {
-      freeReward = { type: 'coins', amount: 500, name: 'Münzschatz', icon: '💰' };
-    } else if (level === 25) {
-      freeReward = { type: 'coins', amount: 1000, name: 'Gold Truhe', icon: '💰', rarity: 'rare' };
-    } else if (level === 50) {
-      freeReward = { type: 'coins', amount: 2000, name: 'Platin Schatz', icon: '💰', rarity: 'epic' };
-    } else if (level === 75) {
-      freeReward = { type: 'coins', amount: 3000, name: 'Diamant Hort', icon: '💰', rarity: 'epic' };
-    } else if (level === 100) {
-      freeReward = { type: 'coins', amount: 5000, name: 'Legendärer Schatz', icon: '💰', rarity: 'legendary' };
-    }
-    // Regular Free Rewards - More generous
-    else if (level % 5 === 0) {
-      freeReward = { type: 'coins', amount: 200 + level * 5, name: 'Münzschatz', icon: '💰' };
-    } else if (level % 3 === 0) {
-      freeReward = { type: 'coins', amount: 100 + level * 3, name: 'Münzen', icon: '💰' };
-    } else {
-      freeReward = { type: 'coins', amount: 75 + level * 2, name: 'Münzen', icon: '💰' };
+    // --- FREE TRACK (Target: ~42 rewards) ---
+    // Pattern: Levels ending in 1, 3, 6, 9 (4 per 10 = 40) + Level 100 + Level 50 = 42 total
+    const lastDigit = level % 10;
+    if ([1, 3, 6, 9].includes(lastDigit) || level === 50 || level === 100) {
+      if (level % 10 === 0) {
+        // Big Milestones (10, 20...) - actually covered by logic below but let's be specific
+        freeReward = { type: 'coins', amount: 500, name: 'Big Coin Stash', icon: 'coins_large' };
+      } else if (level % 3 === 0) {
+        freeReward = { type: 'coins', amount: 100, name: 'Coin Pouch', icon: 'coins_small' };
+      } else {
+        freeReward = { type: 'coins', amount: 50, name: 'Loose Change', icon: 'coins_small' };
+      }
     }
 
-    // ============================================================================
-    // PREMIUM TRACK - 40 Avatars + Frames + Effects + Titles + CardBacks
-    // ============================================================================
+    // --- PREMIUM TRACK (Target: 100 rewards - EVERY LEVEL) ---
 
-    // Check for Avatar rewards first (priority)
-    const avatarReward = PREMIUM_AVATARS.find(a => a.level === level);
-    const highLevelAvatar = HIGH_LEVEL_AVATARS.find(a => a.level === level);
-    
-    if (avatarReward) {
-      const rarity = level > 40 ? 'epic' : level > 20 ? 'rare' : 'common';
-      premiumReward = { 
-        type: 'avatar', 
-        name: avatarReward.name, 
-        value: avatarReward.preview, 
-        preview: avatarReward.preview, 
-        rarity: rarity as any,
-        desc: `Exklusiver ${avatarReward.name} Avatar`
+    // 1. Avatars - Every 10 levels AND every 5 levels (20 total avatars)
+    if (level % 10 === 0) {
+      const avatarReward = season.avatars.find(a => a.level === level);
+      premiumReward = {
+        type: 'avatar',
+        name: avatarReward?.name || 'Mystery Avatar',
+        desc: avatarReward?.desc || 'Exclusive Season Avatar',
+        value: avatarReward?.id,
+        preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarReward?.dicebear || 'mystery'}`,
+        icon: 'avatar_legendary',
+        rarity: 'legendary'
       };
     }
-    else if (highLevelAvatar) {
-      premiumReward = { 
-        type: 'avatar', 
-        name: highLevelAvatar.name, 
-        value: highLevelAvatar.preview, 
-        preview: highLevelAvatar.preview, 
-        rarity: 'legendary',
-        desc: `Legendärer ${highLevelAvatar.name} Avatar`
+    // Extra avatars at mid-points (5, 15, 25, 35, 45, 55, 65, 75, 85, 95)
+    else if (level % 10 === 5) {
+      const avatarIndex = Math.floor(level / 10) + 10; // Start from index 10
+      premiumReward = {
+        type: 'avatar',
+        name: `Agent #${level}`,
+        desc: 'Exclusive Agent Avatar',
+        value: `avatar_${level}`,
+        preview: `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=agent${level}`,
+        icon: 'avatar_epic',
+        rarity: 'epic'
       };
     }
-    // Check for Frame rewards
-    else if (FRAMES.find(f => f.level === level)) {
-      const frameReward = FRAMES.find(f => f.level === level)!;
-      const isMilestone = [50, 75, 100].includes(level);
-      premiumReward = { 
-        type: 'frame', 
-        name: frameReward.name, 
-        value: frameReward.value, 
-        icon: '🖼️', 
-        rarity: frameReward.rarity as any,
-        desc: isMilestone ? `🏆 MEILENSTEIN Level ${level}!` : undefined
+    // 2. Cosmetics / Effects (Premium only) - EVERY 3 LEVELS (levels 3,6,9,12,15...)
+    else if (level % 3 === 0) {
+      const allEffects = [
+        // Original 5
+        { id: 'glow', name: 'Glow', desc: 'Pulsing magical border' },
+        { id: 'fire', name: 'Fire', desc: 'Rotating fire gradient' },
+        { id: 'ice', name: 'Ice', desc: 'Shimmering icy border' },
+        { id: 'neon', name: 'Neon', desc: 'Flickering neon effect' },
+        { id: 'sparkle', name: 'Sparkle', desc: 'Gold sparkle border' },
+        // Elemental
+        { id: 'flame_burst', name: 'Flame Burst', desc: 'Animated flames' },
+        { id: 'frost_aura', name: 'Frost Aura', desc: 'Icy particles' },
+        { id: 'lightning_arc', name: 'Lightning', desc: 'Electric sparks' },
+        { id: 'water_ripple', name: 'Water Ripple', desc: 'Flowing water' },
+        // Cosmic
+        { id: 'galaxy_swirl', name: 'Galaxy Swirl', desc: 'Rotating galaxy' },
+        { id: 'star_field', name: 'Star Field', desc: 'Twinkling stars' },
+        { id: 'nebula_glow', name: 'Nebula', desc: 'Colorful nebula' },
+        { id: 'void_edge', name: 'Void Edge', desc: 'Dark matter' },
+        // Special
+        { id: 'rainbow_pulse', name: 'Rainbow', desc: 'Shifting rainbow' },
+        { id: 'gold_luxury', name: 'Gold Luxury', desc: 'Ornate gold' },
+        { id: 'diamond_shine', name: 'Diamond', desc: 'Crystal shine' },
+        { id: 'shadow_flame', name: 'Shadow Flame', desc: 'Dark fire' },
+        { id: 'aurora_wave', name: 'Aurora', desc: 'Northern lights' },
+        { id: 'pixel_glitch', name: 'Pixel Glitch', desc: 'Retro pixels' },
+        { id: 'holo_shimmer', name: 'Holographic', desc: 'Holo shine' },
+        // Advanced
+        { id: 'wave_motion', name: 'Wave Motion', desc: 'Flowing waves' },
+        { id: 'color_morph', name: 'Color Morph', desc: 'Rainbow cycle' },
+        { id: 'matrix_rain', name: 'Matrix Rain', desc: 'Code cascade' },
+        { id: 'prism_split', name: 'Prism Split', desc: 'RGB split' },
+        { id: 'glitch_wild', name: 'Glitch Wild', desc: 'Chaotic glitch' },
+        { id: 'lava_flow', name: 'Lava Flow', desc: 'Molten lava' },
+        { id: 'electric_pulse', name: 'Electric', desc: 'Lightning zaps' },
+        { id: 'oil_slick', name: 'Oil Slick', desc: 'Iridescent oil' },
+        { id: 'chromatic_abberation', name: 'Chromatic', desc: 'Color split' },
+        { id: 'quantum_flux', name: 'Quantum', desc: 'Phase shift' },
+      ];
+
+      // Distribute effects predictably: cycle through all effects
+      const effectIndex = Math.floor((level / 3) - 1) % allEffects.length;
+      const effect = allEffects[effectIndex];
+
+      premiumReward = {
+        type: 'effect',
+        name: `${effect.name} Frame`,
+        desc: effect.desc,
+        value: `effect_${effect.id}`,
+        icon: 'magic_wand',
+        rarity: effectIndex < 5 ? 'rare' : effectIndex < 20 ? 'epic' : 'legendary'
       };
     }
-    // Check for Font rewards
-    else if (FONTS.find(f => f.level === level)) {
-      const fontReward = FONTS.find(f => f.level === level)!;
-      premiumReward = { 
-        type: 'font', 
-        name: fontReward.name, 
-        value: fontReward.value, 
-        icon: '🔤', 
-        rarity: fontReward.rarity as any,
-        preview: fontReward.preview,
-        desc: `Schriftart: ${fontReward.name}`
+    // 3. XP Boosters - Every 4 levels (not divisible by 3 or 5)
+    else if (level % 4 === 0) {
+      premiumReward = {
+        type: 'booster',
+        name: 'XP Booster (1h)',
+        desc: 'Double XP for 1 hour',
+        value: 'xp_boost_1h',
+        icon: 'booster_pack', // Placeholder name for asset
+        rarity: 'rare'
       };
     }
-    // Check for Effect rewards
-    else if (EFFECTS.find(e => e.level === level)) {
-      const effectReward = EFFECTS.find(e => e.level === level)!;
-      premiumReward = { type: 'effect', name: effectReward.name, value: effectReward.value, icon: effectReward.icon, rarity: effectReward.rarity as any };
-    }
-    // Check for Title rewards
-    else if (TITLES.find(t => t.level === level)) {
-      const titleReward = TITLES.find(t => t.level === level)!;
-      premiumReward = { type: 'title', name: titleReward.name, value: titleReward.value, icon: titleReward.icon, rarity: titleReward.rarity as any };
-    }
-    // Check for CardBack rewards
-    else if (CARDBACKS.find(c => c.level === level)) {
-      const cardBackReward = CARDBACKS.find(c => c.level === level)!;
-      premiumReward = { type: 'cardback', name: cardBackReward.name, value: cardBackReward.value, icon: '🃏', rarity: cardBackReward.rarity as any };
-    }
-    // Coins for remaining levels
+    // 4. Filler (Coins) - All remaining levels
     else {
-      const coinAmount = level < 30 ? 300 : level < 50 ? 500 : level < 70 ? 750 : 1000;
-      premiumReward = { 
-        type: 'coins', 
-        amount: coinAmount + level * 10, 
-        name: 'Premium Münzen', 
-        icon: '💰',
-        rarity: level > 60 ? 'epic' : level > 30 ? 'rare' : 'common'
+      premiumReward = {
+        type: 'coins',
+        amount: 250 * (Math.floor(level / 20) + 1), // Scales with level
+        name: 'Premium Coins',
+        icon: 'coin_pile_huge'
       };
     }
 
@@ -2269,233 +1933,99 @@ export const generateSeasonRewards = (season: Season) => {
   });
 };
 
-// Generate rewards for current season
-export const SEASON_REWARDS: SeasonReward[] = generateSeasonRewards(getCurrentSeason());
+// Legacy compatibility - defaults to current season
+const generatedRewards = generateSeasonRewards(getCurrentSeason());
+
+// Apply Manual Overrides for first 15 levels (Nano Banana Special)
+// Apply Manual Overrides for first 15 levels (Nano Banana Special)
+const overrides: Record<number, Partial<SeasonReward>> = {
+  1: { premium: { type: 'avatar', name: 'Nano Scout', value: 'nano_banana_pro_1', preview: '/assets/season/avatar_nano_scout.png' } },
+  2: { premium: { type: 'effect', name: 'Rainbow Pulse', value: 'effect_rainbow', icon: '🌈' } }, // Keep emoji for now as effect fallback
+  4: { premium: { type: 'avatar', name: 'Space Explorer', value: 'space_explorer', preview: '/assets/season/avatar_space_explorer.png' } },
+  5: { premium: { type: 'card_pack', amount: 1, icon: '📦' } },
+  6: { premium: { type: 'avatar', name: 'Cyber Banana', value: 'nano_banana_pro_2', preview: '/assets/season/avatar_nano_scout.png' } },
+  7: { premium: { type: 'effect', name: 'Silver Shine', value: 'effect_silver', icon: '/assets/season/frame_silver.png' } }, // Use silver frame
+  8: { premium: { type: 'effect', name: 'Matrix Rain', value: 'effect_matrix', icon: '💻' } },
+  9: { premium: { type: 'avatar', name: 'Neon Ape', value: 'nano_banana_pro_3', preview: '/assets/season/avatar_nano_scout.png' } },
+  10: { premium: { type: 'effect', name: 'Glitch Wild', value: 'effect_glitch_wild', icon: '👾' } },
+  11: { premium: { type: 'avatar', name: 'Glitch Monkey', value: 'nano_banana_pro_4', preview: '/assets/season/avatar_nano_scout.png' } },
+  12: { premium: { type: 'effect', name: 'Holo Shimmer', value: 'effect_holo', icon: '💿' } },
+  14: { premium: { type: 'avatar', name: 'Mecha Kong', value: 'nano_banana_pro_5', preview: '/assets/season/avatar_mecha_kong.png' } },
+  15: { premium: { type: 'card_pack', amount: 2, icon: '📦' } }
+};
+
+export const SEASON_REWARDS: SeasonReward[] = generatedRewards.map(reward => {
+  const override = overrides[reward.level];
+  if (override) {
+    return { ...reward, ...override };
+  }
+  return reward;
+});
 
 // Shop Items
 export const SHOP_ITEMS: ShopItem[] = [
-  // ============================================================================
-  // 💰 MÜNZPAKETE (Echtgeld)
-  // ============================================================================
-  {
-    id: 'coins_starter',
-    type: 'currency',
-    name: 'Starter Paket',
-    cost: '1,99€',
-    value: 150,
-    currencyAmount: 150,
-    isRealMoney: true,
-    rarity: 'common'
-  },
+  // Currency Packs (Real Money)
   {
     id: 'coins_small',
     type: 'currency',
-    name: 'Kleiner Schatz',
+    name: 'Pocket Change',
     cost: '4,99€',
     value: 500,
     currencyAmount: 500,
     isRealMoney: true,
-    rarity: 'common'
+    paypalLink: 'https://www.paypal.com/ncp/payment/5FZ6BJ9G8LGML'
   },
   {
     id: 'coins_med',
     type: 'currency',
-    name: 'Gold Truhe',
+    name: 'Mercenary Stash',
     cost: '9,99€',
     value: 1500,
     currencyAmount: 1500,
     isRealMoney: true,
-    rarity: 'rare'
+    paypalLink: 'https://www.paypal.com/ncp/payment/JRPDA9NBVAV48'
   },
   {
     id: 'coins_large',
     type: 'currency',
-    name: 'Diamant Hort',
+    name: 'Corporate Fund',
     cost: '24,99€',
     value: 6000,
     currencyAmount: 6000,
     isRealMoney: true,
-    rarity: 'epic'
-  },
-  {
-    id: 'coins_mega',
-    type: 'currency',
-    name: 'Legendärer Schatz',
-    cost: '49,99€',
-    value: 15000,
-    currencyAmount: 15000,
-    isRealMoney: true,
-    rarity: 'legendary'
+    paypalLink: 'https://www.paypal.com/ncp/payment/V9GJ535LYLFKU'
   },
 
-  // ============================================================================
-  // 👤 AVATARE (Münzen) - Mit lokalen SVGs
-  // ============================================================================
-  // Günstige Avatare (100-500 Münzen)
-  { id: 'shop_avatar_space', type: 'avatar', name: 'Weltraum Forscher', cost: 200, value: '/avatars/space_explorer.png', rarity: 'common', preview: '/avatars/space_explorer.png' },
-  { id: 'shop_avatar_cyber', type: 'avatar', name: 'Cyber Krieger', cost: 300, value: '/avatars/cyberpunk_warrior.png', rarity: 'common', preview: '/avatars/cyberpunk_warrior.png' },
-  { id: 'shop_avatar_wizard', type: 'avatar', name: 'Fantasie Magier', cost: 400, value: '/avatars/fantasy_wizard.png', rarity: 'common', preview: '/avatars/fantasy_wizard.png' },
-  
-  // Mittlere Avatare (500-1500 Münzen)
-  { id: 'shop_avatar_ninja', type: 'avatar', name: 'Schatten Ninja', cost: 600, value: 'ShadowNinja', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=ShadowNinja' },
-  { id: 'shop_avatar_viking', type: 'avatar', name: 'Wikinger Held', cost: 800, value: 'VikingHero', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=VikingHero' },
-  { id: 'shop_avatar_pirate', type: 'avatar', name: 'Piraten Kapitän', cost: 1000, value: 'PirateCaptain', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=PirateCaptain' },
-  { id: 'shop_avatar_samurai', type: 'avatar', name: 'Samurai Meister', cost: 1200, value: 'SamuraiMaster', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/lorelei/svg?seed=SamuraiMaster' },
-  
-  // Teure Avatare (2000-5000 Münzen)
-  { id: 'shop_avatar_dragon', type: 'avatar', name: 'Drachen Reiter', cost: 2000, value: 'DragonRider', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/bottts/svg?seed=DragonRider' },
-  { id: 'shop_avatar_phoenix', type: 'avatar', name: 'Phönix Wächter', cost: 2500, value: 'PhoenixGuard', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/bottts/svg?seed=PhoenixGuard' },
-  { id: 'shop_avatar_titan', type: 'avatar', name: 'Titan Krieger', cost: 3000, value: 'TitanWarrior', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/micah/svg?seed=TitanWarrior' },
-  { id: 'shop_avatar_void', type: 'avatar', name: 'Void Jäger', cost: 4000, value: 'VoidHunter', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/micah/svg?seed=VoidHunter' },
-  
-  // Legendäre Avatare (5000+ Münzen)
-  { id: 'shop_avatar_cosmic', type: 'avatar', name: 'Kosmischer Kaiser', cost: 5000, value: 'CosmicEmperor', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/avataaars/svg?seed=CosmicEmperor' },
-  { id: 'shop_avatar_eternal', type: 'avatar', name: 'Ewiger Champion', cost: 7500, value: 'EternalChampion', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/avataaars/svg?seed=EternalChampion' },
-  { id: 'shop_avatar_supreme', type: 'avatar', name: 'Höchster Meister', cost: 10000, value: 'SupremeMaster', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=SupremeMaster' },
+  // Card Packs
+  { id: 'pack_starter', type: 'card_pack', name: 'Starter Pack', cost: 500, value: 'pack_starter', description: 'Contains 5 basic cards' },
+  { id: 'pack_premium', type: 'card_pack', name: 'Premium Pack', cost: 1500, value: 'pack_premium', description: 'Contains 5 cards with at least 1 rare' },
+  { id: 'pack_legendary', type: 'card_pack', name: 'Legendary Pack', cost: 5000, value: 'pack_legendary', description: 'Contains 5 cards with guaranteed legendary' },
 
-  // ============================================================================
-  // 🖼️ RAHMEN (Münzen)
-  // ============================================================================
-  { id: 'shop_frame_silver', type: 'frame', name: 'Silber Rahmen', cost: 300, value: 'frame_silver', rarity: 'common' },
-  { id: 'shop_frame_bronze', type: 'frame', name: 'Bronze Rahmen', cost: 400, value: 'frame_bronze', rarity: 'common' },
-  { id: 'shop_frame_gold', type: 'frame', name: 'Gold Rahmen', cost: 800, value: 'frame_gold', rarity: 'rare' },
-  { id: 'shop_frame_diamond', type: 'frame', name: 'Diamant Rahmen', cost: 1500, value: 'frame_diamond', rarity: 'rare' },
-  { id: 'shop_frame_neon_blue', type: 'frame', name: 'Neon Blau', cost: 2000, value: 'frame_neon_blue', rarity: 'epic' },
-  { id: 'shop_frame_neon_pink', type: 'frame', name: 'Neon Pink', cost: 2000, value: 'frame_neon_pink', rarity: 'epic' },
-  { id: 'shop_frame_fire', type: 'frame', name: 'Feuer Rahmen', cost: 3000, value: 'frame_fire', rarity: 'epic' },
-  { id: 'shop_frame_ice', type: 'frame', name: 'Eis Rahmen', cost: 3000, value: 'frame_ice', rarity: 'epic' },
-  { id: 'shop_frame_rainbow', type: 'frame', name: 'Regenbogen', cost: 5000, value: 'frame_rainbow', rarity: 'legendary' },
-  { id: 'shop_frame_galaxy', type: 'frame', name: 'Galaxie Rahmen', cost: 7500, value: 'frame_galaxy', rarity: 'legendary' },
-  { id: 'shop_frame_dragon', type: 'frame', name: 'Drachen Rahmen', cost: 10000, value: 'frame_dragon', rarity: 'legendary' },
+  // Avatars (Costs Coins)
+  { id: 'shop_avatar_1', type: 'avatar', name: 'Cyber Demon', cost: 500, value: 'CyberDemon' },
+  { id: 'shop_avatar_2', type: 'avatar', name: 'Holo Girl', cost: 800, value: 'HoloGirl' },
+  { id: 'shop_avatar_3', type: 'avatar', name: 'Mecha King', cost: 1200, value: 'MechaKing' },
+  { id: 'shop_avatar_4', type: 'avatar', name: 'Void Stalker', cost: 2000, value: 'VoidStalker' },
+  { id: 'shop_avatar_5', type: 'avatar', name: 'Neon Samurai', cost: 3000, value: 'NeonSamurai' },
+  { id: 'shop_avatar_6', type: 'avatar', name: 'Quantum Ghost', cost: 5000, value: 'QuantumGhost' },
+  { id: 'shop_avatar_7', type: 'avatar', name: 'Plasma Knight', cost: 7500, value: 'PlasmaKnight' },
+  { id: 'shop_avatar_8', type: 'avatar', name: 'Nano Swarm', cost: 10000, value: 'NanoSwarm' },
 
-  // ============================================================================
-  // ✨ EFFEKTE (Münzen)
-  // ============================================================================
-  { id: 'shop_effect_sparkle', type: 'effect', name: 'Funkel Effekt', cost: 400, value: 'effect_sparkle', rarity: 'common' },
-  { id: 'shop_effect_hearts', type: 'effect', name: 'Herzen', cost: 500, value: 'effect_hearts', rarity: 'common' },
-  { id: 'shop_effect_stars', type: 'effect', name: 'Sterne', cost: 600, value: 'effect_stars', rarity: 'common' },
-  { id: 'shop_effect_fire', type: 'effect', name: 'Feuer Aura', cost: 1200, value: 'effect_fire', rarity: 'rare' },
-  { id: 'shop_effect_ice', type: 'effect', name: 'Eis Kristalle', cost: 1200, value: 'effect_ice', rarity: 'rare' },
-  { id: 'shop_effect_electric', type: 'effect', name: 'Blitz Energie', cost: 1500, value: 'effect_electric', rarity: 'rare' },
-  { id: 'shop_effect_neon', type: 'effect', name: 'Neon Glow', cost: 2000, value: 'effect_neon', rarity: 'epic' },
-  { id: 'shop_effect_gold', type: 'effect', name: 'Gold Glitzer', cost: 2500, value: 'effect_gold', rarity: 'epic' },
-  { id: 'shop_effect_matrix', type: 'effect', name: 'Matrix Code', cost: 3000, value: 'effect_matrix', rarity: 'epic' },
-  { id: 'shop_effect_sakura', type: 'effect', name: 'Kirschblüten', cost: 3500, value: 'effect_sakura', rarity: 'epic' },
-  { id: 'shop_effect_rainbow', type: 'effect', name: 'Regenbogen Aura', cost: 5000, value: 'effect_rainbow', rarity: 'legendary' },
-  { id: 'shop_effect_cosmic', type: 'effect', name: 'Kosmische Energie', cost: 7500, value: 'effect_cosmic', rarity: 'legendary' },
-  { id: 'shop_effect_supernova', type: 'effect', name: 'Supernova', cost: 10000, value: 'effect_supernova', rarity: 'legendary' },
+  // Card Backs (Kartenrückseiten)
+  { id: 'cardback_classic', type: 'card_back', name: 'Classic Blue', cost: 200, value: 'classic_blue' },
+  { id: 'cardback_neon', type: 'card_back', name: 'Neon Glow', cost: 500, value: 'neon_glow' },
+  { id: 'cardback_cyber', type: 'card_back', name: 'Cyberpunk', cost: 800, value: 'cyberpunk' },
+  { id: 'cardback_gold', type: 'card_back', name: 'Golden Luxury', cost: 1500, value: 'gold_luxury' },
+  { id: 'cardback_galaxy', type: 'card_back', name: 'Galaxy Stars', cost: 2000, value: 'galaxy_stars' },
+  { id: 'cardback_fire', type: 'card_back', name: 'Fire Dragon', cost: 3000, value: 'fire_dragon' },
 
-  // ============================================================================
-  // 👑 TITEL (Münzen)
-  // ============================================================================
-  { id: 'shop_title_rookie', type: 'title', name: 'Neuling', cost: 100, value: 'title_rookie', rarity: 'common' },
-  { id: 'shop_title_player', type: 'title', name: 'Spieler', cost: 200, value: 'title_player', rarity: 'common' },
-  { id: 'shop_title_gamer', type: 'title', name: 'Gamer', cost: 300, value: 'title_gamer', rarity: 'common' },
-  { id: 'shop_title_pro', type: 'title', name: 'Profi', cost: 500, value: 'title_pro', rarity: 'rare' },
-  { id: 'shop_title_expert', type: 'title', name: 'Experte', cost: 800, value: 'title_expert', rarity: 'rare' },
-  { id: 'shop_title_master', type: 'title', name: 'Meister', cost: 1500, value: 'title_master', rarity: 'rare' },
-  { id: 'shop_title_champion', type: 'title', name: 'Champion', cost: 2500, value: 'title_champion', rarity: 'epic' },
-  { id: 'shop_title_legend', type: 'title', name: 'Legende', cost: 4000, value: 'title_legend', rarity: 'epic' },
-  { id: 'shop_title_hero', type: 'title', name: 'Held', cost: 5000, value: 'title_hero', rarity: 'epic' },
-  { id: 'shop_title_king', type: 'title', name: 'König', cost: 7500, value: 'title_king', rarity: 'legendary' },
-  { id: 'shop_title_emperor', type: 'title', name: 'Kaiser', cost: 10000, value: 'title_emperor', rarity: 'legendary' },
-  { id: 'shop_title_god', type: 'title', name: 'Gott', cost: 15000, value: 'title_god', rarity: 'legendary' },
-
-  // ============================================================================
-  // 🃏 KARTENRÜCKSEITEN (Münzen)
-  // ============================================================================
-  { id: 'shop_card_classic', type: 'cardback', name: 'Klassisch Rot', cost: 200, value: 'cardback_classic', rarity: 'common' },
-  { id: 'shop_card_blue', type: 'cardback', name: 'Ozean Blau', cost: 300, value: 'cardback_blue', rarity: 'common' },
-  { id: 'shop_card_green', type: 'cardback', name: 'Wald Grün', cost: 300, value: 'cardback_green', rarity: 'common' },
-  { id: 'shop_card_purple', type: 'cardback', name: 'Royal Lila', cost: 500, value: 'cardback_purple', rarity: 'rare' },
-  { id: 'shop_card_gold', type: 'cardback', name: 'Gold Edition', cost: 1000, value: 'cardback_gold', rarity: 'rare' },
-  { id: 'shop_card_diamond', type: 'cardback', name: 'Diamant', cost: 1500, value: 'cardback_diamond', rarity: 'rare' },
-  { id: 'shop_card_neon', type: 'cardback', name: 'Neon Cyber', cost: 2000, value: 'cardback_neon', rarity: 'epic' },
-  { id: 'shop_card_fire', type: 'cardback', name: 'Flammen', cost: 2500, value: 'cardback_fire', rarity: 'epic' },
-  { id: 'shop_card_ice', type: 'cardback', name: 'Frost', cost: 2500, value: 'cardback_ice', rarity: 'epic' },
-  { id: 'shop_card_galaxy', type: 'cardback', name: 'Galaxie', cost: 4000, value: 'cardback_galaxy', rarity: 'epic' },
-  { id: 'shop_card_rainbow', type: 'cardback', name: 'Regenbogen', cost: 6000, value: 'cardback_rainbow', rarity: 'legendary' },
-  { id: 'shop_card_dragon', type: 'cardback', name: 'Drachen', cost: 8000, value: 'cardback_dragon', rarity: 'legendary' },
-  { id: 'shop_card_holographic', type: 'cardback', name: 'Holografisch', cost: 12000, value: 'cardback_holo', rarity: 'legendary' },
-
-  // ============================================================================
-  // 🔤 SCHRIFTARTEN (Münzen)
-  // ============================================================================
-  { id: 'shop_font_bold', type: 'font', name: 'Fett', cost: 300, value: 'font_bold', rarity: 'common', preview: "'Arial Black', sans-serif" },
-  { id: 'shop_font_italic', type: 'font', name: 'Kursiv', cost: 300, value: 'font_italic', rarity: 'common', preview: "'Georgia', serif" },
-  { id: 'shop_font_pixel', type: 'font', name: 'Pixel', cost: 600, value: 'font_pixel', rarity: 'rare', preview: "'Press Start 2P', cursive" },
-  { id: 'shop_font_script', type: 'font', name: 'Schreibschrift', cost: 800, value: 'font_script', rarity: 'rare', preview: "'Dancing Script', cursive" },
-  { id: 'shop_font_mono', type: 'font', name: 'Hacker', cost: 1000, value: 'font_mono', rarity: 'rare', preview: "'JetBrains Mono', monospace" },
-  { id: 'shop_font_gothic', type: 'font', name: 'Gotisch', cost: 1500, value: 'font_gothic', rarity: 'epic', preview: "'UnifrakturMaguntia', cursive" },
-  { id: 'shop_font_neon', type: 'font', name: 'Neon', cost: 2000, value: 'font_neon', rarity: 'epic', preview: "'Monoton', cursive" },
-  { id: 'shop_font_royal', type: 'font', name: 'Royal', cost: 3000, value: 'font_royal', rarity: 'epic', preview: "'Cinzel', serif" },
-  { id: 'shop_font_graffiti', type: 'font', name: 'Graffiti', cost: 4000, value: 'font_graffiti', rarity: 'legendary', preview: "'Permanent Marker', cursive" },
-  { id: 'shop_font_matrix', type: 'font', name: 'Matrix', cost: 5000, value: 'font_matrix', rarity: 'legendary', preview: "'Share Tech Mono', monospace" },
-
-  // ============================================================================
-  // ⚡ BOOSTER & POWER-UPS (Münzen)
-  // ============================================================================
-  { id: 'shop_booster_xp_small', type: 'booster', name: 'XP Boost (1h)', cost: 100, value: 'xp_boost_1h', rarity: 'common' },
-  { id: 'shop_booster_xp_med', type: 'booster', name: 'XP Boost (6h)', cost: 400, value: 'xp_boost_6h', rarity: 'rare' },
-  { id: 'shop_booster_xp_large', type: 'booster', name: 'XP Boost (24h)', cost: 1000, value: 'xp_boost_24h', rarity: 'epic' },
-  { id: 'shop_booster_coin_small', type: 'booster', name: 'Münz Boost (1h)', cost: 150, value: 'coin_boost_1h', rarity: 'common' },
-  { id: 'shop_booster_coin_med', type: 'booster', name: 'Münz Boost (6h)', cost: 500, value: 'coin_boost_6h', rarity: 'rare' },
-  { id: 'shop_booster_coin_large', type: 'booster', name: 'Münz Boost (24h)', cost: 1200, value: 'coin_boost_24h', rarity: 'epic' },
-  { id: 'shop_hint_pack_small', type: 'booster', name: '5 Hinweise', cost: 200, value: 'hints_5', rarity: 'common' },
-  { id: 'shop_hint_pack_med', type: 'booster', name: '15 Hinweise', cost: 500, value: 'hints_15', rarity: 'rare' },
-  { id: 'shop_hint_pack_large', type: 'booster', name: '50 Hinweise', cost: 1500, value: 'hints_50', rarity: 'epic' },
-  { id: 'shop_skip_level', type: 'booster', name: 'Level Überspringen', cost: 300, value: 'skip_level', rarity: 'rare' },
-  { id: 'shop_extra_lives', type: 'booster', name: '3 Extra Leben', cost: 400, value: 'extra_lives_3', rarity: 'rare' },
-  { id: 'shop_time_freeze', type: 'booster', name: 'Zeit Stopp (30s)', cost: 250, value: 'time_freeze', rarity: 'rare' },
-
-  // ============================================================================
-  // 🃏 KARTENPAKETE - Deckbuilder (Münzen)
-  // ============================================================================
-  // Basis-Pakete
-  { id: 'pack_basic', type: 'cardpack', name: 'Basis-Paket', cost: 500, value: 'basic', rarity: 'common' },
-  { id: 'pack_standard', type: 'cardpack', name: 'Standard-Paket', cost: 1000, value: 'standard', rarity: 'rare' },
-  
-  // Element-Pakete
-  { id: 'pack_fire', type: 'cardpack', name: 'Feuer-Paket', cost: 800, value: 'element_fire', rarity: 'rare' },
-  { id: 'pack_water', type: 'cardpack', name: 'Wasser-Paket', cost: 800, value: 'element_water', rarity: 'rare' },
-  { id: 'pack_earth', type: 'cardpack', name: 'Erde-Paket', cost: 800, value: 'element_earth', rarity: 'rare' },
-  { id: 'pack_air', type: 'cardpack', name: 'Luft-Paket', cost: 800, value: 'element_air', rarity: 'rare' },
-  { id: 'pack_void', type: 'cardpack', name: 'Leere-Paket', cost: 1200, value: 'element_void', rarity: 'epic' },
-  
-  // Premium-Pakete
-  { id: 'pack_premium', type: 'cardpack', name: 'Premium-Paket', cost: 2500, value: 'premium', rarity: 'epic' },
-  { id: 'pack_legendary', type: 'cardpack', name: 'Legendäres Paket', cost: 5000, value: 'legendary', rarity: 'legendary' },
-
-  // ============================================================================
-  // 🎁 BUNDLES (Echtgeld - Spezialangebote)
-  // ============================================================================
-  {
-    id: 'bundle_starter',
-    type: 'bundle',
-    name: 'Starter Bundle',
-    cost: '2,99€',
-    value: 'bundle_starter',
-    isRealMoney: true,
-    rarity: 'rare'
-  },
-  {
-    id: 'bundle_premium',
-    type: 'bundle',
-    name: 'Premium Bundle',
-    cost: '9,99€',
-    value: 'bundle_premium',
-    isRealMoney: true,
-    rarity: 'epic'
-  },
-  {
-    id: 'bundle_ultimate',
-    type: 'bundle',
-    name: 'Ultimate Bundle',
-    cost: '19,99€',
-    value: 'bundle_ultimate',
-    isRealMoney: true,
-    rarity: 'legendary'
-  },
+  // Frames (Rahmen)
+  { id: 'frame_bronze', type: 'frame', name: 'Bronze Border', cost: 300, value: 'frame_bronze' },
+  { id: 'frame_silver', type: 'frame', name: 'Silver Border', cost: 600, value: 'frame_silver' },
+  { id: 'frame_gold', type: 'frame', name: 'Gold Border', cost: 1000, value: 'frame_gold' },
+  { id: 'frame_rainbow', type: 'frame', name: 'Rainbow Glow', cost: 1800, value: 'frame_rainbow' },
+  { id: 'frame_fire', type: 'frame', name: 'Fire Effect', cost: 2500, value: 'frame_fire' },
+  { id: 'frame_plasma', type: 'frame', name: 'Plasma Storm', cost: 4000, value: 'frame_plasma' },
 ];
 
 // Premium Pass Plans (PayPal Subscriptions)
