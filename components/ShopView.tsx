@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Sparkles, Gem, Zap, User, Coins, CreditCard, ChevronLeft, ChevronRight, Package, Frame } from 'lucide-react';
 import { PayPalButton } from './PayPalButton';
 import { SHOP_ITEMS } from '../constants';
 import { audio } from '../utils/audio';
@@ -187,6 +187,63 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     </button>
                 </div>
 
+                {/* Card Packs Section - Neo Brutal */}
+                <div>
+                    <div
+                        className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
+                        style={{ background: '#000', color: '#FF006E' }}
+                    >
+                        <Package size={14} className="inline mr-2" /> KARTEN PACKS
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {SHOP_ITEMS.filter(i => i.type === 'card_pack').map((item) => (
+                            <div
+                                key={item.id}
+                                className="p-4 flex flex-col items-center relative overflow-hidden group transition-all duration-100"
+                                style={{
+                                    background: 'var(--color-surface)',
+                                    border: '4px solid #000',
+                                    boxShadow: '6px 6px 0px #FF006E',
+                                    transform: 'skewX(-3deg)'
+                                }}
+                            >
+                                <div
+                                    className="w-20 h-20 mb-3 flex items-center justify-center text-4xl bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform"
+                                    style={{ transform: 'skewX(3deg)' }}
+                                >
+                                    📦
+                                </div>
+                                <span
+                                    className="text-lg font-black uppercase mb-1 text-center leading-tight"
+                                    style={{ color: 'var(--color-text)', transform: 'skewX(3deg)' }}
+                                >
+                                    {item.name}
+                                </span>
+                                {/* @ts-ignore */}
+                                <p className="text-xs text-center mb-4 font-bold opacity-70" style={{ transform: 'skewX(3deg)' }}>
+                                    {/* @ts-ignore */}
+                                    {item.description}
+                                </p>
+
+                                <div className="mt-auto w-full" style={{ transform: 'skewX(3deg)' }}>
+                                    <button
+                                        onClick={() => handleBuyItem(item)}
+                                        className="w-full py-3 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all hover:translate-y-1 hover:shadow-none"
+                                        style={{
+                                            background: '#FF006E',
+                                            color: '#fff',
+                                            border: '3px solid #000',
+                                            boxShadow: '4px 4px 0px #000'
+                                        }}
+                                    >
+                                        <Gem size={14} /> {item.cost}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Avatar Section - Neo Brutal */}
                 <div>
                     <div
@@ -324,6 +381,162 @@ export const ShopView: React.FC<ShopViewProps> = ({
                                                 }}
                                             >
                                                 {item.cost}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Card Backs Section - Neo Brutal */}
+                <div>
+                    <div
+                        className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
+                        style={{ background: '#000', color: '#8338EC' }}
+                    >
+                        🎴 KARTENRÜCKSEITEN
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {SHOP_ITEMS.filter(i => i.type === 'card_back').map((item) => {
+                            const isOwned = (user.ownedCardBacks || []).includes(item.value as string);
+                            const isEquipped = user.activeCardBack === item.value;
+
+                            return (
+                                <div
+                                    key={item.id}
+                                    className="p-4 flex flex-col items-center relative overflow-hidden group transition-all duration-100"
+                                    style={{
+                                        background: isEquipped ? '#8338EC' : 'var(--color-surface)',
+                                        border: '4px solid #000',
+                                        boxShadow: '6px 6px 0px #8338EC',
+                                        transform: 'skewX(-3deg)'
+                                    }}
+                                >
+                                    <div
+                                        className="w-20 h-28 mb-3 flex items-center justify-center text-5xl group-hover:scale-105 transition-transform"
+                                        style={{
+                                            background: 'linear-gradient(135deg, #8338EC, #A855F7)',
+                                            border: '3px solid #000',
+                                            transform: 'skewX(3deg)',
+                                            boxShadow: '4px 4px 0px #000'
+                                        }}
+                                    >
+                                        🎴
+                                    </div>
+                                    <span
+                                        className="text-sm font-black uppercase mb-2 text-center leading-tight"
+                                        style={{ color: isEquipped ? '#FFF' : 'var(--color-text)', transform: 'skewX(3deg)' }}
+                                    >
+                                        {item.name}
+                                    </span>
+
+                                    <div className="mt-auto w-full" style={{ transform: 'skewX(3deg)' }}>
+                                        {isOwned ? (
+                                            <button
+                                                disabled={isEquipped}
+                                                onClick={() => setUser({ ...user, activeCardBack: item.value as string })}
+                                                className="w-full py-2 font-black text-xs uppercase transition-all"
+                                                style={{
+                                                    background: isEquipped ? '#000' : 'var(--color-surface)',
+                                                    color: isEquipped ? '#8338EC' : 'var(--color-text)',
+                                                    border: '3px solid #000',
+                                                    boxShadow: '3px 3px 0px #000'
+                                                }}
+                                            >
+                                                {isEquipped ? t.SHOP.EQUIPPED : t.SHOP.EQUIP}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleBuyItem(item)}
+                                                className="w-full py-2 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
+                                                style={{
+                                                    background: '#8338EC',
+                                                    color: '#FFF',
+                                                    border: '3px solid #000',
+                                                    boxShadow: '3px 3px 0px #000'
+                                                }}
+                                            >
+                                                <Gem size={12} /> {item.cost}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Frames Section - Neo Brutal */}
+                <div>
+                    <div
+                        className="inline-block px-4 py-2 mb-4 font-black text-sm uppercase tracking-wider"
+                        style={{ background: '#000', color: '#FF7F00' }}
+                    >
+                        <Frame size={14} className="inline mr-2" /> RAHMEN
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {SHOP_ITEMS.filter(i => i.type === 'frame').map((item) => {
+                            const isOwned = (user.ownedFrames || []).includes(item.value as string);
+                            const isEquipped = user.activeFrame === item.value;
+
+                            return (
+                                <div
+                                    key={item.id}
+                                    className="p-4 flex flex-col items-center relative overflow-hidden group transition-all duration-100"
+                                    style={{
+                                        background: isEquipped ? '#FF7F00' : 'var(--color-surface)',
+                                        border: '4px solid #000',
+                                        boxShadow: '6px 6px 0px #FF7F00',
+                                        transform: 'skewX(-3deg)'
+                                    }}
+                                >
+                                    <div
+                                        className="w-20 h-20 mb-3 flex items-center justify-center relative group-hover:scale-105 transition-transform"
+                                        style={{
+                                            background: 'linear-gradient(135deg, #FF7F00, #FFBE0B)',
+                                            border: '4px solid #000',
+                                            transform: 'skewX(3deg)',
+                                            boxShadow: '4px 4px 0px #000'
+                                        }}
+                                    >
+                                        <Frame size={40} style={{ color: '#000' }} />
+                                    </div>
+                                    <span
+                                        className="text-sm font-black uppercase mb-2 text-center leading-tight"
+                                        style={{ color: isEquipped ? '#000' : 'var(--color-text)', transform: 'skewX(3deg)' }}
+                                    >
+                                        {item.name}
+                                    </span>
+
+                                    <div className="mt-auto w-full" style={{ transform: 'skewX(3deg)' }}>
+                                        {isOwned ? (
+                                            <button
+                                                disabled={isEquipped}
+                                                onClick={() => setUser({ ...user, activeFrame: item.value as string })}
+                                                className="w-full py-2 font-black text-xs uppercase transition-all"
+                                                style={{
+                                                    background: isEquipped ? '#000' : 'var(--color-surface)',
+                                                    color: isEquipped ? '#FF7F00' : 'var(--color-text)',
+                                                    border: '3px solid #000',
+                                                    boxShadow: '3px 3px 0px #000'
+                                                }}
+                                            >
+                                                {isEquipped ? t.SHOP.EQUIPPED : t.SHOP.EQUIP}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleBuyItem(item)}
+                                                className="w-full py-2 font-black text-xs uppercase flex items-center justify-center gap-1 transition-all"
+                                                style={{
+                                                    background: '#FF7F00',
+                                                    color: '#000',
+                                                    border: '3px solid #000',
+                                                    boxShadow: '3px 3px 0px #000'
+                                                }}
+                                            >
+                                                <Gem size={12} /> {item.cost}
                                             </button>
                                         )}
                                     </div>

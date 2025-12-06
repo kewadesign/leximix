@@ -45,7 +45,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
         const minimum = data.min_version || '0.0.0';
 
         // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
-        const url = data.download_url || (isCapacitor ? 'http://leximix.de/app-release.apk' : '/app-release.apk');
+        const url = data.download_url || (isCapacitor ? 'https://leximix.de/app-release.apk' : '/app-release.apk');
 
         // Check Maintenance Mode
         if (data.maintenance_active) {
@@ -64,7 +64,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
     });
 
     // Fetch Changelog
-    fetch('/changelog.json')
+    fetch('./changelog.json')
       .then(res => res.json())
       .then(data => setChangelogData(data))
       .catch(err => console.error('Failed to load changelog', err));

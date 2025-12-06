@@ -4,7 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '3.1.3';
+export const APP_VERSION = '3.5.0';
 
 // ============================================================================
 // SEASON SYSTEM
@@ -140,6 +140,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Max 20 characters",
       ERR_AGE: "Invalid age (1-120)"
     },
+    AUTH: {
+      login: "LOGIN",
+      register: "REGISTER",
+      username: "USERNAME",
+      password: "PASSWORD",
+      confirmPassword: "CONFIRM PASSWORD",
+      captcha: "CAPTCHA",
+      result: "Result",
+      loading: "LOADING...",
+      resetEmailSent: "EMAIL SENT",
+      checkEmail: "Check your inbox.",
+      backToLogin: "BACK TO LOGIN",
+      resetPassword: "RESET PASSWORD",
+      forgotPassword: "Forgot Password?",
+      sendResetEmail: "SEND RESET EMAIL",
+      age: "AGE",
+      minAge: "Minimum age: 12 years"
+    },
     HOME: {
       PLAYER: "Puzzle Pal",
       SEASON_LEVEL: "Season Level",
@@ -168,7 +186,7 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "LETTER SUDOKU", desc: "Logic (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Challenges" },
       RIDDLE: { title: "RIDDLES", desc: "Word Puzzles" },
-      LETTER_MAU_MAU: { title: "LETTER MAU MAU", desc: "Card Game" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Premium Card Forge" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Classic Card Game" },
       CHESS: { title: "CHESS", desc: "Classic Strategy Game" },
       CHECKERS: { title: "CHECKERS", desc: "Classic Board Game" },
@@ -177,7 +195,7 @@ export const TRANSLATIONS = {
       LOCKED: { title: "LOCKED", desc: "Coming Soon" }
     },
     MAU_MAU: {
-      TITLE: "LETTER MAU MAU",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Your Turn",
       OPPONENT_TURN: "Opponent's Turn",
       CARDS: "cards",
@@ -406,6 +424,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Max 20 Zeichen",
       ERR_AGE: "Ungültiges Alter (1-120)"
     },
+    AUTH: {
+      login: "ANMELDEN",
+      register: "REGISTRIEREN",
+      username: "BENUTZERNAME",
+      password: "PASSWORT",
+      confirmPassword: "PASSWORT WIEDERHOLEN",
+      captcha: "SICHERHEITSFRAGE",
+      result: "Ergebnis",
+      loading: "LÄDT...",
+      resetEmailSent: "E-MAIL GESENDET",
+      checkEmail: "Prüfe dein Postfach.",
+      backToLogin: "ZURÜCK ZUM LOGIN",
+      resetPassword: "PASSWORT ZURÜCKSETZEN",
+      forgotPassword: "Passwort vergessen?",
+      sendResetEmail: "RESET E-MAIL SENDEN",
+      age: "ALTER",
+      minAge: "Mindestalter: 12 Jahre"
+    },
     HOME: {
       PLAYER: "Rätselfreund",
       SEASON_LEVEL: "Saison Stufe",
@@ -434,7 +470,7 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "Buchstaben Sudoku", desc: "Logik (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Herausforderungen" },
       RIDDLE: { title: "RÄTSEL", desc: "Worträtsel" },
-      LETTER_MAU_MAU: { title: "BUCHSTABEN MAU MAU", desc: "Kartenspiel" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Premium Kartenschmiede" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Klassisches Kartenspiel" },
       CHESS: { title: "SCHACH", desc: "Klassisches Strategiespiel" },
       CHECKERS: { title: "DAME", desc: "Klassisches Brettspiel" },
@@ -443,7 +479,7 @@ export const TRANSLATIONS = {
       LOCKED: { title: "BALD", desc: "Demnächst" }
     },
     MAU_MAU: {
-      TITLE: "BUCHSTABEN MAU MAU",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Dein Zug",
       OPPONENT_TURN: "Gegner am Zug",
       CARDS: "Karten",
@@ -671,6 +707,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Máx 20 caracteres",
       ERR_AGE: "Edad inválida (1-120)"
     },
+    AUTH: {
+      login: "INICIAR SESIÓN",
+      register: "REGISTRARSE",
+      username: "USUARIO",
+      password: "CONTRASEÑA",
+      confirmPassword: "CONFIRMAR CONTRASEÑA",
+      captcha: "CAPTCHA",
+      result: "Resultado",
+      loading: "CARGANDO...",
+      resetEmailSent: "CORREO ENVIADO",
+      checkEmail: "Revisa tu bandeja de entrada.",
+      backToLogin: "VOLVER AL LOGIN",
+      resetPassword: "RESTABLECER CONTRASEÑA",
+      forgotPassword: "¿Olvidaste tu contraseña?",
+      sendResetEmail: "ENVIAR CORREO",
+      age: "EDAD",
+      minAge: "Edad mínima: 12 años"
+    },
     HOME: {
       PLAYER: "Jugador",
       SEASON_LEVEL: "Nivel de Temporada",
@@ -699,7 +753,7 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "SUDOKU DE LETRAS", desc: "Lógica (A-I)" },
       CHALLENGE: { title: "DESAFÍO", desc: "Retos Premium" },
       RIDDLE: { title: "ACERTIJOS", desc: "Rompecabezas" },
-      LETTER_MAU_MAU: { title: "MAU MAU DE LETRAS", desc: "Juego de Cartas" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Forja de Cartas Premium" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Juego de Cartas Clásico" },
       CHESS: { title: "AJEDREZ", desc: "Juego de Estrategia Clásico" },
       CHECKERS: { title: "DAMAS", desc: "Juego de Mesa Clásico" },
@@ -708,7 +762,7 @@ export const TRANSLATIONS = {
       LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
     },
     MAU_MAU: {
-      TITLE: "MAU MAU DE LETRAS",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Tu Turno",
       OPPONENT_TURN: "Turno del Oponente",
       CARDS: "cartas",
@@ -1888,7 +1942,7 @@ const overrides: Record<number, Partial<SeasonReward>> = {
   1: { premium: { type: 'avatar', name: 'Nano Scout', value: 'nano_banana_pro_1', preview: '/assets/season/avatar_nano_scout.png' } },
   2: { premium: { type: 'effect', name: 'Rainbow Pulse', value: 'effect_rainbow', icon: '🌈' } }, // Keep emoji for now as effect fallback
   4: { premium: { type: 'avatar', name: 'Space Explorer', value: 'space_explorer', preview: '/assets/season/avatar_space_explorer.png' } },
-  5: { premium: { type: 'effect', name: 'Gold Luxury', value: 'effect_gold', icon: '/assets/season/frame_gold.png' } }, // Use frame as icon
+  5: { premium: { type: 'card_pack', amount: 1, icon: '📦' } },
   6: { premium: { type: 'avatar', name: 'Cyber Banana', value: 'nano_banana_pro_2', preview: '/assets/season/avatar_nano_scout.png' } },
   7: { premium: { type: 'effect', name: 'Silver Shine', value: 'effect_silver', icon: '/assets/season/frame_silver.png' } }, // Use silver frame
   8: { premium: { type: 'effect', name: 'Matrix Rain', value: 'effect_matrix', icon: '💻' } },
@@ -1897,7 +1951,7 @@ const overrides: Record<number, Partial<SeasonReward>> = {
   11: { premium: { type: 'avatar', name: 'Glitch Monkey', value: 'nano_banana_pro_4', preview: '/assets/season/avatar_nano_scout.png' } },
   12: { premium: { type: 'effect', name: 'Holo Shimmer', value: 'effect_holo', icon: '💿' } },
   14: { premium: { type: 'avatar', name: 'Mecha Kong', value: 'nano_banana_pro_5', preview: '/assets/season/avatar_mecha_kong.png' } },
-  15: { premium: { type: 'effect', name: 'Quantum Flux', value: 'effect_quantum', icon: '⚛️' } }
+  15: { premium: { type: 'card_pack', amount: 2, icon: '📦' } }
 };
 
 export const SEASON_REWARDS: SeasonReward[] = generatedRewards.map(reward => {
@@ -1942,6 +1996,11 @@ export const SHOP_ITEMS: ShopItem[] = [
     paypalLink: 'https://www.paypal.com/ncp/payment/V9GJ535LYLFKU'
   },
 
+  // Card Packs
+  { id: 'pack_starter', type: 'card_pack', name: 'Starter Pack', cost: 500, value: 'pack_starter', description: 'Contains 5 basic cards' },
+  { id: 'pack_premium', type: 'card_pack', name: 'Premium Pack', cost: 1500, value: 'pack_premium', description: 'Contains 5 cards with at least 1 rare' },
+  { id: 'pack_legendary', type: 'card_pack', name: 'Legendary Pack', cost: 5000, value: 'pack_legendary', description: 'Contains 5 cards with guaranteed legendary' },
+
   // Avatars (Costs Coins)
   { id: 'shop_avatar_1', type: 'avatar', name: 'Cyber Demon', cost: 500, value: 'CyberDemon' },
   { id: 'shop_avatar_2', type: 'avatar', name: 'Holo Girl', cost: 800, value: 'HoloGirl' },
@@ -1951,6 +2010,22 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'shop_avatar_6', type: 'avatar', name: 'Quantum Ghost', cost: 5000, value: 'QuantumGhost' },
   { id: 'shop_avatar_7', type: 'avatar', name: 'Plasma Knight', cost: 7500, value: 'PlasmaKnight' },
   { id: 'shop_avatar_8', type: 'avatar', name: 'Nano Swarm', cost: 10000, value: 'NanoSwarm' },
+
+  // Card Backs (Kartenrückseiten)
+  { id: 'cardback_classic', type: 'card_back', name: 'Classic Blue', cost: 200, value: 'classic_blue' },
+  { id: 'cardback_neon', type: 'card_back', name: 'Neon Glow', cost: 500, value: 'neon_glow' },
+  { id: 'cardback_cyber', type: 'card_back', name: 'Cyberpunk', cost: 800, value: 'cyberpunk' },
+  { id: 'cardback_gold', type: 'card_back', name: 'Golden Luxury', cost: 1500, value: 'gold_luxury' },
+  { id: 'cardback_galaxy', type: 'card_back', name: 'Galaxy Stars', cost: 2000, value: 'galaxy_stars' },
+  { id: 'cardback_fire', type: 'card_back', name: 'Fire Dragon', cost: 3000, value: 'fire_dragon' },
+
+  // Frames (Rahmen)
+  { id: 'frame_bronze', type: 'frame', name: 'Bronze Border', cost: 300, value: 'frame_bronze' },
+  { id: 'frame_silver', type: 'frame', name: 'Silver Border', cost: 600, value: 'frame_silver' },
+  { id: 'frame_gold', type: 'frame', name: 'Gold Border', cost: 1000, value: 'frame_gold' },
+  { id: 'frame_rainbow', type: 'frame', name: 'Rainbow Glow', cost: 1800, value: 'frame_rainbow' },
+  { id: 'frame_fire', type: 'frame', name: 'Fire Effect', cost: 2500, value: 'frame_fire' },
+  { id: 'frame_plasma', type: 'frame', name: 'Plasma Storm', cost: 4000, value: 'frame_plasma' },
 ];
 
 // Premium Pass Plans (PayPal Subscriptions)

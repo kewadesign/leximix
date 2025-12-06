@@ -99,7 +99,7 @@ export interface TutorialContent {
 
 export interface ShopItem {
   id: string;
-  type: 'currency' | 'avatar' | 'frame' | 'booster';
+  type: 'currency' | 'avatar' | 'frame' | 'booster' | 'card_pack' | 'card_back';
   name: string;
   cost: number | string; // Number = Coins, String = Real Money (Display)
   value: number | string; // Amount of coins OR Avatar ID OR Frame ID
@@ -109,7 +109,7 @@ export interface ShopItem {
 }
 
 export interface SeasonRewardItem {
-  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker' | 'effect';
+  type: 'coins' | 'avatar' | 'cosmetic' | 'booster' | 'mystery' | 'sticker' | 'effect' | 'card_pack';
   name: string;
   amount?: number;
   desc?: string;
@@ -123,4 +123,11 @@ export interface SeasonReward {
   level: number;
   free: SeasonRewardItem | null;
   premium: SeasonRewardItem | null;
+}
+
+export interface VoucherRedemptionResult {
+  success: boolean;
+  error?: string;
+  coinsAwarded?: number;
+  isPremium?: boolean;
 }

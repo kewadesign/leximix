@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './UI';
-import { registerUser, loginUser, resetPassword } from '../utils/firebase';
+import { registerUser, loginUser, resetPassword } from '../utils/api';
 import {
     IoMailSharp,
     IoPersonSharp,
@@ -11,7 +11,7 @@ import {
     IoGlobeSharp,
     IoSettingsSharp
 } from 'react-icons/io5';
-import { TRANSLATIONS } from '../translations';
+import { TRANSLATIONS } from '../constants';
 import { Language } from '../types';
 
 interface Props {
@@ -36,7 +36,13 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     const [showVerificationSent, setShowVerificationSent] = useState(false);
     const [showPasswordResetSent, setShowPasswordResetSent] = useState(false);
 
-    const t = TRANSLATIONS[lang].auth;
+    // Ensure lang is uppercase to match TRANSLATIONS keys
+    const safeLang = (lang || 'DE').toUpperCase();
+    const t = TRANSLATIONS[safeLang] || TRANSLATIONS['DE'];
+
+    if (!t || !t.AUTH) {
+        return null; // Prevent crash
+    }
 
     // CAPTCHA State
     const [captcha, setCaptcha] = useState({ num1: 0, num2: 0 });
@@ -138,6 +144,8 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
             } else {
                 const result = await loginUser(email, password);
                 if (result.success && result.username) {
+                    // Store cloud user immediately
+                    localStorage.setItem('leximix_cloud_user', result.username);
                     onSuccess(result.username);
                     onClose();
                 } else {
@@ -273,9 +281,9 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                     >
                         <IoCheckmarkCircleSharp size={60} color="#FFF" />
                     </div>
-                    <h3 className="text-4xl font-black uppercase" style={{ color: '#000', transform: 'skew(-5deg)' }}>{t.resetEmailSent}</h3>
+                    <h3 className="text-4xl font-black uppercase" style={{ color: '#000', transform: 'skew(-5deg)' }}>{t.AUTH.resetEmailSent}</h3>
                     <p className="text-lg font-bold" style={{ color: '#4A4A4A' }}>
-                        {t.checkEmail}
+                        {t.AUTH.checkEmail}
                     </p>
                     <button
                         onClick={() => {
@@ -301,36 +309,31 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                             e.currentTarget.style.boxShadow = '8px 8px 0px #000';
                         }}
                     >
-                        {t.backToLogin}
+                        {t.AUTH.backToLogin}
                     </button>
                 </div>
             </div>
         );
 
         if (embedded) return content;
-        return <Modal isOpen={isOpen} onClose={onClose} title={t.resetPassword}>{content}</Modal>;
+        return <Modal isOpen={isOpen} onClose={onClose} title={t.AUTH.resetPassword}>{content}</Modal>;
     }
 
     const formContent = (
         <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-bg)' }}>
             <RainbowStripe />
 
+            {/* Logo at Top */}
+            <div className="w-full flex justify-center pt-8 pb-4">
+                <img src="/LexiMix_Logo_Dark.png" alt="LexiMix" className="h-16 w-auto object-contain" />
+            </div>
+
             <div className="flex-1 flex items-center justify-center p-6">
                 <div className="w-full max-w-md space-y-6">
-                    {/* Header Icon */}
+                    {/* Header Icon - Removed from here, moved to top */}
                     {mode === 'select_auth_type' && (
                         <div className="flex justify-center mb-6">
-                            <div
-                                className="p-6"
-                                style={{
-                                    background: '#FFBE0B',
-                                    border: '4px solid #000',
-                                    boxShadow: '8px 8px 0px #000',
-                                    transform: 'skew(-5deg)'
-                                }}
-                            >
-                                <IoPersonSharp size={48} color="#000" />
-                            </div>
+                            {/* Placeholder to keep spacing if needed, or just remove */}
                         </div>
                     )}
                     {mode === 'language_select' && (
@@ -406,7 +409,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                         e.currentTarget.style.boxShadow = '8px 8px 0px #000';
                                     }}
                                 >
-                                    {t.login}
+                                    {t.AUTH.login}
                                 </button>
                                 <button
                                     type="button"
@@ -429,7 +432,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                         e.currentTarget.style.boxShadow = '8px 8px 0px #000';
                                     }}
                                 >
-                                    {t.register}
+                                    {t.AUTH.register}
                                 </button>
                             </div>
                         )}
@@ -517,7 +520,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                         {mode === 'age_verify' && (
                             <div className="space-y-4">
                                 <h2 className="text-3xl font-black uppercase text-center mb-4" style={{ color: 'var(--color-text)' }}>
-                                    {t.age}
+                                    {t.AUTH.age}
                                 </h2>
                                 <input
                                     type="text"
@@ -538,10 +541,10 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                         border: '4px solid #000',
                                         boxShadow: '4px 4px 0px #000'
                                     }}
-                                    placeholder={t.age}
+                                    placeholder={t.AUTH.age}
                                     autoFocus
                                 />
-                                <p className="text-sm font-bold text-center" style={{ color: '#4A4A4A' }}>{t.minAge}</p>
+                                <p className="text-sm font-bold text-center" style={{ color: '#4A4A4A' }}>{t.AUTH.minAge}</p>
                                 <button
                                     type="submit"
                                     disabled={!age}
@@ -606,7 +609,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 {/* Username - ONLY FOR REGISTER */}
                                 {mode === 'register' && (
                                     <div>
-                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.username}</label>
+                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.AUTH.username}</label>
                                         <div className="relative">
                                             <div
                                                 className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
@@ -628,7 +631,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                     border: '4px solid #000',
                                                     boxShadow: '4px 4px 0px #000'
                                                 }}
-                                                placeholder={t.username}
+                                                placeholder={t.AUTH.username}
                                                 disabled={loading}
                                                 maxLength={30}
                                             />
@@ -640,7 +643,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 {/* Password */}
                                 {(mode === 'login' || mode === 'register') && (
                                     <div>
-                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.password}</label>
+                                        <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.AUTH.password}</label>
                                         <div className="relative">
                                             <div
                                                 className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
@@ -662,7 +665,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                     border: '4px solid #000',
                                                     boxShadow: '4px 4px 0px #000'
                                                 }}
-                                                placeholder={t.password}
+                                                placeholder={t.AUTH.password}
                                                 disabled={loading}
                                             />
                                         </div>
@@ -673,7 +676,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                 {mode === 'register' && (
                                     <>
                                         <div>
-                                            <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.confirmPassword}</label>
+                                            <label className="block text-sm font-black uppercase mb-2" style={{ color: 'var(--color-text)' }}>{t.AUTH.confirmPassword}</label>
                                             <div className="relative">
                                                 <div
                                                     className="absolute left-4 top-1/2 -translate-y-1/2 p-2"
@@ -695,7 +698,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                         border: '4px solid #000',
                                                         boxShadow: '4px 4px 0px #000'
                                                     }}
-                                                    placeholder={t.confirmPassword}
+                                                    placeholder={t.AUTH.confirmPassword}
                                                     disabled={loading}
                                                 />
                                             </div>
@@ -713,7 +716,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                         >
                                             <label className="block text-sm font-black uppercase flex items-center gap-2" style={{ color: '#000' }}>
                                                 <IoCalculatorSharp size={20} />
-                                                {t.captcha}: {captcha.num1} + {captcha.num2} = ?
+                                                {t.AUTH.captcha}: {captcha.num1} + {captcha.num2} = ?
                                             </label>
                                             <input
                                                 type="number"
@@ -726,7 +729,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                     border: '4px solid #000',
                                                     boxShadow: '2px 2px 0px #000'
                                                 }}
-                                                placeholder={t.result}
+                                                placeholder={t.AUTH.result}
                                                 disabled={loading}
                                             />
                                         </div>
@@ -754,7 +757,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                 e.currentTarget.style.boxShadow = '8px 8px 0px #000';
                                             }}
                                         >
-                                            {loading ? t.loading : t.register}
+                                            {loading ? t.AUTH.loading : t.AUTH.register}
                                         </button>
                                     </>
                                 )}
@@ -785,7 +788,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                                 e.currentTarget.style.boxShadow = '8px 8px 0px #000';
                                             }}
                                         >
-                                            {loading ? t.loading : t.login}
+                                            {loading ? t.AUTH.loading : t.AUTH.login}
                                         </button>
                                         <button
                                             type="button"
@@ -796,7 +799,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                             className="w-full text-sm font-bold uppercase hover:underline"
                                             style={{ color: '#8338EC' }}
                                         >
-                                            {t.forgotPassword}
+                                            {t.AUTH.forgotPassword}
                                         </button>
                                     </>
                                 )}
@@ -827,7 +830,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
                                             e.currentTarget.style.boxShadow = '8px 8px 0px #000';
                                         }}
                                     >
-                                        {loading ? t.loading : t.sendResetEmail}
+                                        {loading ? t.AUTH.loading : t.AUTH.sendResetEmail}
                                     </button>
                                 )}
                             </>
@@ -859,7 +862,7 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang, o
     if (embedded) return formContent;
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? t.login : mode === 'age_verify' ? 'ALTER' : mode === 'language_select' ? 'LANGUAGE' : mode === 'register' ? t.register : 'WELCOME'}>
+        <Modal isOpen={isOpen} onClose={onClose} title={mode === 'login' ? t.AUTH.login : mode === 'age_verify' ? 'ALTER' : mode === 'language_select' ? 'LANGUAGE' : mode === 'register' ? t.AUTH.register : 'WELCOME'}>
             {formContent}
         </Modal>
     );
