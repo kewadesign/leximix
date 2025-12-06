@@ -699,8 +699,8 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                 <Box size={36} style={{ color: '#8338EC' }} />
                                             ) : premiumReward.type === 'booster' ? (
                                                 <Zap size={36} style={{ color: '#FFBE0B' }} />
-                                            ) : premiumReward.type === 'coins' ? (
-                                                <Coins size={28} style={{ color: '#FFBE0B' }} />
+                                            ) : premiumReward.type === 'card_pack' ? (
+                                                <div className="text-4xl">📦</div>
                                             ) : (
                                                 <Gem size={28} style={{ color: '#0096FF' }} />
                                             )}
@@ -771,16 +771,8 @@ export const SeasonPassView: React.FC<Props> = ({ user, rewards, onClose, onClai
                                                 <Coins size={36} style={{ color: '#FFBE0B' }} />
                                             ) : freeReward.type === 'sticker' ? (
                                                 <Star size={36} style={{ color: '#FF006E' }} />
-                                            ) : freeReward.type === 'sticker_pack' ? (
-                                                <div 
-                                                    className="w-10 h-10 flex items-center justify-center"
-                                                    style={{ 
-                                                        background: getRarityColor(freeReward.rarity || 'common'), 
-                                                        border: '2px solid #000' 
-                                                    }}
-                                                >
-                                                    <span className="text-xl">🎁</span>
-                                                </div>
+                                            ) : freeReward.type === 'card_pack' ? (
+                                                <div className="text-4xl">📦</div>
                                             ) : (
                                                 <Coins size={32} style={{ color: '#FFBE0B' }} />
                                             )}

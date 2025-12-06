@@ -4,238 +4,7 @@ import { Tier, GameMode, Language, TutorialContent, ShopItem, WordData, SeasonRe
 // APP CONSTANTS
 // ============================================================================
 
-export const APP_VERSION = '4.0.0';
-
-// ============================================================================
-// PROFILE FRAMES
-// ============================================================================
-
-export const PROFILE_FRAMES: ProfileFrame[] = [
-  { id: 'frame_none', name: 'Kein Rahmen', cssClass: '', unlockLevel: 0, isPremium: false, rarity: 'common' },
-  { id: 'frame_gold', name: 'Goldrand', cssClass: 'frame-gold', unlockLevel: 5, isPremium: false, rarity: 'common' },
-  { id: 'frame_neon', name: 'Neon Glow', cssClass: 'frame-neon', unlockLevel: 15, isPremium: true, rarity: 'rare' },
-  { id: 'frame_fire', name: 'Flammenrahmen', cssClass: 'frame-fire', unlockLevel: 25, isPremium: true, rarity: 'rare' },
-  { id: 'frame_ice', name: 'Eisrahmen', cssClass: 'frame-ice', unlockLevel: 35, isPremium: true, rarity: 'epic' },
-  { id: 'frame_rainbow', name: 'Regenbogen', cssClass: 'frame-rainbow', unlockLevel: 50, isPremium: true, rarity: 'epic' },
-  { id: 'frame_lightning', name: 'Blitz', cssClass: 'frame-lightning', unlockLevel: 65, isPremium: true, rarity: 'epic' },
-  { id: 'frame_galaxy', name: 'Galaxie', cssClass: 'frame-galaxy', unlockLevel: 75, isPremium: true, rarity: 'legendary' },
-  { id: 'frame_dragon', name: 'Drache', cssClass: 'frame-dragon', unlockLevel: 90, isPremium: true, rarity: 'legendary' },
-  { id: 'frame_legendary', name: 'Legendär', cssClass: 'frame-legendary', unlockLevel: 100, isPremium: true, rarity: 'legendary' },
-  // Category completion rewards
-  { id: 'frame_animals', name: 'Tierfreund', cssClass: 'ring-4 ring-green-500 shadow-[0_0_20px_rgba(34,197,94,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
-  { id: 'frame_food', name: 'Gourmet', cssClass: 'ring-4 ring-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
-  { id: 'frame_nature', name: 'Naturliebhaber', cssClass: 'ring-4 ring-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
-  { id: 'frame_sports', name: 'Sportler', cssClass: 'ring-4 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]', unlockLevel: 0, isPremium: false, rarity: 'rare' },
-  { id: 'frame_collector', name: 'Sammler', cssClass: 'ring-[6px] ring-amber-400 shadow-[0_0_30px_rgba(251,191,36,0.8)]', unlockLevel: 0, isPremium: false, rarity: 'epic' },
-];
-
-// ============================================================================
-// PROFILE FONTS
-// ============================================================================
-
-export const PROFILE_FONTS: ProfileFont[] = [
-  { id: 'font_default', name: 'Standard', fontFamily: "'Poppins', sans-serif", unlockLevel: 0, isPremium: false },
-  { id: 'font_pixel', name: 'Pixel', fontFamily: "'Press Start 2P', cursive", unlockLevel: 10, isPremium: true },
-  { id: 'font_script', name: 'Elegant', fontFamily: "'Dancing Script', cursive", unlockLevel: 20, isPremium: true },
-  { id: 'font_mono', name: 'Hacker', fontFamily: "'JetBrains Mono', monospace", unlockLevel: 30, isPremium: true },
-  { id: 'font_comic', name: 'Comic', fontFamily: "'Comic Neue', cursive", unlockLevel: 40, isPremium: true },
-  { id: 'font_bold', name: 'Ultra Bold', fontFamily: "'Black Ops One', cursive", unlockLevel: 60, isPremium: true },
-];
-
-// ============================================================================
-// PROFILE EFFECTS
-// ============================================================================
-
-export const PROFILE_EFFECTS: ProfileEffect[] = [
-  { id: 'effect_none', name: 'Kein Effekt', cssClass: '', icon: '❌', unlockLevel: 0, isPremium: false },
-  { id: 'effect_glow', name: 'Leuchtend', cssClass: 'shadow-[0_0_30px_rgba(255,255,255,0.6)] animate-pulse', icon: '✨', unlockLevel: 5, isPremium: false },
-  { id: 'effect_rainbow', name: 'Regenbogen Pulse', cssClass: 'animate-rainbow-bg holo-shimmer', icon: '🌈', unlockLevel: 0, isPremium: true },
-  { id: 'effect_fire', name: 'Feuer', cssClass: 'effect-fire shadow-[0_0_30px_rgba(255,127,0,0.8)] animate-pulse', icon: '🔥', unlockLevel: 0, isPremium: true },
-  { id: 'effect_ice', name: 'Eis', cssClass: 'effect-ice shadow-[0_0_30px_rgba(0,217,255,0.8)]', icon: '❄️', unlockLevel: 0, isPremium: true },
-  { id: 'effect_gold', name: 'Gold Luxus', cssClass: 'effect-gold shadow-[0_0_35px_rgba(255,215,0,0.9)]', icon: '👑', unlockLevel: 0, isPremium: true },
-  { id: 'effect_diamond', name: 'Diamant', cssClass: 'shadow-[0_0_30px_rgba(168,85,247,0.8)] holo-shimmer', icon: '💎', unlockLevel: 0, isPremium: true },
-  { id: 'effect_matrix', name: 'Matrix Rain', cssClass: 'shadow-[0_0_25px_rgba(0,217,255,0.9)]', icon: '💻', unlockLevel: 0, isPremium: true },
-  { id: 'effect_neon', name: 'Neon', cssClass: 'effect-neon shadow-[0_0_30px_rgba(255,0,110,0.8)]', icon: '💜', unlockLevel: 0, isPremium: true },
-  { id: 'effect_sakura', name: 'Sakura', cssClass: 'shadow-[0_0_25px_rgba(244,114,182,0.7)]', icon: '🌸', unlockLevel: 0, isPremium: true },
-  { id: 'effect_lightning', name: 'Blitz', cssClass: 'shadow-[0_0_35px_rgba(255,190,11,1)] animate-pulse', icon: '⚡', unlockLevel: 0, isPremium: true },
-  { id: 'effect_vaporwave', name: 'Vaporwave', cssClass: 'shadow-[0_0_30px_rgba(255,0,110,0.7),0_0_60px_rgba(0,217,255,0.5)]', icon: '🌴', unlockLevel: 0, isPremium: true },
-  { id: 'effect_glitch', name: 'Glitch', cssClass: 'animate-glitch', icon: '👾', unlockLevel: 0, isPremium: true },
-  { id: 'effect_holo', name: 'Hologramm', cssClass: 'holo-shimmer shadow-[0_0_40px_rgba(192,132,252,0.8)]', icon: '💿', unlockLevel: 0, isPremium: true },
-  { id: 'effect_quantum', name: 'Quantum', cssClass: 'shadow-[0_0_35px_rgba(99,102,241,0.9)]', icon: '⚛️', unlockLevel: 0, isPremium: true },
-];
-
-// ============================================================================
-// PROFILE TITLES
-// ============================================================================
-
-export const PROFILE_TITLES: ProfileTitle[] = [
-  { id: 'title_none', name: 'Kein Titel', rarity: 'common', cssClass: '', unlockLevel: 0, isPremium: false },
-  { id: 'title_newcomer', name: 'Neuling', rarity: 'common', cssClass: 'text-gray-400', icon: '🌱', unlockLevel: 0, isPremium: false },
-  { id: 'title_wordsmith', name: 'Wortschmied', rarity: 'common', cssClass: 'text-blue-400', icon: '📝', unlockLevel: 5, isPremium: false },
-  { id: 'title_puzzle_solver', name: 'Rätsellöser', rarity: 'rare', cssClass: 'text-green-400', icon: '🧩', unlockLevel: 10, isPremium: true },
-  { id: 'title_champion', name: 'Champion', rarity: 'rare', cssClass: 'text-yellow-400', icon: '🏆', unlockLevel: 15, isPremium: true },
-  { id: 'title_genius', name: 'Genie', rarity: 'epic', cssClass: 'text-purple-400 animate-pulse', icon: '🧠', unlockLevel: 25, isPremium: true },
-  { id: 'title_legend', name: 'Legende', rarity: 'epic', cssClass: 'text-orange-400 animate-pulse', icon: '⭐', unlockLevel: 35, isPremium: true },
-  { id: 'title_master', name: 'Meister', rarity: 'epic', cssClass: 'text-red-400', icon: '👑', unlockLevel: 50, isPremium: true },
-  { id: 'title_elite', name: 'Elite', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 bg-clip-text text-transparent animate-shimmer', icon: '💎', unlockLevel: 75, isPremium: true },
-  { id: 'title_supreme', name: 'Supreme', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent animate-shimmer', icon: '🔱', unlockLevel: 100, isPremium: true },
-  // Special titles
-  { id: 'title_cyber', name: 'Cyber Agent', rarity: 'epic', cssClass: 'text-cyan-400 animate-pulse', icon: '🤖', unlockLevel: 0, isPremium: true },
-  { id: 'title_neon', name: 'Neon Rider', rarity: 'epic', cssClass: 'text-fuchsia-400 animate-pulse', icon: '🌃', unlockLevel: 0, isPremium: true },
-  { id: 'title_shadow', name: 'Schattenwandler', rarity: 'legendary', cssClass: 'text-gray-300', icon: '🌑', unlockLevel: 0, isPremium: true },
-  { id: 'title_phoenix', name: 'Phoenix', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 bg-clip-text text-transparent', icon: '🔥', unlockLevel: 0, isPremium: true },
-];
-
-// Helper: Get title by ID
-export const getTitleById = (id: string): ProfileTitle | undefined => {
-  return PROFILE_TITLES.find(t => t.id === id);
-};
-
-// ============================================================================
-// CARD BACKS
-// ============================================================================
-
-export const CARD_BACKS: CardBack[] = [
-  { id: 'cardback_default', name: 'Standard', preview: '/assets/cardbacks/default.png', rarity: 'common', unlockLevel: 0, isPremium: false },
-  { id: 'cardback_blue', name: 'Ozean Blau', preview: '/assets/cardbacks/blue.png', rarity: 'common', cssClass: 'bg-gradient-to-br from-blue-600 to-blue-900', unlockLevel: 5, isPremium: false },
-  { id: 'cardback_fire', name: 'Feuer', preview: '/assets/cardbacks/fire.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-orange-500 via-red-600 to-yellow-500', unlockLevel: 10, isPremium: true },
-  { id: 'cardback_ice', name: 'Frost', preview: '/assets/cardbacks/ice.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-cyan-400 to-blue-600', unlockLevel: 18, isPremium: true },
-  { id: 'cardback_neon', name: 'Neon Grid', preview: '/assets/cardbacks/neon.png', rarity: 'rare', cssClass: 'bg-gradient-to-br from-fuchsia-600 via-purple-600 to-cyan-500', unlockLevel: 28, isPremium: true },
-  { id: 'cardback_galaxy', name: 'Galaxie', preview: '/assets/cardbacks/galaxy.png', rarity: 'epic', cssClass: 'bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900', unlockLevel: 38, isPremium: true },
-  { id: 'cardback_gold', name: 'Gold Royal', preview: '/assets/cardbacks/gold.png', rarity: 'epic', cssClass: 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600', unlockLevel: 48, isPremium: true },
-  { id: 'cardback_matrix', name: 'Matrix', preview: '/assets/cardbacks/matrix.png', rarity: 'epic', cssClass: 'bg-gradient-to-b from-green-900 to-black', unlockLevel: 58, isPremium: true },
-  { id: 'cardback_rainbow', name: 'Prisma', preview: '/assets/cardbacks/rainbow.png', rarity: 'legendary', cssClass: 'bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500', unlockLevel: 78, isPremium: true },
-  { id: 'cardback_legendary', name: 'Legendär', preview: '/assets/cardbacks/legendary.png', rarity: 'legendary', cssClass: 'bg-gradient-to-br from-yellow-300 via-orange-500 to-red-600 animate-pulse', unlockLevel: 100, isPremium: true },
-];
-
-// Helper: Get card back by ID
-export const getCardBackById = (id: string): CardBack | undefined => {
-  return CARD_BACKS.find(c => c.id === id);
-};
-
-// ============================================================================
-// STICKER ALBUM SYSTEM
-// ============================================================================
-
-export const STICKER_CATEGORIES: StickerCategory[] = [
-  { id: 'animals', name: 'Tiere', icon: '🐾', totalStickers: 12, rewardFrame: 'frame_animals', rewardCoins: 100 },
-  { id: 'food', name: 'Essen', icon: '🍔', totalStickers: 12, rewardFrame: 'frame_food', rewardCoins: 100 },
-  { id: 'nature', name: 'Natur', icon: '🌿', totalStickers: 12, rewardFrame: 'frame_nature', rewardCoins: 100 },
-  { id: 'sports', name: 'Sport', icon: '⚽', totalStickers: 12, rewardFrame: 'frame_sports', rewardCoins: 100 },
-  { id: 'emojis', name: 'Emojis', icon: '😎', totalStickers: 12, rewardCoins: 150 },
-  { id: 'rare', name: 'Seltene', icon: '💎', totalStickers: 12, rewardFrame: 'frame_collector', rewardCoins: 250 },
-];
-
-export const STICKERS: Sticker[] = [
-  // Animals (12)
-  { id: 'sticker_cat', emoji: '🐱', name: 'Katze', category: 'animals', rarity: 'common' },
-  { id: 'sticker_dog', emoji: '🐶', name: 'Hund', category: 'animals', rarity: 'common' },
-  { id: 'sticker_fox', emoji: '🦊', name: 'Fuchs', category: 'animals', rarity: 'common' },
-  { id: 'sticker_panda', emoji: '🐼', name: 'Panda', category: 'animals', rarity: 'common' },
-  { id: 'sticker_lion', emoji: '🦁', name: 'Löwe', category: 'animals', rarity: 'rare' },
-  { id: 'sticker_tiger', emoji: '🐯', name: 'Tiger', category: 'animals', rarity: 'rare' },
-  { id: 'sticker_elephant', emoji: '🐘', name: 'Elefant', category: 'animals', rarity: 'rare' },
-  { id: 'sticker_monkey', emoji: '🐵', name: 'Affe', category: 'animals', rarity: 'common' },
-  { id: 'sticker_rabbit', emoji: '🐰', name: 'Hase', category: 'animals', rarity: 'common' },
-  { id: 'sticker_bear', emoji: '🐻', name: 'Bär', category: 'animals', rarity: 'rare' },
-  { id: 'sticker_unicorn', emoji: '🦄', name: 'Einhorn', category: 'animals', rarity: 'epic' },
-  { id: 'sticker_dragon', emoji: '🐲', name: 'Drache', category: 'animals', rarity: 'legendary' },
-
-  // Food (12)
-  { id: 'sticker_pizza', emoji: '🍕', name: 'Pizza', category: 'food', rarity: 'common' },
-  { id: 'sticker_burger', emoji: '🍔', name: 'Burger', category: 'food', rarity: 'common' },
-  { id: 'sticker_fries', emoji: '🍟', name: 'Pommes', category: 'food', rarity: 'common' },
-  { id: 'sticker_hotdog', emoji: '🌭', name: 'Hotdog', category: 'food', rarity: 'common' },
-  { id: 'sticker_donut', emoji: '🍩', name: 'Donut', category: 'food', rarity: 'rare' },
-  { id: 'sticker_icecream', emoji: '🍦', name: 'Eis', category: 'food', rarity: 'common' },
-  { id: 'sticker_cake', emoji: '🎂', name: 'Kuchen', category: 'food', rarity: 'rare' },
-  { id: 'sticker_sushi', emoji: '🍣', name: 'Sushi', category: 'food', rarity: 'rare' },
-  { id: 'sticker_ramen', emoji: '🍜', name: 'Ramen', category: 'food', rarity: 'rare' },
-  { id: 'sticker_taco', emoji: '🌮', name: 'Taco', category: 'food', rarity: 'common' },
-  { id: 'sticker_cookie', emoji: '🍪', name: 'Keks', category: 'food', rarity: 'common' },
-  { id: 'sticker_lobster', emoji: '🦞', name: 'Hummer', category: 'food', rarity: 'legendary' },
-
-  // Nature (12)
-  { id: 'sticker_flower', emoji: '🌸', name: 'Kirschblüte', category: 'nature', rarity: 'common' },
-  { id: 'sticker_sunflower', emoji: '🌻', name: 'Sonnenblume', category: 'nature', rarity: 'common' },
-  { id: 'sticker_tree', emoji: '🌳', name: 'Baum', category: 'nature', rarity: 'common' },
-  { id: 'sticker_mountain', emoji: '🏔️', name: 'Berg', category: 'nature', rarity: 'rare' },
-  { id: 'sticker_wave', emoji: '🌊', name: 'Welle', category: 'nature', rarity: 'rare' },
-  { id: 'sticker_sun', emoji: '☀️', name: 'Sonne', category: 'nature', rarity: 'common' },
-  { id: 'sticker_moon', emoji: '🌙', name: 'Mond', category: 'nature', rarity: 'rare' },
-  { id: 'sticker_star', emoji: '⭐', name: 'Stern', category: 'nature', rarity: 'common' },
-  { id: 'sticker_rainbow_n', emoji: '🌈', name: 'Regenbogen', category: 'nature', rarity: 'epic' },
-  { id: 'sticker_fire_n', emoji: '🔥', name: 'Feuer', category: 'nature', rarity: 'rare' },
-  { id: 'sticker_snowflake', emoji: '❄️', name: 'Schneeflocke', category: 'nature', rarity: 'common' },
-  { id: 'sticker_aurora', emoji: '🌌', name: 'Nordlicht', category: 'nature', rarity: 'legendary' },
-
-  // Sports (12)
-  { id: 'sticker_soccer', emoji: '⚽', name: 'Fußball', category: 'sports', rarity: 'common' },
-  { id: 'sticker_basketball', emoji: '🏀', name: 'Basketball', category: 'sports', rarity: 'common' },
-  { id: 'sticker_football', emoji: '🏈', name: 'Football', category: 'sports', rarity: 'common' },
-  { id: 'sticker_tennis', emoji: '🎾', name: 'Tennis', category: 'sports', rarity: 'common' },
-  { id: 'sticker_baseball', emoji: '⚾', name: 'Baseball', category: 'sports', rarity: 'common' },
-  { id: 'sticker_golf', emoji: '⛳', name: 'Golf', category: 'sports', rarity: 'rare' },
-  { id: 'sticker_ski', emoji: '⛷️', name: 'Ski', category: 'sports', rarity: 'rare' },
-  { id: 'sticker_surf', emoji: '🏄', name: 'Surfen', category: 'sports', rarity: 'rare' },
-  { id: 'sticker_medal', emoji: '🥇', name: 'Goldmedaille', category: 'sports', rarity: 'epic' },
-  { id: 'sticker_trophy_s', emoji: '🏆', name: 'Pokal', category: 'sports', rarity: 'epic' },
-  { id: 'sticker_boxing', emoji: '🥊', name: 'Boxen', category: 'sports', rarity: 'rare' },
-  { id: 'sticker_champion', emoji: '🏅', name: 'Champion', category: 'sports', rarity: 'legendary' },
-
-  // Emojis (12)
-  { id: 'sticker_cool', emoji: '😎', name: 'Cool', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_heart_eyes', emoji: '😍', name: 'Verliebt', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_laugh', emoji: '😂', name: 'Lachen', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_thinking', emoji: '🤔', name: 'Denken', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_party', emoji: '🥳', name: 'Party', category: 'emojis', rarity: 'rare' },
-  { id: 'sticker_mind_blown', emoji: '🤯', name: 'Mind Blown', category: 'emojis', rarity: 'rare' },
-  { id: 'sticker_nerd', emoji: '🤓', name: 'Nerd', category: 'emojis', rarity: 'common' },
-  { id: 'sticker_devil', emoji: '😈', name: 'Teufel', category: 'emojis', rarity: 'rare' },
-  { id: 'sticker_ghost', emoji: '👻', name: 'Geist', category: 'emojis', rarity: 'rare' },
-  { id: 'sticker_alien', emoji: '👽', name: 'Alien', category: 'emojis', rarity: 'epic' },
-  { id: 'sticker_robot', emoji: '🤖', name: 'Roboter', category: 'emojis', rarity: 'epic' },
-  { id: 'sticker_skull', emoji: '💀', name: 'Totenkopf', category: 'emojis', rarity: 'legendary' },
-
-  // Rare (12)
-  { id: 'sticker_gem', emoji: '💎', name: 'Diamant', category: 'rare', rarity: 'rare' },
-  { id: 'sticker_crown', emoji: '👑', name: 'Krone', category: 'rare', rarity: 'epic' },
-  { id: 'sticker_rocket', emoji: '🚀', name: 'Rakete', category: 'rare', rarity: 'epic' },
-  { id: 'sticker_ufo', emoji: '🛸', name: 'UFO', category: 'rare', rarity: 'epic' },
-  { id: 'sticker_crystal', emoji: '🔮', name: 'Kristallkugel', category: 'rare', rarity: 'epic' },
-  { id: 'sticker_sword', emoji: '⚔️', name: 'Schwerter', category: 'rare', rarity: 'rare' },
-  { id: 'sticker_magic', emoji: '✨', name: 'Magie', category: 'rare', rarity: 'rare' },
-  { id: 'sticker_infinity', emoji: '♾️', name: 'Unendlich', category: 'rare', rarity: 'legendary' },
-  { id: 'sticker_heart_gold', emoji: '💛', name: 'Goldenes Herz', category: 'rare', rarity: 'legendary' },
-  { id: 'sticker_star_gold', emoji: '🌟', name: 'Goldstern', category: 'rare', rarity: 'legendary' },
-  { id: 'sticker_phoenix', emoji: '🔱', name: 'Dreizack', category: 'rare', rarity: 'legendary' },
-  { id: 'sticker_legendary', emoji: '⚜️', name: 'Lilie', category: 'rare', rarity: 'legendary' },
-];
-
-// Helper: Get stickers by category
-export const getStickersByCategory = (categoryId: string): Sticker[] => {
-  return STICKERS.filter(s => s.category === categoryId);
-};
-
-// Helper: Get sticker by ID
-export const getStickerById = (id: string): Sticker | undefined => {
-  return STICKERS.find(s => s.id === id);
-};
-
-// Helper: Get frame by ID
-export const getFrameById = (id: string): ProfileFrame | undefined => {
-  return PROFILE_FRAMES.find(f => f.id === id);
-};
-
-// Helper: Get font by ID
-export const getFontById = (id: string): ProfileFont | undefined => {
-  return PROFILE_FONTS.find(f => f.id === id);
-};
-
-// Helper: Get effect by ID
-export const getEffectById = (id: string): ProfileEffect | undefined => {
-  return PROFILE_EFFECTS.find(e => e.id === id);
-};
+export const APP_VERSION = '3.5.0';
 
 // ============================================================================
 // SEASON SYSTEM
@@ -370,6 +139,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Max 20 characters",
       ERR_AGE: "Invalid age (1-120)"
     },
+    AUTH: {
+      login: "LOGIN",
+      register: "REGISTER",
+      username: "USERNAME",
+      password: "PASSWORD",
+      confirmPassword: "CONFIRM PASSWORD",
+      captcha: "CAPTCHA",
+      result: "Result",
+      loading: "LOADING...",
+      resetEmailSent: "EMAIL SENT",
+      checkEmail: "Check your inbox.",
+      backToLogin: "BACK TO LOGIN",
+      resetPassword: "RESET PASSWORD",
+      forgotPassword: "Forgot Password?",
+      sendResetEmail: "SEND RESET EMAIL",
+      age: "AGE",
+      minAge: "Minimum age: 12 years"
+    },
     HOME: {
       PLAYER: "Puzzle Pal",
       SEASON_LEVEL: "Season Level",
@@ -400,7 +187,7 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "LETTER SUDOKU", desc: "Logic (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Challenges" },
       RIDDLE: { title: "RIDDLES", desc: "Word Puzzles" },
-      LETTER_MAU_MAU: { title: "LETTER MAU MAU", desc: "Card Game" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Premium Card Forge" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Classic Card Game" },
       CHESS: { title: "CHESS", desc: "Classic Strategy Game" },
       CHECKERS: { title: "CHECKERS", desc: "Classic Board Game" },
@@ -411,7 +198,7 @@ export const TRANSLATIONS = {
       LOCKED: { title: "LOCKED", desc: "Coming Soon" }
     },
     MAU_MAU: {
-      TITLE: "LETTER MAU MAU",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Your Turn",
       OPPONENT_TURN: "Opponent's Turn",
       CARDS: "cards",
@@ -642,6 +429,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Max 20 Zeichen",
       ERR_AGE: "Ungültiges Alter (1-120)"
     },
+    AUTH: {
+      login: "ANMELDEN",
+      register: "REGISTRIEREN",
+      username: "BENUTZERNAME",
+      password: "PASSWORT",
+      confirmPassword: "PASSWORT WIEDERHOLEN",
+      captcha: "SICHERHEITSFRAGE",
+      result: "Ergebnis",
+      loading: "LÄDT...",
+      resetEmailSent: "E-MAIL GESENDET",
+      checkEmail: "Prüfe dein Postfach.",
+      backToLogin: "ZURÜCK ZUM LOGIN",
+      resetPassword: "PASSWORT ZURÜCKSETZEN",
+      forgotPassword: "Passwort vergessen?",
+      sendResetEmail: "RESET E-MAIL SENDEN",
+      age: "ALTER",
+      minAge: "Mindestalter: 12 Jahre"
+    },
     HOME: {
       PLAYER: "Rätselfreund",
       SEASON_LEVEL: "Saison Stufe",
@@ -672,7 +477,7 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "Buchstaben Sudoku", desc: "Logik (A-I)" },
       CHALLENGE: { title: "CHALLENGE", desc: "Premium Herausforderungen" },
       RIDDLE: { title: "RÄTSEL", desc: "Worträtsel" },
-      LETTER_MAU_MAU: { title: "BUCHSTABEN MAU MAU", desc: "Kartenspiel" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Premium Kartenschmiede" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Klassisches Kartenspiel" },
       CHESS: { title: "SCHACH", desc: "Klassisches Strategiespiel" },
       CHECKERS: { title: "DAME", desc: "Klassisches Brettspiel" },
@@ -683,7 +488,7 @@ export const TRANSLATIONS = {
       LOCKED: { title: "BALD", desc: "Demnächst" }
     },
     MAU_MAU: {
-      TITLE: "BUCHSTABEN MAU MAU",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Dein Zug",
       OPPONENT_TURN: "Gegner am Zug",
       CARDS: "Karten",
@@ -913,6 +718,24 @@ export const TRANSLATIONS = {
       ERR_NAME: "Máx 20 caracteres",
       ERR_AGE: "Edad inválida (1-120)"
     },
+    AUTH: {
+      login: "INICIAR SESIÓN",
+      register: "REGISTRARSE",
+      username: "USUARIO",
+      password: "CONTRASEÑA",
+      confirmPassword: "CONFIRMAR CONTRASEÑA",
+      captcha: "CAPTCHA",
+      result: "Resultado",
+      loading: "CARGANDO...",
+      resetEmailSent: "CORREO ENVIADO",
+      checkEmail: "Revisa tu bandeja de entrada.",
+      backToLogin: "VOLVER AL LOGIN",
+      resetPassword: "RESTABLECER CONTRASEÑA",
+      forgotPassword: "¿Olvidaste tu contraseña?",
+      sendResetEmail: "ENVIAR CORREO",
+      age: "EDAD",
+      minAge: "Edad mínima: 12 años"
+    },
     HOME: {
       PLAYER: "Jugador",
       SEASON_LEVEL: "Nivel de Temporada",
@@ -943,7 +766,7 @@ export const TRANSLATIONS = {
       SUDOKU: { title: "SUDOKU DE LETRAS", desc: "Lógica (A-I)" },
       CHALLENGE: { title: "DESAFÍO", desc: "Retos Premium" },
       RIDDLE: { title: "ACERTIJOS", desc: "Rompecabezas" },
-      LETTER_MAU_MAU: { title: "MAU MAU DE LETRAS", desc: "Juego de Cartas" },
+      LETTER_MAU_MAU: { title: "KARTENSCHMIEDE", desc: "Forja de Cartas Premium" },
       SKAT_MAU_MAU: { title: "MAU MAU", desc: "Juego de Cartas Clásico" },
       CHESS: { title: "AJEDREZ", desc: "Juego de Estrategia Clásico" },
       CHECKERS: { title: "DAMAS", desc: "Juego de Mesa Clásico" },
@@ -954,7 +777,7 @@ export const TRANSLATIONS = {
       LOCKED: { title: "BLOQUEADO", desc: "Próximamente" }
     },
     MAU_MAU: {
-      TITLE: "MAU MAU DE LETRAS",
+      TITLE: "KARTENSCHMIEDE",
       YOUR_TURN: "Tu Turno",
       OPPONENT_TURN: "Turno del Oponente",
       CARDS: "cartas",
@@ -2269,8 +2092,34 @@ export const generateSeasonRewards = (season: Season) => {
   });
 };
 
-// Generate rewards for current season
-export const SEASON_REWARDS: SeasonReward[] = generateSeasonRewards(getCurrentSeason());
+// Legacy compatibility - defaults to current season
+const generatedRewards = generateSeasonRewards(getCurrentSeason());
+
+// Apply Manual Overrides for first 15 levels (Nano Banana Special)
+// Apply Manual Overrides for first 15 levels (Nano Banana Special)
+const overrides: Record<number, Partial<SeasonReward>> = {
+  1: { premium: { type: 'avatar', name: 'Nano Scout', value: 'nano_banana_pro_1', preview: '/assets/season/avatar_nano_scout.png' } },
+  2: { premium: { type: 'effect', name: 'Rainbow Pulse', value: 'effect_rainbow', icon: '🌈' } }, // Keep emoji for now as effect fallback
+  4: { premium: { type: 'avatar', name: 'Space Explorer', value: 'space_explorer', preview: '/assets/season/avatar_space_explorer.png' } },
+  5: { premium: { type: 'card_pack', amount: 1, icon: '📦' } },
+  6: { premium: { type: 'avatar', name: 'Cyber Banana', value: 'nano_banana_pro_2', preview: '/assets/season/avatar_nano_scout.png' } },
+  7: { premium: { type: 'effect', name: 'Silver Shine', value: 'effect_silver', icon: '/assets/season/frame_silver.png' } }, // Use silver frame
+  8: { premium: { type: 'effect', name: 'Matrix Rain', value: 'effect_matrix', icon: '💻' } },
+  9: { premium: { type: 'avatar', name: 'Neon Ape', value: 'nano_banana_pro_3', preview: '/assets/season/avatar_nano_scout.png' } },
+  10: { premium: { type: 'effect', name: 'Glitch Wild', value: 'effect_glitch_wild', icon: '👾' } },
+  11: { premium: { type: 'avatar', name: 'Glitch Monkey', value: 'nano_banana_pro_4', preview: '/assets/season/avatar_nano_scout.png' } },
+  12: { premium: { type: 'effect', name: 'Holo Shimmer', value: 'effect_holo', icon: '💿' } },
+  14: { premium: { type: 'avatar', name: 'Mecha Kong', value: 'nano_banana_pro_5', preview: '/assets/season/avatar_mecha_kong.png' } },
+  15: { premium: { type: 'card_pack', amount: 2, icon: '📦' } }
+};
+
+export const SEASON_REWARDS: SeasonReward[] = generatedRewards.map(reward => {
+  const override = overrides[reward.level];
+  if (override) {
+    return { ...reward, ...override };
+  }
+  return reward;
+});
 
 // Shop Items
 export const SHOP_ITEMS: ShopItem[] = [
@@ -2328,174 +2177,36 @@ export const SHOP_ITEMS: ShopItem[] = [
     rarity: 'legendary'
   },
 
-  // ============================================================================
-  // 👤 AVATARE (Münzen) - Mit lokalen SVGs
-  // ============================================================================
-  // Günstige Avatare (100-500 Münzen)
-  { id: 'shop_avatar_space', type: 'avatar', name: 'Weltraum Forscher', cost: 200, value: '/avatars/space_explorer.png', rarity: 'common', preview: '/avatars/space_explorer.png' },
-  { id: 'shop_avatar_cyber', type: 'avatar', name: 'Cyber Krieger', cost: 300, value: '/avatars/cyberpunk_warrior.png', rarity: 'common', preview: '/avatars/cyberpunk_warrior.png' },
-  { id: 'shop_avatar_wizard', type: 'avatar', name: 'Fantasie Magier', cost: 400, value: '/avatars/fantasy_wizard.png', rarity: 'common', preview: '/avatars/fantasy_wizard.png' },
-  
-  // Mittlere Avatare (500-1500 Münzen)
-  { id: 'shop_avatar_ninja', type: 'avatar', name: 'Schatten Ninja', cost: 600, value: 'ShadowNinja', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=ShadowNinja' },
-  { id: 'shop_avatar_viking', type: 'avatar', name: 'Wikinger Held', cost: 800, value: 'VikingHero', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=VikingHero' },
-  { id: 'shop_avatar_pirate', type: 'avatar', name: 'Piraten Kapitän', cost: 1000, value: 'PirateCaptain', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/adventurer/svg?seed=PirateCaptain' },
-  { id: 'shop_avatar_samurai', type: 'avatar', name: 'Samurai Meister', cost: 1200, value: 'SamuraiMaster', rarity: 'rare', preview: 'https://api.dicebear.com/9.x/lorelei/svg?seed=SamuraiMaster' },
-  
-  // Teure Avatare (2000-5000 Münzen)
-  { id: 'shop_avatar_dragon', type: 'avatar', name: 'Drachen Reiter', cost: 2000, value: 'DragonRider', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/bottts/svg?seed=DragonRider' },
-  { id: 'shop_avatar_phoenix', type: 'avatar', name: 'Phönix Wächter', cost: 2500, value: 'PhoenixGuard', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/bottts/svg?seed=PhoenixGuard' },
-  { id: 'shop_avatar_titan', type: 'avatar', name: 'Titan Krieger', cost: 3000, value: 'TitanWarrior', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/micah/svg?seed=TitanWarrior' },
-  { id: 'shop_avatar_void', type: 'avatar', name: 'Void Jäger', cost: 4000, value: 'VoidHunter', rarity: 'epic', preview: 'https://api.dicebear.com/9.x/micah/svg?seed=VoidHunter' },
-  
-  // Legendäre Avatare (5000+ Münzen)
-  { id: 'shop_avatar_cosmic', type: 'avatar', name: 'Kosmischer Kaiser', cost: 5000, value: 'CosmicEmperor', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/avataaars/svg?seed=CosmicEmperor' },
-  { id: 'shop_avatar_eternal', type: 'avatar', name: 'Ewiger Champion', cost: 7500, value: 'EternalChampion', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/avataaars/svg?seed=EternalChampion' },
-  { id: 'shop_avatar_supreme', type: 'avatar', name: 'Höchster Meister', cost: 10000, value: 'SupremeMaster', rarity: 'legendary', preview: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=SupremeMaster' },
+  // Card Packs
+  { id: 'pack_starter', type: 'card_pack', name: 'Starter Pack', cost: 500, value: 'pack_starter', description: 'Contains 5 basic cards' },
+  { id: 'pack_premium', type: 'card_pack', name: 'Premium Pack', cost: 1500, value: 'pack_premium', description: 'Contains 5 cards with at least 1 rare' },
+  { id: 'pack_legendary', type: 'card_pack', name: 'Legendary Pack', cost: 5000, value: 'pack_legendary', description: 'Contains 5 cards with guaranteed legendary' },
 
-  // ============================================================================
-  // 🖼️ RAHMEN (Münzen)
-  // ============================================================================
-  { id: 'shop_frame_silver', type: 'frame', name: 'Silber Rahmen', cost: 300, value: 'frame_silver', rarity: 'common' },
-  { id: 'shop_frame_bronze', type: 'frame', name: 'Bronze Rahmen', cost: 400, value: 'frame_bronze', rarity: 'common' },
-  { id: 'shop_frame_gold', type: 'frame', name: 'Gold Rahmen', cost: 800, value: 'frame_gold', rarity: 'rare' },
-  { id: 'shop_frame_diamond', type: 'frame', name: 'Diamant Rahmen', cost: 1500, value: 'frame_diamond', rarity: 'rare' },
-  { id: 'shop_frame_neon_blue', type: 'frame', name: 'Neon Blau', cost: 2000, value: 'frame_neon_blue', rarity: 'epic' },
-  { id: 'shop_frame_neon_pink', type: 'frame', name: 'Neon Pink', cost: 2000, value: 'frame_neon_pink', rarity: 'epic' },
-  { id: 'shop_frame_fire', type: 'frame', name: 'Feuer Rahmen', cost: 3000, value: 'frame_fire', rarity: 'epic' },
-  { id: 'shop_frame_ice', type: 'frame', name: 'Eis Rahmen', cost: 3000, value: 'frame_ice', rarity: 'epic' },
-  { id: 'shop_frame_rainbow', type: 'frame', name: 'Regenbogen', cost: 5000, value: 'frame_rainbow', rarity: 'legendary' },
-  { id: 'shop_frame_galaxy', type: 'frame', name: 'Galaxie Rahmen', cost: 7500, value: 'frame_galaxy', rarity: 'legendary' },
-  { id: 'shop_frame_dragon', type: 'frame', name: 'Drachen Rahmen', cost: 10000, value: 'frame_dragon', rarity: 'legendary' },
+  // Avatars (Costs Coins)
+  { id: 'shop_avatar_1', type: 'avatar', name: 'Cyber Demon', cost: 500, value: 'CyberDemon' },
+  { id: 'shop_avatar_2', type: 'avatar', name: 'Holo Girl', cost: 800, value: 'HoloGirl' },
+  { id: 'shop_avatar_3', type: 'avatar', name: 'Mecha King', cost: 1200, value: 'MechaKing' },
+  { id: 'shop_avatar_4', type: 'avatar', name: 'Void Stalker', cost: 2000, value: 'VoidStalker' },
+  { id: 'shop_avatar_5', type: 'avatar', name: 'Neon Samurai', cost: 3000, value: 'NeonSamurai' },
+  { id: 'shop_avatar_6', type: 'avatar', name: 'Quantum Ghost', cost: 5000, value: 'QuantumGhost' },
+  { id: 'shop_avatar_7', type: 'avatar', name: 'Plasma Knight', cost: 7500, value: 'PlasmaKnight' },
+  { id: 'shop_avatar_8', type: 'avatar', name: 'Nano Swarm', cost: 10000, value: 'NanoSwarm' },
 
-  // ============================================================================
-  // ✨ EFFEKTE (Münzen)
-  // ============================================================================
-  { id: 'shop_effect_sparkle', type: 'effect', name: 'Funkel Effekt', cost: 400, value: 'effect_sparkle', rarity: 'common' },
-  { id: 'shop_effect_hearts', type: 'effect', name: 'Herzen', cost: 500, value: 'effect_hearts', rarity: 'common' },
-  { id: 'shop_effect_stars', type: 'effect', name: 'Sterne', cost: 600, value: 'effect_stars', rarity: 'common' },
-  { id: 'shop_effect_fire', type: 'effect', name: 'Feuer Aura', cost: 1200, value: 'effect_fire', rarity: 'rare' },
-  { id: 'shop_effect_ice', type: 'effect', name: 'Eis Kristalle', cost: 1200, value: 'effect_ice', rarity: 'rare' },
-  { id: 'shop_effect_electric', type: 'effect', name: 'Blitz Energie', cost: 1500, value: 'effect_electric', rarity: 'rare' },
-  { id: 'shop_effect_neon', type: 'effect', name: 'Neon Glow', cost: 2000, value: 'effect_neon', rarity: 'epic' },
-  { id: 'shop_effect_gold', type: 'effect', name: 'Gold Glitzer', cost: 2500, value: 'effect_gold', rarity: 'epic' },
-  { id: 'shop_effect_matrix', type: 'effect', name: 'Matrix Code', cost: 3000, value: 'effect_matrix', rarity: 'epic' },
-  { id: 'shop_effect_sakura', type: 'effect', name: 'Kirschblüten', cost: 3500, value: 'effect_sakura', rarity: 'epic' },
-  { id: 'shop_effect_rainbow', type: 'effect', name: 'Regenbogen Aura', cost: 5000, value: 'effect_rainbow', rarity: 'legendary' },
-  { id: 'shop_effect_cosmic', type: 'effect', name: 'Kosmische Energie', cost: 7500, value: 'effect_cosmic', rarity: 'legendary' },
-  { id: 'shop_effect_supernova', type: 'effect', name: 'Supernova', cost: 10000, value: 'effect_supernova', rarity: 'legendary' },
+  // Card Backs (Kartenrückseiten)
+  { id: 'cardback_classic', type: 'card_back', name: 'Classic Blue', cost: 200, value: 'classic_blue' },
+  { id: 'cardback_neon', type: 'card_back', name: 'Neon Glow', cost: 500, value: 'neon_glow' },
+  { id: 'cardback_cyber', type: 'card_back', name: 'Cyberpunk', cost: 800, value: 'cyberpunk' },
+  { id: 'cardback_gold', type: 'card_back', name: 'Golden Luxury', cost: 1500, value: 'gold_luxury' },
+  { id: 'cardback_galaxy', type: 'card_back', name: 'Galaxy Stars', cost: 2000, value: 'galaxy_stars' },
+  { id: 'cardback_fire', type: 'card_back', name: 'Fire Dragon', cost: 3000, value: 'fire_dragon' },
 
-  // ============================================================================
-  // 👑 TITEL (Münzen)
-  // ============================================================================
-  { id: 'shop_title_rookie', type: 'title', name: 'Neuling', cost: 100, value: 'title_rookie', rarity: 'common' },
-  { id: 'shop_title_player', type: 'title', name: 'Spieler', cost: 200, value: 'title_player', rarity: 'common' },
-  { id: 'shop_title_gamer', type: 'title', name: 'Gamer', cost: 300, value: 'title_gamer', rarity: 'common' },
-  { id: 'shop_title_pro', type: 'title', name: 'Profi', cost: 500, value: 'title_pro', rarity: 'rare' },
-  { id: 'shop_title_expert', type: 'title', name: 'Experte', cost: 800, value: 'title_expert', rarity: 'rare' },
-  { id: 'shop_title_master', type: 'title', name: 'Meister', cost: 1500, value: 'title_master', rarity: 'rare' },
-  { id: 'shop_title_champion', type: 'title', name: 'Champion', cost: 2500, value: 'title_champion', rarity: 'epic' },
-  { id: 'shop_title_legend', type: 'title', name: 'Legende', cost: 4000, value: 'title_legend', rarity: 'epic' },
-  { id: 'shop_title_hero', type: 'title', name: 'Held', cost: 5000, value: 'title_hero', rarity: 'epic' },
-  { id: 'shop_title_king', type: 'title', name: 'König', cost: 7500, value: 'title_king', rarity: 'legendary' },
-  { id: 'shop_title_emperor', type: 'title', name: 'Kaiser', cost: 10000, value: 'title_emperor', rarity: 'legendary' },
-  { id: 'shop_title_god', type: 'title', name: 'Gott', cost: 15000, value: 'title_god', rarity: 'legendary' },
-
-  // ============================================================================
-  // 🃏 KARTENRÜCKSEITEN (Münzen)
-  // ============================================================================
-  { id: 'shop_card_classic', type: 'cardback', name: 'Klassisch Rot', cost: 200, value: 'cardback_classic', rarity: 'common' },
-  { id: 'shop_card_blue', type: 'cardback', name: 'Ozean Blau', cost: 300, value: 'cardback_blue', rarity: 'common' },
-  { id: 'shop_card_green', type: 'cardback', name: 'Wald Grün', cost: 300, value: 'cardback_green', rarity: 'common' },
-  { id: 'shop_card_purple', type: 'cardback', name: 'Royal Lila', cost: 500, value: 'cardback_purple', rarity: 'rare' },
-  { id: 'shop_card_gold', type: 'cardback', name: 'Gold Edition', cost: 1000, value: 'cardback_gold', rarity: 'rare' },
-  { id: 'shop_card_diamond', type: 'cardback', name: 'Diamant', cost: 1500, value: 'cardback_diamond', rarity: 'rare' },
-  { id: 'shop_card_neon', type: 'cardback', name: 'Neon Cyber', cost: 2000, value: 'cardback_neon', rarity: 'epic' },
-  { id: 'shop_card_fire', type: 'cardback', name: 'Flammen', cost: 2500, value: 'cardback_fire', rarity: 'epic' },
-  { id: 'shop_card_ice', type: 'cardback', name: 'Frost', cost: 2500, value: 'cardback_ice', rarity: 'epic' },
-  { id: 'shop_card_galaxy', type: 'cardback', name: 'Galaxie', cost: 4000, value: 'cardback_galaxy', rarity: 'epic' },
-  { id: 'shop_card_rainbow', type: 'cardback', name: 'Regenbogen', cost: 6000, value: 'cardback_rainbow', rarity: 'legendary' },
-  { id: 'shop_card_dragon', type: 'cardback', name: 'Drachen', cost: 8000, value: 'cardback_dragon', rarity: 'legendary' },
-  { id: 'shop_card_holographic', type: 'cardback', name: 'Holografisch', cost: 12000, value: 'cardback_holo', rarity: 'legendary' },
-
-  // ============================================================================
-  // 🔤 SCHRIFTARTEN (Münzen)
-  // ============================================================================
-  { id: 'shop_font_bold', type: 'font', name: 'Fett', cost: 300, value: 'font_bold', rarity: 'common', preview: "'Arial Black', sans-serif" },
-  { id: 'shop_font_italic', type: 'font', name: 'Kursiv', cost: 300, value: 'font_italic', rarity: 'common', preview: "'Georgia', serif" },
-  { id: 'shop_font_pixel', type: 'font', name: 'Pixel', cost: 600, value: 'font_pixel', rarity: 'rare', preview: "'Press Start 2P', cursive" },
-  { id: 'shop_font_script', type: 'font', name: 'Schreibschrift', cost: 800, value: 'font_script', rarity: 'rare', preview: "'Dancing Script', cursive" },
-  { id: 'shop_font_mono', type: 'font', name: 'Hacker', cost: 1000, value: 'font_mono', rarity: 'rare', preview: "'JetBrains Mono', monospace" },
-  { id: 'shop_font_gothic', type: 'font', name: 'Gotisch', cost: 1500, value: 'font_gothic', rarity: 'epic', preview: "'UnifrakturMaguntia', cursive" },
-  { id: 'shop_font_neon', type: 'font', name: 'Neon', cost: 2000, value: 'font_neon', rarity: 'epic', preview: "'Monoton', cursive" },
-  { id: 'shop_font_royal', type: 'font', name: 'Royal', cost: 3000, value: 'font_royal', rarity: 'epic', preview: "'Cinzel', serif" },
-  { id: 'shop_font_graffiti', type: 'font', name: 'Graffiti', cost: 4000, value: 'font_graffiti', rarity: 'legendary', preview: "'Permanent Marker', cursive" },
-  { id: 'shop_font_matrix', type: 'font', name: 'Matrix', cost: 5000, value: 'font_matrix', rarity: 'legendary', preview: "'Share Tech Mono', monospace" },
-
-  // ============================================================================
-  // ⚡ BOOSTER & POWER-UPS (Münzen)
-  // ============================================================================
-  { id: 'shop_booster_xp_small', type: 'booster', name: 'XP Boost (1h)', cost: 100, value: 'xp_boost_1h', rarity: 'common' },
-  { id: 'shop_booster_xp_med', type: 'booster', name: 'XP Boost (6h)', cost: 400, value: 'xp_boost_6h', rarity: 'rare' },
-  { id: 'shop_booster_xp_large', type: 'booster', name: 'XP Boost (24h)', cost: 1000, value: 'xp_boost_24h', rarity: 'epic' },
-  { id: 'shop_booster_coin_small', type: 'booster', name: 'Münz Boost (1h)', cost: 150, value: 'coin_boost_1h', rarity: 'common' },
-  { id: 'shop_booster_coin_med', type: 'booster', name: 'Münz Boost (6h)', cost: 500, value: 'coin_boost_6h', rarity: 'rare' },
-  { id: 'shop_booster_coin_large', type: 'booster', name: 'Münz Boost (24h)', cost: 1200, value: 'coin_boost_24h', rarity: 'epic' },
-  { id: 'shop_hint_pack_small', type: 'booster', name: '5 Hinweise', cost: 200, value: 'hints_5', rarity: 'common' },
-  { id: 'shop_hint_pack_med', type: 'booster', name: '15 Hinweise', cost: 500, value: 'hints_15', rarity: 'rare' },
-  { id: 'shop_hint_pack_large', type: 'booster', name: '50 Hinweise', cost: 1500, value: 'hints_50', rarity: 'epic' },
-  { id: 'shop_skip_level', type: 'booster', name: 'Level Überspringen', cost: 300, value: 'skip_level', rarity: 'rare' },
-  { id: 'shop_extra_lives', type: 'booster', name: '3 Extra Leben', cost: 400, value: 'extra_lives_3', rarity: 'rare' },
-  { id: 'shop_time_freeze', type: 'booster', name: 'Zeit Stopp (30s)', cost: 250, value: 'time_freeze', rarity: 'rare' },
-
-  // ============================================================================
-  // 🃏 KARTENPAKETE - Deckbuilder (Münzen)
-  // ============================================================================
-  // Basis-Pakete
-  { id: 'pack_basic', type: 'cardpack', name: 'Basis-Paket', cost: 500, value: 'basic', rarity: 'common' },
-  { id: 'pack_standard', type: 'cardpack', name: 'Standard-Paket', cost: 1000, value: 'standard', rarity: 'rare' },
-  
-  // Element-Pakete
-  { id: 'pack_fire', type: 'cardpack', name: 'Feuer-Paket', cost: 800, value: 'element_fire', rarity: 'rare' },
-  { id: 'pack_water', type: 'cardpack', name: 'Wasser-Paket', cost: 800, value: 'element_water', rarity: 'rare' },
-  { id: 'pack_earth', type: 'cardpack', name: 'Erde-Paket', cost: 800, value: 'element_earth', rarity: 'rare' },
-  { id: 'pack_air', type: 'cardpack', name: 'Luft-Paket', cost: 800, value: 'element_air', rarity: 'rare' },
-  { id: 'pack_void', type: 'cardpack', name: 'Leere-Paket', cost: 1200, value: 'element_void', rarity: 'epic' },
-  
-  // Premium-Pakete
-  { id: 'pack_premium', type: 'cardpack', name: 'Premium-Paket', cost: 2500, value: 'premium', rarity: 'epic' },
-  { id: 'pack_legendary', type: 'cardpack', name: 'Legendäres Paket', cost: 5000, value: 'legendary', rarity: 'legendary' },
-
-  // ============================================================================
-  // 🎁 BUNDLES (Echtgeld - Spezialangebote)
-  // ============================================================================
-  {
-    id: 'bundle_starter',
-    type: 'bundle',
-    name: 'Starter Bundle',
-    cost: '2,99€',
-    value: 'bundle_starter',
-    isRealMoney: true,
-    rarity: 'rare'
-  },
-  {
-    id: 'bundle_premium',
-    type: 'bundle',
-    name: 'Premium Bundle',
-    cost: '9,99€',
-    value: 'bundle_premium',
-    isRealMoney: true,
-    rarity: 'epic'
-  },
-  {
-    id: 'bundle_ultimate',
-    type: 'bundle',
-    name: 'Ultimate Bundle',
-    cost: '19,99€',
-    value: 'bundle_ultimate',
-    isRealMoney: true,
-    rarity: 'legendary'
-  },
+  // Frames (Rahmen)
+  { id: 'frame_bronze', type: 'frame', name: 'Bronze Border', cost: 300, value: 'frame_bronze' },
+  { id: 'frame_silver', type: 'frame', name: 'Silver Border', cost: 600, value: 'frame_silver' },
+  { id: 'frame_gold', type: 'frame', name: 'Gold Border', cost: 1000, value: 'frame_gold' },
+  { id: 'frame_rainbow', type: 'frame', name: 'Rainbow Glow', cost: 1800, value: 'frame_rainbow' },
+  { id: 'frame_fire', type: 'frame', name: 'Fire Effect', cost: 2500, value: 'frame_fire' },
+  { id: 'frame_plasma', type: 'frame', name: 'Plasma Storm', cost: 4000, value: 'frame_plasma' },
 ];
 
 // Premium Pass Plans (PayPal Subscriptions)

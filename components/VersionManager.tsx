@@ -8,9 +8,10 @@ import { APP_VERSION } from '../constants';
 interface Props {
   isOnline: boolean;
   t: any;
+  canShowChangelog?: boolean;
 }
 
-export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
+export const VersionManager: React.FC<Props> = ({ isOnline, t, canShowChangelog = true }) => {
   const [serverVersion, setServerVersion] = useState('');
   const [minVersion, setMinVersion] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
@@ -56,7 +57,15 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
           setMinVersion(minimum);
           setDownloadUrl(url);
 
-          checkVersion(latest, minimum);
+        // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
+        const url = data.download_url || (isCapacitor ? 'https://leximix.de/app-release.apk' : '/app-release.apk');
+
+        // Check Maintenance Mode
+        if (data.maintenance_active) {
+          setIsMaintenance(true);
+          setMaintenanceMessage(data.maintenance_message || '');
+        } else {
+          setIsMaintenance(false);
         }
       } catch (error) {
         console.error('Failed to fetch version info:', error);
@@ -72,7 +81,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
     const interval = setInterval(fetchVersionInfo, 30000);
 
     // Fetch Changelog
-    fetch('/changelog.json')
+    fetch('./changelog.json')
       .then(res => res.json())
       .then(data => setChangelogData(data))
       .catch(err => console.error('Failed to load changelog', err));
@@ -114,7 +123,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
     // We show changelog if the last seen version < current version
     const lastSeen = localStorage.getItem('last_seen_version');
     if (!lastSeen || compare(current, lastSeen) > 0) {
-      if (compare(current, latest) >= 0) {
+      if (compare(current, latest) >= 0 && canShowChangelog) {
         setShowChangelog(true);
         localStorage.setItem('last_seen_version', current);
       }
