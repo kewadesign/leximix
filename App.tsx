@@ -257,7 +257,7 @@ const FALLBACK_SEASON_CONFIG = {
 
 export default function App() {
   const [view, setView] = useState<ViewType>('ONBOARDING');
-  const [apkDownloadUrl, setApkDownloadUrl] = useState('https://leximix.de/LexiMix-v3.0.2-Release.apk');
+  const [apkDownloadUrl, setApkDownloadUrl] = useState('https://leximix.de/LexiMix-v3.5.2-Release.apk');
 
   useEffect(() => {
     /*
