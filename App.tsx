@@ -4828,6 +4828,9 @@ export default function App() {
         </div>
       </div>
 
+      {/* Music Player */}
+      <MusicPlayer />
+
     </div>
   );
 }
