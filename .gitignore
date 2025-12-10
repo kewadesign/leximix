@@ -22,3 +22,28 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Deployment scripts
+sftp_*.py
+deploy*.py
+package_and_upload.py
+reupload_*.py
+cleanup_*.py
+force_upload_*.py
+setup_android.sh
+
+# Test files
+api/mail_test.php
+api/mail_test_v2.php
+api/php_info.php
+
+# Android build artifacts
+android/build/
+android/.gradle/
+*.apk
+*.aab
