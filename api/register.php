@@ -62,9 +62,12 @@ function generateFriendCode($pdo)
 
 $friendCode = generateFriendCode($pdo);
 
+// Generate verification token
+$verificationToken = bin2hex(random_bytes(32));
+
 // Create User
 try {
-    $stmt = $pdo->prepare("INSERT INTO users (username, email, password_hash, friend_code, save_data) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO users (username, email, password_hash, friend_code, verification_token, save_data) VALUES (?, ?, ?, ?, ?, ?)");
     // Initial save data
     $initialSave = json_encode([
         'name' => $username,
@@ -76,15 +79,13 @@ try {
         'friendCode' => $friendCode
     ]);
 
-    $stmt->execute([$username, $email, $passwordHash, $friendCode, $initialSave]);
+    $stmt->execute([$username, $email, $passwordHash, $friendCode, $verificationToken, $initialSave]);
 
-    // Send Welcome Email
+    // Send Welcome Email with verification link
     $to = $email;
-    $subject = "Willkommen bei LexiMix!";
-    $message = "Hallo $username,\n\nWillkommen bei LexiMix! Dein Account wurde erfolgreich erstellt.\n\nDein Freundescode: $friendCode\n\nViel Spaß beim Spielen!\nDein LexiMix Team";
-    $headers = 'From: noreply@leximix.de' . "\r\n" .
-        'Reply-To: noreply@leximix.de' . "\r\n" .
-        'X-Mailer: PHP/' . phpversion();
+    $subject = "Willkommen bei LexiMix - Bestätige deine E-Mail";
+    $verificationLink = "https://leximix.de/api/verify.php?token=$verificationToken";
+    $message = "Hallo $username,\n\nWillkommen bei LexiMix! Dein Account wurde erfolgreich erstellt.\n\nBitte klicke auf den folgenden Link, um deine E-Mail-Adresse zu bestätigen:\n$verificationLink\n\nDein Freundescode: $friendCode\n\nViel Spaß beim Spielen!\nDein LexiMix Team";
 
     // Attempt to send
     require_once 'smtp_mailer.php';
