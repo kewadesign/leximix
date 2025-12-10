@@ -1,14 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Music, Volume2, VolumeX, Radio } from 'lucide-react';
+import { Music, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 
 export const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [showControls, setShowControls] = useState(false);
+  const [volume, setVolume] = useState(0.5);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Lofi Stream URL (Public Domain / Free Stream)
-  const STREAM_URL = "https://stream.zeno.fm/0r0xa792kwzuv";
+  // Local Music File
+  const MUSIC_URL = "/music/happy-video-game-music-geometry-dash-type-beat-431059.mp3";
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+      audioRef.current.loop = true;
+    }
+  }, [volume]);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -34,48 +41,95 @@ export const MusicPlayer = () => {
   };
 
   return (
-    <div
-      className="fixed bottom-6 left-6 z-50 flex flex-col items-start gap-2"
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => setShowControls(false)}
-    >
+    <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2">
       <audio
         ref={audioRef}
-        src={STREAM_URL}
-        preload="none"
-        crossOrigin="anonymous"
+        src={MUSIC_URL}
+        preload="metadata"
       />
 
-      <div className="flex items-center gap-2">
-        <button
-          onClick={togglePlay}
-          className={`w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-xl border shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 group
-             ${isPlaying
-              ? 'bg-gradient-to-tr from-lexi-primary to-purple-600 border-white/20 text-white shadow-[0_0_20px_rgba(99,102,241,0.5)]'
-              : 'bg-gray-900/80 border-white/10 text-gray-400 hover:bg-gray-800 hover:text-white'}`}
-        >
-          <Music size={20} className={`transition-transform duration-700 ${isPlaying ? 'animate-[spin_3s_linear_infinite]' : 'group-hover:scale-110'}`} />
-        </button>
-
-        <div className={`flex items-center gap-2 transition-all duration-300 overflow-hidden ${isPlaying || showControls ? 'w-24 opacity-100' : 'w-0 opacity-0'}`}>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-lexi-primary uppercase tracking-wider whitespace-nowrap">Lofi Radio</span>
-            <span className="text-[9px] text-gray-400 whitespace-nowrap flex items-center gap-1">
-              <span className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
-              {isPlaying ? 'LIVE' : 'OFFLINE'}
-            </span>
-          </div>
-
-          {isPlaying && (
-            <button
-              onClick={toggleMute}
-              className="w-8 h-8 rounded-full bg-black/40 text-white/80 flex items-center justify-center backdrop-blur-md border border-white/10 hover:bg-black/60 hover:scale-110 transition-all ml-auto shrink-0"
-            >
-              {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-            </button>
+      {/* Main Play Button - Brutalism Style */}
+      <button
+        onClick={togglePlay}
+        className="relative group"
+        style={{
+          width: '56px',
+          height: '56px',
+          background: isPlaying ? '#06FFA5' : '#FF006E',
+          border: '4px solid #000',
+          boxShadow: '6px 6px 0px #000',
+          transform: 'skew(-5deg)',
+          transition: 'all 0.1s linear'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'skew(-5deg) translateY(-2px)';
+          e.currentTarget.style.boxShadow = '8px 8px 0px #000';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'skew(-5deg)';
+          e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+        }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center" style={{ transform: 'skew(5deg)' }}>
+          {isPlaying ? (
+            <Pause size={24} className="text-black" fill="black" />
+          ) : (
+            <Play size={24} className="text-white" fill="white" />
           )}
         </div>
-      </div>
+      </button>
+
+      {/* Volume Control - Shows when playing */}
+      {isPlaying && (
+        <div
+          className="flex items-center gap-2"
+          style={{
+            background: '#FFBE0B',
+            border: '4px solid #000',
+            boxShadow: '4px 4px 0px #000',
+            padding: '8px 12px',
+            transform: 'skew(-5deg)'
+          }}
+        >
+          <div style={{ transform: 'skew(5deg)' }} className="flex items-center gap-2">
+            <button
+              onClick={toggleMute}
+              className="p-1 hover:scale-110 transition-transform"
+            >
+              {isMuted ? <VolumeX size={18} className="text-black" /> : <Volume2 size={18} className="text-black" />}
+            </button>
+
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={isMuted ? 0 : volume}
+              onChange={(e) => {
+                const newVolume = parseFloat(e.target.value);
+                setVolume(newVolume);
+                if (audioRef.current) {
+                  audioRef.current.volume = newVolume;
+                }
+                if (isMuted && newVolume > 0) {
+                  setIsMuted(false);
+                  if (audioRef.current) audioRef.current.muted = false;
+                }
+              }}
+              className="w-20 h-2 appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, #000 0%, #000 ${(isMuted ? 0 : volume) * 100}%, #FFF ${(isMuted ? 0 : volume) * 100}%, #FFF 100%)`,
+                border: '2px solid #000',
+                outline: 'none'
+              }}
+            />
+
+            <span className="text-xs font-black text-black uppercase tracking-wider">
+              {isPlaying ? '♪' : ''}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
