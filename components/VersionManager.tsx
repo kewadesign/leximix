@@ -45,7 +45,7 @@ export const VersionManager: React.FC<Props> = ({ isOnline, t }) => {
         const minimum = data.min_version || '0.0.0';
 
         // Use Firebase URL if provided, else fallback to relative path (Web) or hardcoded (App)
-        const url = data.download_url || (isCapacitor ? 'https://leximix.de/app-release.apk' : '/app-release.apk');
+        const url = data.download_url || (isCapacitor ? 'https://leximix.de/LexiMix-v3.5.2-Release.apk' : '/LexiMix-v3.5.2-Release.apk');
 
         // Check Maintenance Mode
         if (data.maintenance_active) {
